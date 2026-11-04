@@ -1,6 +1,6 @@
 # Curriculum license
 
-Copyright (c) 2026 CodeMakesMeSmile. All rights reserved.
+Copyright (c) 2026 Anna Chester. All rights reserved.
 
 This covers the study material, not the code. That means everything under `content/`: questions, answer keys, rubrics, recall prompts, role packs, and the prompts used for AI evaluation.
 

@@ -1,0 +1,29 @@
+# Store text with LF in the repo and check it out with LF everywhere
+* text=auto eol=lf
+
+# Windows scripts need CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.mp3 binary
+*.mp4 binary
+*.m4a binary
+*.zip binary
+*.db binary
+*.sqlite binary
+
+# Keep lockfile diffs out of reviews
+pnpm-lock.yaml -diff linguist-generated
