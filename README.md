@@ -6,3 +6,9 @@ The mobile app will reinforce learned material (or help identify gaps in knowled
 AI will be integrated for long form project evaluations.
 
 The prototype is in Figma: [Meritory Prototype](https://www.figma.com/design/bNJ7xsT25s2zAdOr1MZ9Ug). Open the Screens page and pick a flow: the web core loop, the mobile core loop, or the handoff where a failed web attempt turns into phone recall and comes back as a fresh check on the web. Tokens and components, in light and dark, are on the Components page.
+
+## License
+
+The code is open source under the [GNU AGPL v3](LICENSE). If you run a modified version as a public service, you have to publish your changes.
+
+The curriculum in `content/` (questions, rubrics, recall prompts and evaluation prompts) is not open. It's all rights reserved, see [LICENSE-CONTENT.md](LICENSE-CONTENT.md).
