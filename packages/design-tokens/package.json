@@ -1,0 +1,14 @@
+{
+  "name": "@meritory/design-tokens",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "AGPL-3.0-only",
+  "description": "Colors, spacing and type from the Figma prototype",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc"
+  }
+}

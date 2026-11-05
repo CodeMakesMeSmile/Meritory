@@ -1,0 +1,17 @@
+{
+  "name": "@meritory/worker",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "AGPL-3.0-only",
+  "scripts": {
+    "dev": "node --env-file-if-exists=../../.env --watch src/main.ts",
+    "start": "node src/main.ts",
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "@meritory/ai": "workspace:*",
+    "@meritory/server": "workspace:*",
+    "pino": "^10.4.0"
+  }
+}

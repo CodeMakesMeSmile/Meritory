@@ -1,0 +1,41 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    groups:
+      # Expo SDK packages move together. Majors are done by hand with `expo install`.
+      expo:
+        patterns:
+          - "expo"
+          - "expo-*"
+          - "@expo/*"
+          - "react-native"
+          - "react-native-*"
+        update-types: [minor, patch]
+      dev-tools:
+        dependency-type: development
+        update-types: [minor, patch]
+      runtime:
+        dependency-type: production
+        update-types: [minor, patch]
+    ignore:
+      - dependency-name: "expo"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-native"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: docker-compose
+    directory: /
+    schedule:
+      interval: weekly
