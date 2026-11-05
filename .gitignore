@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Build output
+.next/
+dist/
+build/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# Expo
+.expo/
+apps/mobile/ios/
+apps/mobile/android/
+
+# Local env and secrets
+.env
+.env.*
+!.env.example
+
+# Test output
+coverage/
+playwright-report/
+test-results/
+
+# OS and editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+apps/mobile/expo-env.d.ts

@@ -1,0 +1,14 @@
+{
+  "name": "@meritory/ai",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "AGPL-3.0-only",
+  "description": "AI provider interface and adapters",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc"
+  }
+}

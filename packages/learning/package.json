@@ -1,0 +1,17 @@
+{
+  "name": "@meritory/learning",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "AGPL-3.0-only",
+  "description": "Pure scheduling, mastery and XP rules",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "ts-fsrs": "^6.0.0"
+  }
+}

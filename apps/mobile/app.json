@@ -1,0 +1,21 @@
+{
+  "expo": {
+    "name": "Meritory",
+    "slug": "meritory",
+    "scheme": "meritory",
+    "version": "0.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "bundleIdentifier": "app.meritory.mobile",
+      "supportsTablet": false
+    },
+    "android": {
+      "package": "app.meritory.mobile"
+    },
+    "plugins": ["expo-router", "expo-status-bar", "expo-sqlite"],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

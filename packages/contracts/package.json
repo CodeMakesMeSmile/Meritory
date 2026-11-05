@@ -1,0 +1,17 @@
+{
+  "name": "@meritory/contracts",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "AGPL-3.0-only",
+  "description": "API route schemas shared by the server and clients",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "typebox": "^1.4.3"
+  }
+}

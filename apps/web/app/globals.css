@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+/* Tailwind utilities read the token variables set in layout.tsx,
+   so bg-card or text-secondary follow light and dark automatically */
+@theme inline {
+  --color-desk: var(--color-bg-desk);
+  --color-rail: var(--color-bg-rail);
+  --color-card: var(--color-bg-card);
+  --color-sunken: var(--color-bg-sunken);
+  --color-track: var(--color-bg-track);
+  --color-primary: var(--color-text-primary);
+  --color-secondary: var(--color-text-secondary);
+  --color-on-accent: var(--color-text-on-accent);
+  --color-accent: var(--color-accent-default);
+  --color-accent-strong: var(--color-accent-strong);
+  --color-border: var(--color-border-default);
+  --color-border-subtle: var(--color-border-subtle);
+  --color-due: var(--color-highlight-due);
+  --color-due-soft: var(--color-highlight-soft);
+  --color-warning: var(--color-status-warning);
+  --color-danger: var(--color-status-danger);
+  --color-success: var(--color-status-success);
+
+  --radius-control: var(--radius-control);
+  --radius-item: var(--radius-item);
+  --radius-card: var(--radius-card);
+
+  --text-display: var(--type-display-size);
+  --text-display--line-height: var(--type-display-line-height);
+  --text-display--letter-spacing: var(--type-display-letter-spacing);
+  --text-display--font-weight: var(--type-display-weight);
+  --text-body: var(--type-body-size);
+  --text-body--line-height: var(--type-body-line-height);
+  --text-small: var(--type-small-size);
+  --text-small--line-height: var(--type-small-line-height);
+
+  --font-sans: var(--font-host-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+}
+
+body {
+  background: var(--color-bg-desk);
+  color: var(--color-text-primary);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-line-height);
+}

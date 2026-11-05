@@ -1,0 +1,39 @@
+{
+  "name": "meritory",
+  "private": true,
+  "type": "module",
+  "license": "AGPL-3.0-only",
+  "packageManager": "pnpm@12.16.1",
+  "engines": {
+    "node": ">=26.13.0"
+  },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "26.13.0",
+      "onFail": "download"
+    }
+  },
+  "volta": {
+    "node": "26.13.0"
+  },
+  "scripts": {
+    "dev": "pnpm --parallel --filter @meritory/api --filter @meritory/worker --filter @meritory/web dev",
+    "dev:mobile": "pnpm --filter @meritory/mobile start",
+    "services:up": "docker compose up -d --wait",
+    "services:down": "docker compose down",
+    "db:generate": "pnpm --filter @meritory/server db:generate",
+    "db:migrate": "pnpm --filter @meritory/server db:migrate",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "typecheck": "pnpm -r --parallel typecheck",
+    "test": "vitest run",
+    "check": "pnpm lint && pnpm typecheck && pnpm test"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.6.4",
+    "@types/node": "^26.6.6",
+    "typescript": "~6.0.3",
+    "vitest": "^5.1.0"
+  }
+}
