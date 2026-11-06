@@ -5,7 +5,7 @@ import {
   themeStylesheet,
   typeVariables,
 } from "./css.ts";
-import { colors } from "./tokens.ts";
+import { colors, textStyles } from "./tokens.ts";
 
 describe("design tokens", () => {
   it("defines the same color tokens in light and dark", () => {
@@ -30,15 +30,22 @@ describe("design tokens", () => {
   it("keeps cards square and controls 44px tall", () => {
     expect(layoutVariables()).toContain("--radius-card: 0px;");
     expect(layoutVariables()).toContain("--radius-control: 2px;");
-    expect(layoutVariables()).toContain("--control-height: 44px;");
+    expect(layoutVariables()).toContain("--control-height: 2.75rem;");
   });
 
-  it("exposes text styles as CSS variables", () => {
-    expect(typeVariables()).toContain("--type-display-size: 28px;");
+  it("exposes text styles as CSS variables in rem", () => {
+    expect(typeVariables()).toContain("--type-display-size: 2rem;");
     expect(typeVariables()).toContain("--type-body-strong-weight: 600;");
-    expect(typeVariables()).toContain("--type-link-line-height: 24px;");
+    expect(typeVariables()).toContain("--type-link-line-height: 1.5rem;");
     expect(typeVariables()).toContain("--type-tag-weight: 500;");
     expect(typeVariables()).toContain("--type-tag-line-height: normal;");
+  });
+
+  it("keeps text 12px or larger, and inputs at 16px so iOS does not zoom", () => {
+    for (const style of Object.values(textStyles)) {
+      expect(style.size).toBeGreaterThanOrEqual(12);
+    }
+    expect(typeVariables()).toContain("--type-body-size: 1rem;");
   });
 
   it("lets an explicit light theme override a dark system setting", () => {

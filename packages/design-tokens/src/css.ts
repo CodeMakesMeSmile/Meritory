@@ -10,6 +10,9 @@ import {
 const kebab = (name: string) =>
   name.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
 
+// Relative to the browser's font size setting, so text and controls grow with it
+const rem = (px: number) => `${px / 16}rem`;
+
 /** CSS custom properties for one color mode */
 export function colorVariables(mode: ColorMode): string {
   return Object.entries(colors[mode])
@@ -28,7 +31,7 @@ export function layoutVariables(): string {
   return [
     ...spacing,
     ...radii,
-    `--control-height: ${controlHeight}px;`,
+    `--control-height: ${rem(controlHeight)};`,
     // A gap in the surface color, then an ink ring. The only shadow allowed.
     "--focus-ring: 0 0 0 2px var(--color-bg-card), 0 0 0 4px var(--color-accent-default);",
   ].join(" ");
@@ -40,9 +43,9 @@ export function typeVariables(): string {
     .map(([name, style]) => {
       const prefix = `--type-${kebab(name)}`;
       const lineHeight =
-        style.lineHeight === null ? "normal" : `${style.lineHeight}px`;
+        style.lineHeight === null ? "normal" : rem(style.lineHeight);
       return [
-        `${prefix}-size: ${style.size}px;`,
+        `${prefix}-size: ${rem(style.size)};`,
         `${prefix}-line-height: ${lineHeight};`,
         `${prefix}-letter-spacing: ${style.letterSpacing}em;`,
         `${prefix}-weight: ${style.weight};`,
