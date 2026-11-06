@@ -59,7 +59,7 @@ export function createAuth(config: AuthConfig) {
             text: [
               "Someone asked to reset the password for your Meritory account.",
               url,
-              "The link works for 1 hour. Saving a new password signs out your other devices. If this wasn’t you, you can ignore this email.",
+              "The link works for 1 hour. Saving a new password signs out your other devices. If this wasn't you, you can ignore this email.",
             ].join("\n\n"),
           },
           user.id,
@@ -77,7 +77,7 @@ export function createAuth(config: AuthConfig) {
             text: [
               "Confirm your email to finish signing up for Meritory.",
               url,
-              "The link works for 1 hour. If you didn’t sign up, you can ignore this email.",
+              "The link works for 1 hour. If you didn't sign up, you can ignore this email.",
             ].join("\n\n"),
           },
           user.id,
