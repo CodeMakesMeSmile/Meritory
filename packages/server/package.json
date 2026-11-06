@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@better-auth/drizzle-adapter": "1.7.17",
+    "@meritory/password": "workspace:*",
     "better-auth": "1.7.17",
     "drizzle-orm": "^0.45.4",
     "nodemailer": "^10.3.1",

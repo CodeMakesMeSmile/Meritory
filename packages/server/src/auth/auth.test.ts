@@ -29,7 +29,6 @@ describe("createAuth", () => {
     const options = auth.options;
     expect(options.emailAndPassword).toMatchObject({
       minPasswordLength: 16,
-      maxPasswordLength: 128,
       requireEmailVerification: true,
       autoSignIn: false,
       resetPasswordTokenExpiresIn: 3600,
@@ -39,6 +38,37 @@ describe("createAuth", () => {
     expect(options.rateLimit).toMatchObject({
       storage: "database",
       customRules: { "/sign-in/email": { window: 10, max: 3 } },
+    });
+  });
+
+  it("rejects weak and personal passwords before touching the database", async () => {
+    const signUp = (password: string) =>
+      auth.handler(
+        new Request("https://meritory.test/api/v1/auth/sign-up/email", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            origin: "https://meritory.test",
+          },
+          body: JSON.stringify({
+            name: "Anna",
+            email: "anna@example.com",
+            password,
+          }),
+        }),
+      );
+
+    const weak = await signUp("aaaaaaaaaaaaaaaa");
+    expect(weak.status).toBe(400);
+    expect(await weak.json()).toMatchObject({ code: "PASSWORD_TOO_WEAK" });
+
+    const personal = await signUp("anna keeps forgetting things");
+    expect(await personal.json()).toMatchObject({ code: "PASSWORD_PERSONAL" });
+
+    const emoji = await signUp("🙂".repeat(8));
+    expect(await emoji.json()).toMatchObject({
+      code: "PASSWORD_TOO_SHORT",
+      message: "Use at least 16 characters. You have 8.",
     });
   });
 
