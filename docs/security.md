@@ -29,6 +29,7 @@ React escapes every value it renders as text or as an attribute. Keep it that wa
 
 - Every API route declares a TypeBox schema for its body, query, and params. Fastify rejects anything that doesn't match.
 - Check length, format, and allowed values. Validation is a first filter. It never makes a value safe to join into SQL or HTML.
+- Names and other short text refuse control characters. Postgres can't store a null byte, and line breaks could forge email headers.
 - Send back only the fields the client needs. Build the response object by hand instead of returning a database row.
 - Server-only modules import `server-only`, so they can't end up in browser code.
 
@@ -44,6 +45,7 @@ React escapes every value it renders as text or as an attribute. Keep it that wa
 - Every protected route checks the session on the server. The proxy's cookie check only decides where to send people.
 - Check that the signed-in person owns the record they're reading or changing, not only that they're signed in.
 - Session cookies stay HttpOnly, SameSite=Lax, and Secure on https.
+- Better Auth refuses requests from other sites on its own routes. Its check is set on explicitly, because Better Auth turns it off under tests by default.
 
 ### 6. Send security headers
 
@@ -61,7 +63,9 @@ React escapes every value it renders as text or as an attribute. Keep it that wa
 
 Every change that handles input adds tests for what must fail, not only for what must work:
 
-- Attack strings for each field: SQL, HTML, attribute, URL, and `javascript:` payloads.
+- Attack strings for each field, taken from `@meritory/security-testing`: SQL, HTML, attribute, URL, `javascript:`, and control character payloads.
+- For anything shown on a page, a render test that finds only the escaped form.
+- For anything stored, a Postgres test that the value is saved exactly and matches nothing else.
 - Requests with no session, someone else's session, and another site's `Origin`.
 - Each new header or redirect rule.
 
@@ -83,7 +87,7 @@ An exception needs a `biome-ignore` comment with the reason, a test that shows w
 |---|---|
 | `apps/web/app/layout.tsx` uses `dangerouslySetInnerHTML` | It writes the theme CSS built from our own design tokens. No outside data reaches it, and a test proves the CSS can't close its style tag. |
 | `packages/server/drizzle.config.ts` has a database URL | It's the local Docker database from `docker-compose.yml`. Real environments set `DATABASE_URL`. |
-| `noSecrets` is off in test files | Test data is full of random-looking strings. Tests never hold real secrets. |
+| `noSecrets` is off in test files and `@meritory/security-testing` | Test data and attack strings look random. Neither ever holds a real secret. |
 
 ## Sources
 
