@@ -8,13 +8,12 @@ import { Button, linkClass } from "@/components/button";
 import { StrengthMeter } from "@/components/strength-meter";
 import { TextField } from "@/components/text-field";
 import { authClient, SIGN_UP_EMAIL_KEY } from "@/lib/auth-client";
+import { EMAIL_ERROR, EMAIL_PATTERN } from "@/lib/email";
 
 type Field = "name" | "email" | "password";
 type Errors = Partial<Record<Field, string>>;
 
 const FIELDS: Field[] = ["name", "email", "password"];
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const EMAIL_ERROR = "Enter an email like name@example.com";
 
 const FIELD_BY_CODE: Record<string, Field> = {
   INVALID_EMAIL: "email",

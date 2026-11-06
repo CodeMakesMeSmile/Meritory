@@ -1,21 +1,9 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
-import { SIGN_UP_EMAIL_KEY } from "@/lib/auth-client";
+import { useSignUpEmail } from "@/lib/sign-up-email";
 
-function readEmail(): string | null {
-  try {
-    return sessionStorage.getItem(SIGN_UP_EMAIL_KEY);
-  } catch {
-    return null;
-  }
-}
-
-const noSubscription = () => () => {};
-
-/** The address comes from the sign-up form, never from the URL */
 export function SentTo() {
-  const email = useSyncExternalStore(noSubscription, readEmail, () => null);
+  const email = useSignUpEmail();
   return (
     <p className="text-body">
       {email ? (
