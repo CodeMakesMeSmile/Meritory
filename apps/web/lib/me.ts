@@ -1,3 +1,4 @@
+import "server-only";
 import type { MeResponse } from "@meritory/contracts";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
