@@ -1,0 +1,14 @@
+{
+  "name": "@meritory/security-testing",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "AGPL-3.0-only",
+  "description": "Attack strings and helpers for failing-path tests",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc"
+  }
+}

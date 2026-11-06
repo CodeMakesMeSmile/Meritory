@@ -13,9 +13,41 @@
     "indentWidth": 2,
     "lineWidth": 80
   },
+  "plugins": ["./tools/biome/no-raw-sql.grit"],
   "linter": {
-    "enabled": true
+    "enabled": true,
+    "rules": {
+      "security": {
+        "noBlankTarget": "error",
+        "noDangerouslySetInnerHtml": "error",
+        "noGlobalEval": "error",
+        "noScriptUrl": "error",
+        "noSecrets": "error"
+      },
+      "suspicious": {
+        "noDocumentCookie": "error"
+      },
+      "nursery": {
+        "noImpliedEval": "error"
+      }
+    }
   },
+  "overrides": [
+    {
+      "includes": [
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "packages/security-testing/**"
+      ],
+      "linter": {
+        "rules": {
+          "security": {
+            "noSecrets": "off"
+          }
+        }
+      }
+    }
+  ],
   "css": {
     "parser": {
       "tailwindDirectives": true

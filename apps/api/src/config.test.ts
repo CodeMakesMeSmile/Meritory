@@ -1,0 +1,59 @@
+import { describe, expect, it } from "vitest";
+import { readConfig } from "./config.ts";
+
+const base = {
+  DATABASE_URL: "postgres://localhost/meritory",
+  BETTER_AUTH_SECRET: "x".repeat(32),
+};
+
+describe("readConfig", () => {
+  it("refuses to start without a long enough secret", () => {
+    expect(() => readConfig({ ...base, BETTER_AUTH_SECRET: "" })).toThrow(
+      /BETTER_AUTH_SECRET/,
+    );
+    expect(() =>
+      readConfig({ ...base, BETTER_AUTH_SECRET: "x".repeat(31) }),
+    ).toThrow(/BETTER_AUTH_SECRET/);
+  });
+
+  it("serves auth under the web origin", () => {
+    const config = readConfig({
+      ...base,
+      WEB_ORIGIN: "http://localhost:3000/",
+    });
+    expect(config.webOrigin).toBe("http://localhost:3000");
+    expect(config.publicApiUrl).toBe("http://localhost:3000/api");
+  });
+
+  it("only allows localhost outside production", () => {
+    expect(readConfig(base).webOrigin).toBe("http://localhost:3000");
+    expect(() => readConfig({ ...base, NODE_ENV: "production" })).toThrow(
+      /WEB_ORIGIN/,
+    );
+    expect(() =>
+      readConfig({
+        ...base,
+        NODE_ENV: "production",
+        WEB_ORIGIN: "http://localhost:3000",
+      }),
+    ).toThrow(/public https/);
+    expect(
+      readConfig({
+        ...base,
+        NODE_ENV: "production",
+        WEB_ORIGIN: "https://meritory.app",
+      }).webOrigin,
+    ).toBe("https://meritory.app");
+  });
+
+  it("reads proxy settings as lists", () => {
+    const config = readConfig({
+      ...base,
+      AUTH_IP_HEADERS: "",
+      AUTH_TRUSTED_PROXIES: "10.0.0.1, 10.0.0.2",
+    });
+    expect(config.ipAddressHeaders).toEqual([]);
+    expect(config.trustedProxies).toEqual(["10.0.0.1", "10.0.0.2"]);
+    expect(readConfig(base).ipAddressHeaders).toBeUndefined();
+  });
+});

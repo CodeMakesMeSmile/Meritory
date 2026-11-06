@@ -13,11 +13,15 @@
   "dependencies": {
     "@meritory/contracts": "workspace:*",
     "@meritory/design-tokens": "workspace:*",
+    "@meritory/password": "workspace:*",
+    "better-auth": "1.7.17",
     "next": "16.4.5",
     "react": "^19.3.1",
-    "react-dom": "^19.3.1"
+    "react-dom": "^19.3.1",
+    "server-only": "0.0.1"
   },
   "devDependencies": {
+    "@meritory/security-testing": "workspace:*",
     "@tailwindcss/postcss": "^4.3.4",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
