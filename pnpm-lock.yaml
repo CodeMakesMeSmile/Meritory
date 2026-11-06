@@ -273,6 +273,9 @@ importers:
         specifier: 0.0.1
         version: 0.0.1
     devDependencies:
+      '@meritory/security-testing':
+        specifier: workspace:*
+        version: link:../../packages/security-testing
       '@tailwindcss/postcss':
         specifier: ^4.3.4
         version: 4.3.4
@@ -326,6 +329,8 @@ importers:
         specifier: ^4.1.1
         version: 4.1.1
 
+  packages/security-testing: {}
+
   packages/server:
     dependencies:
       '@better-auth/drizzle-adapter':
@@ -347,6 +352,9 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0
     devDependencies:
+      '@meritory/security-testing':
+        specifier: workspace:*
+        version: link:../security-testing
       '@types/nodemailer':
         specifier: ^8.0.2
         version: 8.0.2

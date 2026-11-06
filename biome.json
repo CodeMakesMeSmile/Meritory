@@ -34,7 +34,11 @@
   },
   "overrides": [
     {
-      "includes": ["**/*.test.ts", "**/*.test.tsx"],
+      "includes": [
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "packages/security-testing/**"
+      ],
       "linter": {
         "rules": {
           "security": {
