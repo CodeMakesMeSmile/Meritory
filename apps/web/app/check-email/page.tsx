@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AuthShell } from "@/components/auth-shell";
 import { linkClass } from "@/components/button";
+import { Resend } from "./resend";
 import { SentTo } from "./sent-to";
 
 export const metadata: Metadata = { title: "Check your email · Meritory" };
@@ -14,9 +15,7 @@ export default function CheckEmailPage() {
           <h1 className="text-display">Check your email</h1>
           <SentTo />
         </div>
-        <p className="text-small text-secondary">
-          No email after a few minutes? Check your spam folder.
-        </p>
+        <Resend />
         <div className="flex gap-5">
           <Link href="/sign-up" className={linkClass}>
             Use a different email
