@@ -5,6 +5,8 @@ interface TextFieldProps extends ComponentProps<"input"> {
   label: string;
   helper?: ReactNode;
   error?: string;
+  /** Sits at the end of the label row */
+  aside?: ReactNode;
   /** Sits inside the box, after the input */
   trailing?: ReactNode;
   /** Sits between the box and the helper text */
@@ -16,6 +18,7 @@ export function TextField({
   label,
   helper,
   error,
+  aside,
   trailing,
   below,
   ...input
@@ -23,9 +26,12 @@ export function TextField({
   const helperId = `${id}-helper`;
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor={id} className="text-small font-semibold">
-        {label}
-      </label>
+      <div className="flex items-center justify-between gap-4">
+        <label htmlFor={id} className="text-small font-semibold">
+          {label}
+        </label>
+        {aside}
+      </div>
       <div className="field-box" data-invalid={error ? "" : undefined}>
         <input
           id={id}
