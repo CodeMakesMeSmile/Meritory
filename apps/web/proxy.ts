@@ -1,5 +1,6 @@
 import { getSessionCookie } from "better-auth/cookies";
 import { type NextRequest, NextResponse } from "next/server";
+import { contentSecurityPolicy, createNonce, NONCE_HEADER } from "./lib/csp";
 
 const PUBLIC_PATHS = new Set([
   "/sign-in",
@@ -10,15 +11,28 @@ const PUBLIC_PATHS = new Set([
   "/reset-password",
 ]);
 
-// Only checks that a session cookie exists. Pages ask the API whether it's valid.
 export function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
-  if (PUBLIC_PATHS.has(pathname) || getSessionCookie(request)) {
-    return NextResponse.next();
+
+  // Only checks that a session cookie exists. Pages ask the API whether it's valid.
+  if (!PUBLIC_PATHS.has(pathname) && !getSessionCookie(request)) {
+    const signIn = new URL("/sign-in", request.url);
+    signIn.searchParams.set("next", `${pathname}${search}`);
+    return NextResponse.redirect(signIn);
   }
-  const signIn = new URL("/sign-in", request.url);
-  signIn.searchParams.set("next", `${pathname}${search}`);
-  return NextResponse.redirect(signIn);
+
+  // Next reads the policy from the request and adds the nonce to its own tags
+  const nonce = createNonce();
+  const policy = contentSecurityPolicy(
+    nonce,
+    process.env.NODE_ENV === "development",
+  );
+  const headers = new Headers(request.headers);
+  headers.set(NONCE_HEADER, nonce);
+  headers.set("content-security-policy", policy);
+  const response = NextResponse.next({ request: { headers } });
+  response.headers.set("content-security-policy", policy);
+  return response;
 }
 
 export const config = {

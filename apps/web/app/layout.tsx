@@ -1,7 +1,9 @@
 import { themeStylesheet } from "@meritory/design-tokens";
 import type { Metadata } from "next";
 import { Host_Grotesk, IBM_Plex_Mono } from "next/font/google";
+import { headers } from "next/headers";
 import type { ReactNode } from "react";
+import { NONCE_HEADER } from "@/lib/csp";
 import "./globals.css";
 
 const sans = Host_Grotesk({
@@ -21,12 +23,21 @@ export const metadata: Metadata = {
   description: "Practice for senior engineering interviews.",
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+// Reading the nonce renders every page per request, which a nonce needs
+export default async function RootLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const nonce = (await headers()).get(NONCE_HEADER) ?? undefined;
   return (
     <html lang="en" className={`${sans.variable} ${mono.variable}`}>
       <head>
-        {/* biome-ignore lint/security/noDangerouslySetInnerHtml: static token CSS built from our own package */}
-        <style dangerouslySetInnerHTML={{ __html: themeStylesheet() }} />
+        <style
+          nonce={nonce}
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: static token CSS built from our own package
+          dangerouslySetInnerHTML={{ __html: themeStylesheet() }}
+        />
       </head>
       <body className="font-sans antialiased">{children}</body>
     </html>
