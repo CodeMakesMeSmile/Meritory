@@ -7,6 +7,7 @@ export default defineConfig({
   dbCredentials: {
     url:
       process.env.DATABASE_URL ??
+      // biome-ignore lint/security/noSecrets: the local Docker database from docker-compose.yml
       "postgres://meritory:meritory@localhost:5432/meritory",
   },
   strict: true,

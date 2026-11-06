@@ -52,4 +52,9 @@ describe("design tokens", () => {
     expect(themeStylesheet()).toContain(':root:not([data-theme="light"])');
     expect(themeStylesheet()).toContain(':root[data-theme="dark"]');
   });
+
+  // The layout writes this into a style tag as raw HTML
+  it("can't close the style tag it's written into", () => {
+    expect(themeStylesheet()).not.toContain("<");
+  });
 });
