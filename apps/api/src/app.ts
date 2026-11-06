@@ -14,6 +14,7 @@ import {
   type AuthRouteDependencies,
   registerAuthRoutes,
 } from "./auth-routes.ts";
+import { registerSignedInRoutes, type SessionDependencies } from "./session.ts";
 
 /** Our own codes, so clients never see framework internals */
 const CODES_BY_STATUS: Record<number, string> = {
@@ -33,7 +34,9 @@ function errorCode(error: FastifyError, status: number): string {
   return CODES_BY_STATUS[status] ?? "bad_request";
 }
 
-export interface AppDependencies extends AuthRouteDependencies {
+export interface AppDependencies
+  extends AuthRouteDependencies,
+    SessionDependencies {
   /** Resolves true when the database answers */
   pingDatabase(): Promise<boolean>;
 }
@@ -108,6 +111,7 @@ export async function buildApp(
       );
 
       registerAuthRoutes(v1, deps);
+      await registerSignedInRoutes(v1, deps);
     },
     { prefix: API_PREFIX },
   );

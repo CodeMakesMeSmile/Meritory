@@ -4,14 +4,23 @@ import { buildApp } from "./app.ts";
 
 let app: Awaited<ReturnType<typeof buildApp>> | undefined;
 
+const ANNA = {
+  id: "0b6f8f1e-6d2a-4c47-9a39-2f4a1c1d5e10",
+  name: "Anna",
+  email: "anna@example.com",
+};
+
 async function start(
   databaseUp: boolean,
   handleAuth = async (_request: Request) => new Response(null),
+  currentUser = async (headers: Headers) =>
+    headers.get("cookie") === "session=good" ? ANNA : null,
 ) {
   app = await buildApp({
     pingDatabase: async () => databaseUp,
     handleAuth,
     publicApiUrl: "https://meritory.test/api",
+    currentUser,
   });
   return app;
 }
@@ -100,13 +109,52 @@ describe("auth routes", () => {
   });
 });
 
+describe("signed-in routes", () => {
+  it("returns the user for a valid session", async () => {
+    const res = await (await start(true)).inject({
+      url: "/v1/me",
+      headers: { cookie: "session=good" },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toEqual(ANNA);
+  });
+
+  it("returns 401 without a session", async () => {
+    const res = await (await start(true)).inject("/v1/me");
+    expect(res.statusCode).toBe(401);
+    expect(res.json()).toMatchObject({ code: "unauthorized" });
+  });
+
+  it("returns 401 for a session the server doesn't know", async () => {
+    const res = await (await start(true)).inject({
+      url: "/v1/me",
+      headers: { cookie: "session=revoked" },
+    });
+    expect(res.statusCode).toBe(401);
+  });
+
+  it("only sends the fields in the contract", async () => {
+    const app = await start(true, undefined, async () => ({
+      ...ANNA,
+      emailVerified: true,
+    }));
+    const res = await app.inject({ url: "/v1/me" });
+    expect(Object.keys(res.json())).toEqual(["id", "name", "email"]);
+  });
+
+  it("leaves public routes alone", async () => {
+    const res = await (await start(true)).inject("/v1/health/live");
+    expect(res.statusCode).toBe(200);
+  });
+});
+
 describe("openapi", () => {
   it("documents the versioned routes", async () => {
     const res = await (await start(true)).inject("/v1/openapi.json");
     const spec = res.json();
     expect(spec.openapi).toMatch(/^3\./);
     expect(Object.keys(spec.paths)).toEqual(
-      expect.arrayContaining(["/v1/health/live", "/v1/health/ready"]),
+      expect.arrayContaining(["/v1/health/live", "/v1/health/ready", "/v1/me"]),
     );
   });
 });

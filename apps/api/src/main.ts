@@ -21,6 +21,12 @@ const app = await buildApp(
     pingDatabase: database.ping,
     handleAuth: auth.handler,
     publicApiUrl: config.publicApiUrl,
+    async currentUser(headers) {
+      const session = await auth.api.getSession({ headers });
+      if (!session) return null;
+      const { id, name, email } = session.user;
+      return { id, name, email };
+    },
   },
   { logger: { level: config.logLevel } },
 );

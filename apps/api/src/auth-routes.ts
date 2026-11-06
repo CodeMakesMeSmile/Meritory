@@ -15,7 +15,7 @@ const SKIPPED_HEADERS = new Set([
   "transfer-encoding",
 ]);
 
-function toFetchHeaders(request: FastifyRequest): Headers {
+export function toFetchHeaders(request: FastifyRequest): Headers {
   const headers = new Headers();
   for (const [name, value] of Object.entries(request.headers)) {
     if (value === undefined || SKIPPED_HEADERS.has(name)) continue;
