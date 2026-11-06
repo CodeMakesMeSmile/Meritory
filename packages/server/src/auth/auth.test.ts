@@ -13,6 +13,7 @@ const auth = createAuth({
   appScheme: "meritory://",
   mailer: { send: async () => {} },
   log: { error: () => {} },
+  emailLinks: { remember: async () => {}, consume: async () => false },
 });
 
 afterAll(() => database.close());
@@ -70,6 +71,18 @@ describe("createAuth", () => {
       code: "PASSWORD_TOO_SHORT",
       message: "Use at least 16 characters. You have 8.",
     });
+  });
+
+  it("sends a used or unknown link to the expired page", async () => {
+    const res = await auth.handler(
+      new Request(
+        "https://meritory.test/api/v1/auth/verify-email?token=unknown&callbackURL=%2Femail-confirmed",
+      ),
+    );
+    expect(res.status).toBe(302);
+    expect(res.headers.get("location")).toBe(
+      "/email-confirmed?error=INVALID_TOKEN",
+    );
   });
 
   it("only trusts the web origin and the app scheme", () => {

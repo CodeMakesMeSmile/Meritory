@@ -9,8 +9,13 @@ import { APIError, createAuthMiddleware } from "better-auth/api";
 import type { Database } from "../db/client.ts";
 import * as schema from "../db/schema.ts";
 import type { Mail, Mailer } from "../mail/mailer.ts";
+import { createEmailLinks, type EmailLinks } from "./email-links.ts";
 
 const LINK_LIFETIME_SECONDS = 60 * 60;
+
+/** Where every verification link lands, with ?error= when it fails */
+export const EMAIL_CONFIRMED_PATH = "/email-confirmed";
+const LINK_FAILED_PATH = `${EMAIL_CONFIRMED_PATH}?error=INVALID_TOKEN`;
 
 const PASSWORD_ERROR_CODES = {
   too_short: "PASSWORD_TOO_SHORT",
@@ -20,9 +25,8 @@ const PASSWORD_ERROR_CODES = {
 } as const;
 
 // Runs before Better Auth's own checks, which count UTF-16 units instead of characters
-const passwordRules = createAuthMiddleware(async (ctx) => {
-  if (ctx.path !== "/sign-up/email") return;
-  const { password, name, email } = (ctx.body ?? {}) as Record<string, unknown>;
+function checkPasswordRules(body: Record<string, unknown>) {
+  const { password, name, email } = body;
   if (typeof password !== "string") return;
   const result = checkPassword(password, {
     name: typeof name === "string" ? name : undefined,
@@ -34,7 +38,7 @@ const passwordRules = createAuthMiddleware(async (ctx) => {
       message: result.message,
     });
   }
-});
+}
 
 export interface AuthLogger {
   error(details: object, message: string): void;
@@ -51,9 +55,38 @@ export interface AuthConfig {
   trustedProxies?: string[];
   mailer: Mailer;
   log: AuthLogger;
+  /** Defaults to the verifications table */
+  emailLinks?: EmailLinks;
 }
 
 export function createAuth(config: AuthConfig) {
+  const links = config.emailLinks ?? createEmailLinks(config.db);
+
+  const rules = createAuthMiddleware(async (ctx) => {
+    const body = (ctx.body ?? {}) as Record<string, unknown>;
+    if (ctx.path === "/sign-up/email") checkPasswordRules(body);
+
+    // Links always land on our page, whatever the client asked for
+    if (
+      ctx.path === "/sign-up/email" ||
+      ctx.path === "/send-verification-email"
+    ) {
+      return {
+        context: {
+          ...ctx,
+          body: { ...body, callbackURL: EMAIL_CONFIRMED_PATH },
+        },
+      };
+    }
+
+    if (ctx.path === "/verify-email") {
+      const token = ctx.query?.token;
+      if (typeof token !== "string" || !(await links.consume(token))) {
+        throw ctx.redirect(LINK_FAILED_PATH);
+      }
+    }
+  });
+
   // Not awaited, so the response takes as long whether or not the account exists
   function sendLater(mail: Mail, userId: string) {
     config.mailer
@@ -123,7 +156,12 @@ export function createAuth(config: AuthConfig) {
     emailVerification: {
       sendOnSignUp: true,
       expiresIn: LINK_LIFETIME_SECONDS,
-      sendVerificationEmail: async ({ user, url }) => {
+      sendVerificationEmail: async ({ user, url, token }) => {
+        await links.remember(
+          user.id,
+          token,
+          new Date(Date.now() + LINK_LIFETIME_SECONDS * 1000),
+        );
         sendLater(
           {
             to: user.email,
@@ -144,7 +182,7 @@ export function createAuth(config: AuthConfig) {
         "/sign-in/email": { window: 10, max: 3 },
       },
     },
-    hooks: { before: passwordRules },
+    hooks: { before: rules },
     advanced: {
       database: { generateId: "uuid" },
       ipAddress: {
@@ -156,7 +194,9 @@ export function createAuth(config: AuthConfig) {
 
   sendFreshLink = (email) => {
     auth.api
-      .sendVerificationEmail({ body: { email } })
+      .sendVerificationEmail({
+        body: { email, callbackURL: EMAIL_CONFIRMED_PATH },
+      })
       .catch((err: unknown) =>
         config.log.error({ err }, "verification email failed"),
       );
