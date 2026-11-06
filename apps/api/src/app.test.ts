@@ -148,6 +148,46 @@ describe("signed-in routes", () => {
   });
 });
 
+describe("security headers", () => {
+  it.each([
+    ["a success", "/v1/health/live"],
+    ["a 404", "/v1/nope"],
+    ["a 401", "/v1/me"],
+    ["an auth route", "/v1/auth/get-session"],
+  ])("sends nosniff on %s", async (_name, url) => {
+    const res = await (await start(true)).inject(url);
+    expect(res.headers["x-content-type-options"]).toBe("nosniff");
+  });
+
+  it("never lets a cache keep personal data", async () => {
+    const app = await start(true);
+    const signedIn = await app.inject({
+      url: "/v1/me",
+      headers: { cookie: "session=good" },
+    });
+    const signedOut = await app.inject("/v1/me");
+    const auth = await app.inject("/v1/auth/get-session");
+    expect(signedIn.headers["cache-control"]).toBe("no-store");
+    expect(signedOut.headers["cache-control"]).toBe("no-store");
+    expect(auth.headers["cache-control"]).toBe("no-store");
+  });
+
+  it("keeps Better Auth's own cache rule when it sets one", async () => {
+    const app = await start(
+      true,
+      async () =>
+        new Response(null, { headers: { "cache-control": "max-age=60" } }),
+    );
+    const res = await app.inject("/v1/auth/ok");
+    expect(res.headers["cache-control"]).toBe("max-age=60");
+  });
+
+  it("lets public routes be cached", async () => {
+    const res = await (await start(true)).inject("/v1/health/live");
+    expect(res.headers["cache-control"]).toBeUndefined();
+  });
+});
+
 describe("openapi", () => {
   it("documents the versioned routes", async () => {
     const res = await (await start(true)).inject("/v1/openapi.json");

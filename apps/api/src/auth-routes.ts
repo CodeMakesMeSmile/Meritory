@@ -51,6 +51,10 @@ export function registerAuthRoutes(
         if (name === "set-cookie" || SKIPPED_HEADERS.has(name)) continue;
         reply.header(name, value);
       }
+      // Sessions and tokens pass through here, so nothing is cached unless Better Auth says so
+      if (!response.headers.has("cache-control")) {
+        reply.header("cache-control", "no-store");
+      }
       const cookies = response.headers.getSetCookie();
       if (cookies.length > 0) reply.header("set-cookie", cookies);
       return reply.send(

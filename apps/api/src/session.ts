@@ -22,6 +22,12 @@ export async function registerSignedInRoutes(
   await v1.register(async (scope) => {
     scope.decorateRequest("user", null);
 
+    // Everything here is personal, so no cache may keep a copy
+    scope.addHook("onSend", async (_request, reply, payload) => {
+      reply.header("cache-control", "no-store");
+      return payload;
+    });
+
     scope.addHook("onRequest", async (request, reply) => {
       const user = await deps.currentUser(toFetchHeaders(request));
       if (!user) {

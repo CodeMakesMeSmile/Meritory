@@ -55,6 +55,12 @@ export async function buildApp(
     },
   });
 
+  // On every response, errors and 404s included, so browsers never guess a type
+  app.addHook("onSend", async (_request, reply, payload) => {
+    reply.header("x-content-type-options", "nosniff");
+    return payload;
+  });
+
   app.setNotFoundHandler((request, reply) => {
     reply.code(404).send({
       code: "not_found",
