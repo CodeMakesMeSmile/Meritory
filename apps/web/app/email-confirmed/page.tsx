@@ -23,7 +23,7 @@ export default async function EmailConfirmedPage({ searchParams }: PageProps) {
 
   if (error) {
     return (
-      <AuthShell note={"Sending a new link\ncancels the old one."}>
+      <AuthShell>
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-2">
             <h1 className="text-display">This link expired</h1>
@@ -41,7 +41,7 @@ export default async function EmailConfirmedPage({ searchParams }: PageProps) {
   }
 
   return (
-    <AuthShell note="Your first queue is waiting on Today.">
+    <AuthShell>
       <div className="flex flex-col gap-5">
         <div className="flex flex-col gap-2">
           <h1 className="text-display">Email confirmed</h1>

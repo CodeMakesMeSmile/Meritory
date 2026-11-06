@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: "Check your email · Meritory" };
 
 export default function CheckEmailPage() {
   return (
-    <AuthShell note={"You can close this tab.\nThe link works on any device."}>
+    <AuthShell>
       <div className="flex flex-col gap-5">
         <div className="flex flex-col gap-2">
           <h1 className="text-display">Check your email</h1>
