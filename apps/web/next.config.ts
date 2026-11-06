@@ -5,7 +5,11 @@ const apiOrigin = process.env.API_ORIGIN ?? "http://localhost:4000";
 const config: NextConfig = {
   agentRules: false,
   // Workspace packages ship TypeScript source
-  transpilePackages: ["@meritory/contracts", "@meritory/design-tokens"],
+  transpilePackages: [
+    "@meritory/contracts",
+    "@meritory/design-tokens",
+    "@meritory/password",
+  ],
   // Locally, stand in for the edge gateway: the browser calls /api/v1 on the
   // same origin and it reaches Fastify. In AWS the edge does this routing.
   async rewrites() {
