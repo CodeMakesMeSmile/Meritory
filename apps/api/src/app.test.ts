@@ -4,8 +4,15 @@ import { buildApp } from "./app.ts";
 
 let app: Awaited<ReturnType<typeof buildApp>> | undefined;
 
-async function start(databaseUp: boolean) {
-  app = await buildApp({ pingDatabase: async () => databaseUp });
+async function start(
+  databaseUp: boolean,
+  handleAuth = async (_request: Request) => new Response(null),
+) {
+  app = await buildApp({
+    pingDatabase: async () => databaseUp,
+    handleAuth,
+    publicApiUrl: "https://meritory.test/api",
+  });
   return app;
 }
 
@@ -53,6 +60,43 @@ describe("errors", () => {
     const res = await app.inject("/check?n=abc");
     expect(res.statusCode).toBe(400);
     expect(res.json()).toMatchObject({ code: "validation_failed" });
+  });
+});
+
+describe("auth routes", () => {
+  it("hands Better Auth the public URL, not the Host header", async () => {
+    let seen: Request | undefined;
+    const app = await start(true, async (request) => {
+      seen = request;
+      return new Response(null);
+    });
+    await app.inject({
+      method: "POST",
+      url: "/v1/auth/sign-in/email?next=today",
+      headers: { host: "evil.example" },
+      payload: { email: "a@b.test", password: "x" },
+    });
+    expect(seen?.url).toBe(
+      "https://meritory.test/api/v1/auth/sign-in/email?next=today",
+    );
+    expect(seen?.headers.get("host")).toBeNull();
+    expect(await seen?.json()).toEqual({ email: "a@b.test", password: "x" });
+  });
+
+  it("passes the status, body, and every cookie back", async () => {
+    const app = await start(true, async () => {
+      const headers = new Headers({ "content-type": "application/json" });
+      headers.append("set-cookie", "a=1; Path=/");
+      headers.append("set-cookie", "b=2; Path=/");
+      return new Response(JSON.stringify({ code: "INVALID_EMAIL" }), {
+        status: 400,
+        headers,
+      });
+    });
+    const res = await app.inject("/v1/auth/get-session");
+    expect(res.statusCode).toBe(400);
+    expect(res.json()).toEqual({ code: "INVALID_EMAIL" });
+    expect(res.headers["set-cookie"]).toEqual(["a=1; Path=/", "b=2; Path=/"]);
   });
 });
 

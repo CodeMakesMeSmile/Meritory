@@ -10,6 +10,10 @@ import {
   ReadyResponse,
 } from "@meritory/contracts";
 import Fastify, { type FastifyError, type FastifyServerOptions } from "fastify";
+import {
+  type AuthRouteDependencies,
+  registerAuthRoutes,
+} from "./auth-routes.ts";
 
 /** Our own codes, so clients never see framework internals */
 const CODES_BY_STATUS: Record<number, string> = {
@@ -29,7 +33,7 @@ function errorCode(error: FastifyError, status: number): string {
   return CODES_BY_STATUS[status] ?? "bad_request";
 }
 
-export interface AppDependencies {
+export interface AppDependencies extends AuthRouteDependencies {
   /** Resolves true when the database answers */
   pingDatabase(): Promise<boolean>;
 }
@@ -102,6 +106,8 @@ export async function buildApp(
       v1.get("/openapi.json", { schema: { hide: true } }, async () =>
         app.swagger(),
       );
+
+      registerAuthRoutes(v1, deps);
     },
     { prefix: API_PREFIX },
   );
