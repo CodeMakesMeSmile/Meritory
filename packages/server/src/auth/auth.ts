@@ -57,6 +57,8 @@ export interface AuthConfig {
   log: AuthLogger;
   /** Defaults to the verifications table */
   emailLinks?: EmailLinks;
+  /** On unless turned off, in every environment */
+  rateLimit?: boolean;
 }
 
 export function createAuth(config: AuthConfig) {
@@ -177,6 +179,8 @@ export function createAuth(config: AuthConfig) {
       },
     },
     rateLimit: {
+      // Better Auth only limits in production by default. This keeps local the same.
+      enabled: config.rateLimit ?? true,
       storage: "database",
       customRules: {
         "/sign-in/email": { window: 10, max: 3 },

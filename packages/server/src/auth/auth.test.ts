@@ -2,7 +2,7 @@ import { afterAll, describe, expect, it } from "vitest";
 import { createDatabase } from "../db/client.ts";
 import { createAuth } from "./auth.ts";
 
-// The client connects lazily, and these routes never query
+// The client connects lazily, and these routes never query with the limiter off
 const database = createDatabase("postgres://meritory@127.0.0.1:1/meritory");
 
 const auth = createAuth({
@@ -14,6 +14,7 @@ const auth = createAuth({
   mailer: { send: async () => {} },
   log: { error: () => {} },
   emailLinks: { remember: async () => {}, consume: async () => false },
+  rateLimit: false,
 });
 
 afterAll(() => database.close());
