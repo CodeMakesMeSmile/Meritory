@@ -1,3 +1,4 @@
+import { CONTROL_ATTACKS } from "@meritory/security-testing";
 import { afterAll, describe, expect, it } from "vitest";
 import { createDatabase } from "../db/client.ts";
 import { createAuth } from "./auth.ts";
@@ -18,6 +19,19 @@ const auth = createAuth({
 });
 
 afterAll(() => database.close());
+
+const post = (
+  path: string,
+  body: object,
+  headers: Record<string, string> = { origin: "https://meritory.test" },
+) =>
+  auth.handler(
+    new Request(`https://meritory.test/api/v1/auth${path}`, {
+      method: "POST",
+      headers: { "content-type": "application/json", ...headers },
+      body: JSON.stringify(body),
+    }),
+  );
 
 describe("createAuth", () => {
   it("answers on the public path", async () => {
@@ -84,6 +98,39 @@ describe("createAuth", () => {
     expect(res.headers.get("location")).toBe(
       "/email-confirmed?error=INVALID_TOKEN",
     );
+  });
+
+  it.each(CONTROL_ATTACKS)(
+    "rejects the name %j before touching the database",
+    async (name) => {
+      const res = await post("/sign-up/email", {
+        name,
+        email: "anna@example.com",
+        password: "violet harbor tractor sandwich",
+      });
+      expect(res.status).toBe(400);
+      expect(await res.json()).toMatchObject({ code: "NAME_INVALID" });
+    },
+  );
+
+  it.each([
+    ["sign-in", "/sign-in/email"],
+    ["sign-up", "/sign-up/email"],
+    ["a new link", "/send-verification-email"],
+    ["sign-out", "/sign-out"],
+  ])("refuses %s from another site", async (_name, path) => {
+    const body = {
+      name: "Anna",
+      email: "anna@example.com",
+      password: "violet harbor tractor sandwich",
+    };
+    for (const origin of ["https://evil.example", "null"]) {
+      const res = await post(path, body, {
+        origin,
+        cookie: "better-auth.session_token=abc",
+      });
+      expect(res.status).toBe(403);
+    }
   });
 
   it("only trusts the web origin and the app scheme", () => {

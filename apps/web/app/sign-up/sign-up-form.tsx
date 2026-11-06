@@ -16,6 +16,7 @@ type Errors = Partial<Record<Field, string>>;
 const FIELDS: Field[] = ["name", "email", "password"];
 
 const FIELD_BY_CODE: Record<string, Field> = {
+  NAME_INVALID: "name",
   INVALID_EMAIL: "email",
   PASSWORD_TOO_SHORT: "password",
   PASSWORD_TOO_LONG: "password",

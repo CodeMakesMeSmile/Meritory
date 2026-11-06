@@ -40,6 +40,17 @@ function checkPasswordRules(body: Record<string, unknown>) {
   }
 }
 
+// Postgres can't store a null byte, and line breaks could forge email headers
+function checkName(body: Record<string, unknown>) {
+  const { name } = body;
+  if (typeof name === "string" && /\p{Cc}/u.test(name)) {
+    throw new APIError("BAD_REQUEST", {
+      code: "NAME_INVALID",
+      message: "Use letters, numbers, spaces, and punctuation.",
+    });
+  }
+}
+
 export interface AuthLogger {
   error(details: object, message: string): void;
 }
@@ -66,7 +77,10 @@ export function createAuth(config: AuthConfig) {
 
   const rules = createAuthMiddleware(async (ctx) => {
     const body = (ctx.body ?? {}) as Record<string, unknown>;
-    if (ctx.path === "/sign-up/email") checkPasswordRules(body);
+    if (ctx.path === "/sign-up/email") {
+      checkName(body);
+      checkPasswordRules(body);
+    }
 
     // Links always land on our page, whatever the client asked for
     if (
@@ -188,6 +202,8 @@ export function createAuth(config: AuthConfig) {
     },
     hooks: { before: rules },
     advanced: {
+      // Better Auth skips the cross-site check under tests by default. This keeps it on, so tests prove it.
+      disableOriginCheck: false,
       database: { generateId: "uuid" },
       ipAddress: {
         ipAddressHeaders: config.ipAddressHeaders,
