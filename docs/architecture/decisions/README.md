@@ -9,3 +9,4 @@ One short file per decision that would be expensive to reverse. Each follows the
 | [0003](0003-sign-in-methods.md) | Email, GitHub and Google sign-in through Better Auth | Accepted |
 | [0004](0004-split-license.md) | AGPL code, all-rights-reserved curriculum | Accepted |
 | [0005](0005-toolchain-and-versions.md) | Toolchain and pinned versions | Accepted |
+| [0006](0006-auth-under-the-web-origin.md) | Auth routes under the web origin, with Better Auth's own errors | Accepted |
