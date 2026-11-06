@@ -1,4 +1,11 @@
-import { type ColorMode, colors, radius, space, textStyles } from "./tokens.ts";
+import {
+  type ColorMode,
+  colors,
+  controlHeight,
+  radius,
+  space,
+  textStyles,
+} from "./tokens.ts";
 
 const kebab = (name: string) =>
   name.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
@@ -10,7 +17,7 @@ export function colorVariables(mode: ColorMode): string {
     .join(" ");
 }
 
-/** Spacing and radius custom properties */
+/** Spacing, radius, control, and focus ring custom properties */
 export function layoutVariables(): string {
   const spacing = Object.entries(space).map(
     ([step, px]) => `--space-${step}: ${px}px;`,
@@ -18,7 +25,13 @@ export function layoutVariables(): string {
   const radii = Object.entries(radius).map(
     ([name, px]) => `--radius-${name}: ${px}px;`,
   );
-  return [...spacing, ...radii].join(" ");
+  return [
+    ...spacing,
+    ...radii,
+    `--control-height: ${controlHeight}px;`,
+    // A gap in the surface color, then an ink ring. The only shadow allowed.
+    "--focus-ring: 0 0 0 2px var(--color-bg-card), 0 0 0 4px var(--color-accent-default);",
+  ].join(" ");
 }
 
 /** Text style custom properties */
@@ -26,9 +39,11 @@ export function typeVariables(): string {
   return Object.entries(textStyles)
     .map(([name, style]) => {
       const prefix = `--type-${kebab(name)}`;
+      const lineHeight =
+        style.lineHeight === null ? "normal" : `${style.lineHeight}px`;
       return [
         `${prefix}-size: ${style.size}px;`,
-        `${prefix}-line-height: ${style.lineHeight}px;`,
+        `${prefix}-line-height: ${lineHeight};`,
         `${prefix}-letter-spacing: ${style.letterSpacing}em;`,
         `${prefix}-weight: ${style.weight};`,
       ].join(" ");

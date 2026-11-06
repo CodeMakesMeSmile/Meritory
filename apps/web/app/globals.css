@@ -13,10 +13,9 @@
   --color-on-accent: var(--color-text-on-accent);
   --color-accent: var(--color-accent-default);
   --color-accent-strong: var(--color-accent-strong);
+  --color-link: var(--color-text-accent);
   --color-border: var(--color-border-default);
   --color-border-subtle: var(--color-border-subtle);
-  --color-due: var(--color-highlight-due);
-  --color-due-soft: var(--color-highlight-soft);
   --color-warning: var(--color-status-warning);
   --color-danger: var(--color-status-danger);
   --color-success: var(--color-status-success);
@@ -25,14 +24,38 @@
   --radius-item: var(--radius-item);
   --radius-card: var(--radius-card);
 
+  --spacing-control: var(--control-height);
+  --shadow-focus: var(--focus-ring);
+
   --text-display: var(--type-display-size);
   --text-display--line-height: var(--type-display-line-height);
   --text-display--letter-spacing: var(--type-display-letter-spacing);
   --text-display--font-weight: var(--type-display-weight);
+  --text-h2: var(--type-heading2-size);
+  --text-h2--line-height: var(--type-heading2-line-height);
+  --text-h2--letter-spacing: var(--type-heading2-letter-spacing);
+  --text-h2--font-weight: var(--type-heading2-weight);
+  --text-h3: var(--type-heading3-size);
+  --text-h3--line-height: var(--type-heading3-line-height);
+  --text-h3--font-weight: var(--type-heading3-weight);
   --text-body: var(--type-body-size);
   --text-body--line-height: var(--type-body-line-height);
   --text-small: var(--type-small-size);
   --text-small--line-height: var(--type-small-line-height);
+  --text-link: var(--type-link-size);
+  --text-link--line-height: var(--type-link-line-height);
+  --text-link--font-weight: var(--type-link-weight);
+  --text-label: var(--type-label-size);
+  --text-label--line-height: var(--type-label-line-height);
+  --text-label--letter-spacing: var(--type-label-letter-spacing);
+  --text-label--font-weight: var(--type-label-weight);
+  --text-code: var(--type-code-size);
+  --text-code--line-height: var(--type-code-line-height);
+  --text-note: var(--type-note-size);
+  --text-note--line-height: var(--type-note-line-height);
+  --text-tag: var(--type-tag-size);
+  --text-tag--line-height: var(--type-tag-line-height);
+  --text-tag--font-weight: var(--type-tag-weight);
 
   --font-sans: var(--font-host-grotesk), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, monospace;
