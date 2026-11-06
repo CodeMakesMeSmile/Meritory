@@ -71,8 +71,8 @@ body {
 @layer components {
   /* Faint grid on every page: minor lines every 24px, major every 120px */
   .graph-paper {
-    --minor: color-mix(in srgb, var(--color-border-subtle) 50%, transparent);
-    --major: color-mix(in srgb, var(--color-bg-track) 50%, transparent);
+    --minor: color-mix(in srgb, var(--color-border-subtle) 16%, transparent);
+    --major: color-mix(in srgb, var(--color-bg-track) 16%, transparent);
     background-color: var(--color-bg-desk);
     background-image:
       linear-gradient(to right, var(--major) 1px, transparent 1px),

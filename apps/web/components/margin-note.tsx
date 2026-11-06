@@ -6,9 +6,9 @@ import type { ReactNode } from "react";
  */
 export function MarginNote({ children }: { children: ReactNode }) {
   return (
-    <div className="pointer-events-none absolute top-28 right-full hidden pr-0.5 text-primary lg:block">
+    <div className="pointer-events-none absolute top-28 right-full hidden pr-0.5 text-primary xl:block">
       <div className="flex items-end">
-        <p className="-mb-2 w-40 text-right text-small whitespace-pre-line">
+        <p className="-mb-2 w-max max-w-60 text-right text-small whitespace-pre-line">
           {children}
         </p>
         <svg
