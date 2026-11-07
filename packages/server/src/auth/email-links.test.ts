@@ -7,7 +7,6 @@ import type { Mail } from "../mail/mailer.ts";
 import { createAuth } from "./auth.ts";
 import { createEmailLinks } from "./email-links.ts";
 
-// TODO: MER-18 runs these in CI against a Postgres service
 const url = process.env.TEST_DATABASE_URL;
 
 describe.skipIf(!url)("email links against Postgres", () => {
