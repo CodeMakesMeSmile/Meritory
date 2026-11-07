@@ -1,84 +1,51 @@
 // Mirrors the variables and text styles in the Figma prototype
 
-export const primitives = {
-  sage50: "#f5f7f3",
-  sage100: "#eef0eb",
-  sage150: "#e6e9e3",
-  sage200: "#dfe3dd",
-  sage250: "#d6dbd4",
-  sage300: "#cdd3cc",
-  sage500: "#5a625c",
-  sage900: "#1f2421",
-  white: "#ffffff",
-  ink990: "#101311",
-  ink950: "#141715",
-  ink900: "#1b1f1c",
-  ink850: "#222724",
-  ink800: "#2a302c",
-  ink700: "#3a413c",
-  ink300: "#a7afa9",
-  ink100: "#e7eae5",
-  navy200: "#bfd0ea",
-  navy300: "#9db3d6",
-  navy500: "#27466f",
-  navy600: "#1e3757",
-  navy950: "#10203a",
-  highlight100: "#f6f0c8",
-  highlight400: "#f5df5b",
-  highlight800: "#6b5d17",
-  highlight900: "#3a3518",
-  amber300: "#e3b65c",
-  amber700: "#8a5a00",
-  red300: "#e58c7e",
-  red700: "#a3372a",
-  green300: "#8cc5a0",
-  green700: "#2f6b45",
-} as const;
-
-const p = primitives;
-
 export type ColorMode = "light" | "dark";
 
 export const colors = {
   light: {
-    bgDesk: p.sage100,
-    bgRail: p.sage150,
-    bgCard: p.white,
-    bgSunken: p.sage50,
-    bgTrack: p.sage250,
-    textPrimary: p.sage900,
-    textSecondary: p.sage500,
-    textOnAccent: p.white,
-    textAccent: p.navy500,
-    accentDefault: p.navy500,
-    accentStrong: p.navy600,
-    borderDefault: p.sage300,
-    borderSubtle: p.sage200,
-    highlightDue: p.highlight400,
-    highlightSoft: p.highlight100,
-    statusWarning: p.amber700,
-    statusDanger: p.red700,
-    statusSuccess: p.green700,
+    bgDesk: "#f5f5f1",
+    bgRail: "#edede8",
+    bgCard: "#ffffff",
+    bgSunken: "#f2f2ee",
+    bgTrack: "#dcdcd5",
+    textPrimary: "#191a19",
+    textSecondary: "#5b5d59",
+    textOnAccent: "#ffffff",
+    textOnHighlight: "#191a19",
+    textAccent: "#7a5c00",
+    accentDefault: "#191a19",
+    accentStrong: "#000000",
+    borderDefault: "#191a19",
+    borderSubtle: "#e2e2db",
+    highlightDue: "#f2f2ee",
+    highlightSoft: "#f2f2ee",
+    statusDue: "#c86a00",
+    statusWarning: "#8a5a00",
+    statusDanger: "#d0362a",
+    statusSuccess: "#2f6b45",
   },
   dark: {
-    bgDesk: p.ink950,
-    bgRail: p.ink990,
-    bgCard: p.ink900,
-    bgSunken: p.ink850,
-    bgTrack: p.ink800,
-    textPrimary: p.ink100,
-    textSecondary: p.ink300,
-    textOnAccent: p.navy950,
-    textAccent: p.navy300,
-    accentDefault: p.navy300,
-    accentStrong: p.navy200,
-    borderDefault: p.ink700,
-    borderSubtle: p.ink800,
-    highlightDue: p.highlight800,
-    highlightSoft: p.highlight900,
-    statusWarning: p.amber300,
-    statusDanger: p.red300,
-    statusSuccess: p.green300,
+    bgDesk: "#121416",
+    bgRail: "#0e1012",
+    bgCard: "#171a1d",
+    bgSunken: "#1d2124",
+    bgTrack: "#2a2f34",
+    textPrimary: "#e6e7e2",
+    textSecondary: "#9da19e",
+    textOnAccent: "#121416",
+    textOnHighlight: "#e6e7e2",
+    textAccent: "#d8c3a0",
+    accentDefault: "#e6e7e2",
+    accentStrong: "#ffffff",
+    borderDefault: "#6f767c",
+    borderSubtle: "#1f2327",
+    highlightDue: "#1d2124",
+    highlightSoft: "#1d2124",
+    statusDue: "#f0a43a",
+    statusWarning: "#f0b44c",
+    statusDanger: "#ff6b5e",
+    statusSuccess: "#7fd19b",
   },
 } as const satisfies Record<ColorMode, Record<string, string>>;
 
@@ -96,11 +63,14 @@ export const space = {
 } as const;
 
 export const radius = {
-  control: 8,
-  item: 10,
-  card: 14,
+  control: 2,
+  item: 2,
+  card: 0,
   full: 999,
 } as const;
+
+/** Every control is this tall, on web and phone */
+export const controlHeight = 44;
 
 export const fontFamily = {
   sans: "Host Grotesk",
@@ -109,88 +79,112 @@ export const fontFamily = {
 
 interface TextStyle {
   family: keyof typeof fontFamily;
-  weight: 400 | 600;
+  weight: 400 | 500 | 600;
   size: number;
-  lineHeight: number;
+  /** Null follows the font's own line height */
+  lineHeight: number | null;
   letterSpacing: number;
+  uppercase?: boolean;
 }
 
 export const textStyles = {
   display: {
     family: "sans",
     weight: 600,
-    size: 28,
-    lineHeight: 34,
+    size: 32,
+    lineHeight: 40,
     letterSpacing: -0.01,
   },
   heading2: {
     family: "sans",
     weight: 600,
-    size: 20,
-    lineHeight: 26,
+    size: 22,
+    lineHeight: 28,
     letterSpacing: -0.005,
   },
   heading3: {
     family: "sans",
     weight: 600,
-    size: 16,
-    lineHeight: 22,
+    size: 18,
+    lineHeight: 24,
     letterSpacing: 0,
   },
   prompt: {
     family: "sans",
     weight: 400,
-    size: 19,
-    lineHeight: 28,
+    size: 20,
+    lineHeight: 30,
     letterSpacing: 0,
   },
   body: {
     family: "sans",
     weight: 400,
-    size: 15,
-    lineHeight: 22,
+    size: 16,
+    lineHeight: 24,
     letterSpacing: 0,
   },
   bodyStrong: {
     family: "sans",
     weight: 600,
-    size: 15,
-    lineHeight: 22,
+    size: 16,
+    lineHeight: 24,
     letterSpacing: 0,
   },
   small: {
     family: "sans",
     weight: 400,
-    size: 13,
-    lineHeight: 18,
+    size: 14,
+    lineHeight: 20,
     letterSpacing: 0,
   },
   smallStrong: {
     family: "sans",
     weight: 600,
-    size: 13,
-    lineHeight: 18,
+    size: 14,
+    lineHeight: 20,
+    letterSpacing: 0,
+  },
+  link: {
+    family: "sans",
+    weight: 600,
+    size: 14,
+    lineHeight: 24,
     letterSpacing: 0,
   },
   label: {
     family: "sans",
     weight: 600,
-    size: 12,
-    lineHeight: 16,
+    size: 13,
+    lineHeight: 18,
     letterSpacing: 0.06,
+    uppercase: true,
   },
   code: {
     family: "mono",
     weight: 400,
-    size: 13,
+    size: 14,
     lineHeight: 20,
     letterSpacing: 0,
   },
   numeric: {
     family: "mono",
     weight: 400,
+    size: 14,
+    lineHeight: 20,
+    letterSpacing: 0,
+  },
+  note: {
+    family: "mono",
+    weight: 400,
     size: 13,
     lineHeight: 18,
+    letterSpacing: 0,
+  },
+  tag: {
+    family: "mono",
+    weight: 500,
+    size: 12,
+    lineHeight: null,
     letterSpacing: 0,
   },
 } as const satisfies Record<string, TextStyle>;

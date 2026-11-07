@@ -10,6 +10,11 @@ import {
   ReadyResponse,
 } from "@meritory/contracts";
 import Fastify, { type FastifyError, type FastifyServerOptions } from "fastify";
+import {
+  type AuthRouteDependencies,
+  registerAuthRoutes,
+} from "./auth-routes.ts";
+import { registerSignedInRoutes, type SessionDependencies } from "./session.ts";
 
 /** Our own codes, so clients never see framework internals */
 const CODES_BY_STATUS: Record<number, string> = {
@@ -29,7 +34,9 @@ function errorCode(error: FastifyError, status: number): string {
   return CODES_BY_STATUS[status] ?? "bad_request";
 }
 
-export interface AppDependencies {
+export interface AppDependencies
+  extends AuthRouteDependencies,
+    SessionDependencies {
   /** Resolves true when the database answers */
   pingDatabase(): Promise<boolean>;
 }
@@ -46,6 +53,12 @@ export async function buildApp(
     openapi: {
       info: { title: "Meritory API", version: "1" },
     },
+  });
+
+  // On every response, errors and 404s included, so browsers never guess a type
+  app.addHook("onSend", async (_request, reply, payload) => {
+    reply.header("x-content-type-options", "nosniff");
+    return payload;
   });
 
   app.setNotFoundHandler((request, reply) => {
@@ -102,6 +115,9 @@ export async function buildApp(
       v1.get("/openapi.json", { schema: { hide: true } }, async () =>
         app.swagger(),
       );
+
+      registerAuthRoutes(v1, deps);
+      await registerSignedInRoutes(v1, deps);
     },
     { prefix: API_PREFIX },
   );

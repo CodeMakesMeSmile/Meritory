@@ -1,0 +1,8 @@
+or {
+  `sql.raw($text)` as $call where {
+    register_diagnostic(span=$call, message="sql.raw() puts text into SQL unescaped. Pass values through the sql template so they're bound as parameters. See docs/security.md.")
+  },
+  `$client.unsafe($text)` as $call where {
+    register_diagnostic(span=$call, message="unsafe() runs a raw SQL string. Use Drizzle's query builder or the sql template. See docs/security.md.")
+  }
+}

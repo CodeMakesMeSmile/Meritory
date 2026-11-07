@@ -14,10 +14,16 @@
     "db:migrate": "node --env-file-if-exists=../../.env src/db/migrate.ts"
   },
   "dependencies": {
+    "@better-auth/drizzle-adapter": "1.7.17",
+    "@meritory/password": "workspace:*",
+    "better-auth": "1.7.17",
     "drizzle-orm": "^0.45.4",
+    "nodemailer": "^10.3.1",
     "postgres": "^4.0.0"
   },
   "devDependencies": {
+    "@meritory/security-testing": "workspace:*",
+    "@types/nodemailer": "^8.0.2",
     "drizzle-kit": "^0.31.11"
   }
 }
