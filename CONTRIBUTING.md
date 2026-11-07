@@ -25,7 +25,7 @@ For the phone app, run `pnpm dev:mobile` and open it in Expo Go or a simulator.
 
 Before pushing, run `pnpm check`. It runs lint, type checks and tests, the same as CI.
 
-The database tests skip unless `TEST_DATABASE_URL` is set. Tests don't read `.env`, so set it in the shell. They only touch rows they create, so the local database works once it's migrated.
+The database tests skip unless `TEST_DATABASE_URL` is set. Tests don't read `.env`, so set it in the shell. They only touch rows they create, so the local database works once it's migrated. CI runs them against a fresh Postgres on every pull request, and fails if they skip.
 
 ```bash
 pnpm db:migrate

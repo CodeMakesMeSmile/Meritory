@@ -5,7 +5,6 @@ import { createDatabase } from "../db/client.ts";
 import { rateLimits, users } from "../db/schema.ts";
 import { createAuth } from "./auth.ts";
 
-// TODO: MER-18 runs these in CI against a Postgres service
 const url = process.env.TEST_DATABASE_URL;
 
 const PASSWORD = "violet harbor tractor sandwich";
