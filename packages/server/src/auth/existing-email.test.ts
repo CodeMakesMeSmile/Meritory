@@ -11,6 +11,8 @@ const url = process.env.TEST_DATABASE_URL;
 
 const ORIGIN = "https://meritory.test";
 
+type SignUpBody = { user: { email: string } };
+
 describe.skipIf(!url)("signing up with an email that has an account", () => {
   const database = createDatabase(url ?? "");
   const { db } = database;
@@ -101,8 +103,8 @@ describe.skipIf(!url)("signing up with an email that has an account", () => {
     );
 
     expect(taken.status).toBe(fresh.status);
-    const takenBody = await taken.json();
-    const freshBody = await fresh.json();
+    const takenBody = (await taken.json()) as SignUpBody;
+    const freshBody = (await fresh.json()) as SignUpBody;
     expect(Object.keys(takenBody).sort()).toEqual(
       Object.keys(freshBody).sort(),
     );
