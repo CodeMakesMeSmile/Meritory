@@ -17,7 +17,14 @@ const config: NextConfig = {
   agentRules: false,
   poweredByHeader: false,
   async headers() {
-    return [{ source: "/:path*", headers: SECURITY_HEADERS }];
+    return [
+      { source: "/:path*", headers: SECURITY_HEADERS },
+      // The reset token is in this page's URL. The later rule wins.
+      {
+        source: "/reset-password",
+        headers: [{ key: "Referrer-Policy", value: "no-referrer" }],
+      },
+    ];
   },
   // Workspace packages ship TypeScript source
   transpilePackages: [
