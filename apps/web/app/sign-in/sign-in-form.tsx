@@ -9,6 +9,7 @@ import { TextField } from "@/components/text-field";
 import { authClient } from "@/lib/auth-client";
 import { EMAIL_ERROR, EMAIL_PATTERN } from "@/lib/email";
 import { useResend } from "@/lib/use-resend";
+import { waitMessage } from "@/lib/wait-message";
 
 type Field = "email" | "password";
 type Errors = Partial<Record<Field, string>>;
@@ -22,16 +23,13 @@ const MESSAGES = {
   failed: "Something went wrong on our side. Try again in a moment.",
 };
 
-function waitMessage(retryAfter: string | null) {
-  const seconds = Number(retryAfter);
-  if (!Number.isInteger(seconds) || seconds <= 0) {
-    return "Too many tries. Wait a few seconds, then try again.";
-  }
-  const unit = seconds === 1 ? "second" : "seconds";
-  return `Too many tries. Wait ${seconds} ${unit}, then try again.`;
-}
-
-export function SignInForm({ next }: { next: string }) {
+export function SignInForm({
+  next,
+  passwordSaved = false,
+}: {
+  next: string;
+  passwordSaved?: boolean;
+}) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -120,6 +118,12 @@ export function SignInForm({ next }: { next: string }) {
       </div>
 
       {formError && <Alert tone="danger">{formError}</Alert>}
+
+      {passwordSaved && !formError && !unconfirmed && (
+        <Alert tone="success">
+          Password saved. Sign in with your new password.
+        </Alert>
+      )}
 
       {unconfirmed && (
         <>
