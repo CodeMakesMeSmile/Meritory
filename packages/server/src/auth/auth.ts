@@ -6,16 +6,26 @@ import {
 } from "@meritory/password";
 import { betterAuth } from "better-auth";
 import { APIError, createAuthMiddleware } from "better-auth/api";
+import { eq } from "drizzle-orm";
 import type { Database } from "../db/client.ts";
 import * as schema from "../db/schema.ts";
 import type { Mail, Mailer } from "../mail/mailer.ts";
 import { createEmailLinks, type EmailLinks } from "./email-links.ts";
+import {
+  createResetLinks,
+  hashResetIdentifier,
+  RESET_PREFIX,
+  type ResetLinks,
+} from "./reset-links.ts";
 
 const LINK_LIFETIME_SECONDS = 60 * 60;
 
 /** Where every verification link lands, with ?error= when it fails */
 export const EMAIL_CONFIRMED_PATH = "/email-confirmed";
 const LINK_FAILED_PATH = `${EMAIL_CONFIRMED_PATH}?error=INVALID_TOKEN`;
+
+/** Where reset links land, with ?token= or ?error= */
+export const RESET_PASSWORD_PATH = "/reset-password";
 
 const PASSWORD_ERROR_CODES = {
   too_short: "PASSWORD_TOO_SHORT",
@@ -25,12 +35,14 @@ const PASSWORD_ERROR_CODES = {
 } as const;
 
 // Runs before Better Auth's own checks, which count UTF-16 units instead of characters
-function checkPasswordRules(body: Record<string, unknown>) {
-  const { password, name, email } = body;
+function checkPasswordRules(
+  password: unknown,
+  about: { name?: unknown; email?: unknown },
+) {
   if (typeof password !== "string") return;
   const result = checkPassword(password, {
-    name: typeof name === "string" ? name : undefined,
-    email: typeof email === "string" ? email : undefined,
+    name: typeof about.name === "string" ? about.name : undefined,
+    email: typeof about.email === "string" ? about.email : undefined,
   });
   if (result.problem) {
     throw new APIError("BAD_REQUEST", {
@@ -68,18 +80,43 @@ export interface AuthConfig {
   log: AuthLogger;
   /** Defaults to the verifications table */
   emailLinks?: EmailLinks;
+  /** Defaults to the verifications table */
+  resetLinks?: ResetLinks;
   /** On unless turned off, in every environment */
   rateLimit?: boolean;
 }
 
 export function createAuth(config: AuthConfig) {
   const links = config.emailLinks ?? createEmailLinks(config.db);
+  const resetLinks = config.resetLinks ?? createResetLinks(config.db);
 
   const rules = createAuthMiddleware(async (ctx) => {
     const body = (ctx.body ?? {}) as Record<string, unknown>;
     if (ctx.path === "/sign-up/email") {
       checkName(body);
-      checkPasswordRules(body);
+      checkPasswordRules(body.password, body);
+    }
+
+    // Better Auth only checks length here, so the sign-up rules run too
+    if (ctx.path === "/reset-password" && typeof body.token === "string") {
+      const link = await ctx.context.internalAdapter.findVerificationValue(
+        `${RESET_PREFIX}${body.token}`,
+      );
+      // A missing link gets Better Auth's own INVALID_TOKEN answer
+      const user =
+        link && link.expiresAt > new Date()
+          ? await ctx.context.internalAdapter.findUserById(link.value)
+          : null;
+      if (user) checkPasswordRules(body.newPassword, user);
+    }
+
+    if (ctx.path === "/request-password-reset") {
+      return {
+        context: {
+          ...ctx,
+          body: { ...body, redirectTo: RESET_PASSWORD_PATH },
+        },
+      };
     }
 
     // Links always land on our page, whatever the client asked for
@@ -154,15 +191,46 @@ export function createAuth(config: AuthConfig) {
       },
       resetPasswordTokenExpiresIn: LINK_LIFETIME_SECONDS,
       revokeSessionsOnPasswordReset: true,
-      sendResetPassword: async ({ user, url }) => {
+      // Not awaited, so a real account answers as fast as an unknown email
+      sendResetPassword: async ({ user, url, token }) => {
+        resetLinks
+          .claim(user.id, token)
+          .then((fresh) => {
+            if (!fresh) return;
+            sendLater(
+              {
+                to: user.email,
+                subject: "Reset your Meritory password",
+                text: [
+                  "Someone asked to reset the password for your Meritory account.",
+                  url,
+                  "The link works for 1 hour. Saving a new password signs out your other devices. If this wasn't you, you can ignore this email.",
+                ].join("\n\n"),
+              },
+              user.id,
+            );
+          })
+          .catch((err: unknown) =>
+            config.log.error({ err, userId: user.id }, "reset link failed"),
+          );
+      },
+      onPasswordReset: async ({ user }) => {
+        await resetLinks.revokeAll(user.id);
+        // Opening the link proved they read this inbox
+        if (!user.emailVerified) {
+          await config.db
+            .update(schema.users)
+            .set({ emailVerified: true })
+            .where(eq(schema.users.id, user.id));
+        }
         sendLater(
           {
             to: user.email,
-            subject: "Reset your Meritory password",
+            subject: "Your Meritory password was changed",
             text: [
-              "Someone asked to reset the password for your Meritory account.",
-              url,
-              "The link works for 1 hour. Saving a new password signs out your other devices. If this wasn't you, you can ignore this email.",
+              "The password for your Meritory account was just changed, and your other devices were signed out.",
+              "If this was you, there's nothing else to do.",
+              `If it wasn't you, reset your password now: ${config.webOrigin}/forgot-password`,
             ].join("\n\n"),
           },
           user.id,
@@ -201,6 +269,12 @@ export function createAuth(config: AuthConfig) {
       },
     },
     hooks: { before: rules },
+    verification: {
+      storeIdentifier: {
+        default: "plain",
+        overrides: { [RESET_PREFIX]: { hash: hashResetIdentifier } },
+      },
+    },
     advanced: {
       // Better Auth skips the cross-site check under tests by default. This keeps it on, so tests prove it.
       disableOriginCheck: false,
