@@ -12,6 +12,6 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "typebox": "^1.4.3"
+    "typebox": "^1.4.4"
   }
 }
