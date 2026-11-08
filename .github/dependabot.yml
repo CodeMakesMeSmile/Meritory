@@ -24,8 +24,15 @@ updates:
     ignore:
       - dependency-name: "expo"
         update-types: ["version-update:semver-major"]
+      # The Expo SDK pins these, so they move with it by hand through `expo install`
+      - dependency-name: "react"
+        update-types:
+          ["version-update:semver-minor", "version-update:semver-patch"]
+      - dependency-name: "react-dom"
+        update-types:
+          ["version-update:semver-minor", "version-update:semver-patch"]
+      # Majors too, since a new React Native means a new Expo SDK
       - dependency-name: "react-native"
-        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: github-actions
     directory: /
