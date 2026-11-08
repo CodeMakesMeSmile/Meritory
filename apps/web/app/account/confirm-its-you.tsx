@@ -6,24 +6,32 @@ import { type FormEvent, useRef, useState } from "react";
 import { Alert } from "@/components/alert";
 import { Button, linkClass } from "@/components/button";
 import { Dialog } from "@/components/dialog";
+import { ProviderButtons } from "@/components/provider-buttons";
 import { ShowButton } from "@/components/show-button";
 import { TextField } from "@/components/text-field";
 import { confirmPassword } from "@/lib/account-api";
 import { daysAgo } from "@/lib/activity";
+import { PROVIDER_LABELS, type Provider } from "@/lib/providers";
 import { waitMessage } from "@/lib/wait-message";
 
 interface ConfirmItsYouProps {
   open: boolean;
   /** When this session signed in, to say how long ago */
   signedInAt: Date | null;
+  /** Set when the account has no password, so signing in again stands in for it */
+  provider?: Provider | null;
+  /** Saves the waiting action before the page leaves for the provider */
+  onLeave?: () => void;
   onCancel: () => void;
   onConfirmed: () => void;
 }
 
-/** Asks for the password when the sign-in is over a day old */
+/** Asks for the password, or a fresh provider sign-in, when the sign-in is over a day old */
 export function ConfirmItsYou({
   open,
   signedInAt,
+  provider = null,
+  onLeave,
   onCancel,
   onConfirmed,
 }: ConfirmItsYouProps) {
@@ -75,6 +83,34 @@ export function ConfirmItsYou({
   }
 
   const when = signedInAt ? daysAgo(signedInAt) : "over a day ago";
+
+  if (provider) {
+    const label = PROVIDER_LABELS[provider];
+    return (
+      <Dialog open={open} title="Confirm it's you" onClose={close}>
+        <p className="text-small text-secondary">
+          You last signed in {when}. Sign in with {label} again to keep going.
+        </p>
+        {formError && <Alert tone="danger">{formError}</Alert>}
+        <div className="grid grid-cols-2 gap-3">
+          <Button type="button" variant="secondary" onClick={close}>
+            Cancel
+          </Button>
+          <ProviderButtons
+            providers={[provider]}
+            callbackURL="/account?confirmed=1"
+            errorPage="/account"
+            onLeave={onLeave}
+            onFailed={() =>
+              setFormError(
+                "Something went wrong. Check your connection and try again.",
+              )
+            }
+          />
+        </div>
+      </Dialog>
+    );
+  }
 
   return (
     <Dialog open={open} title="Confirm it's you" onClose={close}>

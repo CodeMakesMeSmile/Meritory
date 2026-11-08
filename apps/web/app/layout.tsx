@@ -1,6 +1,6 @@
 import { themeStylesheet } from "@meritory/design-tokens";
 import type { Metadata } from "next";
-import { Host_Grotesk, IBM_Plex_Mono } from "next/font/google";
+import { Host_Grotesk, IBM_Plex_Mono, Roboto } from "next/font/google";
 import { headers } from "next/headers";
 import type { ReactNode } from "react";
 import { NONCE_HEADER } from "@/lib/csp";
@@ -18,6 +18,13 @@ const mono = IBM_Plex_Mono({
   variable: "--font-plex-mono",
 });
 
+// Only the provider buttons use it, as Google's sign-in guidelines ask
+const roboto = Roboto({
+  subsets: ["latin"],
+  weight: ["500"],
+  variable: "--font-roboto",
+});
+
 export const metadata: Metadata = {
   title: "Meritory",
   description: "Practice for senior engineering interviews.",
@@ -31,7 +38,10 @@ export default async function RootLayout({
 }) {
   const nonce = (await headers()).get(NONCE_HEADER) ?? undefined;
   return (
-    <html lang="en" className={`${sans.variable} ${mono.variable}`}>
+    <html
+      lang="en"
+      className={`${sans.variable} ${mono.variable} ${roboto.variable}`}
+    >
       <head>
         <style
           nonce={nonce}

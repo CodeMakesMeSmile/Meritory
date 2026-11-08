@@ -57,6 +57,9 @@ function fakeStore() {
       calls.push(`endOthers ${keepId}`);
       return 1;
     },
+    async signInMethods() {
+      return { password: true, providers: ["github"] };
+    },
     async confirmPassword({ password }) {
       calls.push("confirm");
       if (password === "too many") {
@@ -179,7 +182,10 @@ describe("signed-in routes", () => {
       headers: { cookie: "session=good" },
     });
     expect(res.statusCode).toBe(200);
-    expect(res.json()).toEqual(ANNA);
+    expect(res.json()).toEqual({
+      ...ANNA,
+      signInMethods: { password: true, providers: ["github"] },
+    });
   });
 
   it("returns 401 without a session", async () => {
@@ -203,7 +209,12 @@ describe("signed-in routes", () => {
       fresh: true,
     }));
     const res = await app.inject({ url: "/v1/me" });
-    expect(Object.keys(res.json())).toEqual(["id", "name", "email"]);
+    expect(Object.keys(res.json())).toEqual([
+      "id",
+      "name",
+      "email",
+      "signInMethods",
+    ]);
   });
 
   it("leaves public routes alone", async () => {

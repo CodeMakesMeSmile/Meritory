@@ -5,11 +5,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useRef, useState } from "react";
 import { Button, linkClass } from "@/components/button";
+import { OrDivider, ProviderButtons } from "@/components/provider-buttons";
 import { StrengthMeter } from "@/components/strength-meter";
 import { TextField } from "@/components/text-field";
 import { authClient, SIGN_UP_EMAIL_KEY } from "@/lib/auth-client";
 import { EMAIL_ERROR, EMAIL_PATTERN } from "@/lib/email";
 import { loadPasswordRules, meterMessage } from "@/lib/password-rules";
+import { PROVIDER_LABELS } from "@/lib/providers";
 
 type Field = "name" | "email" | "password";
 type Errors = Partial<Record<Field, string>>;
@@ -138,6 +140,19 @@ export function SignUpForm() {
           {formError}
         </p>
       )}
+
+      <ProviderButtons
+        callbackURL="/"
+        errorPage="/sign-in"
+        disabled={pending}
+        onLeave={() => setFormError(null)}
+        onFailed={(provider) =>
+          setFormError(
+            `${PROVIDER_LABELS[provider]} sign-in didn't work. Try again.`,
+          )
+        }
+      />
+      <OrDivider />
 
       <TextField
         ref={inputs.name}

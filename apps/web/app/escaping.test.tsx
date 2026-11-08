@@ -17,6 +17,9 @@ vi.mock("@/lib/sign-up-email", () => ({ useSignUpEmail: () => me.name }));
 const { default: Home } = await import("./page.tsx");
 const { SentTo } = await import("./check-email/sent-to.tsx");
 
+const home = (params: Record<string, string> = {}) =>
+  Home({ searchParams: Promise.resolve(params) });
+
 /** The attack must show up only in its escaped, harmless form */
 function expectEscaped(html: string, attack: string) {
   expect(html).toContain(escapeHtml(attack));
@@ -26,8 +29,23 @@ function expectEscaped(html: string, attack: string) {
 describe("people's text renders as text", () => {
   it.each(ATTACKS)("a name of %j on the home page", async (attack) => {
     me.name = attack;
-    const html = renderToStaticMarkup(await Home());
+    const html = renderToStaticMarkup(await home());
     expectEscaped(html, attack);
+  });
+
+  it.each(ATTACKS)("a linked value of %j on the home page", async (attack) => {
+    me.name = "Rowan";
+    const html = renderToStaticMarkup(await home({ linked: attack }));
+    expect(html).not.toContain("is now linked");
+    if (/[<>"']/.test(attack)) expect(html).not.toContain(attack);
+  });
+
+  it("says GitHub was just linked, between the heading and Sign out", async () => {
+    me.name = "Rowan";
+    const html = renderToStaticMarkup(await home({ linked: "github" }));
+    const note = html.indexOf("GitHub is now linked to your account.");
+    expect(note).toBeGreaterThan(html.indexOf("Signed in as Rowan"));
+    expect(html.indexOf("Sign out")).toBeGreaterThan(note);
   });
 
   it.each(ATTACKS)("an email of %j on check your email", (attack) => {

@@ -6,12 +6,14 @@ import {
   SESSION_ERRORS,
   SessionParams,
   SessionsResponse,
+  type SignedInUser,
+  type SignInMethods,
 } from "@meritory/contracts";
 import type { FastifyInstance, FastifyReply } from "fastify";
 import { toFetchHeaders } from "./auth-routes.ts";
 
 export interface CurrentSession {
-  user: MeResponse;
+  user: SignedInUser;
   sessionId: string;
   /** Signed in, or typed the password, within the last day */
   fresh: boolean;
@@ -20,7 +22,7 @@ export interface CurrentSession {
 declare module "fastify" {
   interface FastifyRequest {
     /** Always set inside the signed-in scope, and null outside it */
-    user: MeResponse | null;
+    user: SignedInUser | null;
     current: CurrentSession | null;
   }
 }
@@ -34,6 +36,8 @@ export interface AccountSessionStore {
   /** False when the session is gone or belongs to someone else */
   end(userId: string, sessionId: string): Promise<boolean>;
   endOthers(userId: string, keepId: string): Promise<number>;
+  /** Whether the account has a password, and which providers sign it in */
+  signInMethods(userId: string): Promise<SignInMethods>;
   confirmPassword(input: {
     userId: string;
     sessionId: string;
@@ -119,7 +123,13 @@ export async function registerSignedInRoutes(
           response: { 200: MeResponse },
         },
       },
-      async (request) => request.user,
+      async (request) => {
+        const { user } = request.current as CurrentSession;
+        return {
+          ...user,
+          signInMethods: await deps.accountSessions.signInMethods(user.id),
+        };
+      },
     );
 
     scope.get(

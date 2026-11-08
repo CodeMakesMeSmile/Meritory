@@ -11,11 +11,21 @@ import {
   getSessionFromCtx,
   isAPIError,
 } from "better-auth/api";
-import { eq } from "drizzle-orm";
+import { count, eq } from "drizzle-orm";
 import type { Database } from "../db/client.ts";
 import * as schema from "../db/schema.ts";
 import type { Mail, Mailer, MailKind } from "../mail/mailer.ts";
 import { createEmailLinks, type EmailLinks } from "./email-links.ts";
+import {
+  isProvider,
+  PROVIDER_LABELS,
+  type Provider,
+  type ProviderConfig,
+  providerRedirects,
+  socialProviders,
+  withLinked,
+  withoutTokens,
+} from "./providers.ts";
 import {
   createResetLinks,
   hashResetIdentifier,
@@ -86,6 +96,8 @@ export interface AuthConfig {
   trustedProxies?: string[];
   mailer: Mailer;
   log: AuthLogger;
+  /** GitHub and Google, each only when its credentials are set */
+  providers?: ProviderConfig;
   /** Defaults to the verifications table */
   emailLinks?: EmailLinks;
   /** Defaults to the verifications table */
@@ -126,6 +138,16 @@ export function createAuth(config: AuthConfig) {
           ? await ctx.context.internalAdapter.findUserById(link.value)
           : null;
       if (user) checkPasswordRules(body.newPassword, user);
+    }
+
+    // Providers send people back only to our own paths
+    if (ctx.path === "/sign-in/social" && isProvider(body.provider)) {
+      return {
+        context: {
+          ...ctx,
+          body: { ...body, ...providerRedirects(body.provider, body) },
+        },
+      };
     }
 
     if (ctx.path === "/request-password-reset") {
@@ -183,7 +205,51 @@ export function createAuth(config: AuthConfig) {
     );
   }
 
+  // A new sign-in method on an account that already had one, so true when it was linked
+  async function sendProviderLinked(providerId: string, userId: string) {
+    if (!isProvider(providerId)) return false;
+    const [{ total } = { total: 0 }] = await config.db
+      .select({ total: count() })
+      .from(schema.accounts)
+      .where(eq(schema.accounts.userId, userId));
+    if (total < 2) return false;
+    const [user] = await config.db
+      .select({ email: schema.users.email })
+      .from(schema.users)
+      .where(eq(schema.users.id, userId));
+    if (!user) return false;
+    const label = PROVIDER_LABELS[providerId];
+    sendLater(
+      {
+        to: user.email,
+        subject: `${label} was added to your Meritory account`,
+        text: [
+          `${label} can now sign you in to Meritory.`,
+          "If this was you, there's nothing else to do.",
+          `If it wasn't you, reset your password now: ${config.webOrigin}/forgot-password`,
+        ].join("\n\n"),
+      },
+      "provider-linked",
+      userId,
+    );
+    return true;
+  }
+
+  // Requests where a provider was just added to an existing account, keyed by request
+  const justLinked = new WeakMap<object, Provider>();
+
   const afterRoutes = createAuthMiddleware(async (ctx) => {
+    if (ctx.path === "/callback/:id") {
+      const provider = justLinked.get(ctx.context);
+      const returned = ctx.context.returned;
+      const location = isAPIError(returned)
+        ? returned.headers?.get("location")
+        : null;
+      if (provider && location) {
+        throw ctx.redirect(withLinked(location, provider));
+      }
+      return;
+    }
     if (ctx.path !== "/change-password") return;
     const returned = ctx.context.returned as { user?: unknown } | undefined;
     if (!returned || isAPIError(returned)) return;
@@ -204,6 +270,54 @@ export function createAuth(config: AuthConfig) {
       usePlural: true,
     }),
     trustedOrigins: [config.webOrigin, config.appScheme],
+    socialProviders: socialProviders(config.providers),
+    user: {
+      // GitHub's own lookup refuses unverified emails. This covers Google too.
+      validateUserInfo: ({ user, source }) => {
+        if (source.method === "oauth" && !user.emailVerified) {
+          return { error: "email_not_verified" };
+        }
+      },
+    },
+    databaseHooks: {
+      account: {
+        create: {
+          before: async (account) => ({ data: withoutTokens(account) }),
+          after: async (account, ctx) => {
+            const linked = await sendProviderLinked(
+              account.providerId,
+              account.userId,
+            );
+            if (linked && ctx && isProvider(account.providerId)) {
+              justLinked.set(ctx.context, account.providerId);
+            }
+          },
+        },
+        update: {
+          before: async (account) => ({ data: withoutTokens(account) }),
+        },
+      },
+      session: {
+        create: {
+          // Signing in again with GitHub or Google in the same browser replaces that session
+          after: async (session, ctx) => {
+            if (ctx?.path !== "/callback/:id") return;
+            const token = await ctx.getSignedCookie(
+              ctx.context.authCookies.sessionToken.name,
+              ctx.context.secret,
+            );
+            if (!token) return;
+            const old = await ctx.context.internalAdapter.findSession(token);
+            if (
+              old?.session.userId === session.userId &&
+              old.session.id !== session.id
+            ) {
+              await ctx.context.internalAdapter.deleteSession(token);
+            }
+          },
+        },
+      },
+    },
     emailAndPassword: {
       enabled: true,
       minPasswordLength: MIN_PASSWORD_LENGTH,

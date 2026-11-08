@@ -5,6 +5,7 @@ import {
   PASSWORD_SAVED_PARAM,
   PASSWORD_SAVED_VALUE,
 } from "@/lib/password-saved";
+import { providerNotice } from "@/lib/providers";
 import { SignInForm } from "./sign-in-form";
 
 export const metadata: Metadata = { title: "Sign in · Meritory" };
@@ -20,6 +21,7 @@ export default async function SignInPage({
       <SignInForm
         next={nextPath(params.next)}
         passwordSaved={params[PASSWORD_SAVED_PARAM] === PASSWORD_SAVED_VALUE}
+        providerNotice={providerNotice(params.provider, params.error)}
       />
     </AuthShell>
   );

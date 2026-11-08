@@ -30,6 +30,21 @@ describe("readConfig", () => {
     expect(readConfig(base).mailJobKey).toHaveLength(32);
   });
 
+  it("turns on a provider only when both its ID and secret are set", () => {
+    const config = readConfig({
+      ...base,
+      GITHUB_CLIENT_ID: "id",
+      GITHUB_CLIENT_SECRET: "secret",
+      GOOGLE_CLIENT_ID: "id",
+      GOOGLE_CLIENT_SECRET: "",
+    });
+    expect(config.providers.github).toEqual({
+      clientId: "id",
+      clientSecret: "secret",
+    });
+    expect(config.providers.google).toBeUndefined();
+  });
+
   it("serves auth under the web origin", () => {
     const config = readConfig({
       ...base,
