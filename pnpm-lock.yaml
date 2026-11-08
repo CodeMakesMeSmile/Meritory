@@ -189,7 +189,7 @@ importers:
         version: 9.9.3(supports-color@8.1.1)
       '@fastify/type-provider-typebox':
         specifier: ^6.3.0
-        version: 6.3.0(ajv-formats@3.0.1)(typebox@1.4.3)
+        version: 6.3.0(ajv-formats@3.0.1)(typebox@1.4.4)
       '@meritory/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
@@ -200,8 +200,8 @@ importers:
         specifier: ^5.12.8
         version: 5.12.8
       typebox:
-        specifier: ^1.4.3
-        version: 1.4.3
+        specifier: ^1.4.4
+        version: 1.4.4
 
   apps/mobile:
     dependencies:
@@ -306,8 +306,8 @@ importers:
   packages/contracts:
     dependencies:
       typebox:
-        specifier: ^1.4.3
-        version: 1.4.3
+        specifier: ^1.4.4
+        version: 1.4.4
 
   packages/design-tokens: {}
 
@@ -4483,8 +4483,8 @@ packages:
     resolution: {integrity: sha512-Ne2YiiGN8bmrmJJEuTWTLJR32nh/JdL1+PSicowtNb0WFpn59GK8/lfD61bVtzguz7b3PBt74nxpv/Pw5po5Rg==}
     engines: {node: '>=8'}
 
-  typebox@1.4.3:
-    resolution: {integrity: sha512-u3nyf7ZciAv1GOijVpI0TDt9At5wmEi7lSHSlRrnjuThv1DcB7fgGBqqrz+fGZ54jAfTpOOX0JXwxSIg3pnxQA==}
+  typebox@1.4.4:
+    resolution: {integrity: sha512-ctPyL8BZibv6HYU6cE3ldDtfCTh7nXM7WPuL3KQVyRRhMnZEzU3o2yLVywxEEFmKEx+8EdeqG1/uTNzazRbxLA==}
 
   typescript@6.0.3:
     resolution: {integrity: sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==}
@@ -6105,10 +6105,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@fastify/type-provider-typebox@6.3.0(ajv-formats@3.0.1)(typebox@1.4.3)':
+  '@fastify/type-provider-typebox@6.3.0(ajv-formats@3.0.1)(typebox@1.4.4)':
     dependencies:
       ajv-formats: 3.0.1
-      typebox: 1.4.3
+      typebox: 1.4.4
 
   '@img/colour@1.1.0':
     optional: true
@@ -9076,7 +9076,7 @@ snapshots:
 
   type-fest@0.7.1: {}
 
-  typebox@1.4.3: {}
+  typebox@1.4.4: {}
 
   typescript@6.0.3: {}
 
