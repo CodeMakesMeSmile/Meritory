@@ -40,6 +40,8 @@ export const sessions = pgTable(
     updatedAt: updatedAt(),
     ipAddress: text("ip_address"),
     userAgent: text("user_agent"),
+    // Last time the password was typed again on this session, for "Confirm it's you"
+    confirmedAt: timestamp("confirmed_at", { withTimezone: true }),
     userId: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),

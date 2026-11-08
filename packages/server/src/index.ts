@@ -1,4 +1,13 @@
 export {
+  type AccountSession,
+  type AccountSessions,
+  CONFIRM_LIMIT,
+  type ConfirmResult,
+  createAccountSessions,
+  deviceLabel,
+  isFresh,
+} from "./auth/account-sessions.ts";
+export {
   type Auth,
   type AuthConfig,
   type AuthLogger,

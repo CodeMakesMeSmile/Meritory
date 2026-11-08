@@ -18,6 +18,9 @@ export function meterMessage(
     : (messages[check.strength] ?? "");
 }
 
+/** Under a confirm field that doesn't match the new password */
+export const MISMATCH = "These don't match. Check both and try again.";
+
 /** Server codes that belong to the password field */
 export const PASSWORD_CODES = new Set([
   "PASSWORD_TOO_SHORT",

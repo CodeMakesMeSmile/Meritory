@@ -5,7 +5,12 @@ import {
   MIN_PASSWORD_LENGTH,
 } from "@meritory/password";
 import { betterAuth } from "better-auth";
-import { APIError, createAuthMiddleware } from "better-auth/api";
+import {
+  APIError,
+  createAuthMiddleware,
+  getSessionFromCtx,
+  isAPIError,
+} from "better-auth/api";
 import { eq } from "drizzle-orm";
 import type { Database } from "../db/client.ts";
 import * as schema from "../db/schema.ts";
@@ -26,6 +31,9 @@ const LINK_FAILED_PATH = `${EMAIL_CONFIRMED_PATH}?error=INVALID_TOKEN`;
 
 /** Where reset links land, with ?token= or ?error= */
 export const RESET_PASSWORD_PATH = "/reset-password";
+
+/** Change password tries per IP in the window */
+export const CHANGE_PASSWORD_LIMIT = { window: 15 * 60, max: 5 };
 
 const PASSWORD_ERROR_CODES = {
   too_short: "PASSWORD_TOO_SHORT",
@@ -97,6 +105,16 @@ export function createAuth(config: AuthConfig) {
       checkPasswordRules(body.password, body);
     }
 
+    // Better Auth only checks length here, and leaves other sessions running unless asked
+    if (ctx.path === "/change-password") {
+      const session = await getSessionFromCtx(ctx);
+      // Without a session, Better Auth answers 401 itself
+      if (session) checkPasswordRules(body.newPassword, session.user);
+      return {
+        context: { ...ctx, body: { ...body, revokeOtherSessions: true } },
+      };
+    }
+
     // Better Auth only checks length here, so the sign-up rules run too
     if (ctx.path === "/reset-password" && typeof body.token === "string") {
       const link = await ctx.context.internalAdapter.findVerificationValue(
@@ -148,6 +166,29 @@ export function createAuth(config: AuthConfig) {
         config.log.error({ err, userId }, "sign-in email failed"),
       );
   }
+
+  function sendPasswordChanged(user: { id: string; email: string }) {
+    sendLater(
+      {
+        to: user.email,
+        subject: "Your Meritory password was changed",
+        text: [
+          "The password for your Meritory account was just changed, and your other devices were signed out.",
+          "If this was you, there's nothing else to do.",
+          `If it wasn't you, reset your password now: ${config.webOrigin}/forgot-password`,
+        ].join("\n\n"),
+      },
+      user.id,
+    );
+  }
+
+  const afterRoutes = createAuthMiddleware(async (ctx) => {
+    if (ctx.path !== "/change-password") return;
+    const returned = ctx.context.returned as { user?: unknown } | undefined;
+    if (!returned || isAPIError(returned)) return;
+    const user = returned.user as { id: string; email: string } | undefined;
+    if (user) sendPasswordChanged(user);
+  });
 
   // Set once auth exists, so the duplicate sign-up hook can use its API
   let sendFreshLink: (email: string) => void = () => {};
@@ -223,18 +264,7 @@ export function createAuth(config: AuthConfig) {
             .set({ emailVerified: true })
             .where(eq(schema.users.id, user.id));
         }
-        sendLater(
-          {
-            to: user.email,
-            subject: "Your Meritory password was changed",
-            text: [
-              "The password for your Meritory account was just changed, and your other devices were signed out.",
-              "If this was you, there's nothing else to do.",
-              `If it wasn't you, reset your password now: ${config.webOrigin}/forgot-password`,
-            ].join("\n\n"),
-          },
-          user.id,
-        );
+        sendPasswordChanged(user);
       },
     },
     emailVerification: {
@@ -266,9 +296,15 @@ export function createAuth(config: AuthConfig) {
       storage: "database",
       customRules: {
         "/sign-in/email": { window: 10, max: 3 },
+        "/change-password": CHANGE_PASSWORD_LIMIT,
       },
     },
-    hooks: { before: rules },
+    hooks: { before: rules, after: afterRoutes },
+    session: {
+      additionalFields: {
+        confirmedAt: { type: "date", required: false, input: false },
+      },
+    },
     verification: {
       storeIdentifier: {
         default: "plain",

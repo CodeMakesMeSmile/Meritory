@@ -4,12 +4,14 @@ import type { PasswordCheck } from "@meritory/password";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useRef, useState } from "react";
 import { Alert } from "@/components/alert";
-import { Button, linkClass } from "@/components/button";
+import { Button } from "@/components/button";
+import { ShowButton } from "@/components/show-button";
 import { StrengthMeter } from "@/components/strength-meter";
 import { TextField } from "@/components/text-field";
 import { authClient } from "@/lib/auth-client";
 import {
   loadPasswordRules,
+  MISMATCH,
   meterMessage,
   PASSWORD_CODES,
 } from "@/lib/password-rules";
@@ -19,31 +21,8 @@ import { waitMessage } from "@/lib/wait-message";
 type Field = "password" | "confirm";
 type Errors = Partial<Record<Field, string>>;
 
-const MISMATCH = "These don't match. Check both and try again.";
-
 /** Where an expired, used, or cancelled link ends up */
 export const EXPIRED_URL = "/reset-password?error=INVALID_TOKEN";
-
-function ShowButton({
-  shown,
-  onToggle,
-  what,
-}: {
-  shown: boolean;
-  onToggle: () => void;
-  what: string;
-}) {
-  return (
-    <button
-      type="button"
-      className={linkClass}
-      aria-label={`${shown ? "Hide" : "Show"} ${what}`}
-      onClick={onToggle}
-    >
-      {shown ? "Hide" : "Show"}
-    </button>
-  );
-}
 
 export function ResetPasswordForm({ token }: { token: string }) {
   const router = useRouter();
