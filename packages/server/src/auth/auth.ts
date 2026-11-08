@@ -269,6 +269,11 @@ export function createAuth(config: AuthConfig) {
       },
     },
     hooks: { before: rules },
+    session: {
+      additionalFields: {
+        confirmedAt: { type: "date", required: false, input: false },
+      },
+    },
     verification: {
       storeIdentifier: {
         default: "plain",
