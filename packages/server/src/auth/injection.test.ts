@@ -55,7 +55,11 @@ describe.skipIf(!url)("attack strings against Postgres", () => {
       .select({ n: count() })
       .from(users)
       .where(like(users.email, "injection-%"));
-    const [signedIn] = await db.select({ n: count() }).from(sessions);
+    const [signedIn] = await db
+      .select({ n: count() })
+      .from(sessions)
+      .innerJoin(users, eq(users.id, sessions.userId))
+      .where(like(users.email, "injection-%"));
     const [pending] = await db
       .select({ n: count() })
       .from(verifications)

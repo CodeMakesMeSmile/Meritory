@@ -9,6 +9,7 @@ import { StrengthMeter } from "@/components/strength-meter";
 import { TextField } from "@/components/text-field";
 import { authClient, SIGN_UP_EMAIL_KEY } from "@/lib/auth-client";
 import { EMAIL_ERROR, EMAIL_PATTERN } from "@/lib/email";
+import { loadPasswordRules, meterMessage } from "@/lib/password-rules";
 
 type Field = "name" | "email" | "password";
 type Errors = Partial<Record<Field, string>>;
@@ -23,23 +24,6 @@ const FIELD_BY_CODE: Record<string, Field> = {
   PASSWORD_PERSONAL: "password",
   PASSWORD_TOO_WEAK: "password",
 };
-
-// The word lists are large, so they load on the first keystroke, not with the page
-let passwordRules: Promise<typeof import("@meritory/password")> | undefined;
-const loadPasswordRules = () => {
-  passwordRules ??= import("@meritory/password");
-  return passwordRules;
-};
-
-function meterMessage(
-  check: PasswordCheck | null,
-  messages: Record<string, string>,
-) {
-  if (!check) return "Strength shows as you type";
-  return check.problem === "personal"
-    ? check.message
-    : (messages[check.strength] ?? "");
-}
 
 export function SignUpForm() {
   const router = useRouter();

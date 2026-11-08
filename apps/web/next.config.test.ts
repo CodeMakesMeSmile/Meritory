@@ -18,4 +18,14 @@ describe("next.config", () => {
       "Strict-Transport-Security": "max-age=63072000; includeSubDomains",
     });
   });
+
+  it("sends no referrer from the reset page, after the general rule", async () => {
+    const rules = (await config.headers?.()) ?? [];
+    const general = rules.findIndex((rule) => rule.source === "/:path*");
+    const reset = rules.findIndex((rule) => rule.source === "/reset-password");
+    expect(reset).toBeGreaterThan(general);
+    expect(rules[reset]?.headers).toEqual([
+      { key: "Referrer-Policy", value: "no-referrer" },
+    ]);
+  });
 });
