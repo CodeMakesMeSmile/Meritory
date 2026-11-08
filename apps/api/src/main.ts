@@ -1,5 +1,11 @@
 import { API_PREFIX } from "@meritory/contracts";
-import { createAuth, createDatabase, createSmtpMailer } from "@meritory/server";
+import {
+  createAccountSessions,
+  createAuth,
+  createDatabase,
+  createSmtpMailer,
+  isFresh,
+} from "@meritory/server";
 import { buildApp } from "./app.ts";
 import { readConfig } from "./config.ts";
 
@@ -21,11 +27,17 @@ const app = await buildApp(
     pingDatabase: database.ping,
     handleAuth: auth.handler,
     publicApiUrl: config.publicApiUrl,
-    async currentUser(headers) {
-      const session = await auth.api.getSession({ headers });
-      if (!session) return null;
-      const { id, name, email } = session.user;
-      return { id, name, email };
+    webOrigin: config.webOrigin,
+    accountSessions: createAccountSessions(database.db, auth),
+    async currentSession(headers) {
+      const found = await auth.api.getSession({ headers });
+      if (!found) return null;
+      const { id, name, email } = found.user;
+      return {
+        user: { id, name, email },
+        sessionId: found.session.id,
+        fresh: isFresh(found.session),
+      };
     },
   },
   { logger: { level: config.logLevel } },
