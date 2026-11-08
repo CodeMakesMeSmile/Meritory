@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { AuthShell } from "@/components/auth-shell";
+import { linkClass } from "@/components/button";
 import { requireMe } from "@/lib/me";
 import { SignOutButton } from "./sign-out-button";
 
@@ -15,6 +17,9 @@ export default async function Home() {
           </p>
         </div>
         <SignOutButton />
+        <Link href="/account" className={`${linkClass} self-start`}>
+          Account
+        </Link>
       </div>
     </AuthShell>
   );
