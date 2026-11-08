@@ -15,6 +15,7 @@ import {
   meterMessage,
   PASSWORD_CODES,
 } from "@/lib/password-rules";
+import { PROVIDER_LABELS, type Provider } from "@/lib/providers";
 import { waitMessage } from "@/lib/wait-message";
 import { Card, Row } from "./card";
 
@@ -29,11 +30,18 @@ interface PasswordCardProps {
   /** Lets the meter catch a password with the name or email in it */
   name: string;
   email: string;
+  /** Set when the account has no password yet */
+  provider?: Provider | null;
   /** Other sessions just ended, so the list is out of date */
   onChanged: () => void;
 }
 
-export function PasswordCard({ name, email, onChanged }: PasswordCardProps) {
+export function PasswordCard({
+  name,
+  email,
+  provider = null,
+  onChanged,
+}: PasswordCardProps) {
   const [values, setValues] = useState<Record<Field, string>>({
     current: "",
     password: "",
@@ -147,6 +155,8 @@ export function PasswordCard({ name, email, onChanged }: PasswordCardProps) {
   const toggle = (field: Field) =>
     setShown((now) => ({ ...now, [field]: !now[field] }));
 
+  if (provider) return <NoPasswordCard email={email} provider={provider} />;
+
   return (
     <Card
       title="Password"
@@ -228,6 +238,83 @@ export function PasswordCard({ name, email, onChanged }: PasswordCardProps) {
           </Button>
         </Row>
       </form>
+    </Card>
+  );
+}
+
+/** Someone who signs in with GitHub or Google sets a password by email */
+function NoPasswordCard({
+  email,
+  provider,
+}: {
+  email: string;
+  provider: Provider;
+}) {
+  const [notice, setNotice] = useState<Notice | null>(null);
+  const [pending, setPending] = useState(false);
+
+  async function send() {
+    if (pending) return;
+    setNotice(null);
+    if (!navigator.onLine) {
+      setNotice({
+        tone: "danger",
+        text: "You're offline. Sending a link needs a connection.",
+      });
+      return;
+    }
+    setPending(true);
+    let retryAfter: string | null = null;
+    try {
+      const { error } = await authClient.requestPasswordReset(
+        { email, redirectTo: "/reset-password" },
+        {
+          onError: ({ response }) => {
+            retryAfter = response.headers.get("X-Retry-After");
+          },
+        },
+      );
+      if (!error) {
+        setNotice({
+          tone: "success",
+          text: `We sent a link to ${email}. It works for 1 hour.`,
+        });
+      } else if (error.status === 429) {
+        setNotice({ tone: "danger", text: waitMessage(retryAfter) });
+      } else {
+        setNotice({
+          tone: "danger",
+          text: "Something went wrong on our side. Try again in a moment.",
+        });
+      }
+    } catch {
+      setNotice({
+        tone: "danger",
+        text: "You're offline. Sending a link needs a connection.",
+      });
+    } finally {
+      setPending(false);
+    }
+  }
+
+  return (
+    <Card title="Password" description="No password set.">
+      <p className="text-small text-secondary">
+        You sign in with {PROVIDER_LABELS[provider]}, so there's no password
+        yet. We can email you a link to set one.
+      </p>
+      {notice && <Alert tone={notice.tone}>{notice.text}</Alert>}
+      <Row className="flex justify-end">
+        <Button
+          type="button"
+          className="w-full sm:w-50"
+          disabled={pending}
+          aria-busy={pending}
+          onClick={() => void send()}
+        >
+          {pending ? "Sending" : "Email me a link"}
+        </Button>
+      </Row>
     </Card>
   );
 }

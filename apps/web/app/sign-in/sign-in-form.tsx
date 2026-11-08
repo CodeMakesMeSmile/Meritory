@@ -4,10 +4,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useRef, useState } from "react";
 import { Alert } from "@/components/alert";
-import { Button, linkClass } from "@/components/button";
+import { Button, buttonClass, linkClass } from "@/components/button";
+import { OrDivider, ProviderButtons } from "@/components/provider-buttons";
 import { TextField } from "@/components/text-field";
 import { authClient } from "@/lib/auth-client";
 import { EMAIL_ERROR, EMAIL_PATTERN } from "@/lib/email";
+import { PROVIDER_LABELS, type ProviderNotice } from "@/lib/providers";
 import { useResend } from "@/lib/use-resend";
 import { waitMessage } from "@/lib/wait-message";
 
@@ -26,9 +28,12 @@ const MESSAGES = {
 export function SignInForm({
   next,
   passwordSaved = false,
+  providerNotice = null,
 }: {
   next: string;
   passwordSaved?: boolean;
+  /** Why GitHub or Google sent them back */
+  providerNotice?: ProviderNotice | null;
 }) {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -119,6 +124,17 @@ export function SignInForm({
 
       {formError && <Alert tone="danger">{formError}</Alert>}
 
+      {providerNotice && !formError && !unconfirmed && (
+        <>
+          <Alert tone={providerNotice.tone}>{providerNotice.text}</Alert>
+          {providerNotice.reset && (
+            <Link href="/forgot-password" className={buttonClass("secondary")}>
+              Reset password
+            </Link>
+          )}
+        </>
+      )}
+
       {passwordSaved && !formError && !unconfirmed && (
         <Alert tone="success">
           Password saved. Sign in with your new password.
@@ -145,6 +161,19 @@ export function SignInForm({
           </Button>
         </>
       )}
+
+      <ProviderButtons
+        callbackURL={next}
+        errorPage="/sign-in"
+        disabled={pending}
+        onLeave={() => setFormError(null)}
+        onFailed={(provider) =>
+          setFormError(
+            `${PROVIDER_LABELS[provider]} sign-in didn't work. Try again.`,
+          )
+        }
+      />
+      <OrDivider />
 
       <TextField
         ref={inputs.email}

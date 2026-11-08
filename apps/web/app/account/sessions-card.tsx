@@ -12,10 +12,16 @@ import {
   listSessions,
 } from "@/lib/account-api";
 import { activeText, listNames, signedInText } from "@/lib/activity";
+import {
+  type SessionAction,
+  savePendingAction,
+  takePendingAction,
+} from "@/lib/pending-action";
+import type { Provider } from "@/lib/providers";
 import { Card, Row } from "./card";
 import { ConfirmItsYou } from "./confirm-its-you";
 
-type Action = { kind: "one"; id: string } | { kind: "others" };
+type Action = SessionAction;
 
 const LOAD_FAILED =
   "We couldn't load your sessions. Check your connection and try again.";
@@ -33,7 +39,17 @@ export function othersText(others: AccountSession[]) {
   return `${who} will need to sign in again. This device stays signed in.`;
 }
 
-export function SessionsCard() {
+interface SessionsCardProps {
+  /** Set when the account has no password, for "Confirm it's you" */
+  provider?: Provider | null;
+  /** Back from a fresh provider sign-in, so a waiting sign-out can finish */
+  confirmed?: boolean;
+}
+
+export function SessionsCard({
+  provider = null,
+  confirmed = false,
+}: SessionsCardProps) {
   const router = useRouter();
   const [sessions, setSessions] = useState<AccountSession[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -59,6 +75,14 @@ export function SessionsCard() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  // Taken once on arrival, so a saved sign-out never runs twice or after a cancel
+  useEffect(() => {
+    const saved = takePendingAction();
+    if (!confirmed) return;
+    window.history.replaceState(null, "", "/account");
+    if (saved) void run(saved);
+  }, []);
 
   async function run(action: Action) {
     setError(null);
@@ -166,6 +190,10 @@ export function SessionsCard() {
 
       <ConfirmItsYou
         open={retry !== null}
+        provider={provider}
+        onLeave={() => {
+          if (retry) savePendingAction(retry);
+        }}
         signedInAt={current ? new Date(current.signedInAt) : null}
         onCancel={() => setRetry(null)}
         onConfirmed={() => {

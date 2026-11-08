@@ -117,3 +117,45 @@ body {
     box-shadow: var(--focus-ring);
   }
 }
+
+/* Google's sign-in button colours, which GitHub's button matches */
+@layer components {
+  .provider-button {
+    --provider-fill: #ffffff;
+    --provider-stroke: #747775;
+    --provider-text: #1f1f1f;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    height: var(--control-height);
+    padding-inline: var(--space-3);
+    background: var(--provider-fill);
+    border: 1px solid var(--provider-stroke);
+    border-radius: var(--radius-control);
+    color: var(--provider-text);
+    font-family: var(--font-roboto), Roboto, Arial, sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+    white-space: nowrap;
+  }
+  .provider-button:disabled {
+    cursor: progress;
+    opacity: 0.6;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .provider-button {
+    --provider-fill: #131314;
+    --provider-stroke: #8e918f;
+    --provider-text: #e3e3e3;
+  }
+}
+
+:root[data-theme="dark"] .provider-button {
+  --provider-fill: #131314;
+  --provider-stroke: #8e918f;
+  --provider-text: #e3e3e3;
+}

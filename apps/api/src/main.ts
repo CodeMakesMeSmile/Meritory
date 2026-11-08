@@ -26,6 +26,7 @@ const auth = createAuth({
   trustedProxies: config.trustedProxies,
   // The worker sends them, with retries
   mailer: createQueuedMailer(boss, config.mailJobKey),
+  providers: config.providers,
   log: { error: (details, message) => app.log.error(details, message) },
 });
 const app = await buildApp(

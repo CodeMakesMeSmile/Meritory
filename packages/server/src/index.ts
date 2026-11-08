@@ -13,6 +13,10 @@ export {
   type AuthLogger,
   createAuth,
 } from "./auth/auth.ts";
+export {
+  PROVIDERS,
+  type ProviderConfig,
+} from "./auth/providers.ts";
 export { createDatabase, type Database } from "./db/client.ts";
 export { readMailKey } from "./mail/mail-crypto.ts";
 export { createBoss, createQueuedMailer } from "./mail/mail-queue.ts";

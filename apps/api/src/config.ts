@@ -1,4 +1,4 @@
-import { readMailKey } from "@meritory/server";
+import { type ProviderConfig, readMailKey } from "@meritory/server";
 
 export interface ApiConfig {
   port: number;
@@ -14,6 +14,8 @@ export interface ApiConfig {
   trustedProxies?: string[];
   /** Seals queued emails, since they hold sign-in links */
   mailJobKey: Buffer;
+  /** Each provider turns on once both its ID and secret are set */
+  providers: ProviderConfig;
 }
 
 const MIN_SECRET_LENGTH = 32;
@@ -24,6 +26,10 @@ function list(value: string | undefined): string[] | undefined {
     .split(",")
     .map((item) => item.trim())
     .filter(Boolean);
+}
+
+function credentials(clientId?: string, clientSecret?: string) {
+  return clientId && clientSecret ? { clientId, clientSecret } : undefined;
 }
 
 function readWebOrigin(env: Record<string, string | undefined>): string {
@@ -66,5 +72,9 @@ export function readConfig(env: Record<string, string | undefined>): ApiConfig {
     ipAddressHeaders: list(env.AUTH_IP_HEADERS),
     trustedProxies: list(env.AUTH_TRUSTED_PROXIES),
     mailJobKey: readMailKey(env.MAIL_JOB_KEY),
+    providers: {
+      github: credentials(env.GITHUB_CLIENT_ID, env.GITHUB_CLIENT_SECRET),
+      google: credentials(env.GOOGLE_CLIENT_ID, env.GOOGLE_CLIENT_SECRET),
+    },
   };
 }
