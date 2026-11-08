@@ -82,8 +82,6 @@ export function SessionsCard({
     if (!confirmed) return;
     window.history.replaceState(null, "", "/account");
     if (saved) void run(saved);
-    // Only on arrival
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function run(action: Action) {

@@ -91,7 +91,6 @@ export function socialProviders(config: ProviderConfig = {}) {
     ...(config.google && {
       google: {
         ...config.google,
-        // The ticket asks for the account picker every time
         prompt: "select_account" as const,
         mapProfileToUser: (profile: { name?: string; email?: string }) => ({
           name: providerName(profile.name, profile.email?.split("@")[0] ?? ""),
