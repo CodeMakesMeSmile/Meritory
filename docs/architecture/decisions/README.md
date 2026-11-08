@@ -10,3 +10,4 @@ One short file per decision that would be expensive to reverse. Each follows the
 | [0004](0004-split-license.md) | AGPL code, all-rights-reserved curriculum | Accepted |
 | [0005](0005-toolchain-and-versions.md) | Toolchain and pinned versions | Accepted |
 | [0006](0006-auth-under-the-web-origin.md) | Auth routes under the web origin, with Better Auth's own errors | Accepted |
+| [0007](0007-durable-jobs-on-pg-boss.md) | Durable jobs on pg-boss | Accepted |

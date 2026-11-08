@@ -1,4 +1,4 @@
-import type { SmtpConfig } from "@meritory/server";
+import { readMailKey } from "@meritory/server";
 
 export interface ApiConfig {
   port: number;
@@ -12,7 +12,8 @@ export interface ApiConfig {
   appScheme: string;
   ipAddressHeaders?: string[];
   trustedProxies?: string[];
-  smtp: SmtpConfig;
+  /** Seals queued emails, since they hold sign-in links */
+  mailJobKey: Buffer;
 }
 
 const MIN_SECRET_LENGTH = 32;
@@ -64,12 +65,6 @@ export function readConfig(env: Record<string, string | undefined>): ApiConfig {
     appScheme: "meritory://",
     ipAddressHeaders: list(env.AUTH_IP_HEADERS),
     trustedProxies: list(env.AUTH_TRUSTED_PROXIES),
-    smtp: {
-      host: env.SMTP_HOST ?? "localhost",
-      port: Number(env.SMTP_PORT ?? 1025),
-      from: env.MAIL_FROM ?? "Meritory <no-reply@meritory.localhost>",
-      user: env.SMTP_USER,
-      password: env.SMTP_PASSWORD,
-    },
+    mailJobKey: readMailKey(env.MAIL_JOB_KEY),
   };
 }

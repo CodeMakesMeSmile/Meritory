@@ -14,9 +14,15 @@ export {
   createAuth,
 } from "./auth/auth.ts";
 export { createDatabase, type Database } from "./db/client.ts";
+export { readMailKey } from "./mail/mail-crypto.ts";
+export { createBoss, createQueuedMailer } from "./mail/mail-queue.ts";
+export { type MailWorkerLog, startMailWorker } from "./mail/mail-worker.ts";
 export {
   createSmtpMailer,
   type Mail,
   type Mailer,
+  type MailKind,
+  type MailTag,
+  readSmtpConfig,
   type SmtpConfig,
 } from "./mail/mailer.ts";

@@ -10,8 +10,11 @@ You need Node 26 (Volta picks the right version from `package.json`), pnpm 12 an
 pnpm install
 cp .env.example .env
 pnpm services:up
+pnpm db:migrate
 pnpm dev
 ```
+
+In `.env`, set `BETTER_AUTH_SECRET` and `MAIL_JOB_KEY` first. `openssl rand -base64 32` makes a good value for each.
 
 | What | Where |
 |---|---|

@@ -2,8 +2,9 @@ import { API_PREFIX } from "@meritory/contracts";
 import {
   createAccountSessions,
   createAuth,
+  createBoss,
   createDatabase,
-  createSmtpMailer,
+  createQueuedMailer,
   isFresh,
 } from "@meritory/server";
 import { buildApp } from "./app.ts";
@@ -11,6 +12,10 @@ import { readConfig } from "./config.ts";
 
 const config = readConfig(process.env);
 const database = createDatabase(config.databaseUrl);
+const boss = createBoss({
+  url: config.databaseUrl,
+  onError: (err) => app.log.error({ err }, "queue error"),
+});
 const auth = createAuth({
   db: database.db,
   secret: config.authSecret,
@@ -19,7 +24,8 @@ const auth = createAuth({
   appScheme: config.appScheme,
   ipAddressHeaders: config.ipAddressHeaders,
   trustedProxies: config.trustedProxies,
-  mailer: createSmtpMailer(config.smtp),
+  // The worker sends them, with retries
+  mailer: createQueuedMailer(boss, config.mailJobKey),
   log: { error: (details, message) => app.log.error(details, message) },
 });
 const app = await buildApp(
@@ -48,6 +54,7 @@ async function shutdown(signal: string) {
   app.log.info({ signal }, "shutting down");
   setTimeout(() => process.exit(1), 10_000).unref();
   await app.close();
+  await boss.stop({ graceful: false });
   await database.close();
   process.exit(0);
 }
@@ -55,4 +62,6 @@ async function shutdown(signal: string) {
 process.once("SIGTERM", () => void shutdown("SIGTERM"));
 process.once("SIGINT", () => void shutdown("SIGINT"));
 
+// Fails fast if the migrate step hasn't set up the queue
+await boss.start();
 await app.listen({ port: config.port, host: config.host });

@@ -58,6 +58,7 @@ React escapes every value it renders as text or as an attribute. Keep it that wa
 - Secrets come from the environment and never appear in code, logs, error messages, or tests.
 - Only values meant to be public get the `NEXT_PUBLIC_` prefix.
 - Logs never include passwords, tokens, or full email links.
+- Queued emails are sealed with AES-256-GCM under `MAIL_JOB_KEY`. Their logs and stored failures carry codes, never the address, text, or link.
 
 ### 8. Prove it with tests
 
