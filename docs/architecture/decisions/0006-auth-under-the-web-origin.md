@@ -22,6 +22,6 @@ Not waiting on email keeps sign-up and reset responses equally fast whether or n
 
 The phone talks to the web origin, so the AWS edge must route `/api/v1` to the API in every environment.
 
-An email is lost if SMTP fails at the moment of sending. A queued sender with retries is planned before public sign-up.
+Emails now go through a queue with retries. See [0007](0007-durable-jobs-on-pg-boss.md).
 
 Rate limits count requests per client IP, so the trusted proxy headers must be set once the AWS edge exists.
