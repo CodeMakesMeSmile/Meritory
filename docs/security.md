@@ -88,6 +88,7 @@ An exception needs a `biome-ignore` comment with the reason, a test that shows w
 |---|---|
 | `apps/web/app/layout.tsx` uses `dangerouslySetInnerHTML` | It writes the theme CSS built from our own design tokens. No outside data reaches it, and a test proves the CSS can't close its style tag. |
 | `packages/server/drizzle.config.ts` has a database URL | It's the local Docker database from `docker-compose.yml`. Real environments set `DATABASE_URL`. |
+| `packages/contracts/src/me.ts` has the schema name `SignInMethods` | `noSecrets` reads the long name as random text. It's a fixed `$id` that names the schema and holds no secret. |
 | `noSecrets` is off in test files and `@meritory/security-testing` | Test data and attack strings look random. Neither ever holds a real secret. |
 
 ## Sources
