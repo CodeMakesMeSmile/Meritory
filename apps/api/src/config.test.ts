@@ -4,6 +4,7 @@ import { readConfig } from "./config.ts";
 const base = {
   DATABASE_URL: "postgres://localhost/meritory",
   BETTER_AUTH_SECRET: "x".repeat(32),
+  MAIL_JOB_KEY: Buffer.alloc(32, 1).toString("base64"),
 };
 
 describe("readConfig", () => {
@@ -14,6 +15,19 @@ describe("readConfig", () => {
     expect(() =>
       readConfig({ ...base, BETTER_AUTH_SECRET: "x".repeat(31) }),
     ).toThrow(/BETTER_AUTH_SECRET/);
+  });
+
+  it("refuses to start without a 32-byte mail key", () => {
+    expect(() => readConfig({ ...base, MAIL_JOB_KEY: "" })).toThrow(
+      /MAIL_JOB_KEY/,
+    );
+    expect(() =>
+      readConfig({
+        ...base,
+        MAIL_JOB_KEY: Buffer.alloc(16, 1).toString("base64"),
+      }),
+    ).toThrow(/MAIL_JOB_KEY/);
+    expect(readConfig(base).mailJobKey).toHaveLength(32);
   });
 
   it("serves auth under the web origin", () => {

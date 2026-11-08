@@ -14,7 +14,7 @@ import {
 import { eq } from "drizzle-orm";
 import type { Database } from "../db/client.ts";
 import * as schema from "../db/schema.ts";
-import type { Mail, Mailer } from "../mail/mailer.ts";
+import type { Mail, Mailer, MailKind } from "../mail/mailer.ts";
 import { createEmailLinks, type EmailLinks } from "./email-links.ts";
 import {
   createResetLinks,
@@ -159,11 +159,11 @@ export function createAuth(config: AuthConfig) {
   });
 
   // Not awaited, so the response takes as long whether or not the account exists
-  function sendLater(mail: Mail, userId: string) {
+  function sendLater(mail: Mail, kind: MailKind, userId: string) {
     config.mailer
-      .send(mail)
+      .send(mail, { kind, userId })
       .catch((err: unknown) =>
-        config.log.error({ err, userId }, "sign-in email failed"),
+        config.log.error({ err, kind, userId }, "sign-in email failed"),
       );
   }
 
@@ -178,6 +178,7 @@ export function createAuth(config: AuthConfig) {
           `If it wasn't you, reset your password now: ${config.webOrigin}/forgot-password`,
         ].join("\n\n"),
       },
+      "password-changed",
       user.id,
     );
   }
@@ -227,6 +228,7 @@ export function createAuth(config: AuthConfig) {
               "If this wasn't you, you can ignore this email. Nothing about your account has changed.",
             ].join("\n\n"),
           },
+          "existing-account",
           user.id,
         );
       },
@@ -248,6 +250,7 @@ export function createAuth(config: AuthConfig) {
                   "The link works for 1 hour. Saving a new password signs out your other devices. If this wasn't you, you can ignore this email.",
                 ].join("\n\n"),
               },
+              "reset-password",
               user.id,
             );
           })
@@ -286,6 +289,7 @@ export function createAuth(config: AuthConfig) {
               "The link works for 1 hour. If you didn't sign up, you can ignore this email.",
             ].join("\n\n"),
           },
+          "verify-email",
           user.id,
         );
       },

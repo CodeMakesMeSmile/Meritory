@@ -3,7 +3,7 @@ import { and, eq, inArray, like } from "drizzle-orm";
 import { afterAll, describe, expect, it } from "vitest";
 import { createDatabase } from "../db/client.ts";
 import { sessions, users, verifications } from "../db/schema.ts";
-import type { Mail } from "../mail/mailer.ts";
+import type { Mail, MailTag } from "../mail/mailer.ts";
 import { createAuth } from "./auth.ts";
 
 const url = process.env.TEST_DATABASE_URL;
@@ -114,6 +114,42 @@ describe.skipIf(!url)("password reset against Postgres", () => {
     expect(known.status).toBe(200);
     expect(unknown.status).toBe(known.status);
     expect(await unknown.json()).toEqual(await known.json());
+  });
+
+  it("answers before the email is queued", async () => {
+    const email = await newAccount();
+    const tags: MailTag[] = [];
+    let release = () => {};
+    const queueing = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const slow = createAuth({
+      db,
+      secret: "x".repeat(32),
+      baseUrl: `${ORIGIN}/api/v1/auth`,
+      webOrigin: ORIGIN,
+      appScheme: "meritory://",
+      mailer: {
+        send: (_, tag) => {
+          tags.push(tag);
+          return queueing;
+        },
+      },
+      log: { error: () => {} },
+      rateLimit: false,
+    });
+    const res = await slow.handler(
+      new Request(`${ORIGIN}/api/v1/auth/request-password-reset`, {
+        method: "POST",
+        headers: { "content-type": "application/json", origin: ORIGIN },
+        body: JSON.stringify({ email }),
+      }),
+    );
+    expect(res.status).toBe(200);
+    await expect
+      .poll(() => tags)
+      .toEqual([{ kind: "reset-password", userId: expect.any(String) }]);
+    release();
   });
 
   it("stores only a hash of the token", async () => {
