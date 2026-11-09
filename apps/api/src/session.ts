@@ -3,6 +3,7 @@ import {
   EndOthersResponse,
   type ErrorResponse,
   MeResponse,
+  ProviderParams,
   SESSION_ERRORS,
   SessionParams,
   SessionsResponse,
@@ -36,8 +37,6 @@ export interface AccountSessionStore {
   /** False when the session is gone or belongs to someone else */
   end(userId: string, sessionId: string): Promise<boolean>;
   endOthers(userId: string, keepId: string): Promise<number>;
-  /** Whether the account has a password, and which providers sign it in */
-  signInMethods(userId: string): Promise<SignInMethods>;
   confirmPassword(input: {
     userId: string;
     sessionId: string;
@@ -50,10 +49,19 @@ export interface AccountSessionStore {
   >;
 }
 
+export interface SignInMethodDependency {
+  list(userId: string): Promise<SignInMethods>;
+  unlink(
+    userId: string,
+    provider: ProviderParams["provider"],
+  ): Promise<"unlinked" | "not_linked" | "last_method">;
+}
+
 export interface SessionDependencies {
   /** The signed-in session for these request headers, or null */
   currentSession(headers: Headers): Promise<CurrentSession | null>;
   accountSessions: AccountSessionStore;
+  signInMethods: SignInMethodDependency;
   /** The only site allowed to send changes */
   webOrigin: string;
 }
@@ -127,7 +135,7 @@ export async function registerSignedInRoutes(
         const { user } = request.current as CurrentSession;
         return {
           ...user,
-          signInMethods: await deps.accountSessions.signInMethods(user.id),
+          signInMethods: await deps.signInMethods.list(user.id),
         };
       },
     );
@@ -200,6 +208,38 @@ export async function registerSignedInRoutes(
         if (!fresh) return needsConfirm(reply);
         const ended = await deps.accountSessions.endOthers(user.id, sessionId);
         return { ended };
+      },
+    );
+
+    scope.delete<{ Params: ProviderParams }>(
+      "/me/sign-in-methods/:provider",
+      {
+        schema: {
+          summary: "Unlink GitHub or Google",
+          tags: ["account"],
+          params: ProviderParams,
+        },
+      },
+      async (request, reply) => {
+        const { user, fresh } = request.current as CurrentSession;
+        if (!fresh) return needsConfirm(reply);
+        const result = await deps.signInMethods.unlink(
+          user.id,
+          request.params.provider,
+        );
+        if (result === "not_linked") {
+          return refuse(reply, 404, {
+            code: "not_found",
+            message: "That provider isn't linked.",
+          });
+        }
+        if (result === "last_method") {
+          return refuse(reply, 409, {
+            code: SESSION_ERRORS.lastMethod,
+            message: "Keep at least one way to sign in.",
+          });
+        }
+        return reply.code(204).send();
       },
     );
 

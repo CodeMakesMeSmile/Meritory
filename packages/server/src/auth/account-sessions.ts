@@ -2,9 +2,8 @@ import { isAPIError } from "better-auth/api";
 import Bowser from "bowser";
 import { and, desc, eq, gt, ne, sql } from "drizzle-orm";
 import type { Database } from "../db/client.ts";
-import { accounts, rateLimits, sessions } from "../db/schema.ts";
+import { rateLimits, sessions } from "../db/schema.ts";
 import type { Auth } from "./auth.ts";
-import { PROVIDERS } from "./providers.ts";
 
 /** Ending sessions needs a sign-in or a typed password within this long */
 export const CONFIRM_MAX_AGE_MS = 24 * 60 * 60 * 1000;
@@ -33,7 +32,7 @@ export function deviceLabel(userAgent: string | null): string {
   const parsed = Bowser.parse(userAgent);
   const browser = parsed.browser.name;
   const os = parsed.os.name;
-  // TODO: MER-15 sets this user agent on the phone app's requests
+  // TODO: MER-16 sets this user agent on the phone app's requests
   if (userAgent.startsWith("Meritory/")) {
     return os ? `Meritory app on ${os}` : "Meritory app";
   }
@@ -111,25 +110,6 @@ export function createAccountSessions(db: Database["db"], auth: Auth) {
         .where(and(eq(sessions.userId, userId), ne(sessions.id, keepId)))
         .returning({ id: sessions.id });
       return ended.length;
-    },
-
-    /** Whether the account has a password, and which providers sign it in */
-    async signInMethods(userId: string) {
-      const rows = await db
-        .select({
-          providerId: accounts.providerId,
-          password: accounts.password,
-        })
-        .from(accounts)
-        .where(eq(accounts.userId, userId));
-      return {
-        password: rows.some(
-          (row) => row.providerId === "credential" && row.password !== null,
-        ),
-        providers: PROVIDERS.filter((id) =>
-          rows.some((row) => row.providerId === id),
-        ),
-      };
     },
 
     /** Checks the password and marks this session as confirmed */

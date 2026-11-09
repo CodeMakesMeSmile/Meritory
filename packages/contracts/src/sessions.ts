@@ -43,4 +43,5 @@ export const SESSION_ERRORS = {
   confirmPassword: "confirm_password",
   currentSession: "current_session",
   wrongPassword: "wrong_password",
+  lastMethod: "last_sign_in_method",
 } as const;

@@ -1,7 +1,11 @@
 import Type from "typebox";
 import { afterEach, describe, expect, it } from "vitest";
 import { buildApp } from "./app.ts";
-import type { AccountSessionStore, CurrentSession } from "./session.ts";
+import type {
+  AccountSessionStore,
+  CurrentSession,
+  SignInMethodDependency,
+} from "./session.ts";
 
 let app: Awaited<ReturnType<typeof buildApp>> | undefined;
 
@@ -20,6 +24,12 @@ const STRANGER = "33333333-3333-4333-8333-333333333333";
 const SESSIONS: Record<string, CurrentSession> = {
   "session=good": { user: ANNA, sessionId: HERE, fresh: true },
   "session=stale": { user: ANNA, sessionId: HERE, fresh: false },
+};
+
+const SIGN_IN_METHODS = {
+  passwordSetAt: "2026-11-03T09:00:00.000Z",
+  providers: [{ id: "github" as const, linkedAt: "2026-11-03T09:00:00.000Z" }],
+  available: ["github" as const],
 };
 
 // Anna's own sessions, plus a stranger's she must not be able to end
@@ -57,9 +67,6 @@ function fakeStore() {
       calls.push(`endOthers ${keepId}`);
       return 1;
     },
-    async signInMethods() {
-      return { password: true, providers: ["github"] };
-    },
     async confirmPassword({ password }) {
       calls.push("confirm");
       if (password === "too many") {
@@ -79,6 +86,10 @@ async function start(
   currentSession = async (headers: Headers) =>
     SESSIONS[headers.get("cookie") ?? ""] ?? null,
   accountSessions = fakeStore().store,
+  signInMethods: SignInMethodDependency = {
+    list: async () => SIGN_IN_METHODS,
+    unlink: async () => "unlinked",
+  },
 ) {
   app = await buildApp({
     pingDatabase: async () => databaseUp,
@@ -87,6 +98,7 @@ async function start(
     webOrigin: ORIGIN,
     currentSession,
     accountSessions,
+    signInMethods,
   });
   return app;
 }
@@ -184,7 +196,7 @@ describe("signed-in routes", () => {
     expect(res.statusCode).toBe(200);
     expect(res.json()).toEqual({
       ...ANNA,
-      signInMethods: { password: true, providers: ["github"] },
+      signInMethods: SIGN_IN_METHODS,
     });
   });
 
@@ -383,6 +395,7 @@ describe("sessions", () => {
     for (const request of [
       { method: "DELETE" as const, url: `/v1/me/sessions/${PHONE}` },
       { method: "POST" as const, url: "/v1/me/sessions/end-others" },
+      { method: "DELETE" as const, url: "/v1/me/sign-in-methods/github" },
       {
         method: "POST" as const,
         url: "/v1/me/confirm-password",
@@ -397,6 +410,64 @@ describe("sessions", () => {
       expect(res.json()).toMatchObject({ code: "forbidden" });
     }
     expect(calls).toEqual([]);
+  });
+
+  describe("unlinking a provider", () => {
+    const unlink = async (
+      cookie: string,
+      result: "unlinked" | "not_linked" | "last_method" = "unlinked",
+      provider = "github",
+    ) => {
+      const calls: string[] = [];
+      const app = await start(true, undefined, undefined, undefined, {
+        list: async () => SIGN_IN_METHODS,
+        unlink: async (userId, id) => {
+          calls.push(`${userId} ${id}`);
+          return result;
+        },
+      });
+      const res = await app.inject({
+        method: "DELETE",
+        url: `/v1/me/sign-in-methods/${provider}`,
+        headers: as(cookie),
+      });
+      return { res, calls };
+    };
+
+    it("unlinks for the signed-in user", async () => {
+      const { res, calls } = await unlink("session=good");
+      expect(res.statusCode).toBe(204);
+      expect(calls).toEqual([`${ANNA.id} github`]);
+    });
+
+    it("asks for the password first when the sign-in is old", async () => {
+      const { res, calls } = await unlink("session=stale");
+      expect(res.statusCode).toBe(403);
+      expect(res.json()).toMatchObject({ code: "confirm_password" });
+      expect(calls).toEqual([]);
+    });
+
+    it("says when it was the last way to sign in", async () => {
+      const { res } = await unlink("session=good", "last_method");
+      expect(res.statusCode).toBe(409);
+      expect(res.json()).toMatchObject({ code: "last_sign_in_method" });
+    });
+
+    it("answers 404 when the provider isn't linked", async () => {
+      const { res } = await unlink("session=good", "not_linked");
+      expect(res.statusCode).toBe(404);
+    });
+
+    it("refuses anything but GitHub or Google, password included", async () => {
+      const { res, calls } = await unlink(
+        "session=good",
+        "unlinked",
+        "credential",
+      );
+      expect(res.statusCode).toBe(400);
+      expect(res.json()).toMatchObject({ code: "validation_failed" });
+      expect(calls).toEqual([]);
+    });
   });
 
   it("accepts the phone app, which sends no Origin", async () => {
@@ -415,6 +486,7 @@ describe("sessions", () => {
       ["DELETE", `/v1/me/sessions/${PHONE}`],
       ["POST", "/v1/me/sessions/end-others"],
       ["POST", "/v1/me/confirm-password"],
+      ["DELETE", "/v1/me/sign-in-methods/github"],
     ] as const) {
       const res = await app.inject({
         method,

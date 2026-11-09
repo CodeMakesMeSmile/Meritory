@@ -11,7 +11,8 @@ export type MailKind =
   | "reset-password"
   | "password-changed"
   | "existing-account"
-  | "provider-linked";
+  | "provider-linked"
+  | "provider-unlinked";
 
 /** What a log may say about a mail. Never the address or the text. */
 export interface MailTag {

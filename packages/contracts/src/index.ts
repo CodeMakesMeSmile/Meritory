@@ -3,6 +3,7 @@ export { CheckStatus, LiveResponse, ReadyResponse } from "./health.ts";
 export {
   MeResponse,
   PROVIDER_IDS,
+  ProviderParams,
   type SignedInUser,
   SignInMethods,
 } from "./me.ts";

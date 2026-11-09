@@ -26,15 +26,18 @@ export function activeText(
   return current ? "Active now" : `Active ${daysAgo(lastActive, now)}`;
 }
 
-/** "signed in Nov 3", with the year when it isn't this one */
-export function signedInText(signedIn: Date, now = new Date()) {
-  const sameYear = signedIn.getFullYear() === now.getFullYear();
-  const date = signedIn.toLocaleDateString("en-US", {
+/** "Nov 3", with the year when it isn't this one */
+export function shortDate(date: Date, now = new Date()) {
+  const sameYear = date.getFullYear() === now.getFullYear();
+  return date.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
     ...(sameYear ? {} : { year: "numeric" }),
   });
-  return `signed in ${date}`;
+}
+
+export function signedInText(signedIn: Date, now = new Date()) {
+  return `signed in ${shortDate(signedIn, now)}`;
 }
 
 /** "A", "A and B", or "A, B, and C" */

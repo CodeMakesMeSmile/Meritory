@@ -4,6 +4,7 @@ import {
   index,
   integer,
   pgTable,
+  primaryKey,
   text,
   timestamp,
   uuid,
@@ -73,6 +74,19 @@ export const accounts = pgTable(
     updatedAt: updatedAt(),
   },
   (table) => [index("accounts_user_id_idx").on(table.userId)],
+);
+
+// Sign-in with an unlinked provider stays refused until it's linked again from Account
+export const unlinkedProviders = pgTable(
+  "unlinked_providers",
+  {
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    providerId: text("provider_id").notNull(),
+    createdAt: createdAt(),
+  },
+  (table) => [primaryKey({ columns: [table.userId, table.providerId] })],
 );
 
 export const verifications = pgTable(
