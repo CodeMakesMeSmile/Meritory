@@ -32,12 +32,29 @@ export function deviceLabel(userAgent: string | null): string {
   const parsed = Bowser.parse(userAgent);
   const browser = parsed.browser.name;
   const os = parsed.os.name;
-  // TODO: MER-16 sets this user agent on the phone app's requests
   if (userAgent.startsWith("Meritory/")) {
     return os ? `Meritory app on ${os}` : "Meritory app";
   }
   if (browser && os) return `${browser} on ${os}`;
   return browser || os || "Unknown device";
+}
+
+/** Who a request belongs to, for the API's own routes */
+export function createSessionLookup(auth: Auth) {
+  return async (headers: Headers) => {
+    // Refreshing here would lose the new cookie, so clients refresh through /get-session
+    const found = await auth.api.getSession({
+      headers,
+      query: { disableRefresh: true },
+    });
+    if (!found) return null;
+    const { id, name, email } = found.user;
+    return {
+      user: { id, name, email },
+      sessionId: found.session.id,
+      fresh: isFresh(found.session),
+    };
+  };
 }
 
 /** Signed in, or confirmed the password, recently enough to end sessions */

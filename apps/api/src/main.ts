@@ -5,8 +5,8 @@ import {
   createBoss,
   createDatabase,
   createQueuedMailer,
+  createSessionLookup,
   createSignInMethods,
-  isFresh,
 } from "@meritory/server";
 import { buildApp } from "./app.ts";
 import { readConfig } from "./config.ts";
@@ -28,6 +28,7 @@ const auth = createAuth({
   baseUrl: `${config.publicApiUrl}${API_PREFIX}/auth`,
   webOrigin: config.webOrigin,
   appScheme: config.appScheme,
+  expoGoScheme: config.expoGoScheme,
   ipAddressHeaders: config.ipAddressHeaders,
   trustedProxies: config.trustedProxies,
   mailer,
@@ -48,16 +49,7 @@ const app = await buildApp(
       providers: config.providers,
       log,
     }),
-    async currentSession(headers) {
-      const found = await auth.api.getSession({ headers });
-      if (!found) return null;
-      const { id, name, email } = found.user;
-      return {
-        user: { id, name, email },
-        sessionId: found.session.id,
-        fresh: isFresh(found.session),
-      };
-    },
+    currentSession: createSessionLookup(auth),
   },
   { logger: { level: config.logLevel } },
 );

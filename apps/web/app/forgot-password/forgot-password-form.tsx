@@ -1,30 +1,18 @@
 "use client";
 
+import {
+  EMAIL_ERROR,
+  EMAIL_PATTERN,
+  RESET_LINK_NOTICES as NOTICES,
+  waitMessage,
+} from "@meritory/contracts/sign-in-messages";
 import { type FormEvent, useRef, useState } from "react";
 import { Alert } from "@/components/alert";
 import { Button } from "@/components/button";
 import { TextField } from "@/components/text-field";
 import { authClient } from "@/lib/auth-client";
-import { EMAIL_ERROR, EMAIL_PATTERN } from "@/lib/email";
-import { waitMessage } from "@/lib/wait-message";
 
 type Notice = { tone: "info" | "danger"; text: string };
-
-const NOTICES = {
-  // The same whether or not the email has an account
-  sent: {
-    tone: "info",
-    text: "If that email has an account, we sent a link. It works for 1 hour.",
-  },
-  offline: {
-    tone: "danger",
-    text: "You're offline. Sending a link needs a connection.",
-  },
-  failed: {
-    tone: "danger",
-    text: "Something went wrong on our side. Try again in a moment.",
-  },
-} satisfies Record<string, Notice>;
 
 /** Asks for a reset link. Used by forgot password and by an expired reset link. */
 export function ForgotPasswordForm({ submitLabel }: { submitLabel: string }) {

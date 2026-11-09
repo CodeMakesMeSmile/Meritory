@@ -8,6 +8,17 @@ const base = {
 };
 
 describe("readConfig", () => {
+  it("trusts Expo Go outside production only", () => {
+    expect(readConfig(base).expoGoScheme).toBe("exp://");
+    expect(
+      readConfig({
+        ...base,
+        NODE_ENV: "production",
+        WEB_ORIGIN: "https://meritory.app",
+      }).expoGoScheme,
+    ).toBeUndefined();
+  });
+
   it("refuses to start without a long enough secret", () => {
     expect(() => readConfig({ ...base, BETTER_AUTH_SECRET: "" })).toThrow(
       /BETTER_AUTH_SECRET/,

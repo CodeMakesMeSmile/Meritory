@@ -10,6 +10,7 @@ export interface ApiConfig {
   publicApiUrl: string;
   authSecret: string;
   appScheme: string;
+  expoGoScheme?: string;
   ipAddressHeaders?: string[];
   trustedProxies?: string[];
   /** Seals queued emails, since they hold sign-in links */
@@ -69,6 +70,7 @@ export function readConfig(env: Record<string, string | undefined>): ApiConfig {
     publicApiUrl: `${webOrigin}/api`,
     authSecret,
     appScheme: "meritory://",
+    expoGoScheme: env.NODE_ENV === "production" ? undefined : "exp://",
     ipAddressHeaders: list(env.AUTH_IP_HEADERS),
     trustedProxies: list(env.AUTH_TRUSTED_PROXIES),
     mailJobKey: readMailKey(env.MAIL_JOB_KEY),

@@ -1,5 +1,11 @@
 "use client";
 
+import {
+  MISMATCH,
+  meterMessage,
+  PASSWORD_CODES,
+  waitMessage,
+} from "@meritory/contracts/sign-in-messages";
 import type { PasswordCheck } from "@meritory/password";
 import Link from "next/link";
 import { type FormEvent, useRef, useState } from "react";
@@ -9,14 +15,8 @@ import { ShowButton } from "@/components/show-button";
 import { StrengthMeter } from "@/components/strength-meter";
 import { TextField } from "@/components/text-field";
 import { authClient } from "@/lib/auth-client";
-import {
-  loadPasswordRules,
-  MISMATCH,
-  meterMessage,
-  PASSWORD_CODES,
-} from "@/lib/password-rules";
+import { loadPasswordRules } from "@/lib/password-rules";
 import { PROVIDER_LABELS, type Provider } from "@/lib/providers";
-import { waitMessage } from "@/lib/wait-message";
 import { Card, Row } from "./card";
 
 type Field = "current" | "password" | "confirm";
