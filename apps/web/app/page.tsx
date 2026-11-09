@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { AuthShell } from "@/components/auth-shell";
 import { linkClass } from "@/components/button";
+import { KeepSession } from "@/components/keep-session";
 import { LinkedNotice } from "@/components/linked-notice";
 import { requireMe } from "@/lib/me";
 import { SignOutButton } from "./sign-out-button";
@@ -15,6 +16,7 @@ export default async function Home({
   const { linked } = await searchParams;
   return (
     <AuthShell>
+      <KeepSession />
       <div className="flex flex-col gap-5">
         <div className="flex flex-col gap-2">
           <h1 className="text-display">Signed in as {me.name}</h1>

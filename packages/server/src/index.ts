@@ -4,6 +4,7 @@ export {
   CONFIRM_LIMIT,
   type ConfirmResult,
   createAccountSessions,
+  createSessionLookup,
   deviceLabel,
   isFresh,
 } from "./auth/account-sessions.ts";

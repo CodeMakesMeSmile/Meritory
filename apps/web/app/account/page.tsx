@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { linkClass } from "@/components/button";
+import { KeepSession } from "@/components/keep-session";
 import { LinkedNotice } from "@/components/linked-notice";
 import { LogoLockup } from "@/components/logo";
 import { requireMe } from "@/lib/me";
@@ -25,6 +26,7 @@ export default async function AccountPage({
   );
   return (
     <main className="graph-paper min-h-screen px-4 py-12">
+      <KeepSession />
       <div className="mx-auto flex w-full max-w-180 flex-col gap-6">
         <div className="flex items-center justify-between gap-4">
           <LogoLockup />
