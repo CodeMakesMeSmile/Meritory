@@ -13,7 +13,14 @@
     "android": {
       "package": "app.meritory.mobile"
     },
-    "plugins": ["expo-router", "expo-status-bar", "expo-sqlite"],
+    "plugins": [
+      "expo-router",
+      "expo-status-bar",
+      "expo-sqlite",
+      "expo-secure-store",
+      "expo-web-browser",
+      "expo-font"
+    ],
     "experiments": {
       "typedRoutes": true
     }
