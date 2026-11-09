@@ -1,30 +1,10 @@
+import {
+  countdown,
+  RESEND_NOTICES as NOTICES,
+  RESEND_WAIT_MS as WAIT_MS,
+} from "@meritory/contracts/sign-in-messages";
 import { useEffect, useState } from "react";
 import { authClient } from "./auth-client";
-
-// Matches the server's limit of 3 sends a minute
-const WAIT_MS = 60_000;
-
-const NOTICES = {
-  sent: {
-    tone: "success",
-    text: "We sent a new link. The old one no longer works.",
-  },
-  offline: {
-    tone: "info",
-    text: "You're offline. Sending a new link needs a connection.",
-  },
-  limited: {
-    tone: "info",
-    text: "Too many tries. Wait a minute, then try again.",
-  },
-  failed: {
-    tone: "info",
-    text: "Something went wrong on our side. Try again in a moment.",
-  },
-} as const;
-
-const countdown = (seconds: number) =>
-  `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
 
 /** Sends a fresh verification link, then counts down before allowing another */
 export function useResend() {

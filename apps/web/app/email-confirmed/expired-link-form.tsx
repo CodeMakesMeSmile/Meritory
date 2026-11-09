@@ -1,10 +1,13 @@
 "use client";
 
+import {
+  EMAIL_ERROR,
+  EMAIL_PATTERN,
+} from "@meritory/contracts/sign-in-messages";
 import { type FormEvent, useRef, useState } from "react";
 import { Alert } from "@/components/alert";
 import { Button } from "@/components/button";
 import { TextField } from "@/components/text-field";
-import { EMAIL_ERROR, EMAIL_PATTERN } from "@/lib/email";
 import { useSignUpEmail } from "@/lib/sign-up-email";
 import { useResend } from "@/lib/use-resend";
 

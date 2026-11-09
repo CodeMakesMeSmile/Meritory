@@ -1,5 +1,12 @@
 "use client";
 
+import {
+  EMAIL_ERROR,
+  EMAIL_PATTERN,
+  SIGN_IN_MESSAGES as MESSAGES,
+  PASSWORD_REQUIRED,
+  waitMessage,
+} from "@meritory/contracts/sign-in-messages";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useRef, useState } from "react";
@@ -8,22 +15,13 @@ import { Button, buttonClass, linkClass } from "@/components/button";
 import { OrDivider, ProviderButtons } from "@/components/provider-buttons";
 import { TextField } from "@/components/text-field";
 import { authClient } from "@/lib/auth-client";
-import { EMAIL_ERROR, EMAIL_PATTERN } from "@/lib/email";
 import { PROVIDER_LABELS, type ProviderNotice } from "@/lib/providers";
 import { useResend } from "@/lib/use-resend";
-import { waitMessage } from "@/lib/wait-message";
 
 type Field = "email" | "password";
 type Errors = Partial<Record<Field, string>>;
 
 const FIELDS: Field[] = ["email", "password"];
-
-const MESSAGES = {
-  // One message for both, so it never reveals which emails have accounts
-  wrong: "That email and password don't match. Check them and try again.",
-  offline: "You're offline. Signing in needs a connection.",
-  failed: "Something went wrong on our side. Try again in a moment.",
-};
 
 export function SignInForm({
   next,
@@ -63,7 +61,7 @@ export function SignInForm({
 
     const found: Errors = {};
     if (!EMAIL_PATTERN.test(email.trim())) found.email = EMAIL_ERROR;
-    if (!password) found.password = "Enter your password.";
+    if (!password) found.password = PASSWORD_REQUIRED;
     setErrors(found);
     const first = FIELDS.find((field) => found[field]);
     if (first) {
@@ -146,9 +144,7 @@ export function SignInForm({
           {resend.notice ? (
             <Alert tone={resend.notice.tone}>{resend.notice.text}</Alert>
           ) : (
-            <Alert tone="info">
-              Confirm your email first. We can send you a fresh link.
-            </Alert>
+            <Alert tone="info">{MESSAGES.unconfirmed}</Alert>
           )}
           <Button
             type="button"

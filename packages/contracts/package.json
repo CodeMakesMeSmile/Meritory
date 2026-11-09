@@ -6,7 +6,8 @@
   "license": "AGPL-3.0-only",
   "description": "API route schemas shared by the server and clients",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./sign-in-messages": "./src/sign-in-messages.ts"
   },
   "scripts": {
     "typecheck": "tsc"

@@ -1,5 +1,14 @@
 "use client";
 
+import {
+  EMAIL_ERROR,
+  EMAIL_PATTERN,
+  meterMessage,
+  NAME_ERROR,
+  SIGN_UP_MESSAGES,
+  signUpFieldFor,
+  waitMessage,
+} from "@meritory/contracts/sign-in-messages";
 import type { PasswordCheck } from "@meritory/password";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -9,23 +18,13 @@ import { OrDivider, ProviderButtons } from "@/components/provider-buttons";
 import { StrengthMeter } from "@/components/strength-meter";
 import { TextField } from "@/components/text-field";
 import { authClient, SIGN_UP_EMAIL_KEY } from "@/lib/auth-client";
-import { EMAIL_ERROR, EMAIL_PATTERN } from "@/lib/email";
-import { loadPasswordRules, meterMessage } from "@/lib/password-rules";
+import { loadPasswordRules } from "@/lib/password-rules";
 import { PROVIDER_LABELS } from "@/lib/providers";
 
 type Field = "name" | "email" | "password";
 type Errors = Partial<Record<Field, string>>;
 
 const FIELDS: Field[] = ["name", "email", "password"];
-
-const FIELD_BY_CODE: Record<string, Field> = {
-  NAME_INVALID: "name",
-  INVALID_EMAIL: "email",
-  PASSWORD_TOO_SHORT: "password",
-  PASSWORD_TOO_LONG: "password",
-  PASSWORD_PERSONAL: "password",
-  PASSWORD_TOO_WEAK: "password",
-};
 
 export function SignUpForm() {
   const router = useRouter();
@@ -82,7 +81,7 @@ export function SignUpForm() {
     setFormError(null);
 
     const found: Errors = {};
-    if (!name.trim()) found.name = "Enter a name. A nickname is fine.";
+    if (!name.trim()) found.name = NAME_ERROR;
     if (!EMAIL_PATTERN.test(email.trim())) found.email = EMAIL_ERROR;
     const result = (await loadPasswordRules()).checkPassword(password, {
       name,
@@ -108,15 +107,13 @@ export function SignUpForm() {
     }
 
     setPending(false);
-    const field = error.code ? FIELD_BY_CODE[error.code] : undefined;
+    const field = signUpFieldFor(error.code);
     if (field) {
       showErrors({ [field]: field === "email" ? EMAIL_ERROR : error.message });
       return;
     }
     setFormError(
-      error.status === 429
-        ? "Too many tries. Wait a few seconds, then try again."
-        : "Something went wrong on our side. Try again in a moment.",
+      error.status === 429 ? waitMessage(null) : SIGN_UP_MESSAGES.failed,
     );
   }
 
