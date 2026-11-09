@@ -5,6 +5,7 @@ import {
   createBoss,
   createDatabase,
   createQueuedMailer,
+  createSignInMethods,
   isFresh,
 } from "@meritory/server";
 import { buildApp } from "./app.ts";
@@ -16,6 +17,11 @@ const boss = createBoss({
   url: config.databaseUrl,
   onError: (err) => app.log.error({ err }, "queue error"),
 });
+// The worker sends them, with retries
+const mailer = createQueuedMailer(boss, config.mailJobKey);
+const log = {
+  error: (details: object, message: string) => app.log.error(details, message),
+};
 const auth = createAuth({
   db: database.db,
   secret: config.authSecret,
@@ -24,10 +30,9 @@ const auth = createAuth({
   appScheme: config.appScheme,
   ipAddressHeaders: config.ipAddressHeaders,
   trustedProxies: config.trustedProxies,
-  // The worker sends them, with retries
-  mailer: createQueuedMailer(boss, config.mailJobKey),
+  mailer,
   providers: config.providers,
-  log: { error: (details, message) => app.log.error(details, message) },
+  log,
 });
 const app = await buildApp(
   {
@@ -36,6 +41,13 @@ const app = await buildApp(
     publicApiUrl: config.publicApiUrl,
     webOrigin: config.webOrigin,
     accountSessions: createAccountSessions(database.db, auth),
+    signInMethods: createSignInMethods({
+      db: database.db,
+      mailer,
+      webOrigin: config.webOrigin,
+      providers: config.providers,
+      log,
+    }),
     async currentSession(headers) {
       const found = await auth.api.getSession({ headers });
       if (!found) return null;

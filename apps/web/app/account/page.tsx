@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Alert } from "@/components/alert";
 import { linkClass } from "@/components/button";
 import { LinkedNotice } from "@/components/linked-notice";
 import { LogoLockup } from "@/components/logo";
@@ -18,7 +17,12 @@ export default async function AccountPage({
 }) {
   const me = await requireMe("/account");
   const params = await searchParams;
-  const notice = providerNotice(params.provider, params.error, "account");
+  const notice = providerNotice(
+    params.provider,
+    params.error,
+    "account",
+    me.email,
+  );
   return (
     <main className="graph-paper min-h-screen px-4 py-12">
       <div className="mx-auto flex w-full max-w-180 flex-col gap-6">
@@ -29,12 +33,12 @@ export default async function AccountPage({
           </Link>
         </div>
         <h1 className="text-display">Account</h1>
-        {notice && <Alert tone={notice.tone}>{notice.text}</Alert>}
         <LinkedNotice linked={params.linked} />
         <AccountCards
           name={me.name}
           email={me.email}
           signInMethods={me.signInMethods}
+          notice={notice}
           confirmed={params.confirmed === "1"}
         />
       </div>

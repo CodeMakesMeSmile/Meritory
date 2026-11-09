@@ -29,6 +29,7 @@ export function providerNotice(
   provider: string | string[] | undefined,
   error: string | string[] | undefined,
   page: "sign-in" | "account" = "sign-in",
+  email = "your Meritory email",
 ): ProviderNotice | null {
   if (typeof error !== "string" || !isProvider(provider)) return null;
   const label = PROVIDER_LABELS[provider];
@@ -36,7 +37,25 @@ export function providerNotice(
     case "access_denied":
       return {
         tone: "info",
-        text: `You cancelled signing in with ${label}. ${page === "account" ? "Nothing changed." : "Nothing was created."}`,
+        text:
+          page === "account"
+            ? `You cancelled on ${label}. Nothing changed.`
+            : `You cancelled signing in with ${label}. Nothing was created.`,
+      };
+    case "email_does_not_match":
+      return {
+        tone: "danger",
+        text: `That ${label} account uses a different email. Link one that uses ${email}.`,
+      };
+    case "account_already_linked_to_different_user":
+      return {
+        tone: "danger",
+        text: `That ${label} account already belongs to another Meritory account. Sign in with it there and unlink it first.`,
+      };
+    case "provider_unlinked":
+      return {
+        tone: "info",
+        text: `${label} was unlinked from this account. Sign in another way, then link it again from Account.`,
       };
     case "email_not_found":
     case "email_not_verified":

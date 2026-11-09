@@ -2,10 +2,16 @@ import { randomUUID } from "node:crypto";
 import { eq, inArray, like } from "drizzle-orm";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
 import { createDatabase } from "../db/client.ts";
-import { accounts, sessions, users, verifications } from "../db/schema.ts";
+import {
+  accounts,
+  sessions,
+  unlinkedProviders,
+  users,
+  verifications,
+} from "../db/schema.ts";
 import type { Mail, MailTag } from "../mail/mailer.ts";
-import { createAccountSessions } from "./account-sessions.ts";
 import { createAuth } from "./auth.ts";
+import { createSignInMethods } from "./sign-in-methods.ts";
 
 const url = process.env.TEST_DATABASE_URL;
 
@@ -193,9 +199,16 @@ describe.skipIf(!url)("GitHub and Google sign-in against Postgres", () => {
     await roundTrip({ code: "c" });
     vi.unstubAllGlobals();
     const user = await userByEmail(email);
-    const methods = () =>
-      createAccountSessions(db, auth).signInMethods(user?.id ?? "");
-    expect(await methods()).toEqual({ password: false, providers: ["github"] });
+    const hasPassword = async () =>
+      (
+        await createSignInMethods({
+          db,
+          mailer: { send: async () => {} },
+          webOrigin: ORIGIN,
+          log: { error: () => {} },
+        }).list(user?.id ?? "")
+      ).passwordSetAt !== null;
+    expect(await hasPassword()).toBe(false);
 
     const post = (path: string, body: object) =>
       auth.handler(
@@ -220,7 +233,7 @@ describe.skipIf(!url)("GitHub and Google sign-in against Postgres", () => {
       newPassword: PASSWORD,
     });
     expect(reset.status).toBe(200);
-    expect(await methods()).toEqual({ password: true, providers: ["github"] });
+    expect(await hasPassword()).toBe(true);
   });
 
   it("refuses a Google account whose email Google hasn't verified", async () => {
@@ -402,5 +415,278 @@ describe.skipIf(!url)("GitHub and Google sign-in against Postgres", () => {
       "openid",
       "profile",
     ]);
+  });
+
+  describe("managing sign-in methods", () => {
+    const REMOVED = "GitHub was removed from your Meritory account";
+    const methods = createSignInMethods({
+      db,
+      mailer: { send: async (mail, tag) => void sent.push([mail, tag]) },
+      webOrigin: ORIGIN,
+      providers: { github: { clientId: "gh", clientSecret: "s" } },
+      log: { error: () => {} },
+    });
+
+    const signIn = async (email: string) => {
+      const res = await auth.handler(
+        new Request(`${ORIGIN}/api/v1/auth/sign-in/email`, {
+          method: "POST",
+          headers: { "content-type": "application/json", origin: ORIGIN },
+          body: JSON.stringify({ email, password: PASSWORD }),
+        }),
+      );
+      expect(res.status).toBe(200);
+      return sessionCookie(res) ?? "";
+    };
+
+    /** An account with a password, signed in, and the GitHub user that matches it */
+    const member = async () => {
+      const gh = ghUser();
+      const email = gh.emails[0]?.email ?? "";
+      await signUp(email, true);
+      const cookie = await signIn(email);
+      const user = await userByEmail(email);
+      return { gh, email, cookie, userId: user?.id ?? "" };
+    };
+
+    const startLink = (cookie: string, body: object = {}) =>
+      auth.handler(
+        new Request(`${ORIGIN}/api/v1/auth/link-social`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            origin: ORIGIN,
+            cookie,
+          },
+          body: JSON.stringify({ provider: "github", ...body }),
+        }),
+      );
+
+    /** Starts a link from Account, then comes back from GitHub */
+    const linkTrip = async (
+      cookie: string,
+      query: Record<string, string> = { code: "c" },
+      body: object = {},
+    ) => {
+      const started = await startLink(cookie, body);
+      expect(started.status).toBe(200);
+      const { url: to } = (await started.json()) as { url: string };
+      const back = new URL(`${ORIGIN}/api/v1/auth/callback/github`);
+      back.searchParams.set(
+        "state",
+        new URL(to).searchParams.get("state") ?? "",
+      );
+      for (const [key, value] of Object.entries(query)) {
+        back.searchParams.set(key, value);
+      }
+      const res = await auth.handler(
+        new Request(back, {
+          headers: { cookie: [...pairs(started), cookie].join("; ") },
+        }),
+      );
+      return new URL(res.headers.get("location") ?? "", ORIGIN);
+    };
+
+    const providersOf = async (userId: string) =>
+      (await accountsOf(userId)).map((row) => row.providerId).sort();
+
+    const makeStale = (userId: string) =>
+      db
+        .update(sessions)
+        .set({ createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) })
+        .where(eq(sessions.userId, userId));
+
+    it("refuses a sign-in after an unlink, but not a link from Account", async () => {
+      const { gh, cookie, userId } = await member();
+      fakeGitHub(gh);
+      const first = await linkTrip(cookie);
+      expect(`${first.pathname}${first.search}`).toBe("/account?linked=github");
+      expect(await methods.unlink(userId, "github")).toBe("unlinked");
+
+      const refused = await roundTrip({ code: "c" });
+      const to = new URL(refused.location, ORIGIN);
+      expect(to.pathname).toBe("/sign-in");
+      expect(to.searchParams.get("provider")).toBe("github");
+      expect(to.searchParams.get("error")).toBe("provider_unlinked");
+      expect(sessionCookie(refused.res)).toBeUndefined();
+      expect(await providersOf(userId)).toEqual(["credential"]);
+
+      const again = await linkTrip(cookie);
+      expect(`${again.pathname}${again.search}`).toBe("/account?linked=github");
+      expect(await providersOf(userId)).toEqual(["credential", "github"]);
+      expect(
+        await db
+          .select()
+          .from(unlinkedProviders)
+          .where(eq(unlinkedProviders.userId, userId)),
+      ).toEqual([]);
+
+      const allowed = await roundTrip({ code: "c" });
+      expect(allowed.location).toBe("/account");
+      expect(sessionCookie(allowed.res)).toBeDefined();
+    });
+
+    it("only refuses the provider that was unlinked", async () => {
+      const { gh, userId } = await member();
+      await db
+        .insert(accounts)
+        .values({ userId, providerId: "google", accountId: randomUUID() });
+      expect(await methods.unlink(userId, "google")).toBe("unlinked");
+      fakeGitHub(gh);
+      const { location } = await roundTrip({ code: "c" });
+      expect(location).toBe("/account?linked=github");
+    });
+
+    it("always returns a link to Account, whatever the client asked for", async () => {
+      const { gh, cookie } = await member();
+      fakeGitHub(gh);
+      const cancelled = await linkTrip(
+        cookie,
+        { error: "access_denied" },
+        { callbackURL: "/elsewhere", errorCallbackURL: "/admin" },
+      );
+      expect(cancelled.pathname).toBe("/account");
+      expect(cancelled.searchParams.get("provider")).toBe("github");
+      expect(cancelled.searchParams.get("error")).toBe("access_denied");
+      const linked = await linkTrip(
+        cookie,
+        { code: "c" },
+        {
+          callbackURL: "/elsewhere",
+        },
+      );
+      expect(`${linked.pathname}${linked.search}`).toBe(
+        "/account?linked=github",
+      );
+    });
+
+    it("refuses a GitHub account with a different email", async () => {
+      const { cookie, userId } = await member();
+      fakeGitHub(ghUser());
+      const to = await linkTrip(cookie);
+      expect(to.pathname).toBe("/account");
+      expect(to.searchParams.get("error")).toBe("email_does_not_match");
+      expect(await providersOf(userId)).toEqual(["credential"]);
+    });
+
+    it("refuses a GitHub account another Meritory account has", async () => {
+      const taken = ghUser();
+      fakeGitHub(taken);
+      await roundTrip({ code: "c" });
+      const { email, cookie, userId } = await member();
+      fakeGitHub({
+        ...taken,
+        emails: [{ email, primary: true, verified: true }],
+      });
+      const to = await linkTrip(cookie);
+      expect(to.searchParams.get("error")).toBe(
+        "account_already_linked_to_different_user",
+      );
+      expect(await providersOf(userId)).toEqual(["credential"]);
+    });
+
+    it("asks for a fresh sign-in before starting a link", async () => {
+      const { cookie, userId } = await member();
+      await makeStale(userId);
+      const stale = await startLink(cookie);
+      expect(stale.status).toBe(403);
+      expect(await stale.json()).toMatchObject({ code: "confirm_password" });
+      await db
+        .update(sessions)
+        .set({ confirmedAt: new Date() })
+        .where(eq(sessions.userId, userId));
+      expect((await startLink(cookie)).status).toBe(200);
+    });
+
+    it("won't link from a token sent straight to the route", async () => {
+      const { cookie, userId } = await member();
+      const res = await startLink(cookie, { idToken: { token: "t" } });
+      expect(res.status).toBe(400);
+      expect(await providersOf(userId)).toEqual(["credential"]);
+    });
+
+    it("turns off Better Auth's own unlink route", async () => {
+      const { cookie } = await member();
+      const res = await auth.handler(
+        new Request(`${ORIGIN}/api/v1/auth/unlink-account`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            origin: ORIGIN,
+            cookie,
+          },
+          body: JSON.stringify({ accountId: randomUUID() }),
+        }),
+      );
+      expect(res.status).toBe(404);
+    });
+
+    it("removes the provider, emails the owner, and keeps other sessions", async () => {
+      const { gh, email, cookie, userId } = await member();
+      fakeGitHub(gh);
+      await linkTrip(cookie);
+      expect(await methods.unlink(userId, "github")).toBe("unlinked");
+      expect(await providersOf(userId)).toEqual(["credential"]);
+      const removed = () =>
+        sent.filter(([mail]) => mail.to === email && mail.subject === REMOVED);
+      await expect.poll(removed).toHaveLength(1);
+      const [[mail, tag]] = removed() as [[Mail, MailTag]];
+      expect(tag).toEqual({ kind: "provider-unlinked", userId });
+      expect(mail.text).toContain(`${ORIGIN}/forgot-password`);
+      expect(
+        await auth.api.getSession({ headers: new Headers({ cookie }) }),
+      ).not.toBeNull();
+    });
+
+    it("answers not_linked for a provider the account doesn't have", async () => {
+      const { userId } = await member();
+      expect(await methods.unlink(userId, "github")).toBe("not_linked");
+    });
+
+    it("won't remove the only way to sign in", async () => {
+      const gh = ghUser();
+      fakeGitHub(gh);
+      await roundTrip({ code: "c" });
+      const user = await userByEmail(gh.emails[0]?.email ?? "");
+      const userId = user?.id ?? "";
+      expect(await methods.unlink(userId, "github")).toBe("last_method");
+      // A credential row with no password can't sign anyone in
+      await db.insert(accounts).values({
+        userId,
+        providerId: "credential",
+        accountId: userId,
+      });
+      expect(await methods.unlink(userId, "github")).toBe("last_method");
+      expect(await providersOf(userId)).toEqual(["credential", "github"]);
+    });
+
+    it("keeps one method when two unlinks run at once", async () => {
+      const gh = ghUser();
+      fakeGitHub(gh);
+      await roundTrip({ code: "c" });
+      const user = await userByEmail(gh.emails[0]?.email ?? "");
+      const userId = user?.id ?? "";
+      await db
+        .insert(accounts)
+        .values({ userId, providerId: "google", accountId: randomUUID() });
+      const results = await Promise.all([
+        methods.unlink(userId, "github"),
+        methods.unlink(userId, "google"),
+      ]);
+      expect(results.sort()).toEqual(["last_method", "unlinked"]);
+      expect(await providersOf(userId)).toHaveLength(1);
+    });
+
+    it("lists dates, and only providers this server can link", async () => {
+      const { gh, cookie, userId } = await member();
+      fakeGitHub(gh);
+      await linkTrip(cookie);
+      const list = await methods.list(userId);
+      expect(list.available).toEqual(["github"]);
+      expect(list.providers).toEqual([
+        { id: "github", linkedAt: expect.any(String) },
+      ]);
+      expect(list.passwordSetAt).toEqual(expect.any(String));
+    });
   });
 });

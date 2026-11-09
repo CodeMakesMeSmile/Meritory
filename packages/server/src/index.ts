@@ -17,6 +17,11 @@ export {
   PROVIDERS,
   type ProviderConfig,
 } from "./auth/providers.ts";
+export {
+  createSignInMethods,
+  type SignInMethodStore,
+  type UnlinkResult,
+} from "./auth/sign-in-methods.ts";
 export { createDatabase, type Database } from "./db/client.ts";
 export { readMailKey } from "./mail/mail-crypto.ts";
 export { createBoss, createQueuedMailer } from "./mail/mail-queue.ts";

@@ -1,5 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { savePendingAction, takePendingAction } from "./pending-action.ts";
+import {
+  savePendingAction,
+  savePendingMethod,
+  takePendingAction,
+  takePendingMethod,
+} from "./pending-action.ts";
 
 const KEY = "meritory.pending-session-action";
 const ID = "0b6f3c1e-8a3d-4f7a-9c2e-5d1b7e9f0a12";
@@ -17,6 +22,23 @@ describe("pending sign-out", () => {
   });
 
   afterEach(() => vi.unstubAllGlobals());
+
+  it("keeps a waiting link apart from a waiting sign-out", () => {
+    savePendingAction({ kind: "others" });
+    savePendingMethod({ kind: "unlink", provider: "github" });
+    expect(takePendingMethod()).toEqual({ kind: "unlink", provider: "github" });
+    expect(takePendingMethod()).toBeNull();
+    expect(takePendingAction()).toEqual({ kind: "others" });
+  });
+
+  it.each([
+    { kind: "link", provider: "gitlab" },
+    { kind: "delete", provider: "github" },
+    { kind: "unlink" },
+  ])("ignores a malformed waiting link %j", (saved) => {
+    store.set("meritory.pending-method-action", JSON.stringify(saved));
+    expect(takePendingMethod()).toBeNull();
+  });
 
   it("comes back once, then is gone", () => {
     savePendingAction({ kind: "one", id: ID });

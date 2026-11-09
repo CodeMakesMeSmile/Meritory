@@ -40,7 +40,7 @@ describe("providerNotice", () => {
 
   it("says nothing changed when they cancel from Account", () => {
     expect(providerNotice("google", "access_denied", "account")?.text).toBe(
-      "You cancelled signing in with Google. Nothing changed.",
+      "You cancelled on Google. Nothing changed.",
     );
   });
 

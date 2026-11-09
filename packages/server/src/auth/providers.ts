@@ -9,6 +9,9 @@ export const PROVIDER_LABELS: Record<Provider, string> = {
   google: "Google",
 };
 
+/** Why sign-in with a provider the owner unlinked was refused */
+export const PROVIDER_UNLINKED = "provider_unlinked";
+
 export interface ProviderCredentials {
   clientId: string;
   clientSecret: string;

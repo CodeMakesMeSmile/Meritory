@@ -11,6 +11,7 @@ export const SESSION_ERRORS = {
   confirmPassword: "confirm_password",
   currentSession: "current_session",
   wrongPassword: "wrong_password",
+  lastMethod: "last_sign_in_method",
 } as const;
 
 /** What a session request came back with, in terms the page acts on */
@@ -20,6 +21,7 @@ export type AccountResult<T = undefined> =
   | { ok: false; reason: "wrong_password" }
   | { ok: false; reason: "rate_limited"; retryAfter: string | null }
   | { ok: false; reason: "gone" }
+  | { ok: false; reason: "last_method" }
   | { ok: false; reason: "signed_out" }
   | { ok: false; reason: "failed" };
 
@@ -55,6 +57,9 @@ async function call<T>(
   if (body?.code === SESSION_ERRORS.wrongPassword) {
     return { ok: false, reason: "wrong_password" };
   }
+  if (body?.code === SESSION_ERRORS.lastMethod) {
+    return { ok: false, reason: "last_method" };
+  }
   return { ok: false, reason: "failed" };
 }
 
@@ -68,6 +73,10 @@ export function endSession(id: string) {
 
 export function endOtherSessions() {
   return call<{ ended: number }>("/sessions/end-others", { method: "POST" });
+}
+
+export function unlinkProvider(provider: "github" | "google") {
+  return call(`/sign-in-methods/${provider}`, { method: "DELETE" });
 }
 
 export function confirmPassword(password: string) {

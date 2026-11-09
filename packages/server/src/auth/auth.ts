@@ -8,17 +8,20 @@ import { betterAuth } from "better-auth";
 import {
   APIError,
   createAuthMiddleware,
+  getOAuthState,
   getSessionFromCtx,
   isAPIError,
 } from "better-auth/api";
-import { count, eq } from "drizzle-orm";
+import { and, count, eq } from "drizzle-orm";
 import type { Database } from "../db/client.ts";
 import * as schema from "../db/schema.ts";
 import type { Mail, Mailer, MailKind } from "../mail/mailer.ts";
+import { isFresh } from "./account-sessions.ts";
 import { createEmailLinks, type EmailLinks } from "./email-links.ts";
 import {
   isProvider,
   PROVIDER_LABELS,
+  PROVIDER_UNLINKED,
   type Provider,
   type ProviderConfig,
   providerRedirects,
@@ -140,6 +143,37 @@ export function createAuth(config: AuthConfig) {
       if (user) checkPasswordRules(body.newPassword, user);
     }
 
+    if (ctx.path === "/link-social") {
+      // A token sent straight here would skip the trip through the provider
+      if (body.idToken !== undefined) {
+        throw new APIError("BAD_REQUEST", {
+          code: "LINK_NEEDS_PROVIDER",
+          message: "Link this from Account.",
+        });
+      }
+      const session = await getSessionFromCtx(ctx);
+      if (session && !isFresh(session.session)) {
+        throw new APIError("FORBIDDEN", {
+          code: "confirm_password",
+          message: "Enter your password to keep going.",
+        });
+      }
+      if (isProvider(body.provider)) {
+        return {
+          context: {
+            ...ctx,
+            body: {
+              ...body,
+              ...providerRedirects(body.provider, {
+                callbackURL: "/account",
+                errorCallbackURL: "/account",
+              }),
+            },
+          },
+        };
+      }
+    }
+
     // Providers send people back only to our own paths
     if (ctx.path === "/sign-in/social" && isProvider(body.provider)) {
       return {
@@ -235,6 +269,19 @@ export function createAuth(config: AuthConfig) {
     return true;
   }
 
+  async function wasUnlinked(userId: string, providerId: string) {
+    const rows = await config.db
+      .select({ userId: schema.unlinkedProviders.userId })
+      .from(schema.unlinkedProviders)
+      .where(
+        and(
+          eq(schema.unlinkedProviders.userId, userId),
+          eq(schema.unlinkedProviders.providerId, providerId),
+        ),
+      );
+    return rows.length > 0;
+  }
+
   // Requests where a provider was just added to an existing account, keyed by request
   const justLinked = new WeakMap<object, Provider>();
 
@@ -271,11 +318,22 @@ export function createAuth(config: AuthConfig) {
     }),
     trustedOrigins: [config.webOrigin, config.appScheme],
     socialProviders: socialProviders(config.providers),
+    // Our own route takes a lock and remembers the unlink
+    disabledPaths: ["/unlink-account"],
     user: {
-      // GitHub's own lookup refuses unverified emails. This covers Google too.
-      validateUserInfo: ({ user, source }) => {
-        if (source.method === "oauth" && !user.emailVerified) {
-          return { error: "email_not_verified" };
+      validateUserInfo: async ({ user, source }) => {
+        if (source.method !== "oauth") return;
+        // GitHub's own lookup refuses unverified emails. This covers Google too.
+        if (!user.emailVerified) return { error: "email_not_verified" };
+        // Only a link started from Account carries link state
+        if (
+          source.action === "link-account" &&
+          source.oauth &&
+          user.id &&
+          !(await getOAuthState())?.link &&
+          (await wasUnlinked(user.id, source.oauth.providerId))
+        ) {
+          return { error: PROVIDER_UNLINKED };
         }
       },
     },
@@ -284,6 +342,14 @@ export function createAuth(config: AuthConfig) {
         create: {
           before: async (account) => ({ data: withoutTokens(account) }),
           after: async (account, ctx) => {
+            await config.db
+              .delete(schema.unlinkedProviders)
+              .where(
+                and(
+                  eq(schema.unlinkedProviders.userId, account.userId),
+                  eq(schema.unlinkedProviders.providerId, account.providerId),
+                ),
+              );
             const linked = await sendProviderLinked(
               account.providerId,
               account.userId,
