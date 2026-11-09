@@ -4,6 +4,8 @@ import {
   MISMATCH,
   meterMessage,
   PASSWORD_CODES,
+  PROVIDER_LABELS,
+  type Provider,
   waitMessage,
 } from "@meritory/contracts/sign-in-messages";
 import type { PasswordCheck } from "@meritory/password";
@@ -16,7 +18,6 @@ import { StrengthMeter } from "@/components/strength-meter";
 import { TextField } from "@/components/text-field";
 import { authClient } from "@/lib/auth-client";
 import { loadPasswordRules } from "@/lib/password-rules";
-import { PROVIDER_LABELS, type Provider } from "@/lib/providers";
 import { Card, Row } from "./card";
 
 type Field = "current" | "password" | "confirm";

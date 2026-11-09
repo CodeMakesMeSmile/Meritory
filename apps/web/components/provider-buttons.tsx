@@ -1,8 +1,11 @@
 "use client";
 
+import {
+  PROVIDER_LABELS,
+  type Provider,
+} from "@meritory/contracts/sign-in-messages";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
-import { PROVIDER_LABELS, type Provider } from "@/lib/providers";
 
 function GitHubLogo() {
   return (

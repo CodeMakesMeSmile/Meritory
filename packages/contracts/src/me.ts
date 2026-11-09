@@ -1,6 +1,7 @@
 import Type, { type Static } from "typebox";
+import { PROVIDER_IDS } from "./sign-in-messages.ts";
 
-export const PROVIDER_IDS = ["github", "google"] as const;
+export { PROVIDER_IDS };
 
 const ProviderId = Type.Union([
   Type.Literal(PROVIDER_IDS[0]),

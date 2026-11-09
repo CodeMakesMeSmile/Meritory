@@ -1,8 +1,8 @@
 "use client";
 
+import { linkedText } from "@meritory/contracts/sign-in-messages";
 import { useEffect } from "react";
 import { Alert } from "@/components/alert";
-import { linkedText } from "@/lib/providers";
 
 /** Says a provider was just added, once. Dropping ?linked= keeps a refresh quiet. */
 export function LinkedNotice({

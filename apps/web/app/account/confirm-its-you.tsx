@@ -1,6 +1,10 @@
 "use client";
 
-import { waitMessage } from "@meritory/contracts/sign-in-messages";
+import {
+  PROVIDER_LABELS,
+  type Provider,
+  waitMessage,
+} from "@meritory/contracts/sign-in-messages";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useRef, useState } from "react";
@@ -12,7 +16,6 @@ import { ShowButton } from "@/components/show-button";
 import { TextField } from "@/components/text-field";
 import { confirmPassword } from "@/lib/account-api";
 import { daysAgo } from "@/lib/activity";
-import { PROVIDER_LABELS, type Provider } from "@/lib/providers";
 
 interface ConfirmItsYouProps {
   open: boolean;

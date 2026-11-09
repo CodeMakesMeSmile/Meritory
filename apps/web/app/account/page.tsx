@@ -1,3 +1,4 @@
+import { providerNotice } from "@meritory/contracts/sign-in-messages";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { linkClass } from "@/components/button";
@@ -5,7 +6,6 @@ import { KeepSession } from "@/components/keep-session";
 import { LinkedNotice } from "@/components/linked-notice";
 import { LogoLockup } from "@/components/logo";
 import { requireMe } from "@/lib/me";
-import { providerNotice } from "@/lib/providers";
 import { AccountCards } from "./account-cards";
 
 export const metadata: Metadata = { title: "Account · Meritory" };

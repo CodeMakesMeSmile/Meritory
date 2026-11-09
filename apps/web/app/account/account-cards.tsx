@@ -1,8 +1,8 @@
 "use client";
 
 import type { SignInMethods } from "@meritory/contracts";
+import type { ProviderNotice } from "@meritory/contracts/sign-in-messages";
 import { useState } from "react";
-import type { ProviderNotice } from "@/lib/providers";
 import { MethodsCard } from "./methods-card";
 import { PasswordCard } from "./password-card";
 import { SessionsCard } from "./sessions-card";

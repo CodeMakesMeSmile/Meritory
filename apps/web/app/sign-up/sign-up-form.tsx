@@ -5,6 +5,7 @@ import {
   EMAIL_PATTERN,
   meterMessage,
   NAME_ERROR,
+  PROVIDER_LABELS,
   SIGN_UP_MESSAGES,
   signUpFieldFor,
   waitMessage,
@@ -19,7 +20,6 @@ import { StrengthMeter } from "@/components/strength-meter";
 import { TextField } from "@/components/text-field";
 import { authClient, SIGN_UP_EMAIL_KEY } from "@/lib/auth-client";
 import { loadPasswordRules } from "@/lib/password-rules";
-import { PROVIDER_LABELS } from "@/lib/providers";
 
 type Field = "name" | "email" | "password";
 type Errors = Partial<Record<Field, string>>;
