@@ -20,6 +20,7 @@ import type { Mail, Mailer, MailKind } from "../mail/mailer.ts";
 import { isFresh } from "./account-sessions.ts";
 import { createEmailLinks, type EmailLinks } from "./email-links.ts";
 import {
+  appReturnAddress,
   isProvider,
   PROVIDER_LABELS,
   PROVIDER_UNLINKED,
@@ -182,7 +183,18 @@ export function createAuth(config: AuthConfig) {
       return {
         context: {
           ...ctx,
-          body: { ...body, ...providerRedirects(body.provider, body) },
+          body: {
+            ...body,
+            ...providerRedirects(
+              body.provider,
+              body,
+              appReturnAddress(
+                ctx.headers?.get("origin"),
+                config.appScheme,
+                config.expoGoScheme,
+              ),
+            ),
+          },
         },
       };
     }

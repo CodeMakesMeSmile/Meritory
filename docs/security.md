@@ -37,6 +37,7 @@ React escapes every value it renders as text or as an attribute. Keep it that wa
 
 - Redirect to fixed paths, or pass a return path through `nextPath` in `apps/web/lib/next-path.ts`.
 - Never redirect to a URL taken straight from a request.
+- The phone app's return address is built on the server from its trusted scheme, never from the request body.
 
 ### 5. Protect state changes
 
@@ -90,6 +91,7 @@ An exception needs a `biome-ignore` comment with the reason, a test that shows w
 | `packages/server/drizzle.config.ts` has a database URL | It's the local Docker database from `docker-compose.yml`. Real environments set `DATABASE_URL`. |
 | `packages/contracts/src/me.ts` has the schema name `SignInMethods` | `noSecrets` reads the long name as random text. It's a fixed `$id` that names the schema and holds no secret. |
 | `noSecrets` is off in test files and `@meritory/security-testing` | Test data and attack strings look random. Neither ever holds a real secret. |
+| The link back to the phone app carries the session, from `@better-auth/expo` | Only an app on the same phone could intercept it, and no public Android build exists yet. A test covers where the link goes. MER-43 replaces it with a single-use code before the first public release. |
 
 ## Sources
 
