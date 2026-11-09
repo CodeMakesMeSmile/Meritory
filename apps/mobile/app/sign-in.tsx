@@ -11,6 +11,7 @@ import { Alert } from "../components/alert";
 import { AppText } from "../components/app-text";
 import { Button } from "../components/button";
 import { Heading, Switch } from "../components/heading";
+import { OrDivider, ProviderButtons } from "../components/provider-buttons";
 import { Screen } from "../components/screen";
 import { type FieldRef, TextField } from "../components/text-field";
 import { PasswordToggle, TextLink } from "../components/text-link";
@@ -123,6 +124,9 @@ export default function SignIn() {
       </Heading>
 
       {notice()}
+
+      <ProviderButtons disabled={pending} />
+      <OrDivider />
 
       <TextField
         ref={emailInput}

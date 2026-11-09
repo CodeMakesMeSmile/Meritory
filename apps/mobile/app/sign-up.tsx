@@ -14,6 +14,7 @@ import { Alert } from "../components/alert";
 import { AppText } from "../components/app-text";
 import { Button } from "../components/button";
 import { Heading, Switch } from "../components/heading";
+import { OrDivider, ProviderButtons } from "../components/provider-buttons";
 import { Screen } from "../components/screen";
 import { StrengthMeter } from "../components/strength-meter";
 import { type FieldRef, TextField } from "../components/text-field";
@@ -134,6 +135,8 @@ export default function SignUp() {
 
       {!online && <Alert tone="info" text={MESSAGES.offline} />}
       {online && formError && <Alert tone="danger" text={formError} />}
+      <ProviderButtons disabled={pending} />
+      <OrDivider />
 
       <TextField
         ref={inputs.name}
