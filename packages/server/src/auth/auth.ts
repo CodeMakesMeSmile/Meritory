@@ -1,4 +1,5 @@
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
+import { expo } from "@better-auth/expo";
 import {
   checkPassword,
   MAX_PASSWORD_LENGTH,
@@ -95,6 +96,8 @@ export interface AuthConfig {
   baseUrl: string;
   webOrigin: string;
   appScheme: string;
+  /** Only set outside production, so a release never trusts Expo Go */
+  expoGoScheme?: string;
   ipAddressHeaders?: string[];
   trustedProxies?: string[];
   mailer: Mailer;
@@ -316,7 +319,12 @@ export function createAuth(config: AuthConfig) {
       schema,
       usePlural: true,
     }),
-    trustedOrigins: [config.webOrigin, config.appScheme],
+    trustedOrigins: [
+      config.webOrigin,
+      config.appScheme,
+      ...(config.expoGoScheme ? [config.expoGoScheme] : []),
+    ],
+    plugins: [expo()],
     socialProviders: socialProviders(config.providers),
     // Our own route takes a lock and remembers the unlink
     disabledPaths: ["/unlink-account"],

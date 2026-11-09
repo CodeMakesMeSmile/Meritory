@@ -28,6 +28,7 @@ const auth = createAuth({
   baseUrl: `${config.publicApiUrl}${API_PREFIX}/auth`,
   webOrigin: config.webOrigin,
   appScheme: config.appScheme,
+  expoGoScheme: config.expoGoScheme,
   ipAddressHeaders: config.ipAddressHeaders,
   trustedProxies: config.trustedProxies,
   mailer,
