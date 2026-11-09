@@ -11,7 +11,7 @@ const url = process.env.TEST_DATABASE_URL;
 const ORIGIN = "https://meritory.test";
 const PASSWORD = "violet harbor tractor sandwich";
 const EXPO_GO = "exp://192.168.1.20:8081";
-const APP = "meritory://";
+const APP = "app.meritory.mobile://";
 
 describe.skipIf(!url)("requests from the phone app", () => {
   const database = createDatabase(url ?? "");
@@ -84,6 +84,11 @@ describe.skipIf(!url)("requests from the phone app", () => {
   it("accepts the installed app in production", async () => {
     const res = await signUp(production, { "expo-origin": `${APP}home` });
     expect(res.status).toBe(200);
+  });
+
+  it("refuses the app's old scheme", async () => {
+    const res = await signUp(production, { "expo-origin": "meritory://home" });
+    expect(res.status).toBe(403);
   });
 
   it("refuses another app's scheme", async () => {

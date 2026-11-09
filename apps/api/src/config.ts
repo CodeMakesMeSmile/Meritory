@@ -69,7 +69,7 @@ export function readConfig(env: Record<string, string | undefined>): ApiConfig {
     webOrigin,
     publicApiUrl: `${webOrigin}/api`,
     authSecret,
-    appScheme: "meritory://",
+    appScheme: "app.meritory.mobile://",
     expoGoScheme: env.NODE_ENV === "production" ? undefined : "exp://",
     ipAddressHeaders: list(env.AUTH_IP_HEADERS),
     trustedProxies: list(env.AUTH_TRUSTED_PROXIES),

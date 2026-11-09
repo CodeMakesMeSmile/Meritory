@@ -21,7 +21,7 @@ describe.skipIf(!url)("password reset against Postgres", () => {
     secret: "x".repeat(32),
     baseUrl: `${ORIGIN}/api/v1/auth`,
     webOrigin: ORIGIN,
-    appScheme: "meritory://",
+    appScheme: "app.meritory.mobile://",
     mailer: { send: async (mail) => void sent.push(mail) },
     log: { error: () => {} },
     // Many requests in a row would trip it, and the limiter has its own tests
@@ -128,7 +128,7 @@ describe.skipIf(!url)("password reset against Postgres", () => {
       secret: "x".repeat(32),
       baseUrl: `${ORIGIN}/api/v1/auth`,
       webOrigin: ORIGIN,
-      appScheme: "meritory://",
+      appScheme: "app.meritory.mobile://",
       mailer: {
         send: (_, tag) => {
           tags.push(tag);

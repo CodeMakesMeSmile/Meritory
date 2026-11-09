@@ -21,7 +21,7 @@ describe.skipIf(!url)("keeping a session going", () => {
     secret: "x".repeat(32),
     baseUrl: `${ORIGIN}/api/v1/auth`,
     webOrigin: ORIGIN,
-    appScheme: "meritory://",
+    appScheme: "app.meritory.mobile://",
     mailer: { send: async () => {} },
     log: { error: () => {} },
     rateLimit: false,

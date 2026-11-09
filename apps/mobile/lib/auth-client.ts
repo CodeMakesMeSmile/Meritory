@@ -29,7 +29,7 @@ export const authClient = createAuthClient({
   fetchOptions: { headers: { "User-Agent": userAgent() } },
   plugins: [
     expoClient({
-      scheme: "meritory",
+      scheme: "app.meritory.mobile",
       storagePrefix: "meritory",
       storage: SecureStore,
     }),

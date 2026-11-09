@@ -27,7 +27,7 @@ describe.skipIf(!url)("account security against Postgres", () => {
     secret: "x".repeat(32),
     baseUrl: `${ORIGIN}/api/v1/auth`,
     webOrigin: ORIGIN,
-    appScheme: "meritory://",
+    appScheme: "app.meritory.mobile://",
     mailer: { send: async (mail: Mail) => void sent.push(mail) },
     log: { error: () => {} },
   };

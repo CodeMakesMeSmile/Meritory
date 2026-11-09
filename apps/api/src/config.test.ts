@@ -19,6 +19,10 @@ describe("readConfig", () => {
     ).toBeUndefined();
   });
 
+  it("trusts the app by its domain-based scheme", () => {
+    expect(readConfig(base).appScheme).toBe("app.meritory.mobile://");
+  });
+
   it("refuses to start without a long enough secret", () => {
     expect(() => readConfig({ ...base, BETTER_AUTH_SECRET: "" })).toThrow(
       /BETTER_AUTH_SECRET/,

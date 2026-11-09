@@ -62,7 +62,7 @@ describe.skipIf(!url)("GitHub and Google sign-in against Postgres", () => {
     secret: "x".repeat(32),
     baseUrl: `${ORIGIN}/api/v1/auth`,
     webOrigin: ORIGIN,
-    appScheme: "meritory://",
+    appScheme: "app.meritory.mobile://",
     mailer: { send: async (mail, tag) => void sent.push([mail, tag]) },
     log: { error: () => {} },
     rateLimit: false,
