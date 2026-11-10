@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { eq, inArray, like } from "drizzle-orm";
+import { desc, eq, inArray, like } from "drizzle-orm";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
 import { createDatabase } from "../db/client.ts";
 import {
@@ -89,6 +89,9 @@ describe.skipIf(!url)("GitHub and Google sign-in against Postgres", () => {
       );
       await db.delete(users).where(inArray(users.id, ids));
     }
+    await db
+      .delete(verifications)
+      .where(like(verifications.identifier, "app-code:%"));
     await database.close();
   });
 
@@ -180,43 +183,162 @@ describe.skipIf(!url)("GitHub and Google sign-in against Postgres", () => {
   describe("from the phone app", () => {
     const APP = "app.meritory.mobile://";
     const fromApp = { "expo-origin": APP };
+    // The worked example in RFC 7636, Appendix B
+    const VERIFIER = "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk";
+    const CHALLENGE = "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM";
     const asked = {
       provider: "github",
       callbackURL: `${APP}/somewhere-else`,
       errorCallbackURL: `${APP}/elsewhere`,
+      additionalData: { appCodeChallenge: CHALLENGE },
     };
 
     const roundTripFromApp = (query: Record<string, string>) =>
       roundTrip(query, asked, undefined, fromApp);
 
-    const cookieIn = (location: string) =>
-      new URL(location).searchParams.get("cookie") ?? "";
+    const codeIn = (location: string) =>
+      new URL(location).searchParams.get("code") ?? "";
 
-    it("returns to the app's home with the session", async () => {
+    const redeem = (code: string, verifier = VERIFIER) =>
+      auth.handler(
+        new Request(`${ORIGIN}/api/v1/auth/app-session`, {
+          method: "POST",
+          headers: { "content-type": "application/json", ...fromApp },
+          body: JSON.stringify({ code, verifier }),
+        }),
+      );
+
+    const startFromApp = (body: object) =>
+      auth.handler(
+        new Request(`${ORIGIN}/api/v1/auth/sign-in/social`, {
+          method: "POST",
+          headers: { "content-type": "application/json", ...fromApp },
+          body: JSON.stringify(body),
+        }),
+      );
+
+    const newestCode = async () => {
+      const [row] = await db
+        .select()
+        .from(verifications)
+        .where(like(verifications.identifier, "app-code:%"))
+        .orderBy(desc(verifications.createdAt))
+        .limit(1);
+      return row;
+    };
+
+    it("returns to the app's home with only a one-time code", async () => {
       fakeGitHub(ghUser());
       const { res, location } = await roundTripFromApp({ code: "c" });
       expect(res.status).toBe(302);
-      expect(location.startsWith(`${APP}/?cookie=`)).toBe(true);
-      expect(cookieIn(location)).toContain("better-auth.session_token=");
+      expect(location.startsWith(`${APP}/?code=`)).toBe(true);
+      expect([...new URL(location).searchParams.keys()]).toEqual(["code"]);
+      expect(codeIn(location)).toMatch(/^[\w-]{43}$/);
+      expect(location).not.toContain("session_token");
     });
 
-    it("says a provider was linked, and still returns the session", async () => {
+    it("leaves no session in the browser tab", async () => {
+      fakeGitHub(ghUser());
+      const { res } = await roundTripFromApp({ code: "c" });
+      expect(sessionCookie(res)).toBeUndefined();
+    });
+
+    it("hands the session to the app for the code and its verifier", async () => {
+      const gh = ghUser();
+      fakeGitHub(gh);
+      const { location } = await roundTripFromApp({ code: "c" });
+      const res = await redeem(codeIn(location));
+      expect(res.status).toBe(200);
+      const cookie = sessionCookie(res) ?? "";
+      const session = await auth.api.getSession({
+        headers: new Headers({ cookie }),
+      });
+      expect(session?.user.email).toBe(gh.emails[0]?.email);
+    });
+
+    it("takes a code only once", async () => {
+      fakeGitHub(ghUser());
+      const code = codeIn((await roundTripFromApp({ code: "c" })).location);
+      expect((await redeem(code)).status).toBe(200);
+      const again = await redeem(code);
+      expect(again.status).toBe(401);
+      expect(sessionCookie(again)).toBeUndefined();
+    });
+
+    it("refuses a wrong verifier, which also uses up the code", async () => {
+      fakeGitHub(ghUser());
+      const code = codeIn((await roundTripFromApp({ code: "c" })).location);
+      const wrong = await redeem(code, "x".repeat(43));
+      expect(wrong.status).toBe(401);
+      expect(sessionCookie(wrong)).toBeUndefined();
+      expect((await redeem(code)).status).toBe(401);
+    });
+
+    it("refuses an expired code", async () => {
+      fakeGitHub(ghUser());
+      const code = codeIn((await roundTripFromApp({ code: "c" })).location);
+      const row = await newestCode();
+      await db
+        .update(verifications)
+        .set({ expiresAt: new Date(Date.now() - 1000) })
+        .where(eq(verifications.id, row?.id ?? ""));
+      expect((await redeem(code)).status).toBe(401);
+    });
+
+    it("refuses a made-up code or a missing verifier", async () => {
+      expect((await redeem("A".repeat(43))).status).toBe(401);
+      fakeGitHub(ghUser());
+      const code = codeIn((await roundTripFromApp({ code: "c" })).location);
+      expect((await redeem(code, "")).status).toBe(401);
+    });
+
+    it("keeps a code for a minute, stored only as a hash", async () => {
+      fakeGitHub(ghUser());
+      const code = codeIn((await roundTripFromApp({ code: "c" })).location);
+      const row = await newestCode();
+      const left = (row?.expiresAt.getTime() ?? 0) - Date.now();
+      expect(left).toBeGreaterThan(50_000);
+      expect(left).toBeLessThanOrEqual(60_000);
+      expect(row?.identifier).not.toContain(code);
+      expect(row?.value).not.toContain(code);
+    });
+
+    it("refuses a sign-in from the app without a valid challenge", async () => {
+      const { additionalData: _, ...bare } = asked;
+      expect((await startFromApp(bare)).status).toBe(400);
+      for (const appCodeChallenge of [
+        "short",
+        `${CHALLENGE}=`,
+        VERIFIER.replace("-", "+"),
+      ]) {
+        const res = await startFromApp({
+          ...bare,
+          additionalData: { appCodeChallenge },
+        });
+        expect(res.status).toBe(400);
+      }
+    });
+
+    it("says a provider was linked, alongside the code", async () => {
       const gh = ghUser();
       await signUp(gh.emails[0]?.email ?? "", true);
       fakeGitHub(gh);
       const { location } = await roundTripFromApp({ code: "c" });
-      expect(location.startsWith(`${APP}/?`)).toBe(true);
       const params = new URL(location).searchParams;
       expect(params.get("linked")).toBe("github");
-      expect(params.get("cookie")).toContain("better-auth.session_token=");
+      expect(params.get("code")).toMatch(/^[\w-]{43}$/);
+      expect(location).not.toContain("session_token");
     });
 
     it("returns a cancel to the app's sign in, with no session", async () => {
-      const { location } = await roundTripFromApp({ error: "access_denied" });
+      const { res, location } = await roundTripFromApp({
+        error: "access_denied",
+      });
       expect(location.startsWith(`${APP}/sign-in?provider=github`)).toBe(true);
       const params = new URL(location).searchParams;
       expect(params.get("error")).toBe("access_denied");
-      expect(params.get("cookie") ?? "").not.toContain("session_token");
+      expect(params.get("code")).toBeNull();
+      expect(sessionCookie(res)).toBeUndefined();
     });
 
     it("refuses a return address outside the app", async () => {
@@ -230,10 +352,11 @@ describe.skipIf(!url)("GitHub and Google sign-in against Postgres", () => {
       expect(res.status).toBe(403);
     });
 
-    it("keeps a website request on the website", async () => {
+    it("keeps a website request on the website, with its session", async () => {
       fakeGitHub(ghUser());
-      const { location } = await roundTrip({ code: "c" }, asked);
+      const { res, location } = await roundTrip({ code: "c" }, asked);
       expect(location).toBe("/");
+      expect(sessionCookie(res)).toBeDefined();
     });
 
     it("lets a browser's own origin outrank the phone header", async () => {
@@ -277,7 +400,13 @@ describe.skipIf(!url)("GitHub and Google sign-in against Postgres", () => {
         fakeGitHub(gh);
         await roundTrip(
           { code: "c" },
-          { ...asked, additionalData: { appUserAgent: "Meritory/9 (Fake)" } },
+          {
+            ...asked,
+            additionalData: {
+              ...asked.additionalData,
+              appUserAgent: "Meritory/9 (Fake)",
+            },
+          },
           undefined,
           { ...fromApp, "user-agent": APP_AGENT },
           TAB_AGENT,
@@ -290,7 +419,13 @@ describe.skipIf(!url)("GitHub and Google sign-in against Postgres", () => {
         fakeGitHub(gh);
         await roundTrip(
           { code: "c" },
-          { ...asked, additionalData: { appUserAgent: "Meritory/9 (Fake)" } },
+          {
+            ...asked,
+            additionalData: {
+              ...asked.additionalData,
+              appUserAgent: "Meritory/9 (Fake)",
+            },
+          },
           undefined,
           fromApp,
           TAB_AGENT,
