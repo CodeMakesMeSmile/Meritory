@@ -6,6 +6,12 @@ packages:
 allowBuilds:
   esbuild: true
 
+overrides:
+  # drizzle-kit lists it but never loads it, and it pins an esbuild with a known flaw
+  "drizzle-kit>@esbuild-kit/esm-loader": "-"
+  # 13.0.7 has the abort fix and stays inside Expo's ^13 range. Remove with MER-49
+  "glob@": 13.0.7
+
 # pnpm holds back releases younger than a day. `expo install` pins the newest SDK patches
 minimumReleaseAgeExclude:
   - "@expo/env@2.5.4"
