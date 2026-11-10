@@ -14,6 +14,16 @@ import {
 } from "react";
 import { providerReturn } from "./app-link";
 import { authClient } from "./auth-client";
+import { createPkce } from "./pkce";
+
+/** Trades the code from the app's link, plus this sign-in's verifier, for the session */
+async function redeem(code: string, verifier: string) {
+  const { error } = await authClient.$fetch("/app-session", {
+    method: "POST",
+    body: { code, verifier },
+  });
+  return !error;
+}
 
 interface ProviderSignIn {
   /** The provider whose browser is open */
@@ -41,23 +51,35 @@ export function ProviderSignInProvider({ children }: { children: ReactNode }) {
     if (opening) return;
     setOpening(provider);
     clear();
-    // Any app can open our links, so only one that returns during this sign-in counts
-    const subscription = Linking.addEventListener("url", ({ url }) => {
-      const back = providerReturn(url);
-      setNotice(providerNotice(back.provider, back.error));
-      setLinked(linkedText(back.linked));
-    });
-    try {
-      const { error } = await authClient.signIn.social({
-        provider,
-        callbackURL: "/",
-        errorCallbackURL: "/sign-in",
-      });
-      if (error) setNotice(providerNotice(provider, "failed"));
-    } catch {
+    const failed = () => {
+      setLinked(null);
       setNotice(providerNotice(provider, "failed"));
+    };
+    try {
+      const { verifier, challenge } = await createPkce();
+      const pending: { session?: Promise<boolean> } = {};
+      // Any app can open our links, so only one that returns during this sign-in counts
+      const subscription = Linking.addEventListener("url", ({ url }) => {
+        const back = providerReturn(url);
+        setNotice(providerNotice(back.provider, back.error));
+        setLinked(linkedText(back.linked));
+        if (back.code) pending.session = redeem(back.code, verifier);
+      });
+      try {
+        const { error } = await authClient.signIn.social({
+          provider,
+          callbackURL: "/",
+          errorCallbackURL: "/sign-in",
+          additionalData: { appCodeChallenge: challenge },
+        });
+        if (error) failed();
+      } finally {
+        subscription.remove();
+      }
+      if (pending.session && !(await pending.session)) failed();
+    } catch {
+      failed();
     } finally {
-      subscription.remove();
       setOpening(null);
     }
   }
