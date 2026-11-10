@@ -5,6 +5,7 @@ import {
 } from "@expo-google-fonts/host-grotesk";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { ProviderSignInProvider } from "../lib/provider-sign-in";
 import { SessionProvider, useSession } from "../lib/session";
 import { useTheme } from "../lib/theme";
 
@@ -42,7 +43,9 @@ export default function RootLayout() {
       <StatusBar style="auto" />
       {(loaded || failed) && (
         <SessionProvider>
-          <Routes />
+          <ProviderSignInProvider>
+            <Routes />
+          </ProviderSignInProvider>
         </SessionProvider>
       )}
     </>

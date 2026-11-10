@@ -14,6 +14,7 @@ import { Alert } from "../components/alert";
 import { AppText } from "../components/app-text";
 import { Button } from "../components/button";
 import { Heading, Switch } from "../components/heading";
+import { OrDivider, ProviderButtons } from "../components/provider-buttons";
 import { Screen } from "../components/screen";
 import { StrengthMeter } from "../components/strength-meter";
 import { type FieldRef, TextField } from "../components/text-field";
@@ -22,6 +23,7 @@ import { authClient } from "../lib/auth-client";
 import { setEmailDraft } from "../lib/email-draft";
 import { useOnline } from "../lib/online";
 import { loadPasswordRules } from "../lib/password-rules";
+import { useProviderSignIn } from "../lib/provider-sign-in";
 
 type Field = "name" | "email" | "password";
 type Errors = Partial<Record<Field, string>>;
@@ -31,6 +33,8 @@ const FIELDS: Field[] = ["name", "email", "password"];
 
 export default function SignUp() {
   const online = useOnline();
+  const { notice: providerNotice, clear: clearProviderNotice } =
+    useProviderSignIn();
   const [values, setValues] = useState<Values>({
     name: "",
     email: "",
@@ -77,6 +81,7 @@ export default function SignUp() {
   async function submit() {
     if (pending) return;
     setFormError(null);
+    clearProviderNotice();
     const name = values.name.trim();
     const email = values.email.trim();
     const { password } = values;
@@ -127,13 +132,22 @@ export default function SignUp() {
           </AppText>
           <TextLink
             label="Sign in"
-            onPress={() => router.replace("/sign-in")}
+            onPress={() => {
+              clearProviderNotice();
+              router.replace("/sign-in");
+            }}
           />
         </Switch>
       </Heading>
 
       {!online && <Alert tone="info" text={MESSAGES.offline} />}
       {online && formError && <Alert tone="danger" text={formError} />}
+      {online && !formError && providerNotice && (
+        <Alert tone={providerNotice.tone} text={providerNotice.text} />
+      )}
+
+      <ProviderButtons disabled={pending} />
+      <OrDivider />
 
       <TextField
         ref={inputs.name}

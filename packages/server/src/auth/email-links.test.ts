@@ -53,7 +53,7 @@ describe.skipIf(!url)("email links against Postgres", () => {
       secret: "x".repeat(32),
       baseUrl: "https://meritory.test/api/v1/auth",
       webOrigin: "https://meritory.test",
-      appScheme: "meritory://",
+      appScheme: "app.meritory.mobile://",
       mailer: { send: async (mail) => void sent.push(mail) },
       log: { error: () => {} },
     });

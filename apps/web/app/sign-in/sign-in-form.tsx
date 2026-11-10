@@ -5,6 +5,8 @@ import {
   EMAIL_PATTERN,
   SIGN_IN_MESSAGES as MESSAGES,
   PASSWORD_REQUIRED,
+  PROVIDER_LABELS,
+  type ProviderNotice,
   waitMessage,
 } from "@meritory/contracts/sign-in-messages";
 import Link from "next/link";
@@ -15,7 +17,6 @@ import { Button, buttonClass, linkClass } from "@/components/button";
 import { OrDivider, ProviderButtons } from "@/components/provider-buttons";
 import { TextField } from "@/components/text-field";
 import { authClient } from "@/lib/auth-client";
-import { PROVIDER_LABELS, type ProviderNotice } from "@/lib/providers";
 import { useResend } from "@/lib/use-resend";
 
 type Field = "email" | "password";

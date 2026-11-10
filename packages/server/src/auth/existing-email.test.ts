@@ -21,7 +21,7 @@ describe.skipIf(!url)("signing up with an email that has an account", () => {
     secret: "x".repeat(32),
     baseUrl: `${ORIGIN}/api/v1/auth`,
     webOrigin: ORIGIN,
-    appScheme: "meritory://",
+    appScheme: "app.meritory.mobile://",
     mailer: { send: async (mail) => void sent.push(mail) },
     log: { error: () => {} },
     // Several sign-ups in a row would trip it, and the limiter has its own tests

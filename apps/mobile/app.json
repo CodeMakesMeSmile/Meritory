@@ -2,7 +2,7 @@
   "expo": {
     "name": "Meritory",
     "slug": "meritory",
-    "scheme": "meritory",
+    "scheme": "app.meritory.mobile",
     "version": "0.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",

@@ -22,7 +22,7 @@ describe.skipIf(!url)("sign-in rate limit against Postgres", () => {
     secret: "x".repeat(32),
     baseUrl: `${ORIGIN}/api/v1/auth`,
     webOrigin: ORIGIN,
-    appScheme: "meritory://",
+    appScheme: "app.meritory.mobile://",
     mailer: { send: async () => {} },
     log: { error: () => {} },
     ipAddressHeaders: ["x-forwarded-for"],

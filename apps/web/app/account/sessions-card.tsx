@@ -1,5 +1,6 @@
 "use client";
 
+import type { Provider } from "@meritory/contracts/sign-in-messages";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { Alert } from "@/components/alert";
@@ -17,7 +18,6 @@ import {
   savePendingAction,
   takePendingAction,
 } from "@/lib/pending-action";
-import type { Provider } from "@/lib/providers";
 import { Card, Row } from "./card";
 import { ConfirmItsYou } from "./confirm-its-you";
 

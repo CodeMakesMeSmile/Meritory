@@ -1,6 +1,11 @@
 "use client";
 
 import type { SignInMethods } from "@meritory/contracts";
+import {
+  PROVIDER_LABELS,
+  type Provider,
+  type ProviderNotice,
+} from "@meritory/contracts/sign-in-messages";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { Alert } from "@/components/alert";
@@ -18,11 +23,6 @@ import {
   savePendingMethod,
   takePendingMethod,
 } from "@/lib/pending-action";
-import {
-  PROVIDER_LABELS,
-  type Provider,
-  type ProviderNotice,
-} from "@/lib/providers";
 import { Card, Row } from "./card";
 import { ConfirmItsYou } from "./confirm-its-you";
 

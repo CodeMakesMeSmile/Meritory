@@ -25,7 +25,7 @@ describe.skipIf(!url)("attack strings against Postgres", () => {
     secret: "x".repeat(32),
     baseUrl: `${ORIGIN}/api/v1/auth`,
     webOrigin: ORIGIN,
-    appScheme: "meritory://",
+    appScheme: "app.meritory.mobile://",
     mailer: { send: async () => {} },
     log: { error: () => {} },
     // Dozens of tries in a row would trip it, and the limiter has its own tests

@@ -11,12 +11,14 @@ import { Alert } from "../components/alert";
 import { AppText } from "../components/app-text";
 import { Button } from "../components/button";
 import { Heading, Switch } from "../components/heading";
+import { OrDivider, ProviderButtons } from "../components/provider-buttons";
 import { Screen } from "../components/screen";
 import { type FieldRef, TextField } from "../components/text-field";
 import { PasswordToggle, TextLink } from "../components/text-link";
 import { authClient } from "../lib/auth-client";
 import { setEmailDraft } from "../lib/email-draft";
 import { useOnline } from "../lib/online";
+import { useProviderSignIn } from "../lib/provider-sign-in";
 import { useSession } from "../lib/session";
 import { useResend } from "../lib/use-resend";
 
@@ -26,6 +28,8 @@ type Errors = Partial<Record<Field, string>>;
 export default function SignIn() {
   const online = useOnline();
   const { endedElsewhere } = useSession();
+  const { notice: providerNotice, clear: clearProviderNotice } =
+    useProviderSignIn();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -41,6 +45,7 @@ export default function SignIn() {
   async function submit() {
     if (pending) return;
     setFormError(null);
+    clearProviderNotice();
 
     const found: Errors = {};
     if (!EMAIL_PATTERN.test(email.trim())) found.email = EMAIL_ERROR;
@@ -80,6 +85,11 @@ export default function SignIn() {
     }
   }
 
+  function openForgotPassword() {
+    setEmailDraft(email.trim());
+    router.push("/forgot-password");
+  }
+
   function notice() {
     if (!online) return <Alert tone="info" text={MESSAGES.offline} />;
     if (formError) return <Alert tone="danger" text={formError} />;
@@ -100,6 +110,20 @@ export default function SignIn() {
         </>
       );
     }
+    if (providerNotice) {
+      return (
+        <>
+          <Alert tone={providerNotice.tone} text={providerNotice.text} />
+          {providerNotice.reset && (
+            <Button
+              label="Reset password"
+              variant="secondary"
+              onPress={openForgotPassword}
+            />
+          )}
+        </>
+      );
+    }
     if (endedElsewhere) {
       return (
         <Alert tone="info" text="You were signed out. Sign in to continue." />
@@ -117,12 +141,18 @@ export default function SignIn() {
           </AppText>
           <TextLink
             label="Create an account"
-            onPress={() => router.replace("/sign-up")}
+            onPress={() => {
+              clearProviderNotice();
+              router.replace("/sign-up");
+            }}
           />
         </Switch>
       </Heading>
 
       {notice()}
+
+      <ProviderButtons disabled={pending} />
+      <OrDivider />
 
       <TextField
         ref={emailInput}
@@ -159,13 +189,7 @@ export default function SignIn() {
         }}
         onSubmitEditing={() => online && submit()}
         aside={
-          <TextLink
-            label="Forgot password?"
-            onPress={() => {
-              setEmailDraft(email.trim());
-              router.push("/forgot-password");
-            }}
-          />
+          <TextLink label="Forgot password?" onPress={openForgotPassword} />
         }
         trailing={
           <PasswordToggle

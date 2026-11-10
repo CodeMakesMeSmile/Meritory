@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import {
+  appReturnAddress,
   githubUserInfo,
   providerName,
   providerRedirects,
@@ -45,9 +46,62 @@ describe("providerRedirects", () => {
   });
 });
 
+describe("appReturnAddress", () => {
+  const APP = "app.meritory.mobile://";
+
+  it.each([
+    [APP, `${APP}/`],
+    [`${APP}/anything?x=1`, `${APP}/`],
+    ["exp://192.168.1.20:8081", "exp://192.168.1.20:8081/--/"],
+    ["exp://192.168.1.20:8081/--/", "exp://192.168.1.20:8081/--/"],
+  ])("gives %j the address %j", (origin, expected) => {
+    expect(appReturnAddress(origin, APP, "exp://")).toBe(expected);
+  });
+
+  it.each([
+    [null],
+    [undefined],
+    [""],
+    ["https://meritory.test"],
+    ["https://evil.example"],
+    ["meritory://"],
+    ["evil://app.meritory.mobile://"],
+  ])("gives %j nothing", (origin) => {
+    expect(appReturnAddress(origin, APP, "exp://")).toBeNull();
+  });
+
+  it("ignores Expo Go when it isn't trusted", () => {
+    expect(appReturnAddress("exp://192.168.1.20:8081", APP)).toBeNull();
+  });
+});
+
+describe("providerRedirects for the phone app", () => {
+  const address = "app.meritory.mobile:///";
+
+  it("uses the app's address, whatever the request asked for", () => {
+    expect(
+      providerRedirects(
+        "github",
+        {
+          callbackURL: "https://evil.example/",
+          errorCallbackURL: "evil://steal",
+        },
+        address,
+      ),
+    ).toEqual({
+      callbackURL: address,
+      errorCallbackURL: `${address}sign-in?provider=github`,
+      newUserCallbackURL: address,
+    });
+  });
+});
+
 describe("withLinked", () => {
   it("adds the provider to the landing path and keeps the rest", () => {
     expect(withLinked("/", "github")).toBe("/?linked=github");
+    expect(withLinked("app.meritory.mobile:///", "github")).toBe(
+      "app.meritory.mobile:///?linked=github",
+    );
     expect(withLinked("/account?tab=1#sessions", "google")).toBe(
       "/account?tab=1&linked=google#sessions",
     );

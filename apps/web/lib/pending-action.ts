@@ -1,4 +1,7 @@
-import { isProvider, type Provider } from "@/lib/providers";
+import {
+  isProvider,
+  type Provider,
+} from "@meritory/contracts/sign-in-messages";
 
 /** A sign-out waiting on "Confirm it's you", kept while the page visits GitHub or Google */
 export type SessionAction = { kind: "one"; id: string } | { kind: "others" };

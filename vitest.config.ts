@@ -24,8 +24,9 @@ export default defineConfig({
       "apps/web/*.test.ts",
       "apps/web/lib/**/*.test.ts",
       "apps/web/app/**/*.test.tsx",
+      "apps/mobile/lib/**/*.test.ts",
       "tools/**/*.test.ts",
     ],
-    exclude: ["**/node_modules/**", "apps/mobile/**"],
+    exclude: ["**/node_modules/**"],
   },
 });

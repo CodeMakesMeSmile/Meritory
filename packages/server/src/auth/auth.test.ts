@@ -11,7 +11,7 @@ const auth = createAuth({
   secret: "x".repeat(32),
   baseUrl: "https://meritory.test/api/v1/auth",
   webOrigin: "https://meritory.test",
-  appScheme: "meritory://",
+  appScheme: "app.meritory.mobile://",
   mailer: { send: async () => {} },
   log: { error: () => {} },
   emailLinks: { remember: async () => {}, consume: async () => false },
@@ -136,7 +136,7 @@ describe("createAuth", () => {
   it("only trusts the web origin and the app scheme", () => {
     expect(auth.options.trustedOrigins).toEqual([
       "https://meritory.test",
-      "meritory://",
+      "app.meritory.mobile://",
     ]);
   });
 });

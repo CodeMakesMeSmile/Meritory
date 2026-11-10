@@ -131,13 +131,38 @@ const SAME_SITE_PATH = /^\/(?![/\\])/;
 const ERROR_PAGES = ["/sign-in", "/account"] as const;
 
 /**
+ * The phone app's home address when the request came from the app. It's built from the
+ * trusted scheme, so a request can't choose where the session goes.
+ */
+export function appReturnAddress(
+  origin: string | null | undefined,
+  appScheme: string,
+  expoGoScheme?: string,
+) {
+  if (!origin) return null;
+  if (origin.startsWith(appScheme)) return `${appScheme}/`;
+  if (expoGoScheme && origin.startsWith(expoGoScheme)) {
+    return `${origin.split("/--/")[0]}/--/`;
+  }
+  return null;
+}
+
+/**
  * Where a provider sends people back. The success path must be a path on this site, and
- * errors only land on sign in or Account.
+ * errors only land on sign in or Account. The phone app gets its own home and sign in.
  */
 export function providerRedirects(
   provider: Provider,
   body: { callbackURL?: unknown; errorCallbackURL?: unknown },
+  appAddress: string | null = null,
 ) {
+  if (appAddress) {
+    return {
+      callbackURL: appAddress,
+      errorCallbackURL: `${appAddress}sign-in?provider=${provider}`,
+      newUserCallbackURL: appAddress,
+    };
+  }
   const callbackURL =
     typeof body.callbackURL === "string" &&
     SAME_SITE_PATH.test(body.callbackURL) &&
