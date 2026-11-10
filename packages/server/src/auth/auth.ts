@@ -180,20 +180,23 @@ export function createAuth(config: AuthConfig) {
 
     // Providers send people back only to our own paths
     if (ctx.path === "/sign-in/social" && isProvider(body.provider)) {
+      const appAddress = appReturnAddress(
+        ctx.headers?.get("origin"),
+        config.appScheme,
+        config.expoGoScheme,
+      );
       return {
         context: {
           ...ctx,
           body: {
             ...body,
-            ...providerRedirects(
-              body.provider,
-              body,
-              appReturnAddress(
-                ctx.headers?.get("origin"),
-                config.appScheme,
-                config.expoGoScheme,
-              ),
-            ),
+            ...providerRedirects(body.provider, body, appAddress),
+            // Replaces any value the request sent, since an empty string still overrides
+            ...(appAddress && {
+              additionalData: {
+                appUserAgent: ctx.headers?.get("user-agent") ?? "",
+              },
+            }),
           },
         },
       };
@@ -385,6 +388,20 @@ export function createAuth(config: AuthConfig) {
       },
       session: {
         create: {
+          // A sign-in from the app ends in its browser tab, so keep the app's own agent
+          before: async (session, ctx) => {
+            if (ctx?.path !== "/callback/:id") return;
+            const state = await getOAuthState<{ appUserAgent?: unknown }>();
+            const agent = state?.appUserAgent;
+            // A request can't set the return address, so it marks a sign-in from the app
+            const fromApp = appReturnAddress(
+              state?.callbackURL,
+              config.appScheme,
+              config.expoGoScheme,
+            );
+            if (!fromApp || typeof agent !== "string" || !agent) return;
+            return { data: { ...session, userAgent: agent } };
+          },
           // Signing in again with GitHub or Google in the same browser replaces that session
           after: async (session, ctx) => {
             if (ctx?.path !== "/callback/:id") return;

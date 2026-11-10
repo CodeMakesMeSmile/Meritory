@@ -125,6 +125,7 @@ describe.skipIf(!url)("GitHub and Google sign-in against Postgres", () => {
     body: object = { provider: "github", callbackURL: "/account" },
     cookie?: string,
     from?: Record<string, string>,
+    agent?: string,
   ) => {
     const { to, cookies } = await startSignIn(body, cookie, from);
     const state = to.searchParams.get("state") ?? "";
@@ -136,6 +137,7 @@ describe.skipIf(!url)("GitHub and Google sign-in against Postgres", () => {
       new Request(back, {
         headers: {
           cookie: [...cookies, ...(cookie ? [cookie] : [])].join("; "),
+          ...(agent ? { "user-agent": agent } : {}),
         },
       }),
     );
@@ -241,6 +243,73 @@ describe.skipIf(!url)("GitHub and Google sign-in against Postgres", () => {
         ...fromApp,
       });
       expect(location).toBe("/");
+    });
+
+    describe("the session's device", () => {
+      const APP_AGENT = "Meritory/1.0 (Android 17)";
+      const TAB_AGENT =
+        "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Mobile Safari/537.36";
+
+      const agentsOf = async (email: string) => {
+        const user = await userByEmail(email);
+        const rows = await db
+          .select({ userAgent: sessions.userAgent })
+          .from(sessions)
+          .where(eq(sessions.userId, user?.id ?? ""));
+        return rows.map(({ userAgent }) => userAgent);
+      };
+
+      it("is the app, not the browser tab that finished the sign-in", async () => {
+        const gh = ghUser();
+        fakeGitHub(gh);
+        await roundTrip(
+          { code: "c" },
+          asked,
+          undefined,
+          { ...fromApp, "user-agent": APP_AGENT },
+          TAB_AGENT,
+        );
+        expect(await agentsOf(gh.emails[0]?.email ?? "")).toEqual([APP_AGENT]);
+      });
+
+      it("ignores an app agent the request names itself", async () => {
+        const gh = ghUser();
+        fakeGitHub(gh);
+        await roundTrip(
+          { code: "c" },
+          { ...asked, additionalData: { appUserAgent: "Meritory/9 (Fake)" } },
+          undefined,
+          { ...fromApp, "user-agent": APP_AGENT },
+          TAB_AGENT,
+        );
+        expect(await agentsOf(gh.emails[0]?.email ?? "")).toEqual([APP_AGENT]);
+      });
+
+      it("ignores a named agent when the app sends none", async () => {
+        const gh = ghUser();
+        fakeGitHub(gh);
+        await roundTrip(
+          { code: "c" },
+          { ...asked, additionalData: { appUserAgent: "Meritory/9 (Fake)" } },
+          undefined,
+          fromApp,
+          TAB_AGENT,
+        );
+        expect(await agentsOf(gh.emails[0]?.email ?? "")).toEqual([TAB_AGENT]);
+      });
+
+      it("stays the browser for a website sign-in", async () => {
+        const gh = ghUser();
+        fakeGitHub(gh);
+        await roundTrip(
+          { code: "c" },
+          { ...asked, additionalData: { appUserAgent: APP_AGENT } },
+          undefined,
+          { origin: ORIGIN, "user-agent": TAB_AGENT },
+          TAB_AGENT,
+        );
+        expect(await agentsOf(gh.emails[0]?.email ?? "")).toEqual([TAB_AGENT]);
+      });
     });
   });
 
