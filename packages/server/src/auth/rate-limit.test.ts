@@ -3,7 +3,7 @@ import { like, or } from "drizzle-orm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createDatabase } from "../db/client.ts";
 import { rateLimits, users } from "../db/schema.ts";
-import { createAuth } from "./auth.ts";
+import { APP_SESSION_LIMIT, createAuth } from "./auth.ts";
 
 const url = process.env.TEST_DATABASE_URL;
 
@@ -109,5 +109,28 @@ describe.skipIf(!url)("sign-in rate limit against Postgres", () => {
     }
 
     expect((await signIn(nextIp(), "wrong password guess")).status).toBe(401);
+  });
+
+  it("refuses the eleventh code trade from the app in a minute", async () => {
+    const ip = nextIp();
+    const trade = () =>
+      auth.handler(
+        new Request(`${ORIGIN}/api/v1/auth/app-session`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            "expo-origin": "app.meritory.mobile://",
+            "x-forwarded-for": ip,
+          },
+          body: JSON.stringify({
+            code: "A".repeat(43),
+            verifier: "B".repeat(43),
+          }),
+        }),
+      );
+    for (let i = 0; i < APP_SESSION_LIMIT.max; i++) {
+      expect((await trade()).status).toBe(401);
+    }
+    expect((await trade()).status).toBe(429);
   });
 });

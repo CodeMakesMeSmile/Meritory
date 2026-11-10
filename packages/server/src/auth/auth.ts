@@ -8,16 +8,19 @@ import {
 import { betterAuth } from "better-auth";
 import {
   APIError,
+  createAuthEndpoint,
   createAuthMiddleware,
   getOAuthState,
   getSessionFromCtx,
   isAPIError,
 } from "better-auth/api";
+import { setSessionCookie } from "better-auth/cookies";
 import { and, count, eq } from "drizzle-orm";
 import type { Database } from "../db/client.ts";
 import * as schema from "../db/schema.ts";
 import type { Mail, Mailer, MailKind } from "../mail/mailer.ts";
 import { isFresh } from "./account-sessions.ts";
+import { type AppCodes, createAppCodes, isChallenge } from "./app-codes.ts";
 import { createEmailLinks, type EmailLinks } from "./email-links.ts";
 import {
   appReturnAddress,
@@ -49,6 +52,9 @@ export const RESET_PASSWORD_PATH = "/reset-password";
 
 /** Change password tries per IP in the window */
 export const CHANGE_PASSWORD_LIMIT = { window: 15 * 60, max: 5 };
+
+/** Code trades per IP in the window. The app makes one per sign-in. */
+export const APP_SESSION_LIMIT = { window: 60, max: 10 };
 
 const PASSWORD_ERROR_CODES = {
   too_short: "PASSWORD_TOO_SHORT",
@@ -109,13 +115,30 @@ export interface AuthConfig {
   emailLinks?: EmailLinks;
   /** Defaults to the verifications table */
   resetLinks?: ResetLinks;
+  /** Defaults to the verifications table */
+  appCodes?: AppCodes;
   /** On unless turned off, in every environment */
   rateLimit?: boolean;
+}
+
+const APP_CODE_INVALID = {
+  code: "APP_CODE_INVALID",
+  message: "Sign-in didn't finish. Try again.",
+};
+
+/** The Expo plugin, minus its after hook that copies the session cookie into the app's link */
+function expoWithoutSessionInLink() {
+  const plugin = expo();
+  const after = plugin.hooks.after.filter(
+    (hook) => !hook.matcher({ path: "/callback/github" } as never),
+  );
+  return { ...plugin, hooks: { ...plugin.hooks, after } };
 }
 
 export function createAuth(config: AuthConfig) {
   const links = config.emailLinks ?? createEmailLinks(config.db);
   const resetLinks = config.resetLinks ?? createResetLinks(config.db);
+  const appCodes = config.appCodes ?? createAppCodes(config.db);
 
   const rules = createAuthMiddleware(async (ctx) => {
     const body = (ctx.body ?? {}) as Record<string, unknown>;
@@ -185,6 +208,15 @@ export function createAuth(config: AuthConfig) {
         config.appScheme,
         config.expoGoScheme,
       );
+      const challenge = (body.additionalData as Record<string, unknown>)
+        ?.appCodeChallenge;
+      // The app's link only carries a code, which is useless without the verifier
+      if (appAddress && !isChallenge(challenge)) {
+        throw new APIError("BAD_REQUEST", {
+          code: "APP_CHALLENGE_REQUIRED",
+          message: "Update the app and try again.",
+        });
+      }
       return {
         context: {
           ...ctx,
@@ -195,6 +227,7 @@ export function createAuth(config: AuthConfig) {
             ...(appAddress && {
               additionalData: {
                 appUserAgent: ctx.headers?.get("user-agent") ?? "",
+                appCodeChallenge: challenge,
               },
             }),
           },
@@ -302,18 +335,53 @@ export function createAuth(config: AuthConfig) {
 
   // Requests where a provider was just added to an existing account, keyed by request
   const justLinked = new WeakMap<object, Provider>();
+  // Challenges from sign-ins the app started, keyed by request
+  const appChallenges = new WeakMap<object, string>();
 
   const afterRoutes = createAuthMiddleware(async (ctx) => {
     if (ctx.path === "/callback/:id") {
       const provider = justLinked.get(ctx.context);
       const returned = ctx.context.returned;
-      const location = isAPIError(returned)
+      let location = isAPIError(returned)
         ? returned.headers?.get("location")
         : null;
-      if (provider && location) {
-        throw ctx.redirect(withLinked(location, provider));
+      if (!location) return;
+      const signedIn = ctx.context.newSession;
+      const appAddress = appReturnAddress(
+        location,
+        config.appScheme,
+        config.expoGoScheme,
+      );
+      if (appAddress && signedIn) {
+        // The session goes to the app through the code, never through the browser tab
+        const { authCookies } = ctx.context;
+        const sessionCookies = [
+          authCookies.sessionToken.name,
+          authCookies.sessionData.name,
+          authCookies.dontRememberToken.name,
+        ];
+        const headers = ctx.context.responseHeaders;
+        const kept = (headers?.getSetCookie() ?? []).filter(
+          (cookie) => !sessionCookies.includes(cookie.split("=")[0] ?? ""),
+        );
+        headers?.delete("set-cookie");
+        for (const cookie of kept) headers?.append("set-cookie", cookie);
+
+        const challenge = appChallenges.get(ctx.context);
+        if (!challenge) {
+          await ctx.context.internalAdapter.deleteSession(
+            signedIn.session.token,
+          );
+          throw ctx.redirect(
+            `${appAddress}sign-in?provider=${ctx.params?.id}&error=failed`,
+          );
+        }
+        const code = await appCodes.issue(signedIn.session.token, challenge);
+        location = `${appAddress}?code=${code}`;
+      } else if (!provider) {
+        return;
       }
-      return;
+      throw ctx.redirect(provider ? withLinked(location, provider) : location);
     }
     if (ctx.path !== "/change-password") return;
     const returned = ctx.context.returned as { user?: unknown } | undefined;
@@ -339,7 +407,35 @@ export function createAuth(config: AuthConfig) {
       config.appScheme,
       ...(config.expoGoScheme ? [config.expoGoScheme] : []),
     ],
-    plugins: [expo()],
+    plugins: [
+      expoWithoutSessionInLink(),
+      {
+        id: "app-session",
+        endpoints: {
+          // The app trades the code from its link, plus its verifier, for the session
+          appSession: createAuthEndpoint(
+            "/app-session",
+            { method: "POST" },
+            async (ctx) => {
+              const { code, verifier } = (ctx.body ?? {}) as Record<
+                string,
+                unknown
+              >;
+              const token =
+                typeof code === "string" && typeof verifier === "string"
+                  ? await appCodes.redeem(code, verifier)
+                  : null;
+              const found = token
+                ? await ctx.context.internalAdapter.findSession(token)
+                : null;
+              if (!found) throw new APIError("UNAUTHORIZED", APP_CODE_INVALID);
+              await setSessionCookie(ctx, found);
+              return ctx.json({ ok: true });
+            },
+          ),
+        },
+      },
+    ],
     socialProviders: socialProviders(config.providers),
     // Our own route takes a lock and remembers the unlink
     disabledPaths: ["/unlink-account"],
@@ -391,7 +487,10 @@ export function createAuth(config: AuthConfig) {
           // A sign-in from the app ends in its browser tab, so keep the app's own agent
           before: async (session, ctx) => {
             if (ctx?.path !== "/callback/:id") return;
-            const state = await getOAuthState<{ appUserAgent?: unknown }>();
+            const state = await getOAuthState<{
+              appUserAgent?: unknown;
+              appCodeChallenge?: unknown;
+            }>();
             const agent = state?.appUserAgent;
             // A request can't set the return address, so it marks a sign-in from the app
             const fromApp = appReturnAddress(
@@ -399,7 +498,11 @@ export function createAuth(config: AuthConfig) {
               config.appScheme,
               config.expoGoScheme,
             );
-            if (!fromApp || typeof agent !== "string" || !agent) return;
+            if (!fromApp) return;
+            if (isChallenge(state?.appCodeChallenge)) {
+              appChallenges.set(ctx.context, state.appCodeChallenge);
+            }
+            if (typeof agent !== "string" || !agent) return;
             return { data: { ...session, userAgent: agent } };
           },
           // Signing in again with GitHub or Google in the same browser replaces that session
@@ -518,6 +621,7 @@ export function createAuth(config: AuthConfig) {
       customRules: {
         "/sign-in/email": { window: 10, max: 3 },
         "/change-password": CHANGE_PASSWORD_LIMIT,
+        "/app-session": APP_SESSION_LIMIT,
       },
     },
     hooks: { before: rules, after: afterRoutes },

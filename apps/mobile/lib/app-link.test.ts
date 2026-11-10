@@ -21,7 +21,30 @@ describe("providerReturn", () => {
   it("reads an error", () => {
     expect(
       providerReturn(`${APP}/sign-in?provider=github&error=access_denied`),
-    ).toEqual({ provider: "github", error: "access_denied", linked: null });
+    ).toEqual({
+      provider: "github",
+      error: "access_denied",
+      linked: null,
+      code: null,
+    });
+  });
+
+  it("reads a code", () => {
+    const code = "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM";
+    expect(providerReturn(`${APP}/?code=${code}&linked=github`).code).toBe(
+      code,
+    );
+  });
+
+  it.each([
+    ["too short", "abc"],
+    ["too long", "A".repeat(44)],
+    ["outside base64url", `${"A".repeat(42)}+`],
+    ["empty", ""],
+  ])("ignores a code that is %s", (_, code) => {
+    expect(
+      providerReturn(`${APP}/?code=${encodeURIComponent(code)}`).code,
+    ).toBeNull();
   });
 
   it("reads a linked provider", () => {
@@ -31,7 +54,7 @@ describe("providerReturn", () => {
   });
 
   it("finds nothing in a link with no query or a broken one", () => {
-    const empty = { provider: null, error: null, linked: null };
+    const empty = { provider: null, error: null, linked: null, code: null };
     expect(providerReturn(`${APP}/`)).toEqual(empty);
     expect(providerReturn("")).toEqual(empty);
     expect(providerReturn("?%E0%A4%A")).toEqual(empty);
