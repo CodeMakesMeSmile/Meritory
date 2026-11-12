@@ -64,6 +64,30 @@ describe("loadTrackFacts", () => {
     ]);
   });
 
+  it("keeps where each fact is written", async () => {
+    await write("categories.yaml", CATEGORIES);
+    await write(
+      "facts/key-value.yaml",
+      `${KEY_VALUE}${KEY_VALUE.split("facts:\n")[1]?.replace("sorted-set-rank", "second-fact")}`,
+    );
+
+    const { facts, problems } = await loadTrackFacts(track, TODAY);
+
+    expect(problems).toEqual([]);
+    expect(facts.map(({ id, file, line }) => ({ id, file, line }))).toEqual([
+      {
+        id: "sorted-set-rank",
+        file: path.join(track, "facts", "key-value.yaml"),
+        line: 3,
+      },
+      {
+        id: "second-fact",
+        file: path.join(track, "facts", "key-value.yaml"),
+        line: 12,
+      },
+    ]);
+  });
+
   it("keeps facts past their recheck date for callers to filter", async () => {
     await write("categories.yaml", CATEGORIES);
     await write(
