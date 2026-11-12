@@ -15,7 +15,13 @@ import { todayUtc } from "./recheck.ts";
 
 export type Problem = { file: string; line: number | null; message: string };
 
-export type TrackFacts = { facts: CategorizedFact[]; problems: Problem[] };
+/** A fact with where it's written, for reports that point back at it */
+export type LoadedFact = CategorizedFact & {
+  file: string;
+  line: number | null;
+};
+
+export type TrackFacts = { facts: LoadedFact[]; problems: Problem[] };
 
 const PATTERN_MESSAGES: Record<string, string> = {
   [ID_PATTERN]: "must be lowercase words joined by hyphens",
@@ -119,7 +125,7 @@ export async function loadTrackFacts(
   today: string = todayUtc(),
 ): Promise<TrackFacts> {
   const problems: Problem[] = [];
-  const facts: CategorizedFact[] = [];
+  const facts: LoadedFact[] = [];
   const factFiles = await yamlFiles(path.join(trackDir, "facts"));
 
   const categoriesFile = path.join(trackDir, "categories.yaml");
@@ -184,7 +190,12 @@ export async function loadTrackFacts(
           message: `fact ${fact.id} was checked on ${fact.checkedOn}, which is after today`,
         });
       }
-      facts.push({ ...fact, category: factFile.category });
+      facts.push({
+        ...fact,
+        category: factFile.category,
+        file,
+        line: parsed.lineAt(`/facts/${index}`),
+      });
     });
   }
 

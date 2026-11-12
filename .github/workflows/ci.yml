@@ -62,4 +62,6 @@ jobs:
       - run: pnpm test
         env:
           TEST_DATABASE_URL: postgres://meritory:meritory@localhost:5432/meritory
+      # Warns about facts that need a recheck, without failing the run
+      - run: pnpm content:recheck
       - run: pnpm --filter @meritory/web build
