@@ -12,5 +12,6 @@ Checked against [docs/security.md](../docs/security.md):
 - [ ] No secrets in code, logs, or tests
 - [ ] Tests cover what must fail, including attack strings where input is handled
 - [ ] Any exception is listed in docs/security.md with its reason
+- [ ] Nothing here describes a weakness that isn't fixed yet
 
 ## Testing
