@@ -15,6 +15,6 @@
     "@meritory/contracts": "workspace:*",
     "@meritory/server": "workspace:*",
     "fastify": "^5.12.8",
-    "typebox": "^1.4.4"
+    "typebox": "^1.4.6"
   }
 }

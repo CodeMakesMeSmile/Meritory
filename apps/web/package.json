@@ -14,7 +14,7 @@
     "@meritory/contracts": "workspace:*",
     "@meritory/design-tokens": "workspace:*",
     "@meritory/password": "workspace:*",
-    "better-auth": "1.7.17",
+    "better-auth": "1.7.18",
     "next": "16.4.5",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
