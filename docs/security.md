@@ -72,6 +72,15 @@ Every change that handles input adds tests for what must fail, not only for what
 - Requests with no session, someone else's session, and another site's `Origin`.
 - Each new header or redirect rule.
 
+### 9. Keep unfixed weaknesses private
+
+The code is public, so how a defense works is public too, and that's fine. Security must not depend on hiding it. What stays private is where a defense is missing.
+
+- A weakness that isn't fixed yet goes in a draft security advisory on GitHub. Discuss it and fix it in the advisory's private fork.
+- Until the fix ships, don't describe the weakness in a pull request, commit message, issue, code comment, or doc, including the exceptions table below.
+- Once the fix ships, publish the advisory. The fix's pull request can link to it from then on.
+- The same goes for incidents, and for a check that's turned off with no replacement.
+
 ## What CI checks
 
 | Check | What it catches |
@@ -84,7 +93,7 @@ Every change that handles input adds tests for what must fail, not only for what
 
 ## Exceptions
 
-An exception needs a `biome-ignore` comment with the reason, a test that shows why it's safe, and a reviewer's sign-off. These are the current ones:
+An exception needs a `biome-ignore` comment with the reason, a test that shows why it's safe, and a reviewer's sign-off. An exception someone could exploit is a weakness, so it follows rule 9 instead of going here. These are the current ones:
 
 | Where | Why it's safe |
 |---|---|
@@ -95,6 +104,8 @@ An exception needs a `biome-ignore` comment with the reason, a test that shows w
 
 ## Sources
 
+- [NIST SP 800-123, Guide to General Server Security](https://doi.org/10.6028/NIST.SP.800-123), section 2.4, Open Design
+- [GitHub repository security advisories](https://docs.github.com/en/code-security/security-advisories/working-with-repository-security-advisories/about-repository-security-advisories)
 - [OWASP Cross Site Scripting Prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html)
 - [OWASP SQL Injection Prevention](https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html)
 - [OWASP Next.js Security](https://cheatsheetseries.owasp.org/cheatsheets/Nextjs_Security_Cheat_Sheet.html)
