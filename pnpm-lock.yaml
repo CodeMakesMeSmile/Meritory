@@ -343,6 +343,16 @@ importers:
 
   packages/ai: {}
 
+  packages/content:
+    dependencies:
+      typebox:
+        specifier: ^1.4.4
+        version: 1.4.4
+    devDependencies:
+      '@meritory/security-testing':
+        specifier: workspace:*
+        version: link:../security-testing
+
   packages/contracts:
     dependencies:
       typebox:
