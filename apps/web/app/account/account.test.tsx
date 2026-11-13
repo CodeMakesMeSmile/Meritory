@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock("next/navigation", () => ({
-  useRouter: () => ({ replace: () => {}, push: () => {} }),
+  useRouter: () => ({ replace: () => {}, push: () => {}, refresh: () => {} }),
 }));
 
 const me = vi.hoisted(() => ({ current: null as MeResponse | null }));
@@ -12,6 +12,7 @@ vi.mock("@/lib/me", () => ({ requireMe: async () => me.current }));
 const { default: AccountPage } = await import("./page.tsx");
 const { ConfirmItsYou } = await import("./confirm-its-you.tsx");
 const { onlyWayText, stillWorksText } = await import("./methods-card.tsx");
+const { deleteText } = await import("./delete-card.tsx");
 
 const account = async (
   signInMethods: MeResponse["signInMethods"],
@@ -43,6 +44,38 @@ const withPassword = {
   providers: [linked("google")],
   available: both,
 };
+
+describe("Profile", () => {
+  it("comes first, with the name to edit and the email", async () => {
+    const html = await account(withPassword);
+    const profile = html.indexOf("Profile");
+    expect(profile).toBeGreaterThan(-1);
+    expect(html.indexOf("Sign-in methods")).toBeGreaterThan(profile);
+    expect(html).toContain("What should we call you?");
+    expect(html).toContain('value="Rowan Lee"');
+    expect(html).toContain("Save name");
+    expect(html).toContain("rowan@meritory.test");
+    expect(html).toContain("Change email");
+    // The form only opens from the button
+    expect(html).not.toContain("New email");
+  });
+
+  it.each([
+    [{ email: "approved" }, "Change approved. Now open the link"],
+    [{ email: "changed" }, "Your email is now rowan@meritory.test."],
+    [{ email: "failed" }, "That link didn&#x27;t work"],
+    [{ email: "changed", error: "INVALID_USER" }, "That link didn&#x27;t work"],
+  ])("says where the emailed link left off for %j", async (params, text) => {
+    const html = await account(withPassword, params);
+    expect(html).toContain(text);
+  });
+
+  it("says nothing about an unknown step", async () => {
+    const html = await account(withPassword, { email: "<b>done</b>" });
+    expect(html).not.toContain("That link didn");
+    expect(html).not.toContain("<b>done</b>");
+  });
+});
 
 describe("Account without a password", () => {
   it("offers to email a link instead of asking for the current password", async () => {
@@ -147,6 +180,43 @@ describe("Sign-in methods", () => {
       "Google and your email and password still work.",
     );
   });
+});
+
+describe("Delete account", () => {
+  it("comes last, with a red button that only opens the question", async () => {
+    const html = await account(withPassword);
+    const card = html.indexOf("Delete account");
+    expect(card).toBeGreaterThan(html.indexOf("Password"));
+    expect(html).toContain(
+      "This removes your practice history, sessions, and sign-in methods. It can&#x27;t be undone.",
+    );
+    expect(html).toMatch(/border-danger[^"]*text-danger[^>]*>Delete account</);
+    // The dialog's words render only once it opens
+    expect(html).not.toContain("Delete my account");
+  });
+
+  it.each([
+    [
+      3,
+      2,
+      "Your practice history, 3 sessions, and 2 sign-in methods will be removed for good. This can't be undone.",
+    ],
+    [
+      1,
+      1,
+      "Your practice history, 1 session, and 1 sign-in method will be removed for good. This can't be undone.",
+    ],
+    [
+      null,
+      2,
+      "Your practice history, sessions, and 2 sign-in methods will be removed for good. This can't be undone.",
+    ],
+  ])(
+    "names what goes for %j sessions and %j methods",
+    (sessions, methods, text) => {
+      expect(deleteText(sessions, methods)).toBe(text);
+    },
+  );
 });
 
 describe("Confirm it's you", () => {

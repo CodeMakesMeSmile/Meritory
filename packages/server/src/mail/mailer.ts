@@ -12,7 +12,12 @@ export type MailKind =
   | "password-changed"
   | "existing-account"
   | "provider-linked"
-  | "provider-unlinked";
+  | "provider-unlinked"
+  | "approve-email-change"
+  | "email-in-use"
+  | "confirm-new-email"
+  | "email-changed"
+  | "account-deleted";
 
 /** What a log may say about a mail. Never the address or the text. */
 export interface MailTag {
@@ -22,6 +27,8 @@ export interface MailTag {
 
 export interface Mailer {
   send(mail: Mail, tag: MailTag): Promise<void>;
+  /** Drops anything still waiting to go to this account */
+  forget?(userId: string): Promise<void>;
 }
 
 export interface SmtpConfig {

@@ -57,6 +57,23 @@ describe("forgot password page", () => {
   });
 });
 
+describe("sign in after deleting the account", () => {
+  it("says the account was deleted and the email went out", async () => {
+    const html = await signIn({ deleted: "1" });
+    expect(html).toContain(
+      "Your account was deleted. We emailed you a confirmation.",
+    );
+    expect(html).toContain('role="status"');
+  });
+
+  it.each<Record<string, string>>([{}, { deleted: "true" }, { reset: "done" }])(
+    "says nothing otherwise, given %j",
+    async (params) => {
+      expect(await signIn(params)).not.toContain("account was deleted");
+    },
+  );
+});
+
 describe("sign in after a reset", () => {
   it("says the password was saved", async () => {
     expect(await signIn({ reset: "done" })).toContain(

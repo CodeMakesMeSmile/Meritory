@@ -146,6 +146,19 @@ describe.skipIf(!url)("the mail queue against Postgres", () => {
     await boss.deleteQueuedJobs(names.queue);
   });
 
+  it("forgets waiting mail for one account and keeps the rest", async () => {
+    const gone: MailTag = { kind: "verify-email", userId: randomUUID() };
+    await queued.send(newMail(), gone);
+    await queued.send(newMail(), { ...gone, kind: "reset-password" });
+    await queued.send(newMail(), tag);
+    await queued.forget?.(gone.userId);
+    const left = await rows(names.queue);
+    expect(left.map((row) => JSON.parse(row.data).userId)).toEqual([
+      tag.userId,
+    ]);
+    await boss.deleteQueuedJobs(names.queue);
+  });
+
   it("sends the mail and leaves no job behind", async () => {
     const mail = newMail();
     const sent: [Mail, MailTag][] = [];

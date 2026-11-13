@@ -15,12 +15,18 @@ import {
   isAPIError,
 } from "better-auth/api";
 import { setSessionCookie } from "better-auth/cookies";
-import { and, count, eq } from "drizzle-orm";
+import { and, count, eq, ne } from "drizzle-orm";
 import type { Database } from "../db/client.ts";
 import * as schema from "../db/schema.ts";
 import type { Mail, Mailer, MailKind } from "../mail/mailer.ts";
 import { isFresh } from "./account-sessions.ts";
 import { type AppCodes, createAppCodes, isChallenge } from "./app-codes.ts";
+import {
+  type ChangeLink,
+  EMAIL_CHANGE_PATH,
+  emailChangePath,
+  readChangeLink,
+} from "./email-change.ts";
 import { createEmailLinks, type EmailLinks } from "./email-links.ts";
 import {
   appReturnAddress,
@@ -53,6 +59,15 @@ export const RESET_PASSWORD_PATH = "/reset-password";
 /** Change password tries per IP in the window */
 export const CHANGE_PASSWORD_LIMIT = { window: 15 * 60, max: 5 };
 
+/** Email change requests per IP in the window */
+export const CHANGE_EMAIL_LIMIT = { window: 15 * 60, max: 5 };
+
+// Asks the page to show Confirm it's you, then try again
+const CONFIRM_FIRST = {
+  code: "confirm_password",
+  message: "Enter your password to keep going.",
+};
+
 /** Code trades per IP in the window. The app makes one per sign-in. */
 export const APP_SESSION_LIMIT = { window: 60, max: 10 };
 
@@ -81,10 +96,16 @@ function checkPasswordRules(
   }
 }
 
-// Postgres can't store a null byte, and line breaks could forge email headers
-function checkName(body: Record<string, unknown>) {
-  const { name } = body;
-  if (typeof name === "string" && /\p{Cc}/u.test(name)) {
+// The sign-up name rules, used by Account too
+function checkName(name: unknown) {
+  if (typeof name !== "string" || !name.trim()) {
+    throw new APIError("BAD_REQUEST", {
+      code: "NAME_INVALID",
+      message: "Enter a name. A nickname is fine.",
+    });
+  }
+  // Postgres can't store a null byte, and line breaks could forge email headers
+  if (/\p{Cc}/u.test(name)) {
     throw new APIError("BAD_REQUEST", {
       code: "NAME_INVALID",
       message: "Use letters, numbers, spaces, and punctuation.",
@@ -143,8 +164,22 @@ export function createAuth(config: AuthConfig) {
   const rules = createAuthMiddleware(async (ctx) => {
     const body = (ctx.body ?? {}) as Record<string, unknown>;
     if (ctx.path === "/sign-up/email") {
-      checkName(body);
+      checkName(body.name);
       checkPasswordRules(body.password, body);
+    }
+
+    if (ctx.path === "/update-user") {
+      // Better Auth would also take an image and its own fields, and a hook can't drop keys
+      if (Object.keys(body).some((key) => key !== "name")) {
+        throw new APIError("BAD_REQUEST", {
+          code: "ONLY_NAME",
+          message: "Only your name can change here.",
+        });
+      }
+      checkName(body.name);
+      return {
+        context: { ...ctx, body: { name: (body.name as string).trim() } },
+      };
     }
 
     // Better Auth only checks length here, and leaves other sessions running unless asked
@@ -180,10 +215,7 @@ export function createAuth(config: AuthConfig) {
       }
       const session = await getSessionFromCtx(ctx);
       if (session && !isFresh(session.session)) {
-        throw new APIError("FORBIDDEN", {
-          code: "confirm_password",
-          message: "Enter your password to keep going.",
-        });
+        throw new APIError("FORBIDDEN", CONFIRM_FIRST);
       }
       if (isProvider(body.provider)) {
         return {
@@ -199,6 +231,32 @@ export function createAuth(config: AuthConfig) {
           },
         };
       }
+    }
+
+    if (ctx.path === "/change-email") {
+      const session = await getSessionFromCtx(ctx);
+      // Without a session, Better Auth answers 401 itself
+      if (session) {
+        if (!isFresh(session.session)) {
+          throw new APIError("FORBIDDEN", CONFIRM_FIRST);
+        }
+        const newEmail =
+          typeof body.newEmail === "string" ? body.newEmail.toLowerCase() : "";
+        if (newEmail === session.user.email.toLowerCase()) {
+          throw new APIError("BAD_REQUEST", {
+            code: "SAME_EMAIL",
+            message: "That's already your email.",
+          });
+        }
+        // Better Auth answers as if it were free, so the owner hears about it
+        const owner = newEmail
+          ? await ctx.context.internalAdapter.findUserByEmail(newEmail)
+          : null;
+        if (owner) sendEmailInUse(owner.user);
+      }
+      return {
+        context: { ...ctx, body: { ...body, callbackURL: EMAIL_CHANGE_PATH } },
+      };
     }
 
     // Providers send people back only to our own paths
@@ -259,8 +317,27 @@ export function createAuth(config: AuthConfig) {
 
     if (ctx.path === "/verify-email") {
       const token = ctx.query?.token;
+      const change = typeof token === "string" ? readChangeLink(token) : null;
+      const failed = change ? emailChangePath("failed") : LINK_FAILED_PATH;
       if (typeof token !== "string" || !(await links.consume(token))) {
-        throw ctx.redirect(LINK_FAILED_PATH);
+        throw ctx.redirect(failed);
+      }
+      if (change) {
+        if (change.finishes) {
+          // Someone may have taken the address since it was approved
+          const taken = await ctx.context.internalAdapter.findUserByEmail(
+            change.to,
+          );
+          if (taken) throw ctx.redirect(failed);
+        }
+        // Better Auth sends both steps to one address, so each step picks its own
+        const step = change.finishes ? "changed" : "approved";
+        return {
+          context: {
+            ...ctx,
+            query: { ...ctx.query, callbackURL: emailChangePath(step) },
+          },
+        };
       }
     }
   });
@@ -287,6 +364,52 @@ export function createAuth(config: AuthConfig) {
       },
       "password-changed",
       user.id,
+    );
+  }
+
+  function sendEmailInUse(user: { id: string; email: string }) {
+    sendLater(
+      {
+        to: user.email,
+        subject: "Someone tried to use your email on Meritory",
+        text: [
+          "Someone tried to move another Meritory account to this email, but it already belongs to your account.",
+          `If that was you, sign in with this email instead: ${config.webOrigin}/sign-in`,
+          "If it wasn't you, you can ignore this email. Nothing about your account has changed.",
+        ].join("\n\n"),
+      },
+      "email-in-use",
+      user.id,
+    );
+  }
+
+  // Like a new password, a new email signs out every other device
+  async function finishEmailChange(
+    ctx: Parameters<typeof getSessionFromCtx>[0],
+    change: ChangeLink,
+  ) {
+    const here = await getSessionFromCtx(ctx);
+    const keep = here?.user.id === change.userId ? here.session.id : undefined;
+    await config.db
+      .delete(schema.sessions)
+      .where(
+        and(
+          eq(schema.sessions.userId, change.userId),
+          ...(keep ? [ne(schema.sessions.id, keep)] : []),
+        ),
+      );
+    sendLater(
+      {
+        to: change.from,
+        subject: "Your Meritory email was changed",
+        text: [
+          `The email for your Meritory account is now ${change.to}, and your other devices were signed out.`,
+          "If this was you, there's nothing else to do.",
+          "If it wasn't you, someone could read this inbox, because the change was approved from it. Secure this email account first.",
+        ].join("\n\n"),
+      },
+      "email-changed",
+      change.userId,
     );
   }
 
@@ -383,6 +506,19 @@ export function createAuth(config: AuthConfig) {
       }
       throw ctx.redirect(provider ? withLinked(location, provider) : location);
     }
+    if (ctx.path === "/verify-email") {
+      const token = ctx.query?.token;
+      // Hooks don't share a context, so read the link again. Only a link Better Auth accepted reaches the changed step.
+      const change = typeof token === "string" ? readChangeLink(token) : null;
+      const returned = ctx.context.returned;
+      const location = isAPIError(returned)
+        ? returned.headers?.get("location")
+        : null;
+      if (change?.finishes && location === emailChangePath("changed")) {
+        await finishEmailChange(ctx, change);
+      }
+      return;
+    }
     if (ctx.path !== "/change-password") return;
     const returned = ctx.context.returned as { user?: unknown } | undefined;
     if (!returned || isAPIError(returned)) return;
@@ -440,6 +576,41 @@ export function createAuth(config: AuthConfig) {
     // Our own route takes a lock and remembers the unlink
     disabledPaths: ["/unlink-account"],
     user: {
+      changeEmail: {
+        enabled: true,
+        // The current address approves first, then the new one confirms
+        sendChangeEmailConfirmation: async ({ user, newEmail, url, token }) => {
+          // Not awaited, so a free address answers as fast as a taken one
+          links
+            .remember(
+              user.id,
+              token,
+              new Date(Date.now() + LINK_LIFETIME_SECONDS * 1000),
+            )
+            .then(() =>
+              sendLater(
+                {
+                  to: user.email,
+                  subject: "Approve your new email for Meritory",
+                  text: [
+                    `Someone asked to change the email on your Meritory account to ${newEmail}.`,
+                    `If it was you, approve it with this link: ${url}`,
+                    "The link works for 1 hour. Then we send a link to the new address to finish.",
+                    `If it wasn't you, don't open the link, and your email stays the same. Reset your password to be safe: ${config.webOrigin}/forgot-password`,
+                  ].join("\n\n"),
+                },
+                "approve-email-change",
+                user.id,
+              ),
+            )
+            .catch((err: unknown) =>
+              config.log.error(
+                { err, userId: user.id },
+                "approval link failed",
+              ),
+            );
+        },
+      },
       validateUserInfo: async ({ user, source }) => {
         if (source.method !== "oauth") return;
         // GitHub's own lookup refuses unverified emails. This covers Google too.
@@ -599,6 +770,23 @@ export function createAuth(config: AuthConfig) {
           token,
           new Date(Date.now() + LINK_LIFETIME_SECONDS * 1000),
         );
+        // The second step of an email change comes here too, for the new address
+        if (readChangeLink(token)) {
+          sendLater(
+            {
+              to: user.email,
+              subject: "Confirm your new email for Meritory",
+              text: [
+                "Open this link to finish moving your Meritory account to this email.",
+                url,
+                "The link works for 1 hour. If you didn't ask for this, you can ignore this email.",
+              ].join("\n\n"),
+            },
+            "confirm-new-email",
+            user.id,
+          );
+          return;
+        }
         sendLater(
           {
             to: user.email,
@@ -621,6 +809,7 @@ export function createAuth(config: AuthConfig) {
       customRules: {
         "/sign-in/email": { window: 10, max: 3 },
         "/change-password": CHANGE_PASSWORD_LIMIT,
+        "/change-email": CHANGE_EMAIL_LIMIT,
         "/app-session": APP_SESSION_LIMIT,
       },
     },

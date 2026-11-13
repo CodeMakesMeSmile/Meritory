@@ -1,5 +1,6 @@
 import { API_PREFIX } from "@meritory/contracts";
 import {
+  createAccountDeletion,
   createAccountSessions,
   createAuth,
   createBoss,
@@ -47,6 +48,13 @@ const app = await buildApp(
       mailer,
       webOrigin: config.webOrigin,
       providers: config.providers,
+      log,
+    }),
+    accountDeletion: createAccountDeletion({
+      db: database.db,
+      auth,
+      mailer,
+      webOrigin: config.webOrigin,
       log,
     }),
     currentSession: createSessionLookup(auth),

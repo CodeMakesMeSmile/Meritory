@@ -5,6 +5,7 @@ import { linkClass } from "@/components/button";
 import { KeepSession } from "@/components/keep-session";
 import { LinkedNotice } from "@/components/linked-notice";
 import { LogoLockup } from "@/components/logo";
+import { emailStep } from "@/lib/email-change";
 import { requireMe } from "@/lib/me";
 import { AccountCards } from "./account-cards";
 
@@ -16,8 +17,10 @@ export default async function AccountPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const me = await requireMe("/account");
   const params = await searchParams;
+  const step = emailStep(params.email, params.error);
+  // An emailed link may open where nobody is signed in, so the step survives sign-in
+  const me = await requireMe(step ? `/account?email=${step}` : "/account");
   const notice = providerNotice(
     params.provider,
     params.error,
@@ -42,6 +45,7 @@ export default async function AccountPage({
           signInMethods={me.signInMethods}
           notice={notice}
           confirmed={params.confirmed === "1"}
+          emailStep={step}
         />
       </div>
     </main>

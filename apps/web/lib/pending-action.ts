@@ -1,4 +1,5 @@
 import {
+  EMAIL_PATTERN,
   isProvider,
   type Provider,
 } from "@meritory/contracts/sign-in-messages";
@@ -67,4 +68,31 @@ export function takePendingMethod(): MethodAction | null {
     return { kind: value.kind, provider: value.provider };
   }
   return null;
+}
+
+const DELETE_KEY = "meritory.pending-delete-account";
+
+/** A deletion waiting on "Confirm it's you" with GitHub or Google */
+export function savePendingDelete() {
+  save(DELETE_KEY, { kind: "delete" });
+}
+
+/** Reads and forgets the saved deletion. Anything malformed counts as nothing. */
+export function takePendingDelete(): boolean {
+  return take(DELETE_KEY)?.kind === "delete";
+}
+
+const EMAIL_KEY = "meritory.pending-email-change";
+
+/** An email change waiting on "Confirm it's you" with GitHub or Google */
+export function savePendingEmail(email: string) {
+  save(EMAIL_KEY, { email });
+}
+
+/** Reads and forgets the saved address. Anything malformed counts as nothing. */
+export function takePendingEmail(): string | null {
+  const value = take(EMAIL_KEY);
+  return typeof value?.email === "string" && EMAIL_PATTERN.test(value.email)
+    ? value.email
+    : null;
 }

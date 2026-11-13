@@ -57,11 +57,17 @@ export interface SignInMethodDependency {
   ): Promise<"unlinked" | "not_linked" | "last_method">;
 }
 
+export interface AccountDeletionDependency {
+  /** Set-Cookie values that clear the session in this browser */
+  delete(userId: string): Promise<{ cookies: string[] }>;
+}
+
 export interface SessionDependencies {
   /** The signed-in session for these request headers, or null */
   currentSession(headers: Headers): Promise<CurrentSession | null>;
   accountSessions: AccountSessionStore;
   signInMethods: SignInMethodDependency;
+  accountDeletion: AccountDeletionDependency;
   /** The only site allowed to send changes */
   webOrigin: string;
 }
@@ -137,6 +143,23 @@ export async function registerSignedInRoutes(
           ...user,
           signInMethods: await deps.signInMethods.list(user.id),
         };
+      },
+    );
+
+    scope.delete(
+      "/me",
+      {
+        schema: {
+          summary: "Delete the account and everything in it",
+          tags: ["account"],
+        },
+      },
+      async (request, reply) => {
+        const { user, fresh } = request.current as CurrentSession;
+        if (!fresh) return needsConfirm(reply);
+        const { cookies } = await deps.accountDeletion.delete(user.id);
+        if (cookies.length > 0) reply.header("set-cookie", cookies);
+        return reply.code(204).send();
       },
     );
 

@@ -96,5 +96,17 @@ export function createQueuedMailer(
       const job: MailJob = { kind, userId, sealed: sealMail(key, mail) };
       await boss.send(queue, { ...job });
     },
+    async forget(userId) {
+      const waiting = await boss.findJobs(queue, {
+        data: { userId },
+        queued: true,
+      });
+      if (waiting.length > 0) {
+        await boss.deleteJob(
+          queue,
+          waiting.map((job) => job.id),
+        );
+      }
+    },
   };
 }

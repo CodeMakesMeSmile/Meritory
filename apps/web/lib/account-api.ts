@@ -79,6 +79,11 @@ export function unlinkProvider(provider: "github" | "google") {
   return call(`/sign-in-methods/${provider}`, { method: "DELETE" });
 }
 
+/** Deletes the account. The answer clears this browser's session cookies. */
+export function deleteAccount() {
+  return call("", { method: "DELETE" });
+}
+
 export function confirmPassword(password: string) {
   return call("/confirm-password", {
     method: "POST",

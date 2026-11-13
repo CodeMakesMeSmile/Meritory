@@ -3,11 +3,14 @@ import type { ButtonHTMLAttributes } from "react";
 const STYLES = {
   primary: "bg-accent text-on-accent",
   secondary: "border border-border bg-card text-primary",
+  danger: "border border-danger bg-card text-danger",
 } as const;
 
 const WAITING_STYLES = {
   primary: "cursor-not-allowed bg-track text-secondary",
   secondary:
+    "cursor-not-allowed border border-border-subtle bg-card text-secondary",
+  danger:
     "cursor-not-allowed border border-border-subtle bg-card text-secondary",
 } as const;
 
