@@ -2,6 +2,7 @@ import Type from "typebox";
 import { afterEach, describe, expect, it } from "vitest";
 import { buildApp } from "./app.ts";
 import type {
+  AccountDeletionDependency,
   AccountSessionStore,
   CurrentSession,
   SignInMethodDependency,
@@ -80,6 +81,23 @@ function fakeStore() {
   return { store, calls };
 }
 
+// Records who was deleted and hands back cookies that clear the session
+function fakeDeletion() {
+  const deleted: string[] = [];
+  const deletion: AccountDeletionDependency = {
+    async delete(userId) {
+      deleted.push(userId);
+      return {
+        cookies: [
+          "session=; Path=/; Max-Age=0; HttpOnly",
+          "session_data=; Path=/; Max-Age=0; HttpOnly",
+        ],
+      };
+    },
+  };
+  return { deletion, deleted };
+}
+
 async function start(
   databaseUp: boolean,
   handleAuth = async (_request: Request) => new Response(null),
@@ -90,6 +108,7 @@ async function start(
     list: async () => SIGN_IN_METHODS,
     unlink: async () => "unlinked",
   },
+  accountDeletion = fakeDeletion().deletion,
 ) {
   app = await buildApp({
     pingDatabase: async () => databaseUp,
@@ -99,6 +118,7 @@ async function start(
     currentSession,
     accountSessions,
     signInMethods,
+    accountDeletion,
   });
   return app;
 }
@@ -396,6 +416,7 @@ describe("sessions", () => {
       { method: "DELETE" as const, url: `/v1/me/sessions/${PHONE}` },
       { method: "POST" as const, url: "/v1/me/sessions/end-others" },
       { method: "DELETE" as const, url: "/v1/me/sign-in-methods/github" },
+      { method: "DELETE" as const, url: "/v1/me" },
       {
         method: "POST" as const,
         url: "/v1/me/confirm-password",
@@ -470,6 +491,71 @@ describe("sessions", () => {
     });
   });
 
+  describe("deleting the account", () => {
+    const remove = async (cookie: string, headers = {}) => {
+      const { deletion, deleted } = fakeDeletion();
+      const app = await start(
+        true,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        deletion,
+      );
+      const res = await app.inject({
+        method: "DELETE",
+        url: "/v1/me",
+        headers: as(cookie, headers),
+      });
+      return { res, deleted };
+    };
+
+    it("deletes the signed-in user and clears the session cookies", async () => {
+      const { res, deleted } = await remove("session=good");
+      expect(res.statusCode).toBe(204);
+      expect(deleted).toEqual([ANNA.id]);
+      expect(res.headers["set-cookie"]).toEqual([
+        "session=; Path=/; Max-Age=0; HttpOnly",
+        "session_data=; Path=/; Max-Age=0; HttpOnly",
+      ]);
+    });
+
+    it("asks for the password first when the sign-in is old", async () => {
+      const { res, deleted } = await remove("session=stale");
+      expect(res.statusCode).toBe(403);
+      expect(res.json()).toMatchObject({ code: "confirm_password" });
+      expect(deleted).toEqual([]);
+    });
+
+    it("refuses another site", async () => {
+      const { res, deleted } = await remove("session=good", {
+        origin: "https://evil.example",
+      });
+      expect(res.statusCode).toBe(403);
+      expect(deleted).toEqual([]);
+    });
+
+    it("only ever deletes the signed-in user", async () => {
+      const { deletion, deleted } = fakeDeletion();
+      const app = await start(
+        true,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        deletion,
+      );
+      const res = await app.inject({
+        method: "DELETE",
+        url: "/v1/me",
+        headers: as("session=good"),
+        payload: { userId: "someone-else" },
+      });
+      expect(res.statusCode).toBe(204);
+      expect(deleted).toEqual([ANNA.id]);
+    });
+  });
+
   it("accepts the phone app, which sends no Origin", async () => {
     const res = await (await start(true)).inject({
       method: "POST",
@@ -487,6 +573,7 @@ describe("sessions", () => {
       ["POST", "/v1/me/sessions/end-others"],
       ["POST", "/v1/me/confirm-password"],
       ["DELETE", "/v1/me/sign-in-methods/github"],
+      ["DELETE", "/v1/me"],
     ] as const) {
       const res = await app.inject({
         method,

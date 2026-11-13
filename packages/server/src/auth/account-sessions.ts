@@ -11,7 +11,7 @@ export const CONFIRM_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 /** Typed passwords allowed per account in the window */
 export const CONFIRM_LIMIT = { windowSeconds: 15 * 60, max: 5 };
 
-const CONFIRM_KEY_PREFIX = "confirm-password|";
+export const CONFIRM_KEY_PREFIX = "confirm-password|";
 
 export interface AccountSession {
   id: string;

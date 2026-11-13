@@ -15,6 +15,10 @@ export {
   createAuth,
 } from "./auth/auth.ts";
 export {
+  type AccountDeletion,
+  createAccountDeletion,
+} from "./auth/delete-account.ts";
+export {
   PROVIDERS,
   type ProviderConfig,
 } from "./auth/providers.ts";
