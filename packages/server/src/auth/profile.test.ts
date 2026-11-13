@@ -3,7 +3,7 @@ import { ATTACKS, CONTROL_ATTACKS } from "@meritory/security-testing";
 import { eq, inArray, like } from "drizzle-orm";
 import { afterAll, describe, expect, it } from "vitest";
 import { createDatabase } from "../db/client.ts";
-import { sessions, users, verifications } from "../db/schema.ts";
+import { accounts, sessions, users, verifications } from "../db/schema.ts";
 import type { Mail } from "../mail/mailer.ts";
 import { createAuth } from "./auth.ts";
 
@@ -13,6 +13,8 @@ const ORIGIN = "https://meritory.test";
 const PASSWORD = "violet harbor tractor sandwich";
 const APPROVE = "Approve your new email for Meritory";
 const IN_USE = "Someone tried to use your email on Meritory";
+const CONFIRM_NEW = "Confirm your new email for Meritory";
+const CHANGED = "Your Meritory email was changed";
 const DAY = 24 * 60 * 60 * 1000;
 
 // Emails go out after the response, so tests wait for them
@@ -64,6 +66,50 @@ describe.skipIf(!url)("profile changes against Postgres", () => {
       .find((pair) => pair.includes("better-auth.session_token="));
     if (!cookie) throw new Error("no session cookie");
     return { email, cookie };
+  };
+
+  const signIn = async (email: string) => {
+    const res = await post("/sign-in/email", { email, password: PASSWORD }, {});
+    const cookie = res.headers
+      .getSetCookie()
+      .map((value) => value.split(";")[0] ?? "")
+      .find((pair) => pair.includes("better-auth.session_token="));
+    return { status: res.status, cookie };
+  };
+
+  const linkIn = (mail: Mail | undefined) => {
+    const link = mail?.text.match(
+      /https:\/\/\S+\/verify-email\?token=\S+/,
+    )?.[0];
+    if (!link) throw new Error("no link in the email");
+    return link;
+  };
+
+  // Where opening an emailed link sends the browser
+  const open = async (link: string, cookie?: string) => {
+    const res = await auth.handler(
+      new Request(link, { headers: cookie ? { cookie } : {} }),
+    );
+    expect(res.status).toBe(302);
+    return res.headers.get("location");
+  };
+
+  const sessionAlive = async (cookie: string) =>
+    (await auth.api.getSession({
+      headers: new Headers({ cookie }),
+      query: { disableCookieCache: true },
+    })) !== null;
+
+  // Asks for the change and opens the approval link, so the new address has its link
+  const approve = async (cookie: string, email: string, next: string) => {
+    expect((await changeEmail(cookie, next)).status).toBe(200);
+    await settle();
+    const approval = mailsTo(email, APPROVE).at(-1);
+    expect(await open(linkIn(approval), cookie)).toBe(
+      "/account?email=approved",
+    );
+    await settle();
+    return linkIn(mailsTo(next, CONFIRM_NEW).at(-1));
   };
 
   const freshEmail = () => `profile-${randomUUID()}@meritory.test`;
@@ -268,6 +314,119 @@ describe.skipIf(!url)("profile changes against Postgres", () => {
       }
       await settle();
       expect(mailsTo(email, APPROVE)).toEqual([]);
+    });
+  });
+
+  describe("finish an email change", () => {
+    it("moves the account only after both links, and signs out other devices", async () => {
+      const { email, cookie } = await newAccount();
+      const elsewhere = await signIn(email);
+      const next = freshEmail();
+      const finish = await approve(cookie, email, next);
+      // Approving alone changes nothing
+      expect(await emailOf(email)).toBe(email);
+      expect(mailsTo(next, CONFIRM_NEW)[0]?.text).not.toContain(
+        "finish signing up",
+      );
+
+      expect(await open(finish, cookie)).toBe("/account?email=changed");
+      const [row] = await db
+        .select({ email: users.email, emailVerified: users.emailVerified })
+        .from(users)
+        .where(eq(users.email, next));
+      expect(row).toEqual({ email: next, emailVerified: true });
+      expect(await sessionAlive(cookie)).toBe(true);
+      expect(await sessionAlive(elsewhere.cookie ?? "")).toBe(false);
+
+      await settle();
+      const [notice] = mailsTo(email, CHANGED);
+      expect(notice?.text).toContain(next);
+      expect(notice?.text).not.toContain("forgot-password");
+
+      expect((await signIn(next)).status).toBe(200);
+      expect((await signIn(email)).status).toBe(401);
+    });
+
+    it("signs out every device when the last link opens without a session", async () => {
+      const { email, cookie } = await newAccount();
+      const finish = await approve(cookie, email, freshEmail());
+      expect(await open(finish)).toBe("/account?email=changed");
+      expect(await sessionAlive(cookie)).toBe(false);
+    });
+
+    it("keeps linked GitHub and Google sign-ins", async () => {
+      const { email, cookie } = await newAccount();
+      const userId = await idOf(email);
+      await db
+        .insert(accounts)
+        .values({ accountId: "4242", providerId: "github", userId });
+      const finish = await approve(cookie, email, freshEmail());
+      expect(await open(finish, cookie)).toBe("/account?email=changed");
+      const linked = await db
+        .select({ accountId: accounts.accountId })
+        .from(accounts)
+        .where(eq(accounts.userId, userId));
+      expect(linked).toContainEqual({ accountId: "4242" });
+    });
+
+    it("lets each link work once", async () => {
+      const { email, cookie } = await newAccount();
+      const finish = await approve(cookie, email, freshEmail());
+      const approval = linkIn(mailsTo(email, APPROVE).at(-1));
+      expect(await open(approval, cookie)).toBe("/account?email=failed");
+      expect(await open(finish, cookie)).toBe("/account?email=changed");
+      expect(await open(finish, cookie)).toBe("/account?email=failed");
+    });
+
+    it("cancels an older request when a newer one is made", async () => {
+      const { email, cookie } = await newAccount();
+      await changeEmail(cookie, freshEmail());
+      await settle();
+      const older = linkIn(mailsTo(email, APPROVE).at(-1));
+      await changeEmail(cookie, freshEmail());
+      await settle();
+      expect(await open(older, cookie)).toBe("/account?email=failed");
+      expect(await emailOf(email)).toBe(email);
+    });
+
+    it("fails when someone takes the address before the last link", async () => {
+      const { email, cookie } = await newAccount();
+      const next = freshEmail();
+      const finish = await approve(cookie, email, next);
+      await post(
+        "/sign-up/email",
+        { name: "Sam", email: next, password: PASSWORD },
+        {},
+      );
+      expect(await open(finish, cookie)).toBe("/account?email=failed");
+      expect(await emailOf(email)).toBe(email);
+      await settle();
+      expect(mailsTo(email, CHANGED)).toEqual([]);
+    });
+
+    it("sends a forged change link to the failed page", async () => {
+      const { email } = await newAccount();
+      const payload = Buffer.from(
+        JSON.stringify({
+          email,
+          updateTo: freshEmail(),
+          userId: await idOf(email),
+          requestType: "change-email-verification",
+        }),
+      ).toString("base64url");
+      const forged = `${ORIGIN}/api/v1/auth/verify-email?token=e30.${payload}.sig`;
+      expect(await open(forged)).toBe("/account?email=failed");
+      expect(await emailOf(email)).toBe(email);
+    });
+
+    it("refuses the last link in a browser signed in to another account", async () => {
+      const { email, cookie } = await newAccount();
+      const other = await newAccount();
+      const finish = await approve(cookie, email, freshEmail());
+      expect(await open(finish, other.cookie)).toMatch(
+        /^\/account\?email=changed&error=/,
+      );
+      expect(await emailOf(email)).toBe(email);
     });
   });
 });

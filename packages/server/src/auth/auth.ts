@@ -15,12 +15,18 @@ import {
   isAPIError,
 } from "better-auth/api";
 import { setSessionCookie } from "better-auth/cookies";
-import { and, count, eq } from "drizzle-orm";
+import { and, count, eq, ne } from "drizzle-orm";
 import type { Database } from "../db/client.ts";
 import * as schema from "../db/schema.ts";
 import type { Mail, Mailer, MailKind } from "../mail/mailer.ts";
 import { isFresh } from "./account-sessions.ts";
 import { type AppCodes, createAppCodes, isChallenge } from "./app-codes.ts";
+import {
+  type ChangeLink,
+  EMAIL_CHANGE_PATH,
+  emailChangePath,
+  readChangeLink,
+} from "./email-change.ts";
 import { createEmailLinks, type EmailLinks } from "./email-links.ts";
 import {
   appReturnAddress,
@@ -55,9 +61,6 @@ export const CHANGE_PASSWORD_LIMIT = { window: 15 * 60, max: 5 };
 
 /** Email change requests per IP in the window */
 export const CHANGE_EMAIL_LIMIT = { window: 15 * 60, max: 5 };
-
-/** Where email change links open, with ?email= saying how it went */
-export const EMAIL_CHANGE_PATH = "/account";
 
 // Asks the page to show Confirm it's you, then try again
 const CONFIRM_FIRST = {
@@ -314,8 +317,27 @@ export function createAuth(config: AuthConfig) {
 
     if (ctx.path === "/verify-email") {
       const token = ctx.query?.token;
+      const change = typeof token === "string" ? readChangeLink(token) : null;
+      const failed = change ? emailChangePath("failed") : LINK_FAILED_PATH;
       if (typeof token !== "string" || !(await links.consume(token))) {
-        throw ctx.redirect(LINK_FAILED_PATH);
+        throw ctx.redirect(failed);
+      }
+      if (change) {
+        if (change.finishes) {
+          // Someone may have taken the address since it was approved
+          const taken = await ctx.context.internalAdapter.findUserByEmail(
+            change.to,
+          );
+          if (taken) throw ctx.redirect(failed);
+        }
+        // Better Auth sends both steps to one address, so each step picks its own
+        const step = change.finishes ? "changed" : "approved";
+        return {
+          context: {
+            ...ctx,
+            query: { ...ctx.query, callbackURL: emailChangePath(step) },
+          },
+        };
       }
     }
   });
@@ -358,6 +380,36 @@ export function createAuth(config: AuthConfig) {
       },
       "email-in-use",
       user.id,
+    );
+  }
+
+  // Like a new password, a new email signs out every other device
+  async function finishEmailChange(
+    ctx: Parameters<typeof getSessionFromCtx>[0],
+    change: ChangeLink,
+  ) {
+    const here = await getSessionFromCtx(ctx);
+    const keep = here?.user.id === change.userId ? here.session.id : undefined;
+    await config.db
+      .delete(schema.sessions)
+      .where(
+        and(
+          eq(schema.sessions.userId, change.userId),
+          ...(keep ? [ne(schema.sessions.id, keep)] : []),
+        ),
+      );
+    sendLater(
+      {
+        to: change.from,
+        subject: "Your Meritory email was changed",
+        text: [
+          `The email for your Meritory account is now ${change.to}, and your other devices were signed out.`,
+          "If this was you, there's nothing else to do.",
+          "If it wasn't you, someone could read this inbox, because the change was approved from it. Secure this email account first.",
+        ].join("\n\n"),
+      },
+      "email-changed",
+      change.userId,
     );
   }
 
@@ -453,6 +505,19 @@ export function createAuth(config: AuthConfig) {
         return;
       }
       throw ctx.redirect(provider ? withLinked(location, provider) : location);
+    }
+    if (ctx.path === "/verify-email") {
+      const token = ctx.query?.token;
+      // Hooks don't share a context, so read the link again. Only a link Better Auth accepted reaches the changed step.
+      const change = typeof token === "string" ? readChangeLink(token) : null;
+      const returned = ctx.context.returned;
+      const location = isAPIError(returned)
+        ? returned.headers?.get("location")
+        : null;
+      if (change?.finishes && location === emailChangePath("changed")) {
+        await finishEmailChange(ctx, change);
+      }
+      return;
     }
     if (ctx.path !== "/change-password") return;
     const returned = ctx.context.returned as { user?: unknown } | undefined;
@@ -705,6 +770,23 @@ export function createAuth(config: AuthConfig) {
           token,
           new Date(Date.now() + LINK_LIFETIME_SECONDS * 1000),
         );
+        // The second step of an email change comes here too, for the new address
+        if (readChangeLink(token)) {
+          sendLater(
+            {
+              to: user.email,
+              subject: "Confirm your new email for Meritory",
+              text: [
+                "Open this link to finish moving your Meritory account to this email.",
+                url,
+                "The link works for 1 hour. If you didn't ask for this, you can ignore this email.",
+              ].join("\n\n"),
+            },
+            "confirm-new-email",
+            user.id,
+          );
+          return;
+        }
         sendLater(
           {
             to: user.email,

@@ -14,7 +14,9 @@ export type MailKind =
   | "provider-linked"
   | "provider-unlinked"
   | "approve-email-change"
-  | "email-in-use";
+  | "email-in-use"
+  | "confirm-new-email"
+  | "email-changed";
 
 /** What a log may say about a mail. Never the address or the text. */
 export interface MailTag {
