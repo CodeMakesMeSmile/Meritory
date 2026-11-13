@@ -54,6 +54,25 @@ describe("Profile", () => {
     expect(html).toContain('value="Rowan Lee"');
     expect(html).toContain("Save name");
     expect(html).toContain("rowan@meritory.test");
+    expect(html).toContain("Change email");
+    // The form only opens from the button
+    expect(html).not.toContain("New email");
+  });
+
+  it.each([
+    [{ email: "approved" }, "Change approved. Now open the link"],
+    [{ email: "changed" }, "Your email is now rowan@meritory.test."],
+    [{ email: "failed" }, "That link didn&#x27;t work"],
+    [{ email: "changed", error: "INVALID_USER" }, "That link didn&#x27;t work"],
+  ])("says where the emailed link left off for %j", async (params, text) => {
+    const html = await account(withPassword, params);
+    expect(html).toContain(text);
+  });
+
+  it("says nothing about an unknown step", async () => {
+    const html = await account(withPassword, { email: "<b>done</b>" });
+    expect(html).not.toContain("That link didn");
+    expect(html).not.toContain("<b>done</b>");
   });
 });
 

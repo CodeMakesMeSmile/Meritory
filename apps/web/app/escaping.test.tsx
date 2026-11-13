@@ -58,8 +58,8 @@ describe("people's text renders as text", () => {
     const html = renderToStaticMarkup(
       <ProfileCard name={attack} email={attack} />,
     );
-    // Once in the name field and once as the email
-    expect(html.split(escapeHtml(attack)).length - 1).toBe(2);
+    expect(html).toContain(`value="${escapeHtml(attack)}"`);
+    expect(html).toContain(`break-all">${escapeHtml(attack)}</span>`);
     if (/[<>"']/.test(attack)) expect(html).not.toContain(attack);
   });
 

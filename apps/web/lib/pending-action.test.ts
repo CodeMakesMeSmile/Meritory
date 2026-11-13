@@ -1,8 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   savePendingAction,
+  savePendingEmail,
   savePendingMethod,
   takePendingAction,
+  takePendingEmail,
   takePendingMethod,
 } from "./pending-action.ts";
 
@@ -77,4 +79,33 @@ describe("pending sign-out", () => {
     expect(() => savePendingAction({ kind: "others" })).not.toThrow();
     expect(takePendingAction()).toBeNull();
   });
+});
+
+describe("pending email change", () => {
+  let store: Map<string, string>;
+
+  beforeEach(() => {
+    store = new Map();
+    vi.stubGlobal("sessionStorage", {
+      getItem: (key: string) => store.get(key) ?? null,
+      setItem: (key: string, value: string) => void store.set(key, value),
+      removeItem: (key: string) => void store.delete(key),
+    });
+  });
+
+  afterEach(() => vi.unstubAllGlobals());
+
+  it("gives the address back once", () => {
+    savePendingEmail("new@meritory.test");
+    expect(takePendingEmail()).toBe("new@meritory.test");
+    expect(takePendingEmail()).toBeNull();
+  });
+
+  it.each([{ email: "not an email" }, { email: 42 }, {}, null])(
+    "ignores a malformed waiting change %j",
+    (saved) => {
+      store.set("meritory.pending-email-change", JSON.stringify(saved));
+      expect(takePendingEmail()).toBeNull();
+    },
+  );
 });

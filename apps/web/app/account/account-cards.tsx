@@ -3,8 +3,10 @@
 import type { SignInMethods } from "@meritory/contracts";
 import type { ProviderNotice } from "@meritory/contracts/sign-in-messages";
 import { useState } from "react";
+import type { EmailStep } from "@/lib/email-change";
 import { MethodsCard } from "./methods-card";
 import { PasswordCard } from "./password-card";
+import { ProfileCard } from "./profile-card";
 import { SessionsCard } from "./sessions-card";
 
 interface AccountCardsProps {
@@ -15,6 +17,8 @@ interface AccountCardsProps {
   notice: ProviderNotice | null;
   /** Back from signing in again with GitHub or Google */
   confirmed: boolean;
+  /** Where an emailed email change link left off */
+  emailStep?: EmailStep | null;
 }
 
 /** The cards that change together, since a new password ends other sessions */
@@ -24,6 +28,7 @@ export function AccountCards({
   signInMethods,
   notice,
   confirmed,
+  emailStep = null,
 }: AccountCardsProps) {
   const [version, setVersion] = useState(0);
   // Without a password, signing in again with a provider confirms it's them
@@ -32,6 +37,13 @@ export function AccountCards({
     : (signInMethods.providers[0]?.id ?? null);
   return (
     <>
+      <ProfileCard
+        name={name}
+        email={email}
+        provider={provider}
+        confirmed={confirmed}
+        step={emailStep}
+      />
       <MethodsCard
         methods={signInMethods}
         notice={notice}
