@@ -2,6 +2,7 @@ import { SESSION_ERRORS as CONTRACT } from "@meritory/contracts";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   confirmPassword,
+  deleteAccount,
   endSession,
   listSessions,
   SESSION_ERRORS,
@@ -32,6 +33,16 @@ describe("account api", () => {
     expect(fetch).toHaveBeenCalledWith(
       "/api/v1/me/sessions",
       expect.objectContaining({ cache: "no-store" }),
+    );
+  });
+
+  it("deletes the account with DELETE on /me itself", async () => {
+    const fetch = reply(204);
+    vi.stubGlobal("fetch", fetch);
+    expect(await deleteAccount()).toEqual({ ok: true, data: undefined });
+    expect(fetch).toHaveBeenCalledWith(
+      "/api/v1/me",
+      expect.objectContaining({ method: "DELETE" }),
     );
   });
 

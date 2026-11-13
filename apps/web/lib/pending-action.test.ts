@@ -1,9 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   savePendingAction,
+  savePendingDelete,
   savePendingEmail,
   savePendingMethod,
   takePendingAction,
+  takePendingDelete,
   takePendingEmail,
   takePendingMethod,
 } from "./pending-action.ts";
@@ -94,6 +96,23 @@ describe("pending email change", () => {
   });
 
   afterEach(() => vi.unstubAllGlobals());
+
+  it("gives a waiting deletion back once, apart from the others", () => {
+    savePendingEmail("new@meritory.test");
+    expect(takePendingDelete()).toBe(false);
+    savePendingDelete();
+    expect(takePendingDelete()).toBe(true);
+    expect(takePendingDelete()).toBe(false);
+    expect(takePendingEmail()).toBe("new@meritory.test");
+  });
+
+  it.each([{ kind: "others" }, { kind: "Delete" }, "delete", null])(
+    "ignores a malformed waiting deletion %j",
+    (saved) => {
+      store.set("meritory.pending-delete-account", JSON.stringify(saved));
+      expect(takePendingDelete()).toBe(false);
+    },
+  );
 
   it("gives the address back once", () => {
     savePendingEmail("new@meritory.test");

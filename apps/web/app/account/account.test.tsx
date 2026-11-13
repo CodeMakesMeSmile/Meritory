@@ -12,6 +12,7 @@ vi.mock("@/lib/me", () => ({ requireMe: async () => me.current }));
 const { default: AccountPage } = await import("./page.tsx");
 const { ConfirmItsYou } = await import("./confirm-its-you.tsx");
 const { onlyWayText, stillWorksText } = await import("./methods-card.tsx");
+const { deleteText } = await import("./delete-card.tsx");
 
 const account = async (
   signInMethods: MeResponse["signInMethods"],
@@ -179,6 +180,43 @@ describe("Sign-in methods", () => {
       "Google and your email and password still work.",
     );
   });
+});
+
+describe("Delete account", () => {
+  it("comes last, with a red button that only opens the question", async () => {
+    const html = await account(withPassword);
+    const card = html.indexOf("Delete account");
+    expect(card).toBeGreaterThan(html.indexOf("Password"));
+    expect(html).toContain(
+      "This removes your practice history, sessions, and sign-in methods. It can&#x27;t be undone.",
+    );
+    expect(html).toMatch(/border-danger[^"]*text-danger[^>]*>Delete account</);
+    // The dialog's words render only once it opens
+    expect(html).not.toContain("Delete my account");
+  });
+
+  it.each([
+    [
+      3,
+      2,
+      "Your practice history, 3 sessions, and 2 sign-in methods will be removed for good. This can't be undone.",
+    ],
+    [
+      1,
+      1,
+      "Your practice history, 1 session, and 1 sign-in method will be removed for good. This can't be undone.",
+    ],
+    [
+      null,
+      2,
+      "Your practice history, sessions, and 2 sign-in methods will be removed for good. This can't be undone.",
+    ],
+  ])(
+    "names what goes for %j sessions and %j methods",
+    (sessions, methods, text) => {
+      expect(deleteText(sessions, methods)).toBe(text);
+    },
+  );
 });
 
 describe("Confirm it's you", () => {

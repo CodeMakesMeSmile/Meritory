@@ -27,10 +27,13 @@ const FIELDS: Field[] = ["email", "password"];
 export function SignInForm({
   next,
   passwordSaved = false,
+  accountDeleted = false,
   providerNotice = null,
 }: {
   next: string;
   passwordSaved?: boolean;
+  /** Just came from deleting the account */
+  accountDeleted?: boolean;
   /** Why GitHub or Google sent them back */
   providerNotice?: ProviderNotice | null;
 }) {
@@ -137,6 +140,12 @@ export function SignInForm({
       {passwordSaved && !formError && !unconfirmed && (
         <Alert tone="success">
           Password saved. Sign in with your new password.
+        </Alert>
+      )}
+
+      {accountDeleted && !formError && !unconfirmed && (
+        <Alert tone="success">
+          Your account was deleted. We emailed you a confirmation.
         </Alert>
       )}
 

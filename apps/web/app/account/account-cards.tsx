@@ -4,6 +4,7 @@ import type { SignInMethods } from "@meritory/contracts";
 import type { ProviderNotice } from "@meritory/contracts/sign-in-messages";
 import { useState } from "react";
 import type { EmailStep } from "@/lib/email-change";
+import { DeleteCard } from "./delete-card";
 import { MethodsCard } from "./methods-card";
 import { PasswordCard } from "./password-card";
 import { ProfileCard } from "./profile-card";
@@ -56,6 +57,13 @@ export function AccountCards({
         email={email}
         provider={provider}
         onChanged={() => setVersion((now) => now + 1)}
+      />
+      <DeleteCard
+        methods={
+          signInMethods.providers.length + (signInMethods.passwordSetAt ? 1 : 0)
+        }
+        provider={provider}
+        confirmed={confirmed}
       />
     </>
   );
