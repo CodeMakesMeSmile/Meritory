@@ -7,6 +7,7 @@ import { LinkedNotice } from "@/components/linked-notice";
 import { LogoLockup } from "@/components/logo";
 import { requireMe } from "@/lib/me";
 import { AccountCards } from "./account-cards";
+import { ProfileCard } from "./profile-card";
 
 export const metadata: Metadata = { title: "Account · Meritory" };
 
@@ -36,6 +37,7 @@ export default async function AccountPage({
         </div>
         <h1 className="text-display">Account</h1>
         <LinkedNotice linked={params.linked} />
+        <ProfileCard name={me.name} email={me.email} />
         <AccountCards
           name={me.name}
           email={me.email}

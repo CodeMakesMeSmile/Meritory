@@ -7,7 +7,7 @@ export function Card({
   children,
 }: {
   title: string;
-  description: string;
+  description?: string;
   children: ReactNode;
 }) {
   const id = `${title.toLowerCase().replace(/\W+/g, "-")}-title`;
@@ -20,7 +20,9 @@ export function Card({
         <h2 id={id} className="text-h3">
           {title}
         </h2>
-        <p className="text-small text-secondary">{description}</p>
+        {description && (
+          <p className="text-small text-secondary">{description}</p>
+        )}
       </div>
       {children}
     </section>

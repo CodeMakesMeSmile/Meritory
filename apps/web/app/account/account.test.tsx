@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock("next/navigation", () => ({
-  useRouter: () => ({ replace: () => {}, push: () => {} }),
+  useRouter: () => ({ replace: () => {}, push: () => {}, refresh: () => {} }),
 }));
 
 const me = vi.hoisted(() => ({ current: null as MeResponse | null }));
@@ -43,6 +43,19 @@ const withPassword = {
   providers: [linked("google")],
   available: both,
 };
+
+describe("Profile", () => {
+  it("comes first, with the name to edit and the email", async () => {
+    const html = await account(withPassword);
+    const profile = html.indexOf("Profile");
+    expect(profile).toBeGreaterThan(-1);
+    expect(html.indexOf("Sign-in methods")).toBeGreaterThan(profile);
+    expect(html).toContain("What should we call you?");
+    expect(html).toContain('value="Rowan Lee"');
+    expect(html).toContain("Save name");
+    expect(html).toContain("rowan@meritory.test");
+  });
+});
 
 describe("Account without a password", () => {
   it("offers to email a link instead of asking for the current password", async () => {

@@ -3,11 +3,12 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import { Alert } from "@/components/alert";
 import { TextField } from "@/components/text-field";
+import { ProfileCard } from "./account/profile-card.tsx";
 
 const me = vi.hoisted(() => ({ name: "" }));
 
 vi.mock("next/navigation", () => ({
-  useRouter: () => ({ replace: () => {} }),
+  useRouter: () => ({ replace: () => {}, refresh: () => {} }),
 }));
 vi.mock("@/lib/me", () => ({
   requireMe: async () => ({ id: "1", name: me.name, email: "a@b.test" }),
@@ -51,6 +52,15 @@ describe("people's text renders as text", () => {
   it.each(ATTACKS)("an email of %j on check your email", (attack) => {
     me.name = attack;
     expectEscaped(renderToStaticMarkup(<SentTo />), attack);
+  });
+
+  it.each(ATTACKS)("a name and email of %j on Account", (attack) => {
+    const html = renderToStaticMarkup(
+      <ProfileCard name={attack} email={attack} />,
+    );
+    // Once in the name field and once as the email
+    expect(html.split(escapeHtml(attack)).length - 1).toBe(2);
+    if (/[<>"']/.test(attack)) expect(html).not.toContain(attack);
   });
 
   it.each(ATTACKS)("a message of %j in an alert", (attack) => {
