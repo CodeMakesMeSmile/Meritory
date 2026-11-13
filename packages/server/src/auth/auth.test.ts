@@ -100,7 +100,7 @@ describe("createAuth", () => {
     );
   });
 
-  it.each(CONTROL_ATTACKS)(
+  it.each(["", "   ", ...CONTROL_ATTACKS])(
     "rejects the name %j before touching the database",
     async (name) => {
       const res = await post("/sign-up/email", {
