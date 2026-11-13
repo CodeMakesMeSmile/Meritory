@@ -5,7 +5,7 @@ import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
 
 /** The website origin, which also serves the API at /api/v1 */
-function webOrigin() {
+export function webOrigin() {
   const configured = process.env.EXPO_PUBLIC_WEB_ORIGIN;
   if (configured) return configured;
   const host = Constants.expoConfig?.hostUri?.split(":")[0];

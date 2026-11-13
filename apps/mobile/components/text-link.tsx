@@ -7,16 +7,22 @@ const TAP_AREA = { top: 12, bottom: 12, left: 4, right: 4 };
 export function TextLink({
   label,
   accessibilityLabel,
+  accessibilityHint,
+  role = "button",
   onPress,
 }: {
   label: string;
   accessibilityLabel?: string;
+  accessibilityHint?: string;
+  /** "link" when it leaves the app */
+  role?: "button" | "link";
   onPress: () => void;
 }) {
   return (
     <Pressable
-      accessibilityRole="button"
+      accessibilityRole={role}
       accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
       hitSlop={TAP_AREA}
       onPress={onPress}
     >
