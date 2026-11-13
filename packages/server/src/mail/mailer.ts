@@ -12,7 +12,9 @@ export type MailKind =
   | "password-changed"
   | "existing-account"
   | "provider-linked"
-  | "provider-unlinked";
+  | "provider-unlinked"
+  | "approve-email-change"
+  | "email-in-use";
 
 /** What a log may say about a mail. Never the address or the text. */
 export interface MailTag {
