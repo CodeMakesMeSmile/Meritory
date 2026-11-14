@@ -34,9 +34,9 @@ export function sealMail(key: Buffer, mail: Mail): string {
     authTagLength: TAG_BYTES,
   });
   cipher.setAAD(CONTEXT);
-  const { to, subject, text } = mail;
+  const { to, subject, text, html } = mail;
   const body = Buffer.concat([
-    cipher.update(JSON.stringify({ to, subject, text }), "utf8"),
+    cipher.update(JSON.stringify({ to, subject, text, html }), "utf8"),
     cipher.final(),
   ]);
   return Buffer.concat([iv, cipher.getAuthTag(), body]).toString("base64");
@@ -68,9 +68,12 @@ export function openMail(key: Buffer, sealed: unknown): Mail {
   if (
     typeof mail?.to !== "string" ||
     typeof mail.subject !== "string" ||
-    typeof mail.text !== "string"
+    typeof mail.text !== "string" ||
+    (mail.html !== undefined && typeof mail.html !== "string")
   ) {
     throw new UnreadableMailError();
   }
-  return { to: mail.to, subject: mail.subject, text: mail.text };
+  const opened: Mail = { to: mail.to, subject: mail.subject, text: mail.text };
+  if (mail.html !== undefined) opened.html = mail.html;
+  return opened;
 }

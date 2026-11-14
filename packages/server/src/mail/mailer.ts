@@ -4,6 +4,8 @@ export interface Mail {
   to: string;
   subject: string;
   text: string;
+  /** The designed version. Mail queued before it existed has none. */
+  html?: string;
 }
 
 export type MailKind =

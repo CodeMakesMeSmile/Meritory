@@ -45,6 +45,21 @@ describe("sealMail", () => {
     const extra = { ...mail, bcc: "someone@meritory.test" };
     expect(openMail(key, sealMail(key, extra))).toEqual(mail);
   });
+
+  it("keeps the HTML version, sealed with the rest", () => {
+    const designed = { ...mail, html: "<p>Reset your password</p>" };
+    const sealed = sealMail(key, designed);
+    expect(openMail(key, sealed)).toEqual(designed);
+    expect(Buffer.from(sealed, "base64").toString("latin1")).not.toContain(
+      "<p>",
+    );
+  });
+
+  it("opens mail queued before HTML existed", () => {
+    const opened = openMail(key, sealMail(key, mail));
+    expect(opened).toEqual(mail);
+    expect("html" in opened).toBe(false);
+  });
 });
 
 describe("openMail", () => {
@@ -66,7 +81,9 @@ describe("openMail", () => {
   });
 
   it("refuses a sealed value that isn't a mail", () => {
-    const sealed = sealMail(key, { to: 1 } as never);
-    expect(() => openMail(key, sealed)).toThrow(UnreadableMailError);
+    for (const bad of [{ to: 1 }, { ...mail, html: 42 }]) {
+      const sealed = sealMail(key, bad as never);
+      expect(() => openMail(key, sealed)).toThrow(UnreadableMailError);
+    }
   });
 });
