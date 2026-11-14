@@ -11,7 +11,8 @@
   "scripts": {
     "typecheck": "tsc",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "node --env-file-if-exists=../../.env src/db/migrate.ts"
+    "db:migrate": "node --env-file-if-exists=../../.env src/db/migrate.ts",
+    "mail:preview": "node --env-file-if-exists=../../.env src/mail/preview.ts"
   },
   "dependencies": {
     "@better-auth/drizzle-adapter": "1.7.17",
