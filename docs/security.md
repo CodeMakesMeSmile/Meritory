@@ -15,7 +15,7 @@ React escapes every value it renders as text or as an attribute. Keep it that wa
 - No `javascript:` URLs. A URL from outside goes into `href` or `src` only after it's checked against the schemes and hosts we allow.
 - Build query strings with `URLSearchParams` or `encodeURIComponent`, never by joining strings.
 - Don't put untrusted data into `<script>`, `<style>`, inline style strings, or event handler attributes.
-- Emails are plain text. If HTML emails arrive, every value in them gets HTML-encoded.
+- HTML emails are built only with `renderEmail` in `packages/server/src/mail/email-layout.ts`. It HTML-encodes every value and refuses links that aren't http or https.
 
 ### 2. Bind every SQL value
 

@@ -24,6 +24,7 @@
     "services:down": "docker compose down",
     "db:generate": "pnpm --filter @meritory/server db:generate",
     "db:migrate": "pnpm --filter @meritory/server db:migrate",
+    "mail:preview": "pnpm --filter @meritory/server mail:preview",
     "lint": "biome check .",
     "format": "biome check --write .",
     "typecheck": "pnpm -r --parallel typecheck",

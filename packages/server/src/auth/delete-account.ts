@@ -1,6 +1,7 @@
 import { and, eq, like, or } from "drizzle-orm";
 import type { Database } from "../db/client.ts";
 import { rateLimits, users, verifications } from "../db/schema.ts";
+import { accountDeleted } from "../mail/emails.ts";
 import type { Mailer } from "../mail/mailer.ts";
 import { CONFIRM_KEY_PREFIX } from "./account-sessions.ts";
 import type { Auth, AuthLogger } from "./auth.ts";
@@ -75,18 +76,10 @@ export function createAccountDeletion({
       });
 
       mailer
-        .send(
-          {
-            to: user.email,
-            subject: "Your Meritory account was deleted",
-            text: [
-              "Your Meritory account and everything in it were deleted, and every device was signed out.",
-              "If this was you, there's nothing else to do.",
-              `You can sign up again with this email at any time, as a new account: ${webOrigin}/sign-up`,
-            ].join("\n\n"),
-          },
-          { kind: "account-deleted", userId },
-        )
+        .send(accountDeleted(user.email, webOrigin), {
+          kind: "account-deleted",
+          userId,
+        })
         .catch((err: unknown) =>
           log.error({ err, kind: "account-deleted", userId }, "email failed"),
         );

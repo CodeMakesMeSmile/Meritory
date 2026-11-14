@@ -1,6 +1,7 @@
 import { and, eq, sql } from "drizzle-orm";
 import type { Database } from "../db/client.ts";
 import { accounts, unlinkedProviders, users } from "../db/schema.ts";
+import { providerUnlinked } from "../mail/emails.ts";
 import type { Mailer } from "../mail/mailer.ts";
 import type { AuthLogger } from "./auth.ts";
 import {
@@ -35,15 +36,7 @@ export function createSignInMethods(config: SignInMethodsConfig) {
     if (!user) return;
     const label = PROVIDER_LABELS[provider];
     await config.mailer.send(
-      {
-        to: user.email,
-        subject: `${label} was removed from your Meritory account`,
-        text: [
-          `${label} can no longer sign you in to Meritory.`,
-          "If this was you, there's nothing else to do.",
-          `If it wasn't you, reset your password now: ${config.webOrigin}/forgot-password`,
-        ].join("\n\n"),
-      },
+      providerUnlinked(user.email, label, config.webOrigin),
       { kind: "provider-unlinked", userId },
     );
   }

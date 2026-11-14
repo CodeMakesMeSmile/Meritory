@@ -18,6 +18,17 @@ import { setSessionCookie } from "better-auth/cookies";
 import { and, count, eq, ne } from "drizzle-orm";
 import type { Database } from "../db/client.ts";
 import * as schema from "../db/schema.ts";
+import {
+  approveEmailChange,
+  confirmNewEmail,
+  emailChanged,
+  emailInUse,
+  existingAccount,
+  passwordChanged,
+  providerLinked,
+  resetPassword,
+  verifyEmail,
+} from "../mail/emails.ts";
 import type { Mail, Mailer, MailKind } from "../mail/mailer.ts";
 import { isFresh } from "./account-sessions.ts";
 import { type AppCodes, createAppCodes, isChallenge } from "./app-codes.ts";
@@ -353,15 +364,7 @@ export function createAuth(config: AuthConfig) {
 
   function sendPasswordChanged(user: { id: string; email: string }) {
     sendLater(
-      {
-        to: user.email,
-        subject: "Your Meritory password was changed",
-        text: [
-          "The password for your Meritory account was just changed, and your other devices were signed out.",
-          "If this was you, there's nothing else to do.",
-          `If it wasn't you, reset your password now: ${config.webOrigin}/forgot-password`,
-        ].join("\n\n"),
-      },
+      passwordChanged(user.email, config.webOrigin),
       "password-changed",
       user.id,
     );
@@ -369,15 +372,7 @@ export function createAuth(config: AuthConfig) {
 
   function sendEmailInUse(user: { id: string; email: string }) {
     sendLater(
-      {
-        to: user.email,
-        subject: "Someone tried to use your email on Meritory",
-        text: [
-          "Someone tried to move another Meritory account to this email, but it already belongs to your account.",
-          `If that was you, sign in with this email instead: ${config.webOrigin}/sign-in`,
-          "If it wasn't you, you can ignore this email. Nothing about your account has changed.",
-        ].join("\n\n"),
-      },
+      emailInUse(user.email, config.webOrigin),
       "email-in-use",
       user.id,
     );
@@ -399,15 +394,7 @@ export function createAuth(config: AuthConfig) {
         ),
       );
     sendLater(
-      {
-        to: change.from,
-        subject: "Your Meritory email was changed",
-        text: [
-          `The email for your Meritory account is now ${change.to}, and your other devices were signed out.`,
-          "If this was you, there's nothing else to do.",
-          "If it wasn't you, someone could read this inbox, because the change was approved from it. Secure this email account first.",
-        ].join("\n\n"),
-      },
+      emailChanged(change.from, change.to),
       "email-changed",
       change.userId,
     );
@@ -428,15 +415,7 @@ export function createAuth(config: AuthConfig) {
     if (!user) return false;
     const label = PROVIDER_LABELS[providerId];
     sendLater(
-      {
-        to: user.email,
-        subject: `${label} was added to your Meritory account`,
-        text: [
-          `${label} can now sign you in to Meritory.`,
-          "If this was you, there's nothing else to do.",
-          `If it wasn't you, reset your password now: ${config.webOrigin}/forgot-password`,
-        ].join("\n\n"),
-      },
+      providerLinked(user.email, label, config.webOrigin),
       "provider-linked",
       userId,
     );
@@ -589,16 +568,7 @@ export function createAuth(config: AuthConfig) {
             )
             .then(() =>
               sendLater(
-                {
-                  to: user.email,
-                  subject: "Approve your new email for Meritory",
-                  text: [
-                    `Someone asked to change the email on your Meritory account to ${newEmail}.`,
-                    `If it was you, approve it with this link: ${url}`,
-                    "The link works for 1 hour. Then we send a link to the new address to finish.",
-                    `If it wasn't you, don't open the link, and your email stays the same. Reset your password to be safe: ${config.webOrigin}/forgot-password`,
-                  ].join("\n\n"),
-                },
+                approveEmailChange(user.email, newEmail, url, config.webOrigin),
                 "approve-email-change",
                 user.id,
               ),
@@ -709,16 +679,7 @@ export function createAuth(config: AuthConfig) {
           return;
         }
         sendLater(
-          {
-            to: user.email,
-            subject: "Someone tried to sign up with your email",
-            text: [
-              "Someone tried to create a Meritory account with this email, but you already have one.",
-              `Sign in: ${config.webOrigin}/sign-in`,
-              `Forgot your password? ${config.webOrigin}/forgot-password`,
-              "If this wasn't you, you can ignore this email. Nothing about your account has changed.",
-            ].join("\n\n"),
-          },
+          existingAccount(user.email, config.webOrigin),
           "existing-account",
           user.id,
         );
@@ -732,15 +693,7 @@ export function createAuth(config: AuthConfig) {
           .then((fresh) => {
             if (!fresh) return;
             sendLater(
-              {
-                to: user.email,
-                subject: "Reset your Meritory password",
-                text: [
-                  "Someone asked to reset the password for your Meritory account.",
-                  url,
-                  "The link works for 1 hour. Saving a new password signs out your other devices. If this wasn't you, you can ignore this email.",
-                ].join("\n\n"),
-              },
+              resetPassword(user.email, url),
               "reset-password",
               user.id,
             );
@@ -773,33 +726,13 @@ export function createAuth(config: AuthConfig) {
         // The second step of an email change comes here too, for the new address
         if (readChangeLink(token)) {
           sendLater(
-            {
-              to: user.email,
-              subject: "Confirm your new email for Meritory",
-              text: [
-                "Open this link to finish moving your Meritory account to this email.",
-                url,
-                "The link works for 1 hour. If you didn't ask for this, you can ignore this email.",
-              ].join("\n\n"),
-            },
+            confirmNewEmail(user.email, url),
             "confirm-new-email",
             user.id,
           );
           return;
         }
-        sendLater(
-          {
-            to: user.email,
-            subject: "Confirm your email for Meritory",
-            text: [
-              "Confirm your email to finish signing up for Meritory.",
-              url,
-              "The link works for 1 hour. If you didn't sign up, you can ignore this email.",
-            ].join("\n\n"),
-          },
-          "verify-email",
-          user.id,
-        );
+        sendLater(verifyEmail(user.email, url), "verify-email", user.id);
       },
     },
     rateLimit: {
