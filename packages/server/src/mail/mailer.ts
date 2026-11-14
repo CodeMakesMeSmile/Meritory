@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import { EMAIL_LOGOS } from "./email-layout.ts";
 
 export interface Mail {
   to: string;
@@ -69,7 +70,11 @@ export function createSmtpMailer(config: SmtpConfig): Mailer {
   });
   return {
     async send(mail) {
-      await transport.sendMail({ from: config.from, ...mail });
+      await transport.sendMail({
+        from: config.from,
+        ...mail,
+        attachments: mail.html ? EMAIL_LOGOS : undefined,
+      });
     },
   };
 }

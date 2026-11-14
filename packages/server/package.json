@@ -16,6 +16,7 @@
   "dependencies": {
     "@better-auth/drizzle-adapter": "1.7.17",
     "@better-auth/expo": "1.7.17",
+    "@meritory/design-tokens": "workspace:*",
     "@meritory/password": "workspace:*",
     "better-auth": "1.7.17",
     "bowser": "^2.15.0",

@@ -396,6 +396,9 @@ importers:
       '@better-auth/expo':
         specifier: 1.7.17
         version: 1.7.17(4c7b4f2f0a402ea856fc888b9d0ca3c4)
+      '@meritory/design-tokens':
+        specifier: workspace:*
+        version: link:../design-tokens
       '@meritory/password':
         specifier: workspace:*
         version: link:../password
