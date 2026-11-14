@@ -18,6 +18,12 @@ import { setSessionCookie } from "better-auth/cookies";
 import { and, count, eq, ne } from "drizzle-orm";
 import type { Database } from "../db/client.ts";
 import * as schema from "../db/schema.ts";
+import {
+  existingAccount,
+  passwordChanged,
+  resetPassword,
+  verifyEmail,
+} from "../mail/emails.ts";
 import type { Mail, Mailer, MailKind } from "../mail/mailer.ts";
 import { isFresh } from "./account-sessions.ts";
 import { type AppCodes, createAppCodes, isChallenge } from "./app-codes.ts";
@@ -353,15 +359,7 @@ export function createAuth(config: AuthConfig) {
 
   function sendPasswordChanged(user: { id: string; email: string }) {
     sendLater(
-      {
-        to: user.email,
-        subject: "Your Meritory password was changed",
-        text: [
-          "The password for your Meritory account was just changed, and your other devices were signed out.",
-          "If this was you, there's nothing else to do.",
-          `If it wasn't you, reset your password now: ${config.webOrigin}/forgot-password`,
-        ].join("\n\n"),
-      },
+      passwordChanged(user.email, config.webOrigin),
       "password-changed",
       user.id,
     );
@@ -709,16 +707,7 @@ export function createAuth(config: AuthConfig) {
           return;
         }
         sendLater(
-          {
-            to: user.email,
-            subject: "Someone tried to sign up with your email",
-            text: [
-              "Someone tried to create a Meritory account with this email, but you already have one.",
-              `Sign in: ${config.webOrigin}/sign-in`,
-              `Forgot your password? ${config.webOrigin}/forgot-password`,
-              "If this wasn't you, you can ignore this email. Nothing about your account has changed.",
-            ].join("\n\n"),
-          },
+          existingAccount(user.email, config.webOrigin),
           "existing-account",
           user.id,
         );
@@ -732,15 +721,7 @@ export function createAuth(config: AuthConfig) {
           .then((fresh) => {
             if (!fresh) return;
             sendLater(
-              {
-                to: user.email,
-                subject: "Reset your Meritory password",
-                text: [
-                  "Someone asked to reset the password for your Meritory account.",
-                  url,
-                  "The link works for 1 hour. Saving a new password signs out your other devices. If this wasn't you, you can ignore this email.",
-                ].join("\n\n"),
-              },
+              resetPassword(user.email, url),
               "reset-password",
               user.id,
             );
@@ -787,19 +768,7 @@ export function createAuth(config: AuthConfig) {
           );
           return;
         }
-        sendLater(
-          {
-            to: user.email,
-            subject: "Confirm your email for Meritory",
-            text: [
-              "Confirm your email to finish signing up for Meritory.",
-              url,
-              "The link works for 1 hour. If you didn't sign up, you can ignore this email.",
-            ].join("\n\n"),
-          },
-          "verify-email",
-          user.id,
-        );
+        sendLater(verifyEmail(user.email, url), "verify-email", user.id);
       },
     },
     rateLimit: {
