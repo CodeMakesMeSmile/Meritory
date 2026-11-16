@@ -101,6 +101,7 @@ An exception needs a `biome-ignore` comment with the reason, a test that shows w
 | `packages/server/drizzle.config.ts` has a database URL | It's the local Docker database from `docker-compose.yml`. Real environments set `DATABASE_URL`. |
 | `packages/contracts/src/me.ts` has the schema name `SignInMethods` | `noSecrets` reads the long name as random text. It's a fixed `$id` that names the schema and holds no secret. |
 | `noSecrets` is off in test files and `@meritory/security-testing` | Test data and attack strings look random. Neither ever holds a real secret. |
+| `packages/server/src/auth/breached-passwords.ts` hashes a password with SHA-1 (CodeQL alert dismissed) | Have I Been Pwned's range API looks passwords up by SHA-1. Only the first 5 characters leave the server, and the hash is never stored. Stored passwords use Better Auth's scrypt. A test proves only the 5 characters are sent. |
 
 ## Sources
 

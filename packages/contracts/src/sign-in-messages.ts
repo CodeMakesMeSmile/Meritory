@@ -63,6 +63,7 @@ export const PASSWORD_CODES = new Set([
   "PASSWORD_TOO_LONG",
   "PASSWORD_PERSONAL",
   "PASSWORD_TOO_WEAK",
+  "PASSWORD_COMPROMISED",
 ]);
 
 /** Which sign-up field a server code belongs to */

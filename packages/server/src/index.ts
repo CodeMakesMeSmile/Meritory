@@ -15,6 +15,10 @@ export {
   createAuth,
 } from "./auth/auth.ts";
 export {
+  type BreachCheck,
+  createBreachCheck,
+} from "./auth/breached-passwords.ts";
+export {
   type AccountDeletion,
   createAccountDeletion,
 } from "./auth/delete-account.ts";
