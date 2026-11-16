@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import type SMTPTransport from "nodemailer/lib/smtp-transport/index.js";
 import { EMAIL_LOGOS } from "./email-layout.ts";
 
 export interface Mail {
@@ -54,12 +55,17 @@ export function readSmtpConfig(
   };
 }
 
-/** Mailpit locally, SES SMTP in AWS */
-export function createSmtpMailer(config: SmtpConfig): Mailer {
-  const transport = nodemailer.createTransport({
+// Mailpit runs on this machine and has no certificate
+const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
+
+export function smtpOptions(config: SmtpConfig): SMTPTransport.Options {
+  const secure = config.port === 465;
+  return {
     host: config.host,
     port: config.port,
-    secure: config.port === 465,
+    secure,
+    // Otherwise a connection that loses STARTTLS on the way sends the mail unencrypted
+    requireTLS: !secure && !LOCAL_HOSTS.has(config.host),
     auth: config.user
       ? { user: config.user, pass: config.password ?? "" }
       : undefined,
@@ -67,7 +73,12 @@ export function createSmtpMailer(config: SmtpConfig): Mailer {
     connectionTimeout: 10_000,
     greetingTimeout: 10_000,
     socketTimeout: 30_000,
-  });
+  };
+}
+
+/** Mailpit locally, SES SMTP in AWS */
+export function createSmtpMailer(config: SmtpConfig): Mailer {
+  const transport = nodemailer.createTransport(smtpOptions(config));
   return {
     async send(mail) {
       await transport.sendMail({
