@@ -1,6 +1,6 @@
 # Secure coding
 
-Every change follows these rules. CI enforces what a tool can catch, and the pull request checklist covers the rest. To report a vulnerability, see [SECURITY.md](../SECURITY.md).
+Every change follows these rules. CI checks what a tool can catch, a pull request can't merge until those checks pass, and the pull request checklist covers the rest. To report a vulnerability, see [SECURITY.md](../SECURITY.md).
 
 Untrusted data is anything the code didn't create itself: form fields, URL parameters, headers, cookies, rows people wrote, emails, and responses from other services.
 
@@ -76,7 +76,7 @@ Every change that handles input adds tests for what must fail, not only for what
 
 The code is public, so how a defense works is public too, and that's fine. Security must not depend on hiding it. What stays private is where a defense is missing.
 
-- A weakness that isn't fixed yet goes in a draft security advisory on GitHub. Discuss it and fix it in the advisory's private fork.
+- A weakness that isn't fixed yet goes in a draft security advisory on GitHub. Discuss it and fix it in the advisory's private fork. If you aren't a maintainer, report it through [SECURITY.md](../SECURITY.md) instead.
 - Until the fix ships, don't describe the weakness in a pull request, commit message, issue, code comment, or doc, including the exceptions table below.
 - Once the fix ships, publish the advisory. The fix's pull request can link to it from then on.
 - The same goes for incidents, and for a check that's turned off with no replacement.
@@ -93,7 +93,7 @@ The code is public, so how a defense works is public too, and that's fine. Secur
 
 ## Exceptions
 
-An exception needs a `biome-ignore` comment with the reason, a test that shows why it's safe, and a reviewer's sign-off. An exception someone could exploit is a weakness, so it follows rule 9 instead of going here. These are the current ones:
+An exception needs a `biome-ignore` comment with the reason, a test that shows why it's safe, and the maintainer's sign-off. An exception someone could exploit is a weakness, so it follows rule 9 instead of going here. These are the current ones:
 
 | Where | Why it's safe |
 |---|---|
