@@ -4,6 +4,7 @@ import {
   createAccountSessions,
   createAuth,
   createBoss,
+  createBreachCheck,
   createDatabase,
   createQueuedMailer,
   createSessionLookup,
@@ -35,6 +36,12 @@ const auth = createAuth({
   mailer,
   providers: config.providers,
   log,
+  breachCheck: config.breachCheck
+    ? createBreachCheck({
+        onUnavailable: (reason) =>
+          app.log.warn({ reason }, "breached password check unavailable"),
+      })
+    : undefined,
 });
 const app = await buildApp(
   {

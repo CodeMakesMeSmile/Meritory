@@ -100,4 +100,23 @@ describe("readConfig", () => {
     expect(config.trustedProxies).toEqual(["10.0.0.1", "10.0.0.2"]);
     expect(readConfig(base).ipAddressHeaders).toBeUndefined();
   });
+
+  it("checks passwords against breaches in production unless turned off", () => {
+    const production = {
+      ...base,
+      NODE_ENV: "production",
+      WEB_ORIGIN: "https://meritory.app",
+    };
+    expect(readConfig(production).breachCheck).toBe(true);
+    expect(
+      readConfig({ ...production, BREACHED_PASSWORD_CHECK: "off" }).breachCheck,
+    ).toBe(false);
+    expect(readConfig(base).breachCheck).toBe(false);
+    expect(
+      readConfig({ ...base, BREACHED_PASSWORD_CHECK: "on" }).breachCheck,
+    ).toBe(true);
+    expect(() =>
+      readConfig({ ...base, BREACHED_PASSWORD_CHECK: "yes" }),
+    ).toThrow(/BREACHED_PASSWORD_CHECK/);
+  });
 });

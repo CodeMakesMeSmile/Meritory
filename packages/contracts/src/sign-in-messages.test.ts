@@ -45,6 +45,7 @@ describe("signUpFieldFor", () => {
     expect(signUpFieldFor("NAME_INVALID")).toBe("name");
     expect(signUpFieldFor("INVALID_EMAIL")).toBe("email");
     expect(signUpFieldFor("PASSWORD_TOO_WEAK")).toBe("password");
+    expect(signUpFieldFor("PASSWORD_COMPROMISED")).toBe("password");
   });
 
   it("leaves other codes to the form message", () => {

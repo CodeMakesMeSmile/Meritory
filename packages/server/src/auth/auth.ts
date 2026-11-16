@@ -32,6 +32,7 @@ import {
 import type { Mail, Mailer, MailKind } from "../mail/mailer.ts";
 import { isFresh } from "./account-sessions.ts";
 import { type AppCodes, createAppCodes, isChallenge } from "./app-codes.ts";
+import type { BreachCheck } from "./breached-passwords.ts";
 import {
   type ChangeLink,
   EMAIL_CHANGE_PATH,
@@ -107,6 +108,12 @@ function checkPasswordRules(
   }
 }
 
+const COMPROMISED = {
+  code: "PASSWORD_COMPROMISED",
+  message:
+    "This password has shown up in a data breach, so it's easy to guess. Choose a different one, like a few unrelated words.",
+};
+
 // The sign-up name rules, used by Account too
 function checkName(name: unknown) {
   if (typeof name !== "string" || !name.trim()) {
@@ -151,6 +158,8 @@ export interface AuthConfig {
   appCodes?: AppCodes;
   /** On unless turned off, in every environment */
   rateLimit?: boolean;
+  /** Left out, passwords aren't checked against known breaches */
+  breachCheck?: BreachCheck;
 }
 
 const APP_CODE_INVALID = {
@@ -172,11 +181,20 @@ export function createAuth(config: AuthConfig) {
   const resetLinks = config.resetLinks ?? createResetLinks(config.db);
   const appCodes = config.appCodes ?? createAppCodes(config.db);
 
+  // Runs after the local rules, so the service is only asked about passwords that pass them
+  const rejectBreached = async (password: unknown) => {
+    if (typeof password !== "string" || !config.breachCheck) return;
+    if (await config.breachCheck(password)) {
+      throw new APIError("BAD_REQUEST", COMPROMISED);
+    }
+  };
+
   const rules = createAuthMiddleware(async (ctx) => {
     const body = (ctx.body ?? {}) as Record<string, unknown>;
     if (ctx.path === "/sign-up/email") {
       checkName(body.name);
       checkPasswordRules(body.password, body);
+      await rejectBreached(body.password);
     }
 
     if (ctx.path === "/update-user") {
@@ -197,7 +215,10 @@ export function createAuth(config: AuthConfig) {
     if (ctx.path === "/change-password") {
       const session = await getSessionFromCtx(ctx);
       // Without a session, Better Auth answers 401 itself
-      if (session) checkPasswordRules(body.newPassword, session.user);
+      if (session) {
+        checkPasswordRules(body.newPassword, session.user);
+        await rejectBreached(body.newPassword);
+      }
       return {
         context: { ...ctx, body: { ...body, revokeOtherSessions: true } },
       };
@@ -213,7 +234,10 @@ export function createAuth(config: AuthConfig) {
         link && link.expiresAt > new Date()
           ? await ctx.context.internalAdapter.findUserById(link.value)
           : null;
-      if (user) checkPasswordRules(body.newPassword, user);
+      if (user) {
+        checkPasswordRules(body.newPassword, user);
+        await rejectBreached(body.newPassword);
+      }
     }
 
     if (ctx.path === "/link-social") {

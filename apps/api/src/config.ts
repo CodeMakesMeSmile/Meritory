@@ -17,6 +17,8 @@ export interface ApiConfig {
   mailJobKey: Buffer;
   /** Each provider turns on once both its ID and secret are set */
   providers: ProviderConfig;
+  /** Asks Have I Been Pwned about new passwords */
+  breachCheck: boolean;
 }
 
 const MIN_SECRET_LENGTH = 32;
@@ -31,6 +33,15 @@ function list(value: string | undefined): string[] | undefined {
 
 function credentials(clientId?: string, clientSecret?: string) {
   return clientId && clientSecret ? { clientId, clientSecret } : undefined;
+}
+
+// On in production unless turned off, off elsewhere so tests and offline work don't call out
+function readBreachCheck(env: Record<string, string | undefined>): boolean {
+  const value = env.BREACHED_PASSWORD_CHECK;
+  if (value === undefined || value === "") return env.NODE_ENV === "production";
+  if (value === "on") return true;
+  if (value === "off") return false;
+  throw new Error('BREACHED_PASSWORD_CHECK must be "on" or "off".');
 }
 
 function readWebOrigin(env: Record<string, string | undefined>): string {
@@ -78,5 +89,6 @@ export function readConfig(env: Record<string, string | undefined>): ApiConfig {
       github: credentials(env.GITHUB_CLIENT_ID, env.GITHUB_CLIENT_SECRET),
       google: credentials(env.GOOGLE_CLIENT_ID, env.GOOGLE_CLIENT_SECRET),
     },
+    breachCheck: readBreachCheck(env),
   };
 }
