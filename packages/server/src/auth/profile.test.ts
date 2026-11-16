@@ -103,19 +103,23 @@ describe.skipIf(!url)("profile changes against Postgres", () => {
   // Asks for the change and opens the approval link, so the new address has its link
   const approve = async (cookie: string, email: string, next: string) => {
     expect((await changeEmail(cookie, next)).status).toBe(200);
-    await settle();
-    const approval = mailsTo(email, APPROVE).at(-1);
+    const approval = await waitForMail(email, APPROVE);
     expect(await open(linkIn(approval), cookie)).toBe(
       "/account?email=approved",
     );
-    await settle();
-    return linkIn(mailsTo(next, CONFIRM_NEW).at(-1));
+    return linkIn(await waitForMail(next, CONFIRM_NEW));
   };
 
   const freshEmail = () => `profile-${randomUUID()}@meritory.test`;
 
   const mailsTo = (to: string, subject: string) =>
     sent.filter((mail) => mail.to === to && mail.subject === subject);
+
+  // Mail goes out after the response, so wait until it arrives
+  const waitForMail = async (to: string, subject: string, count = 1) => {
+    await expect.poll(() => mailsTo(to, subject).length).toBe(count);
+    return mailsTo(to, subject).at(-1);
+  };
 
   const emailOf = async (email: string) => {
     const [row] = await db
@@ -236,8 +240,7 @@ describe.skipIf(!url)("profile changes against Postgres", () => {
       const next = freshEmail();
       const res = await changeEmail(cookie, next);
       expect(res.status).toBe(200);
-      await settle();
-      const [approval] = mailsTo(email, APPROVE);
+      const approval = await waitForMail(email, APPROVE);
       expect(approval?.text).toContain(next);
       expect(approval?.text).toContain(
         `${ORIGIN}/api/v1/auth/verify-email?token=`,
@@ -263,10 +266,10 @@ describe.skipIf(!url)("profile changes against Postgres", () => {
       const taken = await changeEmail(asker.cookie, owner.email.toUpperCase());
       expect(taken.status).toBe(free.status);
       expect(await taken.json()).toEqual(await free.json());
+      const notice = await waitForMail(owner.email, IN_USE);
       await settle();
       // Only the free address got an approval link
       expect(mailsTo(asker.email, APPROVE)).toHaveLength(1);
-      const [notice] = mailsTo(owner.email, IN_USE);
       expect(notice?.text).toContain(`${ORIGIN}/sign-in`);
       expect(await emailOf(owner.email)).toBe(owner.email);
     });
@@ -338,8 +341,7 @@ describe.skipIf(!url)("profile changes against Postgres", () => {
       expect(await sessionAlive(cookie)).toBe(true);
       expect(await sessionAlive(elsewhere.cookie ?? "")).toBe(false);
 
-      await settle();
-      const [notice] = mailsTo(email, CHANGED);
+      const notice = await waitForMail(email, CHANGED);
       expect(notice?.text).toContain(next);
       expect(notice?.text).not.toContain("forgot-password");
 
@@ -381,10 +383,9 @@ describe.skipIf(!url)("profile changes against Postgres", () => {
     it("cancels an older request when a newer one is made", async () => {
       const { email, cookie } = await newAccount();
       await changeEmail(cookie, freshEmail());
-      await settle();
-      const older = linkIn(mailsTo(email, APPROVE).at(-1));
+      const older = linkIn(await waitForMail(email, APPROVE));
       await changeEmail(cookie, freshEmail());
-      await settle();
+      await waitForMail(email, APPROVE, 2);
       expect(await open(older, cookie)).toBe("/account?email=failed");
       expect(await emailOf(email)).toBe(email);
     });

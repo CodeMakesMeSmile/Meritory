@@ -173,7 +173,7 @@ export function SessionsCard({
         onClose={() => setAskAll(false)}
       >
         <p className="text-small text-secondary">{othersText(others)}</p>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid gap-3 sm:grid-cols-2">
           <Button variant="secondary" onClick={() => setAskAll(false)}>
             Cancel
           </Button>

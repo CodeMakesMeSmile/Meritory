@@ -95,7 +95,7 @@ export function ConfirmItsYou({
           You last signed in {when}. Sign in with {label} again to keep going.
         </p>
         {formError && <Alert tone="danger">{formError}</Alert>}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid gap-3 sm:grid-cols-2">
           <Button type="button" variant="secondary" onClick={close}>
             Cancel
           </Button>
@@ -147,7 +147,7 @@ export function ConfirmItsYou({
             />
           }
         />
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid gap-3 sm:grid-cols-2">
           <Button type="button" variant="secondary" onClick={close}>
             Cancel
           </Button>

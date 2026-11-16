@@ -248,7 +248,7 @@ export function MethodsCard({
               .map((id) => PROVIDER_LABELS[id]),
           )}
         </p>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid gap-3 sm:grid-cols-2">
           <Button variant="secondary" onClick={() => setAskUnlink(null)}>
             Cancel
           </Button>

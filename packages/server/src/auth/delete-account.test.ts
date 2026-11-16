@@ -185,13 +185,15 @@ describe.skipIf(!url)("deleting an account against Postgres", () => {
   it("emails a confirmation that names no way back in", async () => {
     const rowan = await newAccount();
     await deletion.delete(rowan.id);
-    await settle();
-    const mails = sent.filter(
-      (mail) => mail.to === rowan.email && mail.subject === DELETED,
-    );
-    expect(mails).toHaveLength(1);
-    expect(mails[0]?.text).toContain(`${ORIGIN}/sign-up`);
-    expect(mails[0]?.text).not.toMatch(/reset-password|verify-email|token=/);
+    const mails = () =>
+      sent.filter(
+        (mail) => mail.to === rowan.email && mail.subject === DELETED,
+      );
+    // Mail goes out after the delete, so wait until it arrives
+    await expect.poll(() => mails().length).toBe(1);
+    const [mail] = mails();
+    expect(mail?.text).toContain(`${ORIGIN}/sign-up`);
+    expect(mail?.text).not.toMatch(/reset-password|verify-email|token=/);
   });
 
   it("lets the same email sign up again as a new account", async () => {
