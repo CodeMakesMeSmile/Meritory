@@ -20,6 +20,7 @@ export function createBreachCheck(options: BreachCheckOptions): BreachCheck {
   const timeoutMs = options.timeoutMs ?? TIMEOUT_MS;
 
   return async (password) => {
+    // The range API looks passwords up by SHA-1, and this hash is never stored
     const hash = createHash("sha1")
       .update(password)
       .digest("hex")
