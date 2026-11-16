@@ -1,6 +1,8 @@
 # Sending test email through Amazon SES
 
-Locally, every email goes to Mailpit. To see them in real Gmail and Outlook inboxes, send them through Amazon SES instead.
+This is the maintainers' setup, since every step needs the project's AWS account and the `meritory.app` DNS. Contributors check emails in Mailpit, which gets every email sent locally.
+
+To see them in real Gmail and Outlook inboxes, maintainers send them through Amazon SES instead.
 
 SES stays in its [sandbox](https://docs.aws.amazon.com/ses/latest/dg/request-production-access.html), so it only delivers to addresses you verify, at most 200 a day. Test mail comes from `no-reply@meritory.app`, through the `ca-central-1` region, with DNS in Cloudflare.
 
