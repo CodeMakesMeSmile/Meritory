@@ -31,3 +31,7 @@ Thumbs.db
 !.vscode/extensions.json
 .idea/
 apps/mobile/expo-env.d.ts
+
+
+# Course Resources
+/content/resources
