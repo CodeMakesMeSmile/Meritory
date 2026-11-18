@@ -411,7 +411,8 @@ function check<T>(
   return value;
 }
 
-function parseJson(
+/** Parses a JSON file, or reports that it isn't valid without quoting it */
+export function parseJson(
   file: string,
   text: string,
   problems: Problem[],
