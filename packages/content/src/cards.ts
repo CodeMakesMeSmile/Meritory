@@ -5,6 +5,7 @@ import { markdownProblems } from "./explanation.ts";
 import { ID_PATTERN } from "./fact.ts";
 import {
   checkSchema,
+  isRecord,
   type Parsed,
   type Problem,
   parseYaml,
@@ -207,8 +208,4 @@ function normalize(text: string): string {
 
 function same(a: string, b: string): boolean {
   return normalize(a) === normalize(b);
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
 }

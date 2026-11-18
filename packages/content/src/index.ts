@@ -5,6 +5,8 @@ export {
   loadTrackChapters,
   type TrackChapters,
 } from "./chapters.ts";
+export * from "./exercise.ts";
+export type { LoadedExercise } from "./exercises.ts";
 export * from "./fact.ts";
 export {
   formatProblem,
@@ -13,3 +15,4 @@ export {
   type TrackFacts,
 } from "./load.ts";
 export * from "./recheck.ts";
+export { caseHash, type TestCase } from "./test-cases.ts";

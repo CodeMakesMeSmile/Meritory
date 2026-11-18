@@ -2,6 +2,11 @@ import path from "node:path";
 import type { Card } from "./card.ts";
 import { checkChapterCards, loadCards } from "./cards.ts";
 import { ChapterFile, TrackFile } from "./chapter.ts";
+import {
+  type LoadedExercise,
+  loadExercises,
+  type TrackIds,
+} from "./exercises.ts";
 import { checkExplanation } from "./explanation.ts";
 import {
   type Problem,
@@ -15,6 +20,7 @@ export type LoadedChapter = ChapterFile & {
   track: string;
   explanation: string;
   cards: Card[];
+  exercises: LoadedExercise[];
   file: string;
 };
 
@@ -26,8 +32,8 @@ export type TrackChapters = {
 
 /**
  * Reads a track's `track.yaml` and every folder in `chapters/`, with each
- * chapter's explanation and cards, and reports each problem with its file and
- * line. A track with no chapters folder has no chapters.
+ * chapter's explanation, cards, and exercises, and reports each problem with
+ * its file and line. A track with no chapters folder has no chapters.
  */
 export async function loadTrackChapters(
   trackDir: string,
@@ -62,6 +68,7 @@ export async function loadTrackChapters(
 
   const lines = new Map<string, (pointer: string) => number | null>();
   const cardChapter = new Map<string, string>();
+  const ids: TrackIds = { exercises: new Map(), cases: new Map() };
   for (const folder of folders) {
     const dir = path.join(chaptersDir, folder);
     const file = path.join(dir, "chapter.yaml");
@@ -113,12 +120,14 @@ export async function loadTrackChapters(
         }
       }
     }
+    const exercises = await loadExercises(dir, chapter, ids, problems);
     lines.set(file, read.parsed.lineAt);
     chapters.push({
       ...chapter,
       track: track?.id ?? path.basename(trackDir),
       explanation: explanation ?? "",
       cards: cards?.cards.map(({ card }) => card) ?? [],
+      exercises,
       file,
     });
   }

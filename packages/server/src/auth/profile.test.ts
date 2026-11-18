@@ -267,6 +267,8 @@ describe.skipIf(!url)("profile changes against Postgres", () => {
       expect(taken.status).toBe(free.status);
       expect(await taken.json()).toEqual(await free.json());
       const notice = await waitForMail(owner.email, IN_USE);
+      // Both emails are sent in the background, so wait for each
+      await waitForMail(asker.email, APPROVE);
       await settle();
       // Only the free address got an approval link
       expect(mailsTo(asker.email, APPROVE)).toHaveLength(1);
