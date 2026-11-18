@@ -2,7 +2,14 @@ import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import type { TSchema } from "typebox";
 import Value from "typebox/value";
-import { type Document, isNode, LineCounter, parseDocument } from "yaml";
+import {
+  type Document,
+  isMap,
+  isNode,
+  isScalar,
+  LineCounter,
+  parseDocument,
+} from "yaml";
 import { ID_PATTERN, SOURCE_URL_PATTERN, TEXT_PATTERN } from "./fact.ts";
 
 export type Problem = { file: string; line: number | null; message: string };
@@ -63,6 +70,8 @@ function lineAt(
     .map((key) => key.replaceAll("~1", "/").replaceAll("~0", "~"))
     .map((key) => (/^\d+$/.test(key) ? Number(key) : key));
   for (let depth = keys.length; depth >= 0; depth--) {
+    const keyLine = depth > 0 ? fieldLine(doc, lineCounter, keys, depth) : null;
+    if (keyLine !== null) return keyLine;
     const node = doc.getIn(keys.slice(0, depth), true);
     if (isNode(node) && node.range) {
       return lineCounter.linePos(node.range[0]).line;
@@ -71,11 +80,28 @@ function lineAt(
   return null;
 }
 
+// A field's key line, since a list value starts on the line below it
+function fieldLine(
+  doc: Document,
+  lineCounter: LineCounter,
+  keys: (string | number)[],
+  depth: number,
+): number | null {
+  const parent = doc.getIn(keys.slice(0, depth - 1), true);
+  if (!isMap(parent)) return null;
+  const pair = parent.items.find(
+    (item) => isScalar(item.key) && item.key.value === keys[depth - 1],
+  );
+  const range = isScalar(pair?.key) ? pair.key.range : undefined;
+  return range ? lineCounter.linePos(range[0]).line : null;
+}
+
 export function checkSchema<T>(
   schema: TSchema,
   file: string,
   parsed: Parsed,
   problems: Problem[],
+  whole = "the file",
 ): T | undefined {
   if (parsed.data === undefined) return undefined;
   if (Value.Check(schema, parsed.data)) return parsed.data as T;
@@ -88,7 +114,7 @@ export function checkSchema<T>(
       error.keyword === "boolean"
         ? "is not a known field"
         : (PATTERN_MESSAGES[pattern] ?? error.message);
-    const where = error.instancePath.slice(1) || "the file";
+    const where = error.instancePath.slice(1) || whole;
     problems.push({
       file,
       line: parsed.lineAt(error.instancePath),

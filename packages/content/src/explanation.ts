@@ -5,7 +5,7 @@ import type { Problem } from "./yaml-file.ts";
 // biome-ignore lint/suspicious/noControlCharactersInRegex: these are what it finds
 const CONTROL = /[\u0000-\u0008\u000B-\u001F\u007F]/;
 
-// Links may leave only for https pages or jump within the explanation
+// Links may leave only for https pages or jump within the text
 const SAFE_URL = /^(https:\/\/[^/\\]|#)/;
 
 type MarkdownNode = {
@@ -15,14 +15,37 @@ type MarkdownNode = {
   children?: MarkdownNode[];
 };
 
+/** A problem in CommonMark text, with its line counted from 1 */
+export type MarkdownProblem = { line: number | null; message: string };
+
+/** Finds raw HTML and unsafe links in CommonMark text */
+export function markdownProblems(text: string): MarkdownProblem[] {
+  const problems: MarkdownProblem[] = [];
+  const visit = (node: MarkdownNode) => {
+    const line = node.position?.start.line ?? null;
+    if (node.type === "html") {
+      problems.push({ line, message: "must not hold raw HTML" });
+    }
+    if (node.url !== undefined && !SAFE_URL.test(node.url)) {
+      problems.push({
+        line,
+        // Quoted as JSON, so a control character in it can't reach a terminal
+        message: `link ${JSON.stringify(node.url)} must start with https:// or #`,
+      });
+    }
+    for (const child of node.children ?? []) visit(child);
+  };
+  visit(fromMarkdown(text.replaceAll("\r\n", "\n")));
+  return problems;
+}
+
 /** Checks a chapter's CommonMark explanation */
 export function checkExplanation(
   file: string,
   text: string,
   problems: Problem[],
 ) {
-  const normalized = text.replaceAll("\r\n", "\n");
-  const lines = normalized.split("\n");
+  const lines = text.replaceAll("\r\n", "\n").split("\n");
   if (lines.every((line) => line.trim() === "")) {
     problems.push({ file, line: null, message: "is empty" });
     return;
@@ -36,20 +59,7 @@ export function checkExplanation(
       });
     }
   });
-  checkNodes(file, fromMarkdown(normalized), problems);
-}
-
-function checkNodes(file: string, node: MarkdownNode, problems: Problem[]) {
-  const line = node.position?.start.line ?? null;
-  if (node.type === "html") {
-    problems.push({ file, line, message: "must not hold raw HTML" });
+  for (const problem of markdownProblems(text)) {
+    problems.push({ file, ...problem });
   }
-  if (node.url !== undefined && !SAFE_URL.test(node.url)) {
-    problems.push({
-      file,
-      line,
-      message: `link ${node.url} must start with https:// or #`,
-    });
-  }
-  for (const child of node.children ?? []) checkNodes(file, child, problems);
 }

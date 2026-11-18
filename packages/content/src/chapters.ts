@@ -1,4 +1,6 @@
 import path from "node:path";
+import type { Card } from "./card.ts";
+import { checkChapterCards, loadCards } from "./cards.ts";
 import { ChapterFile, TrackFile } from "./chapter.ts";
 import { checkExplanation } from "./explanation.ts";
 import {
@@ -8,10 +10,11 @@ import {
   subfolders,
 } from "./yaml-file.ts";
 
-/** A chapter with its explanation and where it's written */
+/** A chapter with its explanation, its cards, and where it's written */
 export type LoadedChapter = ChapterFile & {
   track: string;
   explanation: string;
+  cards: Card[];
   file: string;
 };
 
@@ -22,9 +25,9 @@ export type TrackChapters = {
 };
 
 /**
- * Reads a track's `track.yaml` and every folder in `chapters/`, and reports
- * each problem with its file and line. A track with no chapters folder has
- * no chapters.
+ * Reads a track's `track.yaml` and every folder in `chapters/`, with each
+ * chapter's explanation and cards, and reports each problem with its file and
+ * line. A track with no chapters folder has no chapters.
  */
 export async function loadTrackChapters(
   trackDir: string,
@@ -58,6 +61,7 @@ export async function loadTrackChapters(
   }
 
   const lines = new Map<string, (pointer: string) => number | null>();
+  const cardChapter = new Map<string, string>();
   for (const folder of folders) {
     const dir = path.join(chaptersDir, folder);
     const file = path.join(dir, "chapter.yaml");
@@ -79,6 +83,12 @@ export async function loadTrackChapters(
       checkExplanation(explanationFile, explanation, problems);
     }
 
+    const cardsFile = path.join(dir, "cards.yaml");
+    const cards = await loadCards(cardsFile, problems);
+    if (!cards) {
+      problems.push({ file: cardsFile, line: null, message: "is missing" });
+    }
+
     const chapter = read.value;
     if (!chapter) continue;
     if (chapter.id !== folder) {
@@ -88,11 +98,27 @@ export async function loadTrackChapters(
         message: `id ${chapter.id} must match its folder name, ${folder}`,
       });
     }
+    if (cards) {
+      checkChapterCards(cardsFile, chapter, cards, problems);
+      for (const { card, index } of cards.cards) {
+        const owner = cardChapter.get(card.id);
+        if (owner !== undefined) {
+          problems.push({
+            file: cardsFile,
+            line: cards.lineAt(`/${index}/id`),
+            message: `card ${card.id} is also in ${owner}`,
+          });
+        } else {
+          cardChapter.set(card.id, chapter.id);
+        }
+      }
+    }
     lines.set(file, read.parsed.lineAt);
     chapters.push({
       ...chapter,
       track: track?.id ?? path.basename(trackDir),
       explanation: explanation ?? "",
+      cards: cards?.cards.map(({ card }) => card) ?? [],
       file,
     });
   }

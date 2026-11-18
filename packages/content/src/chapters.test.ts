@@ -22,6 +22,22 @@ ${extra}`;
 
 const EXPLANATION = "# Arrays\n\nAn array keeps items next to each other.\n";
 
+/** One card that asks why, so the chapter's skill is covered */
+function cards(id: string) {
+  return `- id: ${id}-card
+  skill: ${id}-skill
+  asks: why
+  type: prompt
+  prompt: Why is reading by index fast?
+  reworded: What makes reading by index quick?
+  points:
+    - The address is worked out from the index.
+  lesson:
+    title: Reading by index
+    explanation: The address is the start plus the index times the item size.
+`;
+}
+
 let root: string;
 let track: string;
 
@@ -34,6 +50,7 @@ async function write(name: string, text: string) {
 async function writeChapter(id: string, order: number, extra = "") {
   await write(`chapters/${id}/chapter.yaml`, chapter(id, order, extra));
   await write(`chapters/${id}/explanation.md`, EXPLANATION);
+  await write(`chapters/${id}/cards.yaml`, cards(id));
 }
 
 async function problemLines() {
@@ -105,6 +122,7 @@ describe("loadTrackChapters", () => {
       "id: arrays\ntitle: Arrays\nskills:\n  - id: indexing\n    name: Indexing\n",
     );
     await write("chapters/arrays/explanation.md", EXPLANATION);
+    await write("chapters/arrays/cards.yaml", cards("arrays"));
     expect(await problemLines()).toEqual([
       "chapters/arrays/chapter.yaml:1 the file must have required properties order",
     ]);
@@ -125,6 +143,7 @@ describe("loadTrackChapters", () => {
       `%YAML 1.1\n---\n${chapter("arrays", 1)}`,
     );
     await write("chapters/arrays/explanation.md", EXPLANATION);
+    await write("chapters/arrays/cards.yaml", cards("arrays"));
     expect(await problemLines()).toEqual([
       "chapters/arrays/chapter.yaml:1 uses YAML 1.1, but only YAML 1.2 is allowed",
     ]);
@@ -142,6 +161,7 @@ describe("loadTrackChapters", () => {
     await write("track.yaml", TRACK);
     await write("chapters/arrays/chapter.yaml", chapter("lists", 1));
     await write("chapters/arrays/explanation.md", EXPLANATION);
+    await write("chapters/arrays/cards.yaml", cards("lists"));
     expect(await problemLines()).toEqual([
       "chapters/arrays/chapter.yaml:1 id lists must match its folder name, arrays",
     ]);
@@ -152,6 +172,10 @@ describe("loadTrackChapters", () => {
     await writeChapter("arrays", 1);
     await write("chapters/lists/chapter.yaml", chapter("arrays", 2));
     await write("chapters/lists/explanation.md", EXPLANATION);
+    await write(
+      "chapters/lists/cards.yaml",
+      cards("arrays").replace("arrays-card", "lists-card"),
+    );
     expect(await problemLines()).toEqual([
       "chapters/lists/chapter.yaml:1 id arrays must match its folder name, lists",
       "chapters/lists/chapter.yaml:1 chapter arrays is used by another chapter",
@@ -189,7 +213,7 @@ describe("loadTrackChapters", () => {
     await writeChapter("arrays", 1, "prerequisites:\n  - hashing\n");
     await writeChapter("hashing", 2, "prerequisites:\n  - arrays\n");
     expect(await problemLines()).toEqual([
-      "chapters/arrays/chapter.yaml:8 prerequisites go in a circle: arrays -> hashing -> arrays",
+      "chapters/arrays/chapter.yaml:7 prerequisites go in a circle: arrays -> hashing -> arrays",
     ]);
   });
 
@@ -204,6 +228,7 @@ describe("loadTrackChapters", () => {
   it("reports a missing explanation", async () => {
     await write("track.yaml", TRACK);
     await write("chapters/arrays/chapter.yaml", chapter("arrays", 1));
+    await write("chapters/arrays/cards.yaml", cards("arrays"));
     expect(await problemLines()).toEqual([
       "chapters/arrays/explanation.md is missing",
     ]);
@@ -291,8 +316,8 @@ describe("loadTrackChapters", () => {
       "# Arrays\n\n![Diagram](http://example.com/a.png)\n\n[ref]: javascript:alert(1)\n",
     );
     expect(await problemLines()).toEqual([
-      "chapters/arrays/explanation.md:3 link http://example.com/a.png must start with https:// or #",
-      "chapters/arrays/explanation.md:5 link javascript:alert(1) must start with https:// or #",
+      'chapters/arrays/explanation.md:3 link "http://example.com/a.png" must start with https:// or #',
+      'chapters/arrays/explanation.md:5 link "javascript:alert(1)" must start with https:// or #',
     ]);
   });
 
