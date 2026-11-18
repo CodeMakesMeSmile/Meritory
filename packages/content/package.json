@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "license": "AGPL-3.0-only",
-  "description": "Rules for curriculum facts and when they need a recheck",
+  "description": "Checks curriculum files and builds the versioned content bundle",
   "exports": {
     ".": "./src/index.ts",
     "./node": "./src/node.ts"
