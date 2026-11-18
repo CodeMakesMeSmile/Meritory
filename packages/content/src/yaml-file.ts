@@ -12,12 +12,14 @@ import {
 } from "yaml";
 import {
   CLASS_PATTERN,
+  KIND_PATTERN,
   NAME_PATTERN,
   RETURN_PATTERN,
   TYPE_PATTERN,
   UUID_PATTERN,
 } from "./exercise.ts";
 import { ID_PATTERN, SOURCE_URL_PATTERN, TEXT_PATTERN } from "./fact.ts";
+import { SCORER_PATTERN } from "./rubric.ts";
 
 export type Problem = { file: string; line: number | null; message: string };
 
@@ -37,6 +39,8 @@ const PATTERN_MESSAGES: Record<string, string> = {
   [NAME_PATTERN]: "must be a camelCase name",
   [CLASS_PATTERN]: "must be a PascalCase name",
   [UUID_PATTERN]: "must be a lowercase version 4 uuid",
+  [KIND_PATTERN]: "must be coding or design",
+  [SCORER_PATTERN]: "must be tests or self",
 };
 
 export function isRecord(value: unknown): value is Record<string, unknown> {

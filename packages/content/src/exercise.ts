@@ -36,6 +36,11 @@ export const CLASS_PATTERN = "^[A-Z][A-Za-z0-9]{0,39}$";
 export const UUID_PATTERN =
   "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$";
 
+const KINDS = ["coding", "design"] as const;
+
+/** An exercise's kind, as a pattern so a typo gets one message */
+export const KIND_PATTERN = `^(${KINDS.join("|")})$`;
+
 /** How far apart two doubles can be and still match */
 export const DOUBLE_TOLERANCE = 1e-5;
 
@@ -95,6 +100,10 @@ export type Signature = FunctionSignature | ClassSignature;
 export const ExerciseFile = Type.Object(
   {
     id: Id,
+    /** Coding exercises are run against cases, and design ones only use the rubric */
+    kind: Type.Unsafe<(typeof KINDS)[number]>(
+      Type.String({ pattern: KIND_PATTERN }),
+    ),
     title: Text(120),
     difficulty: Type.Union([
       Type.Literal("easy"),
@@ -103,16 +112,21 @@ export const ExerciseFile = Type.Object(
     ]),
     /** Skills from the exercise's chapter */
     skills: Type.Array(Id, { minItems: 1 }),
-    /** The paired exercise in the same chapter, used for transfer checks */
+    /** The paired exercise of the same kind in the same chapter, used for transfer checks */
     sibling: Id,
+    /** A rubric in the exercise's track */
+    rubric: Id,
+    /** Rubric criteria that must reach the required level to pass */
+    requires: Type.Optional(Type.Array(Id, { minItems: 1 })),
     /** Checked as a function or a class signature, by whether it names a class */
-    signature: Type.Record(Type.String(), Type.Unknown()),
+    signature: Type.Optional(Type.Record(Type.String(), Type.Unknown())),
   },
   { additionalProperties: false },
 );
-export type ExerciseFile = Omit<Static<typeof ExerciseFile>, "signature"> & {
-  signature: Signature;
-};
+export type ExerciseFile = Static<typeof ExerciseFile>;
+
+/** The model answer a design exercise shows after you score yourself */
+export const ANSWER_FILE = "answer.md";
 
 /** The reference solution files every exercise needs, one per language */
 export const SOLUTION_FILES = [

@@ -58,6 +58,35 @@ type Exercise = {
   signature: unknown;
   skills?: string[];
   cases: unknown[];
+  rubric?: string;
+  requires?: string[];
+};
+
+const criterion = (id: string, scoredBy: string) => ({
+  id,
+  name: `The ${id}`,
+  scoredBy,
+  levels: ["Missing.", "Partly there.", "Sound, with a gap.", "Complete."],
+});
+
+const CODING_RUBRIC = {
+  id: "coding-practice",
+  title: "Coding practice",
+  criteria: [
+    criterion("correctness", "tests"),
+    criterion("complexity", "self"),
+  ],
+  pass: { total: 6, lowest: 2 },
+};
+
+const DESIGN_RUBRIC = {
+  id: "design-review",
+  title: "Design review",
+  criteria: [
+    criterion("requirements", "self"),
+    criterion("trade-offs", "self"),
+  ],
+  pass: { total: 6, lowest: 2 },
 };
 
 let root: string;
@@ -81,6 +110,9 @@ async function writeExercise(exercise: Exercise, dir = exercisesDir) {
       skills: exercise.skills ?? ["indexing"],
       sibling: exercise.sibling,
       signature: exercise.signature,
+      kind: "coding",
+      rubric: exercise.rubric ?? "coding-practice",
+      requires: exercise.requires,
     }),
   );
   await write(at("statement.md"), "# An exercise\n\nFind the pair.\n");
@@ -93,6 +125,13 @@ async function writeExercise(exercise: Exercise, dir = exercisesDir) {
     await write(at(`solutions/${name}`), "// A reference solution\n");
   }
   await writeCases(exercise.id, exercise.cases, dir);
+}
+
+async function writeRubric(rubric: typeof CODING_RUBRIC) {
+  await write(
+    path.join(track, "rubrics", `${rubric.id}.yaml`),
+    stringify(rubric),
+  );
 }
 
 async function writeCases(id: string, cases: unknown[], dir = exercisesDir) {
@@ -144,6 +183,8 @@ beforeEach(async () => {
   await write(path.join(chapterDir, "chapter.yaml"), CHAPTER);
   await write(path.join(chapterDir, "explanation.md"), "# Arrays\n\nText.\n");
   await write(path.join(chapterDir, "cards.yaml"), CARDS);
+  await writeRubric(CODING_RUBRIC);
+  await writeRubric(DESIGN_RUBRIC);
 });
 
 afterEach(async () => {
@@ -156,10 +197,14 @@ describe("exercises", () => {
     await lockTrack(track);
     const { chapters, problems } = await loadTrackChapters(track);
     expect(problems).toEqual([]);
-    const exercises = chapters[0]?.exercises ?? [];
-    expect(exercises.map((e) => [e.id, e.sibling, e.cases.length])).toEqual([
-      ["pair-gap", "two-sum", 1],
-      ["two-sum", "pair-gap", 2],
+    const exercises = (chapters[0]?.exercises ?? []).filter(
+      (e) => e.kind === "coding",
+    );
+    expect(
+      exercises.map((e) => [e.id, e.sibling, e.rubric, e.cases.length]),
+    ).toEqual([
+      ["pair-gap", "two-sum", "coding-practice", 1],
+      ["two-sum", "pair-gap", "coding-practice", 2],
     ]);
     expect(exercises[1]?.signature).toEqual(pairSignature("twoSum"));
   });
@@ -666,5 +711,205 @@ describe("case lock", () => {
       "two-sum/cases.lock.json must only map case uuids to their hashes",
     ]);
     expect(await readFile(lockFile, "utf8")).toBe('{ "not-a-uuid": "x" }');
+  });
+});
+
+/** A design exercise, with fields after rubric starting on line 9 */
+async function writeDesign(
+  id: string,
+  sibling: string,
+  extra: Record<string, unknown> = {},
+) {
+  const at = (name: string) => path.join(exercisesDir, id, name);
+  await write(
+    at("exercise.yaml"),
+    stringify({
+      id,
+      title: "A design exercise",
+      difficulty: "medium",
+      skills: ["indexing"],
+      sibling,
+      kind: "design",
+      rubric: "design-review",
+      ...extra,
+    }),
+  );
+  await write(at("statement.md"), "# Design a link shortener\n\nScale it.\n");
+  await write(at("answer.md"), "# Model answer\n\nA sketch of one design.\n");
+}
+
+describe("rubric links", () => {
+  it("loads each exercise's rubric and the track's rubrics", async () => {
+    await writePair({ requires: ["correctness"] });
+    await lockTrack(track);
+    const { chapters, rubrics, problems } = await loadTrackChapters(track);
+    expect(problems).toEqual([]);
+    expect(rubrics.map((rubric) => rubric.id)).toEqual([
+      "coding-practice",
+      "design-review",
+    ]);
+    const twoSum = chapters[0]?.exercises.find((e) => e.id === "two-sum");
+    expect([twoSum?.rubric, twoSum?.requires]).toEqual([
+      "coding-practice",
+      ["correctness"],
+    ]);
+  });
+
+  it("reports a rubric that doesn't exist", async () => {
+    await writePair({ rubric: "speed-run" });
+    await lockTrack(track);
+    expect(await problemLines()).toEqual([
+      "two-sum/exercise.yaml:17 rubric speed-run is not a rubric in this track",
+    ]);
+  });
+
+  it("reports a broken rubric only in its own file", async () => {
+    await writeRubric({ ...CODING_RUBRIC, pass: { total: 99, lowest: 2 } });
+    await writePair();
+    await lockTrack(track);
+    expect(await problemLines(track)).toEqual([
+      "rubrics/coding-practice.yaml:21 pass/total 99 is more than the highest total, 8",
+    ]);
+  });
+
+  it("refuses a coding exercise whose rubric has no tests", async () => {
+    await writePair({ rubric: "design-review" });
+    await lockTrack(track);
+    expect(await problemLines()).toEqual([
+      "two-sum/exercise.yaml:17 rubric design-review has no criterion scored by tests, which a coding exercise needs",
+    ]);
+  });
+
+  it("refuses a required criterion the rubric doesn't have, or one listed twice", async () => {
+    await writePair({ requires: ["correctness", "speed", "correctness"] });
+    await lockTrack(track);
+    expect(await problemLines()).toEqual([
+      "two-sum/exercise.yaml:20 speed is not a criterion in rubric coding-practice",
+      "two-sum/exercise.yaml:21 correctness is listed twice",
+    ]);
+  });
+
+  it("reports a coding exercise with no signature", async () => {
+    await writePair({ signature: undefined });
+    await lockTrack(track);
+    expect(await problemLines()).toEqual([
+      "two-sum/exercise.yaml:7 a coding exercise needs a signature",
+    ]);
+  });
+
+  it("refuses a kind that isn't coding or design", async () => {
+    await writeDesign("url-short", "paste-bin", { kind: "puzzle" });
+    await writeDesign("paste-bin", "url-short");
+    expect(await problemLines()).toEqual([
+      "url-short/exercise.yaml:7 kind must be coding or design",
+      "paste-bin/exercise.yaml:6 sibling url-short is not an exercise in this chapter",
+    ]);
+  });
+});
+
+describe("design exercises", () => {
+  it("loads a linked pair with their model answers", async () => {
+    await writeDesign("url-short", "paste-bin", { requires: ["trade-offs"] });
+    await writeDesign("paste-bin", "url-short");
+    const { chapters, problems } = await loadTrackChapters(track);
+    expect(problems).toEqual([]);
+    const exercises = chapters[0]?.exercises ?? [];
+    expect(
+      exercises.map((e) => [
+        e.id,
+        e.kind,
+        e.kind === "design" ? e.answer : undefined,
+        e.requires,
+      ]),
+    ).toEqual([
+      [
+        "paste-bin",
+        "design",
+        "# Model answer\n\nA sketch of one design.\n",
+        undefined,
+      ],
+      [
+        "url-short",
+        "design",
+        "# Model answer\n\nA sketch of one design.\n",
+        ["trade-offs"],
+      ],
+    ]);
+  });
+
+  it("refuses a rubric with criteria scored by tests", async () => {
+    await writeDesign("url-short", "paste-bin", { rubric: "coding-practice" });
+    await writeDesign("paste-bin", "url-short");
+    expect(await problemLines()).toEqual([
+      "url-short/exercise.yaml:8 rubric coding-practice has criteria scored by tests, which a design exercise can't run",
+    ]);
+  });
+
+  it("refuses a signature, cases, a lock, and solutions", async () => {
+    await writeDesign("url-short", "paste-bin", {
+      signature: pairSignature("shorten"),
+    });
+    await writeDesign("paste-bin", "url-short");
+    const dir = path.join(exercisesDir, "url-short");
+    await writeCases("url-short", [pairCase(1, "shorten")]);
+    await write(path.join(dir, "cases.lock.json"), "{}\n");
+    await write(path.join(dir, "solutions", "solution.ts"), "// Code\n");
+    expect(await problemLines()).toEqual([
+      "url-short/exercise.yaml:9 a design exercise has no signature",
+      "url-short/cases.json is only for coding exercises",
+      "url-short/cases.lock.json is only for coding exercises",
+      "url-short/solutions is only for coding exercises",
+    ]);
+  });
+
+  it("reports a missing model answer and statement", async () => {
+    await writeDesign("url-short", "paste-bin");
+    await writeDesign("paste-bin", "url-short");
+    await rm(path.join(exercisesDir, "url-short", "answer.md"));
+    await rm(path.join(exercisesDir, "paste-bin", "statement.md"));
+    expect(await problemLines()).toEqual([
+      "paste-bin/statement.md is missing",
+      "url-short/answer.md is missing",
+    ]);
+  });
+
+  it("refuses a sibling of the other kind", async () => {
+    await writeExercise({
+      id: "two-sum",
+      sibling: "url-short",
+      signature: pairSignature("twoSum"),
+      cases: [pairCase(1)],
+    });
+    await writeDesign("url-short", "two-sum");
+    await lockTrack(track);
+    expect(await problemLines()).toEqual([
+      "two-sum/exercise.yaml:6 sibling url-short is a design exercise, so it can't pair with a coding one",
+      "url-short/exercise.yaml:6 sibling two-sum is a coding exercise, so it can't pair with a design one",
+    ]);
+  });
+
+  it.each([
+    ...HTML_ATTACKS.filter((attack) => attack.includes("<")).map((attack) => [
+      attack,
+      "must not hold raw HTML",
+    ]),
+    [
+      "[See](javascript:alert(1))",
+      'link "javascript:alert(1)" must start with https:// or #',
+    ],
+    ...CONTROL_ATTACKS.filter((attack) => !attack.includes("\r\n")).map(
+      (attack) => [attack, "must not hold control characters"],
+    ),
+  ])("refuses %j in a model answer", async (attack, message) => {
+    await writeDesign("url-short", "paste-bin");
+    await writeDesign("paste-bin", "url-short");
+    await write(
+      path.join(exercisesDir, "url-short", "answer.md"),
+      `# Model answer\n\n${attack}\n`,
+    );
+    // An opening and closing tag are each reported, as in explanations
+    expect(new Set(await problemLines())).toEqual(
+      new Set([`url-short/answer.md:3 ${message}`]),
+    );
   });
 });
