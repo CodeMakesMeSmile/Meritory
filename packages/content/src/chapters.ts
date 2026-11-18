@@ -8,6 +8,7 @@ import {
   type TrackIds,
 } from "./exercises.ts";
 import { checkExplanation } from "./explanation.ts";
+import { type LoadedRubric, loadRubrics } from "./rubrics.ts";
 import {
   type Problem,
   readText,
@@ -27,13 +28,15 @@ export type LoadedChapter = ChapterFile & {
 export type TrackChapters = {
   track: TrackFile | undefined;
   chapters: LoadedChapter[];
+  rubrics: LoadedRubric[];
   problems: Problem[];
 };
 
 /**
- * Reads a track's `track.yaml` and every folder in `chapters/`, with each
- * chapter's explanation, cards, and exercises, and reports each problem with
- * its file and line. A track with no chapters folder has no chapters.
+ * Reads a track's `track.yaml`, its `rubrics/`, and every folder in
+ * `chapters/`, with each chapter's explanation, cards, and exercises, and
+ * reports each problem with its file and line. A track with no chapters
+ * folder has no chapters.
  */
 export async function loadTrackChapters(
   trackDir: string,
@@ -42,7 +45,9 @@ export async function loadTrackChapters(
   const chapters: LoadedChapter[] = [];
   const chaptersDir = path.join(trackDir, "chapters");
   const folders = await subfolders(chaptersDir);
-  if (folders.length === 0) return { track: undefined, chapters, problems };
+  if (folders.length === 0) {
+    return { track: undefined, chapters, rubrics: [], problems };
+  }
 
   const trackFile = path.join(trackDir, "track.yaml");
   const trackRead = await readYamlFile<TrackFile>(
@@ -66,6 +71,7 @@ export async function loadTrackChapters(
     });
   }
 
+  const rubrics = await loadRubrics(trackDir, problems);
   const lines = new Map<string, (pointer: string) => number | null>();
   const cardChapter = new Map<string, string>();
   const ids: TrackIds = { exercises: new Map(), cases: new Map() };
@@ -120,7 +126,7 @@ export async function loadTrackChapters(
         }
       }
     }
-    const exercises = await loadExercises(dir, chapter, ids, problems);
+    const exercises = await loadExercises(dir, chapter, rubrics, ids, problems);
     lines.set(file, read.parsed.lineAt);
     chapters.push({
       ...chapter,
@@ -134,7 +140,8 @@ export async function loadTrackChapters(
 
   checkAcrossChapters(chapters, lines, problems);
   chapters.sort((a, b) => a.order - b.order);
-  return { track, chapters, problems };
+  const loaded = [...rubrics.values()].filter((rubric) => rubric !== undefined);
+  return { track, chapters, rubrics: loaded, problems };
 }
 
 function checkAcrossChapters(

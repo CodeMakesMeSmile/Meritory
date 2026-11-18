@@ -1,6 +1,7 @@
 import path from "node:path";
 import type { ChapterFile } from "./chapter.ts";
 import {
+  ANSWER_FILE,
   ClassSignature,
   ExerciseFile,
   FunctionSignature,
@@ -9,6 +10,7 @@ import {
   SOLUTION_FILES,
 } from "./exercise.ts";
 import { checkExplanation } from "./explanation.ts";
+import type { TrackRubrics } from "./rubrics.ts";
 import {
   checkCases,
   checkLock,
@@ -26,16 +28,30 @@ import {
   subfolders,
 } from "./yaml-file.ts";
 
-/** An exercise with its statement, its cases, and where it's written */
-export type LoadedExercise = ExerciseFile & {
+type LoadedBase = Omit<ExerciseFile, "kind" | "signature"> & {
   statement: string;
-  cases: TestCase[];
   dir: string;
 };
+
+/** A coding exercise with its statement, its cases, and where it's written */
+export type CodingExercise = LoadedBase & {
+  kind: "coding";
+  signature: Signature;
+  cases: TestCase[];
+};
+
+/** A design exercise with its statement, its model answer, and where it's written */
+export type DesignExercise = LoadedBase & {
+  kind: "design";
+  answer: string;
+};
+
+export type LoadedExercise = CodingExercise | DesignExercise;
 
 /** Where each exercise's sibling is named, for reporting */
 type SiblingLine = {
   id: string;
+  kind: ExerciseFile["kind"];
   sibling: string;
   file: string;
   line: number | null;
@@ -53,6 +69,7 @@ export type TrackIds = {
 export async function loadExercises(
   chapterDir: string,
   chapter: ChapterFile,
+  rubrics: TrackRubrics,
   ids: TrackIds,
   problems: Problem[],
 ): Promise<LoadedExercise[]> {
@@ -69,74 +86,140 @@ export async function loadExercises(
       problems.push({ file, line: null, message: "is missing" });
       continue;
     }
-
-    const statementFile = path.join(dir, "statement.md");
-    const statement = await readText(statementFile);
-    if (statement === undefined) {
-      problems.push({ file: statementFile, line: null, message: "is missing" });
-    } else {
-      checkExplanation(statementFile, statement, problems);
-    }
-
-    for (const name of SOLUTION_FILES) {
-      const solutionFile = path.join(dir, "solutions", name);
-      const solution = await readText(solutionFile);
-      if (solution === undefined || solution.trim() === "") {
-        problems.push({
-          file: solutionFile,
-          line: null,
-          message: solution === undefined ? "is missing" : "is empty",
-        });
-      }
-    }
+    const statement = await readMarkdown(
+      path.join(dir, "statement.md"),
+      problems,
+    );
 
     const exercise = read.value;
     if (!exercise) continue;
     const at = read.parsed.lineAt;
+    const add = (pointer: string, message: string) =>
+      problems.push({ file, line: at(pointer), message });
     if (exercise.id !== folder) {
-      problems.push({
-        file,
-        line: at("/id"),
-        message: `id ${exercise.id} must match its folder name, ${folder}`,
-      });
+      add("/id", `id ${exercise.id} must match its folder name, ${folder}`);
     }
     const owner = ids.exercises.get(exercise.id);
     if (owner !== undefined) {
-      problems.push({
-        file,
-        line: at("/id"),
-        message: `exercise ${exercise.id} is also in ${owner}`,
-      });
+      add("/id", `exercise ${exercise.id} is also in ${owner}`);
     } else {
       ids.exercises.set(exercise.id, chapter.id);
     }
     exercise.skills.forEach((skill, index) => {
       if (!skills.has(skill)) {
-        problems.push({
-          file,
-          line: at(`/skills/${index}`),
-          message: `skill ${skill} is not in this chapter`,
-        });
+        add(`/skills/${index}`, `skill ${skill} is not in this chapter`);
       }
     });
+    checkRubric(exercise, rubrics, add);
 
-    const { id, sibling } = exercise;
-    siblings.push({ id, sibling, file, line: at("/sibling") });
-    const signature = readSignature(file, exercise.signature, at, problems);
-    const cases = await loadCases(dir, id, signature, ids, problems);
-    if (signature) {
-      exercises.push({
-        ...exercise,
-        signature,
-        statement: statement ?? "",
-        cases,
-        dir,
-      });
+    const { id, kind, sibling, signature: data, ...rest } = exercise;
+    siblings.push({ id, kind, sibling, file, line: at("/sibling") });
+    const base = { ...rest, id, sibling, statement: statement ?? "", dir };
+
+    if (kind === "design") {
+      if (data !== undefined) {
+        add("/signature", "a design exercise has no signature");
+      }
+      await checkNoCodingFiles(dir, problems);
+      const answer = await readMarkdown(path.join(dir, ANSWER_FILE), problems);
+      exercises.push({ ...base, kind, answer: answer ?? "" });
+      continue;
     }
+
+    await checkSolutions(dir, problems);
+    if (data === undefined) add("/kind", "a coding exercise needs a signature");
+    const signature = data && readSignature(file, data, at, problems);
+    const cases = await loadCases(dir, id, signature, ids, problems);
+    if (signature) exercises.push({ ...base, kind, signature, cases });
   }
 
   checkSiblings(siblings, problems);
   return exercises;
+}
+
+/** Reads a CommonMark file and checks it like an explanation */
+async function readMarkdown(
+  file: string,
+  problems: Problem[],
+): Promise<string | undefined> {
+  const text = await readText(file);
+  if (text === undefined) {
+    problems.push({ file, line: null, message: "is missing" });
+  } else {
+    checkExplanation(file, text, problems);
+  }
+  return text;
+}
+
+function checkRubric(
+  exercise: ExerciseFile,
+  rubrics: TrackRubrics,
+  add: (pointer: string, message: string) => void,
+) {
+  const name = exercise.rubric;
+  if (!rubrics.has(name)) {
+    add("/rubric", `rubric ${name} is not a rubric in this track`);
+    return;
+  }
+  // Its own file already reports why it couldn't be read
+  const rubric = rubrics.get(name);
+  if (!rubric) return;
+
+  const tested = rubric.criteria.some((c) => c.scoredBy === "tests");
+  if (exercise.kind === "design" && tested) {
+    add(
+      "/rubric",
+      `rubric ${name} has criteria scored by tests, which a design exercise can't run`,
+    );
+  } else if (exercise.kind === "coding" && !tested) {
+    add(
+      "/rubric",
+      `rubric ${name} has no criterion scored by tests, which a coding exercise needs`,
+    );
+  }
+
+  const criteria = new Set(rubric.criteria.map((c) => c.id));
+  const seen = new Set<string>();
+  (exercise.requires ?? []).forEach((criterion, index) => {
+    const pointer = `/requires/${index}`;
+    if (!criteria.has(criterion)) {
+      add(pointer, `${criterion} is not a criterion in rubric ${name}`);
+    } else if (seen.has(criterion)) {
+      add(pointer, `${criterion} is listed twice`);
+    }
+    seen.add(criterion);
+  });
+}
+
+async function checkSolutions(dir: string, problems: Problem[]) {
+  for (const name of SOLUTION_FILES) {
+    const file = path.join(dir, "solutions", name);
+    const solution = await readText(file);
+    if (solution === undefined || solution.trim() === "") {
+      problems.push({
+        file,
+        line: null,
+        message: solution === undefined ? "is missing" : "is empty",
+      });
+    }
+  }
+}
+
+// Cases and solutions would never run, so leaving them in is a mistake
+async function checkNoCodingFiles(dir: string, problems: Problem[]) {
+  const found = (await subfolders(dir)).includes("solutions")
+    ? ["solutions"]
+    : [];
+  for (const name of ["cases.json", LOCK_FILE]) {
+    if ((await readText(path.join(dir, name))) !== undefined) found.push(name);
+  }
+  for (const name of found.sort()) {
+    problems.push({
+      file: path.join(dir, name),
+      line: null,
+      message: "is only for coding exercises",
+    });
+  }
 }
 
 async function loadCases(
@@ -257,7 +340,7 @@ function findRepeatedNames(
 
 function checkSiblings(siblings: SiblingLine[], problems: Problem[]) {
   const byId = new Map(siblings.map((s) => [s.id, s]));
-  for (const { id, sibling, file, line } of siblings) {
+  for (const { id, kind, sibling, file, line } of siblings) {
     const other = byId.get(sibling);
     const message =
       sibling === id
@@ -266,7 +349,9 @@ function checkSiblings(siblings: SiblingLine[], problems: Problem[]) {
           ? `sibling ${sibling} is not an exercise in this chapter`
           : other.sibling !== id
             ? `sibling ${sibling} doesn't name ${id} as its sibling`
-            : undefined;
+            : other.kind !== kind
+              ? `sibling ${sibling} is a ${other.kind} exercise, so it can't pair with a ${kind} one`
+              : undefined;
     if (message) problems.push({ file, line, message });
   }
 }

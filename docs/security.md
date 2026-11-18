@@ -16,7 +16,7 @@ React escapes every value it renders as text or as an attribute. Keep it that wa
 - Build query strings with `URLSearchParams` or `encodeURIComponent`, never by joining strings.
 - Don't put untrusted data into `<script>`, `<style>`, inline style strings, or event handler attributes.
 - HTML emails are built only with `renderEmail` in `packages/server/src/mail/email-layout.ts`. It HTML-encodes every value and refuses links that aren't http or https.
-- Chapter explanations, recall card text, and exercise statements are checked by `markdownProblems` in `packages/content/src/explanation.ts`. It parses them as CommonMark and refuses raw HTML, plus links and images that don't start with `https://` or `#`.
+- Chapter explanations, recall card text, exercise statements, model answers, and rubric level descriptions are checked by `markdownProblems` in `packages/content/src/explanation.ts`. It parses them as CommonMark and refuses raw HTML, plus links and images that don't start with `https://` or `#`.
 
 ### 2. Bind every SQL value
 

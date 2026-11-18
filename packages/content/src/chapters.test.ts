@@ -96,6 +96,7 @@ describe("loadTrackChapters", () => {
     expect(await loadTrackChapters(track)).toEqual({
       track: undefined,
       chapters: [],
+      rubrics: [],
       problems: [],
     });
   });
