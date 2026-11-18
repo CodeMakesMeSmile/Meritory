@@ -10,6 +10,13 @@ import {
   LineCounter,
   parseDocument,
 } from "yaml";
+import {
+  CLASS_PATTERN,
+  NAME_PATTERN,
+  RETURN_PATTERN,
+  TYPE_PATTERN,
+  UUID_PATTERN,
+} from "./exercise.ts";
 import { ID_PATTERN, SOURCE_URL_PATTERN, TEXT_PATTERN } from "./fact.ts";
 
 export type Problem = { file: string; line: number | null; message: string };
@@ -23,7 +30,18 @@ const PATTERN_MESSAGES: Record<string, string> = {
   [ID_PATTERN]: "must be lowercase words joined by hyphens",
   [SOURCE_URL_PATTERN]: "must be an https link with no user name",
   [TEXT_PATTERN]: "must not hold control characters",
+  [TYPE_PATTERN]:
+    "must be int, long, double, boolean, char, string, ListNode, or TreeNode, with up to two []",
+  [RETURN_PATTERN]:
+    "must be void, or int, long, double, boolean, char, string, ListNode, or TreeNode, with up to two []",
+  [NAME_PATTERN]: "must be a camelCase name",
+  [CLASS_PATTERN]: "must be a PascalCase name",
+  [UUID_PATTERN]: "must be a lowercase version 4 uuid",
 };
+
+export function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
 
 // A %YAML 1.1 directive would turn values like "no" into false
 const YAML_DIRECTIVE = /^%YAML[ \t]+(\S+)/m;

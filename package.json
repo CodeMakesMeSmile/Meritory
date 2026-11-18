@@ -30,6 +30,7 @@
     "typecheck": "pnpm -r --parallel typecheck",
     "test": "vitest run",
     "check": "pnpm lint && pnpm typecheck && pnpm test",
+    "content:lock": "node packages/content/src/lock-command.ts",
     "content:recheck": "node packages/content/src/recheck-command.ts"
   },
   "devDependencies": {
