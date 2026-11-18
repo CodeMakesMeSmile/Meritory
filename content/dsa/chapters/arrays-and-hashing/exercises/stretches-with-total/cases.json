@@ -1,0 +1,100 @@
+{
+  "exercise": "stretches-with-total",
+  "cases": [
+    {
+      "uuid": "37cdd1d5-ed3d-427e-ab9e-0d519e417354",
+      "description": "counts every stretch with the total",
+      "property": "stretchesWithTotal",
+      "input": {
+        "changes": [3, -1, 1, 2],
+        "total": 3
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "6522178f-f7bd-4459-88a3-30a3ceab67a9",
+      "description": "stretches can overlap",
+      "property": "stretchesWithTotal",
+      "input": {
+        "changes": [1, 1, 1],
+        "total": 2
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "ee1909bf-94f7-42ae-99e1-1b1fc8fe1ee8",
+      "description": "zeros make many stretches",
+      "property": "stretchesWithTotal",
+      "input": {
+        "changes": [0, 0, 0],
+        "total": 0
+      },
+      "expected": 6
+    },
+    {
+      "uuid": "7bd1a196-210e-4d8a-9ea8-cb88bc1850fa",
+      "description": "money in and out can cancel out",
+      "property": "stretchesWithTotal",
+      "input": {
+        "changes": [1, -1, 1, -1],
+        "total": 0
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "ced21ff9-b3af-49c2-af5b-7ba9e5dba0ba",
+      "description": "no stretch has the total",
+      "property": "stretchesWithTotal",
+      "input": {
+        "changes": [1, 2, 3],
+        "total": 7
+      },
+      "expected": 0
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "87bde35d-1a8e-4913-aacc-b33e018e140b",
+          "description": "no days have no stretches",
+          "property": "stretchesWithTotal",
+          "input": {
+            "changes": [],
+            "total": 0
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "bfdad440-1a02-4492-b00c-a1094d41c727",
+          "description": "one day that matches",
+          "property": "stretchesWithTotal",
+          "input": {
+            "changes": [5],
+            "total": 5
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "a9bad767-fa73-4e06-bfb0-b9b488391dc9",
+          "description": "one day that doesn't match",
+          "property": "stretchesWithTotal",
+          "input": {
+            "changes": [5],
+            "total": 0
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "584048af-108a-4297-86d9-fb7e20e13e29",
+          "description": "a negative total",
+          "property": "stretchesWithTotal",
+          "input": {
+            "changes": [-2, -3, 4, -1, -4],
+            "total": -5
+          },
+          "expected": 2
+        }
+      ]
+    }
+  ]
+}

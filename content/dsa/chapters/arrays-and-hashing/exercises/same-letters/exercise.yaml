@@ -1,0 +1,18 @@
+id: same-letters
+kind: coding
+title: Same letters
+difficulty: easy
+skills:
+  - count-and-compare
+sibling: enough-tiles
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: sameLetters
+  params:
+    - name: first
+      type: string
+    - name: second
+      type: string
+  returns: boolean

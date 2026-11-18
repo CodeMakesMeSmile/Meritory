@@ -1,0 +1,16 @@
+id: balance-point
+kind: coding
+title: Balance point
+difficulty: easy
+skills:
+  - prefix-suffix-passes
+sibling: product-of-others
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: balancePoint
+  params:
+    - name: weights
+      type: int[]
+  returns: int

@@ -1,0 +1,107 @@
+{
+  "card/array-operation-costs": [
+    "4360c2cf4660f48da5f8bf3d2432736e2e7bb381416bb4e597a26f8cb7957c8b"
+  ],
+  "card/group-key-choices": [
+    "b1c429b6df0548b2e2da683255e6f1bcb0b575fd2bb37716f4e082f99fee4391"
+  ],
+  "card/hash-lookup-steps": [
+    "368d18e6b0a4d86ad7e7721468c94a0d499a6b01cd5dcf7a521a5735f88382fc"
+  ],
+  "card/pair-search-steps": [
+    "69ca8dd4ca45400b30b95a6ba399fd28d8c3dbe538afe2bedf321c4960a4a9bb"
+  ],
+  "card/prefix-count-steps": [
+    "0c6c6bd5aa04ca47c845d10c43fee594c88f5d98b6170ca4d369ed775e0b3a03"
+  ],
+  "card/two-pass-steps": [
+    "e40c09dd05ce91902a1021a7326438b78ee600894c0fbf056850c8f8d543616a"
+  ],
+  "card/when-avoid-slicing": [
+    "aa88864256baf8282909fdee4eb18c5636224e6602909e928bcb7a9637090ab2"
+  ],
+  "card/when-count-array": [
+    "570a7c4f575f9387012e464b90848b71fdf7a270cc5b7c795af97dc192ca1ab7"
+  ],
+  "card/when-map-for-pairs": [
+    "041a42140e8ba497ed268711803849a4e9686a08734137910cc9618b242090ea"
+  ],
+  "card/when-not-sliding-window": [
+    "81283a81d5fcf5cc3aa284636d1b734f172630605bf530493231353df0508755"
+  ],
+  "card/when-sort-for-runs": [
+    "0f2aee169a13b007847c651ab93a4d5bd86606c34a4c705bf8e1967191d9296a"
+  ],
+  "card/why-check-before-adding": [
+    "45f84bb63408807d4835728e647fc9ff54b5d7c9c38859a4f26b36ddac7d5f7c"
+  ],
+  "card/why-count-not-sort": [
+    "bfb7e70f6ea8ff3a1409070d278617ecfbd30b6d86153e641d45da67d2d9edd0"
+  ],
+  "card/why-group-key-rules": [
+    "75fdc6c45baa1ea8d4288b4bc46bf11ddb2f307ae63ced67c7e8cb17cf63fd27"
+  ],
+  "card/why-insert-front-slow": [
+    "57f18cd94a733ae538f9d0bd9d8b0a1cb38d7675be897553bc91b020bb3ae591"
+  ],
+  "card/why-not-divide": [
+    "701e6cc1bff98e3d90b4f1cfe4222e250e1da32842e255cfa6486dbe0a5f66d8"
+  ],
+  "card/why-seed-zero": [
+    "355d6212c70dc2e824c827048afd5de9f49327e5bd2a03ba259e119b9122e849"
+  ],
+  "card/why-start-of-run": [
+    "2c0ed90e16629d71d08af846c00f2076b227bdcf8dbafa79fabb16f35e0e0886"
+  ],
+  "card/why-string-key-ts": [
+    "bea0fb5559e0e35f32b3163693e9042c3ad90f3c9b451af43cd8ebbff5f867e0"
+  ],
+  "card/why-table-grows": [
+    "d0a0baed15ec7cb67addcd977c3c5d1aaea1c76a90d4d0b15ea8dcda16f5759f"
+  ],
+  "card/why-worst-case-linear": [
+    "48efccd12d48138fa59bc0950657f1b3c529b7172bc3c052a5f24968fa883b8f"
+  ],
+  "chapter/arrays-and-hashing": [
+    "7279e5a2ae1ae974ff737e0fd4ab732eae5dc61d6495006491b878cacd341620"
+  ],
+  "exercise/as-ranges": [
+    "7b670e484185298a56d9f9734542153245e27c96636be1bb89be22c74aeea589"
+  ],
+  "exercise/balance-point": [
+    "f389f3aaca16f420dad6d44af2ab32d8cc75c55f15e663e0933eea7214fe905d"
+  ],
+  "exercise/enough-tiles": [
+    "a2f9e4e59451fa6b0b8fb0593601d9abd71840f33c6934750b3a70e1e59cad8b"
+  ],
+  "exercise/even-stretch": [
+    "d215e309a07adfe79872290ef956daf226b3209e9fc2521d6eb73cf090a652e3"
+  ],
+  "exercise/letter-groups": [
+    "7cb51e5edd4e6471fe13a9b20a5c93826317e7d071a53f7907d10149d0291ff6"
+  ],
+  "exercise/longest-run": [
+    "ce1ee751f62ad32b05e194b84d34015ba2d2ea440c51907ce6363af0d57a8ee2"
+  ],
+  "exercise/pairs-with-gap": [
+    "c55a98a08e37e110da6c8421fe3238e60feabaac1e7843e341a62d5edeb60d94"
+  ],
+  "exercise/price-pair": [
+    "666d99be8437b1b1b48b64528684edaa4062b6964349b9b2d6e7c5be294d2791"
+  ],
+  "exercise/product-of-others": [
+    "02eb84dcf89f10d67d2ece04ff6dac683957856ed94ef2d3acd3df30beb19964"
+  ],
+  "exercise/same-letters": [
+    "e998b9dc62400e1e9c84b0ed64ee8b38519caa0a2adbef661944be8567736dc2"
+  ],
+  "exercise/shift-groups": [
+    "3f3f5f2514848d0fa320e7c7fc973e8e57166b9cf676fdfd1dac42ae75f0f946"
+  ],
+  "exercise/stretches-with-total": [
+    "891cbcf6180bc86d9398cf4b9bac8eef9cff3de710a341781d18a6056e31eec9"
+  ],
+  "rubric/coding-practice": [
+    "a1f12ef7247a868a70b05439f946b7f3f42732d97276bf321dfa7e586ceb8fa5"
+  ]
+}

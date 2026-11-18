@@ -1,0 +1,73 @@
+{
+  "exercise": "letter-groups",
+  "cases": [
+    {
+      "uuid": "6f92467a-2ab9-4263-a0c0-9dfc5740e3c1",
+      "description": "groups words with the same letters",
+      "property": "letterGroups",
+      "input": {
+        "words": ["tea", "ate", "tan", "eat", "nat", "bat"]
+      },
+      "expected": [["tea", "ate", "eat"], ["tan", "nat"], ["bat"]]
+    },
+    {
+      "uuid": "d2ac91ff-b70a-4b76-8981-b2f766fa4fed",
+      "description": "words with different letters each get a group",
+      "property": "letterGroups",
+      "input": {
+        "words": ["abc", "def"]
+      },
+      "expected": [["abc"], ["def"]]
+    },
+    {
+      "uuid": "7f7cff82-64c4-4d83-9482-67859e926217",
+      "description": "repeated words stay in their group",
+      "property": "letterGroups",
+      "input": {
+        "words": ["ab", "ba", "ab"]
+      },
+      "expected": [["ab", "ba", "ab"]]
+    },
+    {
+      "uuid": "d780afb5-66e9-456b-8842-7aeb35df1116",
+      "description": "the same letters in different amounts don't group",
+      "property": "letterGroups",
+      "input": {
+        "words": ["aab", "abb", "bab"]
+      },
+      "expected": [["aab"], ["abb", "bab"]]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "cd45d553-e9cd-4f49-b31f-b203b46f4ac6",
+          "description": "no words make no groups",
+          "property": "letterGroups",
+          "input": {
+            "words": []
+          },
+          "expected": []
+        },
+        {
+          "uuid": "cc8570de-2c27-4052-87d1-a3f0946b64d7",
+          "description": "one word makes one group",
+          "property": "letterGroups",
+          "input": {
+            "words": ["x"]
+          },
+          "expected": [["x"]]
+        },
+        {
+          "uuid": "c10838cc-5eaa-4fa8-acef-f8470e35f534",
+          "description": "empty words group together",
+          "property": "letterGroups",
+          "input": {
+            "words": ["", "a", ""]
+          },
+          "expected": [["", ""], ["a"]]
+        }
+      ]
+    }
+  ]
+}

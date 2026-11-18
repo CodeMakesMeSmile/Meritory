@@ -1,0 +1,18 @@
+id: price-pair
+kind: coding
+title: Two prices for a gift card
+difficulty: easy
+skills:
+  - complement-lookup
+sibling: pairs-with-gap
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: pricePair
+  params:
+    - name: prices
+      type: int[]
+    - name: target
+      type: int
+  returns: int[]

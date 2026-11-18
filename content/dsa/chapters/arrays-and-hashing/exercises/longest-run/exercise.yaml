@@ -1,0 +1,16 @@
+id: longest-run
+kind: coding
+title: Longest run of days
+difficulty: medium
+skills:
+  - set-runs
+sibling: as-ranges
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: longestRun
+  params:
+    - name: days
+      type: int[]
+  returns: int

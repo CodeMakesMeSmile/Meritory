@@ -1,0 +1,90 @@
+{
+  "exercise": "enough-tiles",
+  "cases": [
+    {
+      "uuid": "1fc4a03a-ab5d-49d7-b509-62a71c6865e8",
+      "description": "spells the word with tiles to spare",
+      "property": "enoughTiles",
+      "input": {
+        "word": "pool",
+        "tiles": "lopxo"
+      },
+      "expected": true
+    },
+    {
+      "uuid": "a8e9fbf7-71e3-4abd-a64e-484bf249fa18",
+      "description": "a letter the word needs twice must appear twice",
+      "property": "enoughTiles",
+      "input": {
+        "word": "pool",
+        "tiles": "polx"
+      },
+      "expected": false
+    },
+    {
+      "uuid": "337a8ba2-264b-4582-bbb9-75904e983525",
+      "description": "uses every tile exactly",
+      "property": "enoughTiles",
+      "input": {
+        "word": "abc",
+        "tiles": "cba"
+      },
+      "expected": true
+    },
+    {
+      "uuid": "8b99a221-c16b-467b-b53e-cc2766256582",
+      "description": "a missing letter can't be spelled",
+      "property": "enoughTiles",
+      "input": {
+        "word": "noon",
+        "tiles": "nox"
+      },
+      "expected": false
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "29993e18-30a0-43e7-a1ce-d2edaafb71c9",
+          "description": "an empty word can always be spelled",
+          "property": "enoughTiles",
+          "input": {
+            "word": "",
+            "tiles": "abc"
+          },
+          "expected": true
+        },
+        {
+          "uuid": "c13ec9bb-61ea-43b3-8e84-00088392d969",
+          "description": "no tiles can't spell a letter",
+          "property": "enoughTiles",
+          "input": {
+            "word": "a",
+            "tiles": ""
+          },
+          "expected": false
+        },
+        {
+          "uuid": "5c6d5e6d-320b-48c5-a886-c4158da40954",
+          "description": "an empty word from no tiles",
+          "property": "enoughTiles",
+          "input": {
+            "word": "",
+            "tiles": ""
+          },
+          "expected": true
+        },
+        {
+          "uuid": "ece99959-da12-4a1d-810a-b23fe2813aee",
+          "description": "too few of the only letter",
+          "property": "enoughTiles",
+          "input": {
+            "word": "aaaa",
+            "tiles": "aaa"
+          },
+          "expected": false
+        }
+      ]
+    }
+  ]
+}

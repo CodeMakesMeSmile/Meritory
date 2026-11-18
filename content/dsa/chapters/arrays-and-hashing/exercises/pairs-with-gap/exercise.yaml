@@ -1,0 +1,18 @@
+id: pairs-with-gap
+kind: coding
+title: Pairs a set gap apart
+difficulty: medium
+skills:
+  - complement-lookup
+sibling: price-pair
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: pairsWithGap
+  params:
+    - name: scores
+      type: int[]
+    - name: gap
+      type: int
+  returns: long

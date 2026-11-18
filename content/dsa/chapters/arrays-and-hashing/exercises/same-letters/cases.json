@@ -1,0 +1,90 @@
+{
+  "exercise": "same-letters",
+  "cases": [
+    {
+      "uuid": "62cb9051-b60b-462b-875c-aabfc090dd3b",
+      "description": "a rearranged word matches",
+      "property": "sameLetters",
+      "input": {
+        "first": "listen",
+        "second": "silent"
+      },
+      "expected": true
+    },
+    {
+      "uuid": "16ac0b1b-6f95-42a2-821f-1b87700637b8",
+      "description": "another rearrangement matches",
+      "property": "sameLetters",
+      "input": {
+        "first": "evil",
+        "second": "vile"
+      },
+      "expected": true
+    },
+    {
+      "uuid": "ce99bdd7-a9a9-47a0-a58f-f3f3da9ff1d5",
+      "description": "the same letters in different amounts don't match",
+      "property": "sameLetters",
+      "input": {
+        "first": "aab",
+        "second": "abb"
+      },
+      "expected": false
+    },
+    {
+      "uuid": "537de5cb-d905-46f7-b66f-b3caec052f74",
+      "description": "words of different lengths don't match",
+      "property": "sameLetters",
+      "input": {
+        "first": "abc",
+        "second": "abcd"
+      },
+      "expected": false
+    },
+    {
+      "uuid": "7034402a-7684-4b94-b056-8959bdcc9c4b",
+      "description": "a word matches itself",
+      "property": "sameLetters",
+      "input": {
+        "first": "abc",
+        "second": "abc"
+      },
+      "expected": true
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "190d3103-6ede-448a-a3c8-7306c26a3290",
+          "description": "two empty words match",
+          "property": "sameLetters",
+          "input": {
+            "first": "",
+            "second": ""
+          },
+          "expected": true
+        },
+        {
+          "uuid": "2c2ff12b-204f-445d-bbe0-feaf508508b1",
+          "description": "an empty word doesn't match a letter",
+          "property": "sameLetters",
+          "input": {
+            "first": "",
+            "second": "a"
+          },
+          "expected": false
+        },
+        {
+          "uuid": "88930743-3f66-465b-9d53-4358b658e87f",
+          "description": "two different single letters don't match",
+          "property": "sameLetters",
+          "input": {
+            "first": "a",
+            "second": "b"
+          },
+          "expected": false
+        }
+      ]
+    }
+  ]
+}

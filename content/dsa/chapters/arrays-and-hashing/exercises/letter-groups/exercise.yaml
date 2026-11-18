@@ -1,0 +1,16 @@
+id: letter-groups
+kind: coding
+title: Groups of the same letters
+difficulty: medium
+skills:
+  - group-by-key
+sibling: shift-groups
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: letterGroups
+  params:
+    - name: words
+      type: string[]
+  returns: string[][]
