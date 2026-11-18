@@ -1,38 +1,126 @@
+import { DefaultScheduler, type Grade, Rating, State } from "ts-fsrs";
 import { describe, expect, it } from "vitest";
-import { newReviewState, scheduleReview } from "./scheduler.ts";
+import {
+  newRecallCard,
+  nextDueDates,
+  type RecallRating,
+  reviewRecallCard,
+} from "./scheduler.ts";
 
 const start = new Date("2026-11-01T09:00:00Z");
 
-describe("scheduleReview", () => {
-  it("starts a new prompt due immediately", () => {
-    const state = newReviewState(start);
-    expect(state.phase).toBe("new");
-    expect(state.due).toEqual(start);
-    expect(state.reps).toBe(0);
+const ratings: [RecallRating, Grade][] = [
+  ["again", Rating.Again],
+  ["hard", Rating.Hard],
+  ["good", Rating.Good],
+  ["easy", Rating.Easy],
+];
+
+function preset(target: number) {
+  return DefaultScheduler({
+    version: "FSRS-7",
+    desiredRetention: target,
+    enableFuzz: false,
+    learningSteps: ["1m", "10m"],
+    relearningSteps: ["10m"],
+    maximumInterval: 36500,
+  });
+}
+
+describe("reviewRecallCard", () => {
+  it("starts a new card due immediately", () => {
+    const card = newRecallCard("card-1", start);
+    expect(card.scheduleStatus).toBe("new");
+    expect(card.dueAt).toEqual(start);
+    expect(card.reps).toBe(0);
   });
 
-  it("pushes the next review further out for easier ratings", () => {
-    const state = newReviewState(start);
-    const again = scheduleReview(state, "again", start);
-    const good = scheduleReview(state, "good", start);
-    const easy = scheduleReview(state, "easy", start);
-    expect(again.due.getTime()).toBeLessThan(good.due.getTime());
-    expect(good.due.getTime()).toBeLessThan(easy.due.getTime());
-    expect(easy.reps).toBe(1);
+  for (const target of [0.9, 0.95]) {
+    it(`matches the FSRS-7 preset for every rating at ${target}`, async () => {
+      const expected = await preset(target);
+      for (const [rating, grade] of ratings) {
+        let ours = newRecallCard("card-1", start);
+        let theirs = expected.newCard({ cardId: "card-1", now: start });
+        let now = start;
+        // A first rating, then three good reviews, each on its due date
+        for (const step of [rating, "good", "good", "good"] as const) {
+          ours = reviewRecallCard(ours, step, now, target).card;
+          theirs = expected.review({
+            card: theirs,
+            grade: step === rating ? grade : Rating.Good,
+            now,
+          }).card;
+          expect(ours.dueAt).toEqual(theirs.dueAt);
+          now = ours.dueAt;
+        }
+      }
+    });
+  }
+
+  it("brings a card back sooner at a higher recall target", () => {
+    const learned = reviewRecallCard(
+      newRecallCard("card-1", start),
+      "easy",
+      start,
+    ).card;
+    const usual = reviewRecallCard(learned, "good", learned.dueAt, 0.9).card;
+    const higher = reviewRecallCard(learned, "good", learned.dueAt, 0.95).card;
+    expect(higher.dueAt.getTime()).toBeLessThan(usual.dueAt.getTime());
   });
 
-  it("counts a lapse when a review-phase prompt is forgotten", () => {
-    let state = scheduleReview(newReviewState(start), "easy", start);
-    expect(state.phase).toBe("review");
-    state = scheduleReview(state, "again", state.due);
-    expect(state.phase).toBe("relearning");
-    expect(state.lapses).toBe(1);
+  it("keeps the three times a review needs to be undone", () => {
+    const first = reviewRecallCard(
+      newRecallCard("card-1", start),
+      "easy",
+      start,
+    ).card;
+    const late = new Date(first.dueAt.getTime() + 3 * 24 * 60 * 60 * 1000);
+    const { card, revlog } = reviewRecallCard(first, "good", late);
+    expect(revlog.lastReviewAt).toEqual(start);
+    expect(revlog.dueAt).toEqual(first.dueAt);
+    expect(revlog.reviewTime).toEqual(late);
+    expect(revlog.rating).toBe(Rating.Good);
+    expect(card.lastReviewAt).toEqual(late);
+  });
+
+  it("counts a lapse when a learned card is forgotten", () => {
+    const learned = reviewRecallCard(
+      newRecallCard("card-1", start),
+      "easy",
+      start,
+    ).card;
+    expect(learned.state).toBe(State.Review);
+    const forgotten = reviewRecallCard(learned, "again", learned.dueAt).card;
+    expect(forgotten.state).toBe(State.Relearning);
+    expect(forgotten.lapses).toBe(1);
   });
 
   it("gives the same result every time for the same input", () => {
-    const state = newReviewState(start);
-    const first = scheduleReview(state, "good", start);
-    const second = scheduleReview(state, "good", start);
-    expect(first).toEqual(second);
+    const card = newRecallCard("card-1", start);
+    expect(reviewRecallCard(card, "good", start)).toEqual(
+      reviewRecallCard(card, "good", start),
+    );
+  });
+
+  for (const target of [0, 1, -0.5, 1.5, Number.NaN]) {
+    it(`refuses a recall target of ${target}`, () => {
+      const card = newRecallCard("card-1", start);
+      expect(() => reviewRecallCard(card, "good", start, target)).toThrow(
+        RangeError,
+      );
+    });
+  }
+});
+
+describe("nextDueDates", () => {
+  it("gives the due date each rating would set", () => {
+    const card = newRecallCard("card-1", start);
+    const dates = nextDueDates(card, start);
+    for (const [rating] of ratings) {
+      expect(dates[rating]).toEqual(
+        reviewRecallCard(card, rating, start).card.dueAt,
+      );
+    }
+    expect(dates.again.getTime()).toBeLessThan(dates.easy.getTime());
   });
 });

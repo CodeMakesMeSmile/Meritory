@@ -1,37 +1,25 @@
+import { dateChrono, defineScheduler, type Grade, Rating } from "ts-fsrs";
 import {
-  type Card,
-  createEmptyCard,
-  fsrs,
-  type Grade,
-  Rating,
-  State,
-} from "ts-fsrs";
+  schedulerDesiredRetentionMiddleware,
+  schedulerFuzzingMiddleware,
+  schedulerLearningStepsMiddleware,
+  schedulerMaximumIntervalMiddleware,
+  schedulerMonotonicIntervalMiddleware,
+  schedulerScheduledDaysMiddleware,
+  schedulerStatsMiddleware,
+} from "ts-fsrs/middlewares";
+import { FSRS7_DEFAULT_WEIGHTS, FSRS7Model } from "ts-fsrs/models/fsrs-7";
 
 /**
  * Recorded on every review so schedules can be traced back to the rules that
- * produced them. Bump it whenever the parameters below or the ts-fsrs major
- * version change.
+ * produced them. Bump it whenever the settings below or the model change.
  */
-export const SCHEDULER_VERSION = "fsrs6-v1";
+export const SCHEDULER_VERSION = "fsrs7-v1";
+
+/** The chance of recalling a card when it comes due */
+export const DEFAULT_RECALL_TARGET = 0.9;
 
 export type RecallRating = "again" | "hard" | "good" | "easy";
-
-export type ReviewPhase = "new" | "learning" | "review" | "relearning";
-
-export interface ReviewState {
-  due: Date;
-  stability: number;
-  difficulty: number;
-  scheduledDays: number;
-  learningSteps: number;
-  reps: number;
-  lapses: number;
-  phase: ReviewPhase;
-  lastReview: Date | null;
-}
-
-// Fuzz is off so the phone and the server compute the same schedule
-const scheduler = fsrs({ enable_fuzz: false, request_retention: 0.9 });
 
 const ratingToGrade: Record<RecallRating, Grade> = {
   again: Rating.Again,
@@ -40,61 +28,101 @@ const ratingToGrade: Record<RecallRating, Grade> = {
   easy: Rating.Easy,
 };
 
-const stateToPhase: Record<State, ReviewPhase> = {
-  [State.New]: "new",
-  [State.Learning]: "learning",
-  [State.Review]: "review",
-  [State.Relearning]: "relearning",
-};
+const gradeToRating = new Map<Grade, RecallRating>(
+  Object.entries(ratingToGrade).map(([rating, grade]) => [
+    grade,
+    rating as RecallRating,
+  ]),
+);
 
-const phaseToState: Record<ReviewPhase, State> = {
-  new: State.New,
-  learning: State.Learning,
-  review: State.Review,
-  relearning: State.Relearning,
-};
+// The same policies, in the same order, as the library's default preset
+const definition = defineScheduler({
+  model: FSRS7Model,
+  chrono: dateChrono,
+}).use(
+  schedulerDesiredRetentionMiddleware,
+  schedulerFuzzingMiddleware,
+  schedulerStatsMiddleware,
+  schedulerScheduledDaysMiddleware,
+  schedulerLearningStepsMiddleware,
+  schedulerMaximumIntervalMiddleware,
+  schedulerMonotonicIntervalMiddleware,
+);
 
-function fromCard(card: Card): ReviewState {
-  return {
-    due: card.due,
-    stability: card.stability,
-    difficulty: card.difficulty,
-    scheduledDays: card.scheduled_days,
-    learningSteps: card.learning_steps,
-    reps: card.reps,
-    lapses: card.lapses,
-    phase: stateToPhase[card.state],
-    lastReview: card.last_review ?? null,
-  };
+function createScheduler(target: number) {
+  return definition.create({
+    config: {
+      weights: FSRS7_DEFAULT_WEIGHTS,
+      fractionalDays: true,
+      desiredRetention: target,
+      // Fuzz is off so the phone and the server compute the same schedule
+      enableFuzz: false,
+      enableShortTerm: true,
+      learningSteps: ["1m", "10m"],
+      relearningSteps: ["10m"],
+      graduatingInterval: 1,
+      allowModelOverride: true,
+      maximumInterval: 36500,
+      clearStatsOnForget: false,
+    },
+  });
 }
 
-function toCard(state: ReviewState): Card {
-  return {
-    due: state.due,
-    stability: state.stability,
-    difficulty: state.difficulty,
-    scheduled_days: state.scheduledDays,
-    learning_steps: state.learningSteps,
-    reps: state.reps,
-    lapses: state.lapses,
-    state: phaseToState[state.phase],
-    ...(state.lastReview ? { last_review: state.lastReview } : {}),
-  };
+type Scheduler = ReturnType<typeof createScheduler>;
+
+export type RecallCard = ReturnType<Scheduler["newCard"]>;
+
+/** What a card looked like before a review, kept so the review can be undone */
+export type RecallRevlog = ReturnType<Scheduler["review"]>["revlog"];
+
+export interface RecallReview {
+  card: RecallCard;
+  revlog: RecallRevlog;
 }
 
-export function newReviewState(now: Date): ReviewState {
-  return fromCard(createEmptyCard(now));
+const schedulers = new Map<number, Scheduler>();
+
+function schedulerFor(target: number): Scheduler {
+  if (!(target > 0 && target < 1)) {
+    throw new RangeError(
+      `Recall target must be between 0 and 1, not ${target}`,
+    );
+  }
+  let scheduler = schedulers.get(target);
+  if (!scheduler) {
+    scheduler = createScheduler(target);
+    schedulers.set(target, scheduler);
+  }
+  return scheduler;
 }
 
-export function scheduleReview(
-  state: ReviewState,
+export function newRecallCard(cardId: string, now: Date): RecallCard {
+  return schedulerFor(DEFAULT_RECALL_TARGET).newCard({ cardId, now });
+}
+
+export function reviewRecallCard(
+  card: RecallCard,
   rating: RecallRating,
-  reviewedAt: Date,
-): ReviewState {
-  const { card } = scheduler.next(
-    toCard(state),
-    reviewedAt,
-    ratingToGrade[rating],
-  );
-  return fromCard(card);
+  reviewTime: Date,
+  target = DEFAULT_RECALL_TARGET,
+): RecallReview {
+  return schedulerFor(target).review({
+    card,
+    grade: ratingToGrade[rating],
+    now: reviewTime,
+  });
+}
+
+/** When the card would next be due for each rating, shown on the buttons */
+export function nextDueDates(
+  card: RecallCard,
+  now: Date,
+  target = DEFAULT_RECALL_TARGET,
+): Record<RecallRating, Date> {
+  const dates: Partial<Record<RecallRating, Date>> = {};
+  for (const item of schedulerFor(target).preview({ card, now })) {
+    const rating = gradeToRating.get(item.grade);
+    if (rating) dates[rating] = item.card.dueAt;
+  }
+  return dates as Record<RecallRating, Date>;
 }
