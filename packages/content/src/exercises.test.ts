@@ -709,6 +709,7 @@ describe("case lock", () => {
     const result = await lockTrack(track);
     expect(result.problems.map((p) => formatProblem(p, exercisesDir))).toEqual([
       "two-sum/cases.lock.json must only map case uuids to their hashes",
+      "../../../versions.json can't record versions while the track has problems",
     ]);
     expect(await readFile(lockFile, "utf8")).toBe('{ "not-a-uuid": "x" }');
   });
