@@ -1,0 +1,82 @@
+{
+  "exercise": "longest-run",
+  "cases": [
+    {
+      "uuid": "f45edd02-c946-408e-9e2f-6ea9153673e2",
+      "description": "finds the longest run in an unsorted list",
+      "property": "longestRun",
+      "input": {
+        "days": [100, 4, 200, 1, 3, 2]
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "198d8eda-e8fc-4503-8e88-998aaff99597",
+      "description": "repeated days don't lengthen a run",
+      "property": "longestRun",
+      "input": {
+        "days": [1, 2, 2, 3]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "a91e1e2f-00a0-4822-abce-caae43a6152e",
+      "description": "runs can cross zero",
+      "property": "longestRun",
+      "input": {
+        "days": [-1, -3, -2, 0, 5]
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "8402836e-f58f-4400-ba61-e77434c5c42e",
+      "description": "days with no neighbours are runs of 1",
+      "property": "longestRun",
+      "input": {
+        "days": [10, 30, 20]
+      },
+      "expected": 1
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "cb1b7787-ef2e-44aa-9078-b853eb1e0bae",
+          "description": "no days",
+          "property": "longestRun",
+          "input": {
+            "days": []
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "9dd3f12f-f9d6-40b7-9036-0ad90e220e08",
+          "description": "one day",
+          "property": "longestRun",
+          "input": {
+            "days": [7]
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "cfd9de07-ccb9-4378-8015-61e234deb81f",
+          "description": "the same day repeated",
+          "property": "longestRun",
+          "input": {
+            "days": [5, 5, 5]
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "0d87caa7-6d3d-4ffd-9d65-1b04af70b8a8",
+          "description": "handles the largest and smallest days",
+          "property": "longestRun",
+          "input": {
+            "days": [1000000000, 999999999, -1000000000]
+          },
+          "expected": 2
+        }
+      ]
+    }
+  ]
+}

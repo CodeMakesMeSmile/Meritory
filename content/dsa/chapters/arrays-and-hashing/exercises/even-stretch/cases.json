@@ -1,0 +1,82 @@
+{
+  "exercise": "even-stretch",
+  "cases": [
+    {
+      "uuid": "a413c8df-b4e8-410b-a8ae-e4886076f965",
+      "description": "finds the longest even stretch",
+      "property": "evenStretch",
+      "input": {
+        "games": [true, true, false, true, false, false, false]
+      },
+      "expected": 6
+    },
+    {
+      "uuid": "2cbcda78-db97-46cc-ae0e-15291a917d07",
+      "description": "one win and one loss",
+      "property": "evenStretch",
+      "input": {
+        "games": [true, false]
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "977c68bf-3a59-4633-a5b4-fb2a4e130b50",
+      "description": "only wins has no even stretch",
+      "property": "evenStretch",
+      "input": {
+        "games": [true, true, true]
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "653e38fb-11e4-4e2e-8f5e-8767eaf2d60b",
+      "description": "the stretch can end before the season does",
+      "property": "evenStretch",
+      "input": {
+        "games": [false, true, true, false, true]
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "b4598579-8b40-4185-892f-c8dac9051d0d",
+      "description": "the stretch can start after the first game",
+      "property": "evenStretch",
+      "input": {
+        "games": [true, true, false, true, false]
+      },
+      "expected": 4
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "27ee29cf-6874-4621-9248-90109784a75b",
+          "description": "no games",
+          "property": "evenStretch",
+          "input": {
+            "games": []
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "e7cc43c7-ab23-40f9-9153-26b105df6b07",
+          "description": "one game",
+          "property": "evenStretch",
+          "input": {
+            "games": [false]
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "457c3d96-6d3d-4cb1-8edf-24c41a34d53e",
+          "description": "wins and losses taking turns",
+          "property": "evenStretch",
+          "input": {
+            "games": [true, false, true, false, true, false, true]
+          },
+          "expected": 6
+        }
+      ]
+    }
+  ]
+}

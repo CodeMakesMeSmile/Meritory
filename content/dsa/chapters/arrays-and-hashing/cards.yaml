@@ -1,0 +1,354 @@
+- id: why-insert-front-slow
+  skill: array-costs
+  asks: why
+  type: pick-one
+  prompt: Why does adding a value at the front of an array take O(n) time?
+  reworded: What makes inserting at index 0 of an array slow for a long array?
+  options:
+    - text: Every value already in the array shifts over by one
+      correct: true
+      reason: Values sit side by side, so making room at the front moves all of them.
+    - text: The array has to be searched for a free slot first
+      reason: An array has no free slots in the middle. The cost comes from moving values, not searching.
+    - text: The new value has to be hashed
+      reason: Arrays don't hash anything. That's how a hash table finds a slot.
+    - text: The whole array is sorted again after each insert
+      reason: An array keeps whatever order you give it and never sorts itself.
+  lesson:
+    title: Values sit side by side
+    explanation: An array keeps its values next to each other in memory, so a new value at the front means moving every other value one place along.
+    fix: Add at the end when you can, or use a structure built for both ends, like a deque.
+- id: array-operation-costs
+  skill: array-costs
+  asks: what
+  type: matching
+  prompt: Match each array operation to its cost.
+  reworded: What does each of these array operations cost for an array of n values?
+  matchHeading: Cost
+  pairs:
+    - item: Read the value at index i
+      match: O(1)
+    - item: Check whether a value is in an unsorted array
+      match: O(n)
+    - item: Copy a slice of k values
+      match: O(k)
+    - item: Add a value at the end of a growable array, on average
+      match: O(1) on average
+  extraMatches:
+    - O(log n)
+    - O(n²)
+  lesson:
+    title: Index reads are cheap and searches aren't
+    explanation: Reading by index is one address calculation. Finding a value means checking each one. A slice copies every value in it. Adding at the end is O(1) except for the rare grow, which averages out.
+- id: when-avoid-slicing
+  skill: array-costs
+  asks: when
+  type: prompt
+  prompt: When should you pass start and end indices instead of slicing an array?
+  reworded: In what situation does slicing an array cost more than it seems to?
+  points:
+    - When the slice happens inside a loop or a recursive call, since each slice copies its values.
+    - A slice of k values costs O(k), so slicing every step can turn O(n) into O(n²).
+    - Indices describe the same range without copying anything.
+  misconception: That a slice is a free view of the original array.
+  lesson:
+    title: A slice is a copy
+    explanation: In Python, Java, and TypeScript, slicing an array builds a new array and copies each value into it. Do that once and it's fine. Do it at every step and the copies add up.
+    fix: Keep the array whole and pass the start and end of the range you mean.
+- id: hash-lookup-steps
+  skill: hash-table-inside
+  asks: what
+  type: ordering
+  prompt: Put the steps of a hash table lookup in order.
+  reworded: In what order does a hash table find the entry for a key?
+  steps:
+    - Run the key through the hash function to get its hash code.
+    - Reduce the hash code to a slot number.
+    - Look at the entries in that slot.
+    - Compare each entry's key with yours for equality.
+  terms:
+    - term: Hash code
+      definition: A whole number computed from the key. Equal keys always get the same one.
+    - term: Slot
+      definition: One place in the table's underlying array, sometimes called a bucket.
+  lesson:
+    title: Hash, reduce, look, compare
+    explanation: The hash code says where to look, but different keys can share a slot, so the table still checks that the key it finds is equal to yours.
+- id: why-worst-case-linear
+  skill: hash-table-inside
+  asks: why
+  type: prompt
+  prompt: Why can a hash table lookup take O(n) time in the worst case?
+  reworded: What would make a hash table as slow as searching a list?
+  points:
+    - If many keys collide and land in the same slot, a lookup has to check each of them.
+    - In the worst case every key shares one slot, so a lookup checks all n entries.
+    - A good hash function spreads keys out, which keeps the average at O(1).
+  misconception: That a hash table lookup is always O(1).
+  lesson:
+    title: O(1) is the average, not a promise
+    explanation: Hash table costs assume keys spread evenly across the slots. When they don't, the entries pile up in a few slots and each lookup walks through the pile.
+    source:
+      url: https://docs.python.org/3/builtins/time-complexity.html
+      title: Time complexity of operations on built-in types
+- id: why-table-grows
+  skill: hash-table-inside
+  asks: why
+  type: pick-one
+  prompt: Why does a hash table add more slots once it's about three quarters full?
+  reworded: What's the reason a hash table grows before every slot is used?
+  options:
+    - text: Fuller tables have more collisions, so lookups slow down
+      correct: true
+      reason: Keeping the load factor low keeps most slots holding about one entry.
+    - text: A table can't store more entries than three quarters of its slots
+      reason: It could keep going, but collisions would make every operation slower.
+    - text: Growing keeps the keys in sorted order
+      reason: Hash tables don't keep keys sorted, before or after growing.
+    - text: Growing frees memory used by deleted entries
+      reason: Growing uses more memory, not less.
+  misconception: That a table only grows when it's completely full.
+  lesson:
+    title: The load factor
+    explanation: The load factor is entries divided by slots. As it rises, more keys share slots. Java's HashMap, for one, roughly doubles its slots once the load factor passes 0.75.
+    source:
+      url: https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/HashMap.html
+      title: HashMap (Java SE 21 and JDK 21)
+- id: why-check-before-adding
+  skill: complement-lookup
+  asks: why
+  type: prompt
+  prompt: When looking for two values that add up to a target in one pass, why check for the partner before you add the current value to the map?
+  reworded: In the one-pass pair search, what goes wrong if you store the current value before looking up its partner?
+  points:
+    - A value could pair with itself, like 4 with itself for a target of 8, when 4 appears only once.
+    - Checking first means every partner found came from an earlier position.
+    - It also gives the earlier index first, so the pair comes out in order.
+  lesson:
+    title: Only earlier values count as partners
+    explanation: The map should hold values from before the current position. Checking before adding keeps the current value out of its own search.
+    fix: Look up `target - value`, then add the value.
+- id: when-map-for-pairs
+  skill: complement-lookup
+  asks: when
+  type: matching
+  prompt: Match each version of the pair problem to the approach that fits it best.
+  reworded: Which approach suits each of these pair problems?
+  matchHeading: Approach
+  pairs:
+    - item: Unsorted values, and you need the original indices
+      match: A map from value to index, in one pass
+    - item: Sorted values, and you can't use extra memory
+      match: Two pointers from both ends
+    - item: Count the pairs that differ by exactly k
+      match: A map from value to how many times it's appeared
+  extraMatches:
+    - Sort, then check every pair
+  lesson:
+    title: The map trades memory for a single pass
+    explanation: A map finds any partner in O(1) on average but uses O(n) memory. When the values are already sorted, two pointers find a pair with no extra memory, and they're covered in the next chapter.
+- id: pair-search-steps
+  skill: complement-lookup
+  asks: what
+  type: ordering
+  prompt: Put the steps of the one-pass pair search in order, for each value.
+  reworded: For each value in the one-pass search for a pair with a given sum, what happens and in what order?
+  steps:
+    - Work out the partner, the target minus the value.
+    - Look the partner up in the map.
+    - If it's there, return the partner's index and this one.
+    - Otherwise, record this value and its index in the map.
+  lesson:
+    title: Compute, look up, then remember
+    explanation: Each value asks for its partner first and only then joins the map, so one pass finds the pair.
+- id: when-count-array
+  skill: count-and-compare
+  asks: when
+  type: pick-one
+  prompt: When is an array of counts a better choice than a hash map for counting?
+  reworded: In what situation should you count with a plain array instead of a map?
+  options:
+    - text: When the keys come from a small, known range, like the 26 lowercase letters
+      correct: true
+      reason: Each key can be its own index, so there's no hashing and no collisions.
+    - text: When the keys are long strings
+      reason: Strings can't be array indices directly. A map is the right tool here.
+    - text: When the keys can be any 32-bit number
+      reason: An array with a slot for every 32-bit number would need billions of slots.
+    - text: When you need the keys in the order you first saw them
+      reason: An array of counts loses that order. A map that keeps insertion order is the fit.
+  lesson:
+    title: Direct addressing
+    explanation: When every possible key maps to a small index, an array indexed by the key is a perfect hash table. Counting letters with `counts[letter - 'a']` is the classic case.
+- id: why-count-not-sort
+  skill: count-and-compare
+  asks: why
+  type: prompt
+  prompt: Why is counting letters a better way to check whether two words use the same letters than sorting both words?
+  reworded: To tell whether one word is a rearrangement of another, what makes counting beat sorting?
+  points:
+    - Counting takes one pass over each word, so it's O(n).
+    - Sorting takes O(n log n).
+    - With a fixed alphabet, the counts fit in a small array, so the extra memory doesn't grow with the words.
+    - Words of different lengths can be ruled out before counting at all.
+  lesson:
+    title: Same counts, same letters
+    explanation: Two words are rearrangements of each other exactly when every letter appears the same number of times in both. Counts answer that in one pass each.
+- id: why-group-key-rules
+  skill: group-by-key
+  asks: why
+  type: prompt
+  prompt: When you group items with a map from a built key to a list, what must be true of the key, and why?
+  reworded: What makes a key you build a correct one for grouping, and what goes wrong otherwise?
+  points:
+    - Every item that belongs in a group must produce the same key, or the group gets split.
+    - Items from different groups must produce different keys, or two groups get merged.
+    - Test the key on two items that belong together and two that don't.
+  misconception: That any key built from the item's contents will do.
+  lesson:
+    title: The key defines the group
+    explanation: The map can only put items together when their keys are equal. Sorted letters work for words with the same letters because rearranging a word doesn't change its sorted letters, and different letters always give different sorted strings.
+- id: why-string-key-ts
+  skill: group-by-key
+  asks: why
+  type: pick-one
+  prompt: In TypeScript, why does `map.get(['a', 'b'])` miss an entry that was stored with `map.set(['a', 'b'], group)`?
+  reworded: Why can't a TypeScript Map find an entry when you look it up with a new array holding the same values?
+  options:
+    - text: Map compares arrays by identity, and the two arrays are different objects
+      correct: true
+      reason: Two arrays with the same contents are still two objects, so they're two keys.
+    - text: Map only accepts strings as keys
+      reason: Map accepts any value as a key. The catch is how it compares them.
+    - text: Arrays are sorted before they're stored
+      reason: Map doesn't change keys at all.
+  lesson:
+    title: Build a string key
+    explanation: A Map compares objects and arrays by reference, not by their contents. Join the parts into a string, like `letters.join('')`, so equal contents give equal keys.
+    source:
+      url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
+      title: Map, MDN
+- id: group-key-choices
+  skill: group-by-key
+  asks: what
+  type: matching
+  prompt: Match each grouping to a key that works for it.
+  reworded: Which key puts each of these groupings together correctly?
+  matchHeading: Key
+  pairs:
+    - item: Words that use the same letters
+      match: The word's letters, sorted
+    - item: Codes that are the same letters shifted along the alphabet
+      match: The gap from each letter to the next, wrapping after z
+    - item: Numbers that leave the same remainder when divided by 7
+      match: The number modulo 7, kept between 0 and 6
+  extraMatches:
+    - The item's length
+    - The first letter
+  lesson:
+    title: A key captures what members share
+    explanation: Each key keeps what stays the same inside a group and drops what changes. Shifting a code changes its letters but not the gaps between them.
+- id: why-seed-zero
+  skill: prefix-sum-lookup
+  asks: why
+  type: prompt
+  prompt: When counting stretches that add up to a total with prefix sums and a map, why does the map start with a sum of 0 seen once?
+  reworded: In the prefix sum count of stretches with a given total, what is the starting entry of 0 for?
+  points:
+    - It stands for the empty prefix, the sum before the first value.
+    - Without it, a stretch that starts at the very first value is never counted.
+    - With it, every stretch is a later prefix sum minus an earlier one, including the empty prefix.
+  misconception: That the starting entry only matters when the total is 0.
+  lesson:
+    title: The empty prefix
+    explanation: A stretch from index 0 to j sums to the prefix sum at j minus the sum of nothing. Recording a sum of 0 once lets the same lookup count those stretches.
+    fix: "Start the map as `{0: 1}` for counting, or `{0: -1}` when you store the first index of each sum."
+- id: prefix-count-steps
+  skill: prefix-sum-lookup
+  asks: what
+  type: ordering
+  prompt: Put the steps for each value in order when counting stretches that add up to a total.
+  reworded: For each value, what does the prefix sum count of stretches do, and in what order?
+  steps:
+    - Add the value to the running sum.
+    - Look up how many earlier prefix sums equal the running sum minus the total.
+    - Add that number to the count of stretches.
+    - Record the running sum in the map.
+  lesson:
+    title: Look up before you record
+    explanation: The map must hold only earlier prefix sums when you look up, so a stretch is never empty. Recording the current sum comes last.
+- id: when-not-sliding-window
+  skill: prefix-sum-lookup
+  asks: when
+  type: pick-one
+  prompt: When must you use prefix sums with a map instead of a sliding window to find stretches with a given sum?
+  reworded: What about the input rules out a sliding window for finding stretches that add up to a total?
+  options:
+    - text: When the values can be negative or zero
+      correct: true
+      reason: Growing the window can then lower the sum, so you can't tell which end to move.
+    - text: When the list is longer than a thousand values
+      reason: Both approaches are O(n), so length doesn't decide it.
+    - text: When the values are already sorted
+      reason: Sorting would break up the stretches, which have to stay in their original order.
+  lesson:
+    title: A window needs sums that only grow
+    explanation: A sliding window works when adding a value always raises the sum and removing one always lowers it. Negative values or zeros break that, but prefix sums with a map don't rely on it.
+- id: why-start-of-run
+  skill: set-runs
+  asks: why
+  type: prompt
+  prompt: When finding the longest run of consecutive numbers with a set, why do you only start counting from a number whose predecessor isn't in the set?
+  reworded: In the set approach to the longest run of consecutive numbers, what does skipping numbers whose predecessor is present achieve?
+  points:
+    - A number whose predecessor is missing is where a run begins.
+    - Counting only from run starts means each number is counted once, as part of one run.
+    - That keeps the whole search O(n), even with a loop inside a loop.
+  misconception: That a loop inside a loop always makes the search O(n²).
+  lesson:
+    title: Count each run once, from its start
+    explanation: Starting from every number would count the run 5, 6, 7 three times, from 5, from 6, and from 7. Starting only where the predecessor is missing counts it once.
+- id: when-sort-for-runs
+  skill: set-runs
+  asks: when
+  type: pick-one
+  prompt: When is sorting the numbers first a reasonable way to find runs of consecutive numbers?
+  reworded: In which case is sorting good enough for finding consecutive runs?
+  options:
+    - text: When O(n log n) time is fine and you'd rather not use O(n) extra memory
+      correct: true
+      reason: Sorting in place uses little extra memory, and runs become neighbours.
+    - text: When the interviewer asks for O(n) time
+      reason: Sorting is O(n log n), so it can't meet an O(n) limit. Use the set.
+    - text: When there are repeated numbers
+      reason: Both approaches handle repeats. A set ignores them, and after sorting you skip them.
+  lesson:
+    title: Sort for memory, set for time
+    explanation: Sorting puts consecutive numbers next to each other in O(n log n). A set finds the runs in O(n) but needs room for every number.
+- id: why-not-divide
+  skill: prefix-suffix-passes
+  asks: why
+  type: prompt
+  prompt: Why is dividing the total product by each number a poor way to get the product of all the other numbers?
+  reworded: What goes wrong if you compute each product of the others as the full product divided by the number?
+  points:
+    - A zero makes the full product 0, and you can't divide by the zero itself.
+    - With one zero, every answer but one is 0, and the zero's own answer is lost.
+    - Interviewers often rule out division to see the two-pass approach.
+  lesson:
+    title: Multiply the two sides
+    explanation: The product of the others is the product before a position times the product after it. One pass from each side builds both, with no division.
+- id: two-pass-steps
+  skill: prefix-suffix-passes
+  asks: what
+  type: ordering
+  prompt: Put the steps for the product of all other numbers in order, using O(1) extra memory besides the answer.
+  reworded: In what order do you fill the answer array for the product of the others with two passes?
+  steps:
+    - Fill the answer from the left with the product of everything before each position.
+    - Start a running product at 1 on the right end.
+    - Walk from the right, multiplying each answer by the running product.
+    - Multiply the running product by the current number before moving left.
+  lesson:
+    title: The answer array holds the left side
+    explanation: The first pass stores the left products in the answer itself. The second pass carries the right product in one variable, so no second array is needed.

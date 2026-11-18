@@ -1,0 +1,16 @@
+id: product-of-others
+kind: coding
+title: Product of the others
+difficulty: medium
+skills:
+  - prefix-suffix-passes
+sibling: balance-point
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: productOfOthers
+  params:
+    - name: nums
+      type: int[]
+  returns: int[]

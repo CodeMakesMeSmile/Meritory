@@ -1,0 +1,18 @@
+id: stretches-with-total
+kind: coding
+title: Stretches with a total
+difficulty: medium
+skills:
+  - prefix-sum-lookup
+sibling: even-stretch
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: stretchesWithTotal
+  params:
+    - name: changes
+      type: int[]
+    - name: total
+      type: int
+  returns: long

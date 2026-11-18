@@ -1,0 +1,82 @@
+{
+  "exercise": "balance-point",
+  "cases": [
+    {
+      "uuid": "9ad446ec-0612-4631-b4d2-795a84eeb322",
+      "description": "finds the balance point",
+      "property": "balancePoint",
+      "input": {
+        "weights": [2, 7, 1, 4, 5]
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "e9a3e0ab-ffeb-4e63-8c1a-9af12d5e2316",
+      "description": "no position balances",
+      "property": "balancePoint",
+      "input": {
+        "weights": [1, 2, 3]
+      },
+      "expected": -1
+    },
+    {
+      "uuid": "bf9b2f35-c960-4529-91ae-6fa6571bcc98",
+      "description": "returns the first balance point",
+      "property": "balancePoint",
+      "input": {
+        "weights": [0, 0, 0]
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "1c4b9ff8-0f62-4b62-88a5-55cbc6f13b4f",
+      "description": "negative weights count",
+      "property": "balancePoint",
+      "input": {
+        "weights": [-1, -1, -1, 0, 1, 1]
+      },
+      "expected": 0
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "afdc5a65-b5a5-4a82-bab0-e99b15abe20d",
+          "description": "no weights have no balance point",
+          "property": "balancePoint",
+          "input": {
+            "weights": []
+          },
+          "expected": -1
+        },
+        {
+          "uuid": "c138fb25-9a56-4320-9506-5fca0aacc9e6",
+          "description": "one weight balances on empty sides",
+          "property": "balancePoint",
+          "input": {
+            "weights": [5]
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "d5f88f98-ddd3-487b-a7c7-aa4e2d8dc3e8",
+          "description": "two equal weights don't balance",
+          "property": "balancePoint",
+          "input": {
+            "weights": [1, 1]
+          },
+          "expected": -1
+        },
+        {
+          "uuid": "58c89daf-f1ae-4f8b-8abe-73e5ced9d052",
+          "description": "the balance point can be the last position",
+          "property": "balancePoint",
+          "input": {
+            "weights": [2, -2, 7]
+          },
+          "expected": 2
+        }
+      ]
+    }
+  ]
+}

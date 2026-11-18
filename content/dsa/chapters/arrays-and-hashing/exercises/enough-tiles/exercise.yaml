@@ -1,0 +1,18 @@
+id: enough-tiles
+kind: coding
+title: Enough tiles
+difficulty: easy
+skills:
+  - count-and-compare
+sibling: same-letters
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: enoughTiles
+  params:
+    - name: word
+      type: string
+    - name: tiles
+      type: string
+  returns: boolean

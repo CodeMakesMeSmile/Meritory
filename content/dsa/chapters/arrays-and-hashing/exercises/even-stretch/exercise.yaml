@@ -1,0 +1,16 @@
+id: even-stretch
+kind: coding
+title: An even stretch
+difficulty: medium
+skills:
+  - prefix-sum-lookup
+sibling: stretches-with-total
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: evenStretch
+  params:
+    - name: games
+      type: boolean[]
+  returns: int

@@ -1,0 +1,16 @@
+id: shift-groups
+kind: coding
+title: Codes that shift together
+difficulty: medium
+skills:
+  - group-by-key
+sibling: letter-groups
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: shiftGroups
+  params:
+    - name: codes
+      type: string[]
+  returns: string[][]

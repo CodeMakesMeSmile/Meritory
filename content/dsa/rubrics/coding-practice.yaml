@@ -1,0 +1,38 @@
+id: coding-practice
+title: Coding practice
+criteria:
+  - id: correctness
+    name: Correctness
+    scoredBy: tests
+    levels:
+      - Fails most cases, or doesn't run.
+      - Passes the common cases but misses edge cases like an empty input or duplicates.
+      - Fails one or two cases.
+      - Passes every case.
+  - id: approach
+    name: Approach
+    scoredBy: self
+    levels:
+      - Starts coding without a plan, or the plan doesn't solve the problem.
+      - Has a working plan but can't say how its time or space grows.
+      - Picks a sound approach and states its time and space, with one mistake.
+      - Compares a slower approach with a faster one, states both costs correctly, and explains the trade-off.
+  - id: code-quality
+    name: Code quality
+    scoredBy: self
+    levels:
+      - Hard to follow, with unclear names and repeated logic.
+      - Readable in parts, but some names or steps would confuse a reviewer.
+      - Clear names and structure, with one or two rough spots.
+      - Clear names, no repeated logic, and edge cases handled where they belong.
+  - id: communication
+    name: Communication
+    scoredBy: self
+    levels:
+      - Works in silence and can't explain the code afterwards.
+      - Explains the code only when asked, and skips the reasoning.
+      - Talks through the plan before coding and checks it with an example.
+      - Asks about the inputs first, talks through the plan, and tests the code by hand with an edge case.
+pass:
+  total: 12
+  lowest: 2

@@ -1,0 +1,17 @@
+id: as-ranges
+kind: coding
+title: Ids as ranges
+difficulty: medium
+skills:
+  - set-runs
+sibling: longest-run
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: asRanges
+  params:
+    - name: ids
+      type: int[]
+  returns: int[][]
+  anyOrder: true

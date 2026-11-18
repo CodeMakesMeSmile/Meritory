@@ -1,0 +1,20 @@
+id: arrays-and-hashing
+title: Arrays and hashing
+order: 2
+skills:
+  - id: array-costs
+    name: Know what each array operation costs
+  - id: hash-table-inside
+    name: Explain how a hash table finds a key
+  - id: complement-lookup
+    name: Look up the value you still need
+  - id: count-and-compare
+    name: Count items and compare the counts
+  - id: group-by-key
+    name: Group items by a key you build
+  - id: prefix-sum-lookup
+    name: Count ranges with prefix sums and a map
+  - id: set-runs
+    name: Find runs of consecutive values with a set
+  - id: prefix-suffix-passes
+    name: Combine a pass from the left with a pass from the right

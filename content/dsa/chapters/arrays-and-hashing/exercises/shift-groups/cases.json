@@ -1,0 +1,73 @@
+{
+  "exercise": "shift-groups",
+  "cases": [
+    {
+      "uuid": "9058de89-69de-4f2f-8356-be0a5c2ba854",
+      "description": "groups codes that shift into each other",
+      "property": "shiftGroups",
+      "input": {
+        "codes": ["abc", "bcd", "az", "ba", "xyz", "a", "z"]
+      },
+      "expected": [["abc", "bcd", "xyz"], ["az", "ba"], ["a", "z"]]
+    },
+    {
+      "uuid": "0dfd83ee-b1fc-48ca-8bd9-bcb6187568d3",
+      "description": "shifting wraps from z to a",
+      "property": "shiftGroups",
+      "input": {
+        "codes": ["az", "ba", "yx"]
+      },
+      "expected": [["az", "ba", "yx"]]
+    },
+    {
+      "uuid": "0bc4be7f-912e-4c8a-b61a-b0b5f40171b2",
+      "description": "codes of different lengths never group",
+      "property": "shiftGroups",
+      "input": {
+        "codes": ["a", "aa", "b", "bb"]
+      },
+      "expected": [["a", "b"], ["aa", "bb"]]
+    },
+    {
+      "uuid": "ca46b67a-6814-491e-adf2-d1bed31537dc",
+      "description": "codes with different gaps don't group",
+      "property": "shiftGroups",
+      "input": {
+        "codes": ["abc", "abd"]
+      },
+      "expected": [["abc"], ["abd"]]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "e96a44dd-525d-49b7-bf69-c02de4854c85",
+          "description": "no codes make no groups",
+          "property": "shiftGroups",
+          "input": {
+            "codes": []
+          },
+          "expected": []
+        },
+        {
+          "uuid": "f6e86d9f-240b-453a-974c-d289c4f9948a",
+          "description": "one code makes one group",
+          "property": "shiftGroups",
+          "input": {
+            "codes": ["q"]
+          },
+          "expected": [["q"]]
+        },
+        {
+          "uuid": "5ec6760a-a8ca-4153-b00b-b3b64751b396",
+          "description": "repeated codes stay in their group",
+          "property": "shiftGroups",
+          "input": {
+            "codes": ["ace", "bdf", "ace"]
+          },
+          "expected": [["ace", "bdf", "ace"]]
+        }
+      ]
+    }
+  ]
+}
