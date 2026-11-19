@@ -1,0 +1,123 @@
+import { ID_PATTERN } from "@meritory/content";
+import Type, { type Static } from "typebox";
+
+const UUID = "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$";
+
+const ContentId = Type.String({ pattern: ID_PATTERN, maxLength: 80 });
+const Time = Type.String({ format: "date-time" });
+const Count = Type.Integer({ minimum: 0 });
+
+export const RecallRating = Type.Union([
+  Type.Literal("again"),
+  Type.Literal("hard"),
+  Type.Literal("good"),
+  Type.Literal("easy"),
+]);
+export type RecallRating = Static<typeof RecallRating>;
+
+export const ChapterParams = Type.Object({
+  trackId: ContentId,
+  chapterId: ContentId,
+});
+export type ChapterParams = Static<typeof ChapterParams>;
+
+export const StartChapterResponse = Type.Object(
+  { added: Count },
+  { $id: "StartChapterResponse" },
+);
+export type StartChapterResponse = Static<typeof StartChapterResponse>;
+
+export const RecallDueResponse = Type.Object(
+  {
+    /** New cards still allowed before 4 a.m. local time */
+    newLeftToday: Count,
+    chapters: Type.Array(
+      Type.Object({
+        trackId: Type.String(),
+        chapterId: Type.String(),
+        due: Count,
+        new: Count,
+      }),
+    ),
+  },
+  { $id: "RecallDueResponse" },
+);
+export type RecallDueResponse = Static<typeof RecallDueResponse>;
+
+export const RecallSessionCard = Type.Object({
+  trackId: Type.String(),
+  chapterId: Type.String(),
+  cardId: Type.String(),
+  /** The bundle's current version, which may be newer than the one last shown */
+  version: Type.Integer({ minimum: 1 }),
+  isNew: Type.Boolean(),
+  dueAt: Time,
+  /** When each rating would bring the card back, for the rating buttons */
+  next: Type.Object({ again: Time, hard: Time, good: Time, easy: Time }),
+});
+export type RecallSessionCard = Static<typeof RecallSessionCard>;
+
+export const RecallSessionResponse = Type.Object(
+  { newLeftToday: Count, cards: Type.Array(RecallSessionCard) },
+  { $id: "RecallSessionResponse" },
+);
+export type RecallSessionResponse = Static<typeof RecallSessionResponse>;
+
+export const RecordReviewBody = Type.Object(
+  {
+    /** A UUID the app makes, so a retry is stored once */
+    id: Type.String({ pattern: UUID }),
+    trackId: ContentId,
+    chapterId: ContentId,
+    cardId: ContentId,
+    cardVersion: Type.Integer({ minimum: 1, maximum: 1_000_000 }),
+    rating: RecallRating,
+    answeredAt: Time,
+    /** Time spent on the card, stored as at most 10 minutes */
+    durationMs: Type.Optional(
+      Type.Integer({ minimum: 0, maximum: 86_400_000 }),
+    ),
+  },
+  { additionalProperties: false },
+);
+export type RecordReviewBody = Static<typeof RecordReviewBody>;
+
+export const RecordReviewResponse = Type.Object(
+  { id: Type.String(), dueAt: Time, undoUntil: Time },
+  { $id: "RecordReviewResponse" },
+);
+export type RecordReviewResponse = Static<typeof RecordReviewResponse>;
+
+export const ReviewParams = Type.Object({ id: Type.String({ pattern: UUID }) });
+export type ReviewParams = Static<typeof ReviewParams>;
+
+export const UndoReviewResponse = Type.Object(
+  {
+    trackId: Type.String(),
+    chapterId: Type.String(),
+    cardId: Type.String(),
+    dueAt: Time,
+  },
+  { $id: "UndoReviewResponse" },
+);
+export type UndoReviewResponse = Static<typeof UndoReviewResponse>;
+
+export const TimeZoneBody = Type.Object(
+  {
+    timeZone: Type.String({
+      maxLength: 64,
+      pattern: "^[A-Za-z][A-Za-z0-9_+-]*(/[A-Za-z0-9_+-]+){0,2}$",
+      examples: ["America/Toronto"],
+    }),
+  },
+  { additionalProperties: false },
+);
+export type TimeZoneBody = Static<typeof TimeZoneBody>;
+
+/** Error codes the recall routes answer with */
+export const RECALL_ERRORS = {
+  idReused: "review_id_reused",
+  notLatest: "not_latest_review",
+  undoExpired: "undo_expired",
+  unknownTimeZone: "unknown_time_zone",
+} as const;

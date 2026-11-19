@@ -1,16 +1,38 @@
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
-import { canonicalJson } from "@meritory/content";
+import { type Bundle, canonicalJson } from "@meritory/content";
 import { ContentResponse } from "@meritory/contracts";
 import type { FastifyInstance } from "fastify";
 import Type from "typebox";
 import Value from "typebox/value";
+
+/** A chapter's cards, which recall needs to start and check reviews */
+export interface ServedChapter {
+  trackId: string;
+  chapterId: string;
+  cards: { id: string; version: number }[];
+}
 
 /** The built bundle, kept as the exact text that's sent */
 export interface ServedContent {
   /** The hash over every track, which is also the ETag */
   hash: string;
   text: string;
+  /** Every chapter, in the bundle's own order */
+  chapters: ServedChapter[];
+}
+
+export function indexContent(bundle: Pick<Bundle, "tracks">): ServedChapter[] {
+  return bundle.tracks.flatMap((track) =>
+    track.chapters.map((chapter) => ({
+      trackId: track.id,
+      chapterId: chapter.id,
+      cards: chapter.cards.map((card) => ({
+        id: card.id,
+        version: card.version,
+      })),
+    })),
+  );
 }
 
 const REBUILD = "Build it again with pnpm content:build.";
@@ -59,7 +81,7 @@ export async function loadContent(file: string): Promise<ServedContent> {
       `The content bundle at ${file} doesn't match its hash. ${REBUILD}`,
     );
   }
-  return { hash, text };
+  return { hash, text, chapters: indexContent(data) };
 }
 
 const ENTITY_TAG = /(?:W\/)?"([^"]*)"/g;

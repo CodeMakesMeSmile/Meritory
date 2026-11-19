@@ -10,9 +10,11 @@ import {
   type SignedInUser,
   type SignInMethods,
 } from "@meritory/contracts";
+import type { RecallStore } from "@meritory/server";
 import type { FastifyInstance, FastifyReply } from "fastify";
 import { toFetchHeaders } from "./auth-routes.ts";
 import { registerContentRoutes, type ServedContent } from "./content.ts";
+import { registerRecallRoutes } from "./recall.ts";
 
 export interface CurrentSession {
   user: SignedInUser;
@@ -72,6 +74,9 @@ export interface SessionDependencies {
   /** The only site allowed to send changes */
   webOrigin: string;
   content: ServedContent;
+  recall: RecallStore;
+  /** The server's clock, which tests replace */
+  now?: () => Date;
 }
 
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
@@ -127,6 +132,14 @@ export async function registerSignedInRoutes(
     });
 
     registerContentRoutes(scope, deps.content);
+    // Its own scope, so its rate limits stay on recall routes
+    await scope.register((recall) =>
+      registerRecallRoutes(recall, {
+        store: deps.recall,
+        chapters: deps.content.chapters,
+        now: deps.now ?? (() => new Date()),
+      }),
+    );
 
     const needsConfirm = (reply: FastifyReply) =>
       refuse(reply, 403, {
