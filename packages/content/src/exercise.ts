@@ -125,6 +125,26 @@ export const ExerciseFile = Type.Object(
 );
 export type ExerciseFile = Static<typeof ExerciseFile>;
 
+const Uuid = Type.String({ pattern: UUID_PATTERN });
+
+/** One test case in Exercism's canonical-data format */
+export const TestCase = Type.Object(
+  {
+    uuid: Uuid,
+    description: Text(200),
+    /** The function or class under test */
+    property: Type.String({ maxLength: 40 }),
+    input: Type.Record(Type.String(), Type.Unknown()),
+    /** The answer, or `{"error": ...}` when the input must be refused */
+    expected: Type.Unknown(),
+    /** The case this one fixes, which stays in the file */
+    reimplements: Type.Optional(Uuid),
+    comments: Type.Optional(Type.Array(Text(500))),
+  },
+  { additionalProperties: false },
+);
+export type TestCase = Static<typeof TestCase>;
+
 /** The model answer a design exercise shows after you score yourself */
 export const ANSWER_FILE = "answer.md";
 

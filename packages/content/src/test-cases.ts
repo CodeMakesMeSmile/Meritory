@@ -7,34 +7,16 @@ import {
   NAME_PATTERN,
   type Param,
   type Signature,
+  TestCase,
   UUID_PATTERN,
 } from "./exercise.ts";
 import { ID_PATTERN, TEXT_PATTERN } from "./fact.ts";
 import { canonicalJson, fitsType } from "./values.ts";
 import { checkSchema, isRecord, type Problem, readText } from "./yaml-file.ts";
 
-const Uuid = Type.String({ pattern: UUID_PATTERN });
 const Text = (maxLength: number) =>
   Type.String({ minLength: 1, maxLength, pattern: TEXT_PATTERN });
 const Comments = Type.Optional(Type.Array(Text(500)));
-
-/** One test case in Exercism's canonical-data format */
-export const TestCase = Type.Object(
-  {
-    uuid: Uuid,
-    description: Text(200),
-    /** The function or class under test */
-    property: Type.String({ maxLength: 40 }),
-    input: Type.Record(Type.String(), Type.Unknown()),
-    /** The answer, or `{"error": ...}` when the input must be refused */
-    expected: Type.Unknown(),
-    /** The case this one fixes, which stays in the file */
-    reimplements: Type.Optional(Uuid),
-    comments: Comments,
-  },
-  { additionalProperties: false },
-);
-export type TestCase = Static<typeof TestCase>;
 
 const Group = Type.Object(
   {
