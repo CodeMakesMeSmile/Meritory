@@ -1,12 +1,18 @@
+import { readdir, readFile } from "node:fs/promises";
+import path from "node:path";
+import { SOLUTION_FILES } from "@meritory/content";
+import { SQL_ATTACKS } from "@meritory/security-testing";
 import Type from "typebox";
 import { afterEach, describe, expect, it } from "vitest";
 import { buildApp } from "./app.ts";
+import type { ServedContent } from "./content.ts";
 import type {
   AccountDeletionDependency,
   AccountSessionStore,
   CurrentSession,
   SignInMethodDependency,
 } from "./session.ts";
+import { builtContent, CONTENT_DIR } from "./test-content.ts";
 
 let app: Awaited<ReturnType<typeof buildApp>> | undefined;
 
@@ -109,6 +115,7 @@ async function start(
     unlink: async () => "unlinked",
   },
   accountDeletion = fakeDeletion().deletion,
+  content?: ServedContent,
 ) {
   app = await buildApp({
     pingDatabase: async () => databaseUp,
@@ -119,6 +126,7 @@ async function start(
     accountSessions,
     signInMethods,
     accountDeletion,
+    content: content ?? (await builtContent()),
   });
   return app;
 }
@@ -585,6 +593,106 @@ describe("sessions", () => {
   });
 });
 
+describe("content", () => {
+  const signedIn = { cookie: "session=good" };
+
+  async function get(headers: Record<string, string> = signedIn) {
+    return (await start(true)).inject({ url: "/v1/content", headers });
+  }
+
+  it("sends the built bundle with its ETag to a signed-in user", async () => {
+    const { hash, text } = await builtContent();
+    const res = await get();
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toBe(text);
+    expect(res.headers["content-type"]).toBe("application/json; charset=utf-8");
+    expect(res.headers.etag).toBe(`"${hash}"`);
+    expect(res.headers["cache-control"]).toBe("private, no-cache");
+    const dsa = res.json().tracks.find((t: { id: string }) => t.id === "dsa");
+    expect(dsa.chapters.map((c: { id: string }) => c.id)).toContain(
+      "arrays-and-hashing",
+    );
+  });
+
+  it("returns 401 without a session and lets no cache keep it", async () => {
+    const res = await get({});
+    expect(res.statusCode).toBe(401);
+    expect(res.headers.etag).toBeUndefined();
+    expect(res.headers["cache-control"]).toBe("no-store");
+  });
+
+  it.each([
+    ["the current ETag", (tag: string) => tag],
+    ["its weak form", (tag: string) => `W/${tag}`],
+    ["a list holding it", (tag: string) => `"old", ${tag}`],
+    ["any ETag", () => "*"],
+  ])("answers 304 with no body for %s", async (_name, ifNoneMatch) => {
+    const { hash } = await builtContent();
+    const res = await get({
+      ...signedIn,
+      "if-none-match": ifNoneMatch(`"${hash}"`),
+    });
+    expect(res.statusCode).toBe(304);
+    expect(res.body).toBe("");
+    expect(res.headers.etag).toBe(`"${hash}"`);
+    expect(res.headers["cache-control"]).toBe("private, no-cache");
+  });
+
+  it("sends the whole bundle for an old ETag", async () => {
+    const res = await get({
+      ...signedIn,
+      "if-none-match": `"${"0".repeat(64)}"`,
+    });
+    expect(res.statusCode).toBe(200);
+  });
+
+  it.each(SQL_ATTACKS)("treats If-None-Match %s as no match", async (value) => {
+    const res = await get({ ...signedIn, "if-none-match": value });
+    expect(res.statusCode).toBe(200);
+  });
+
+  it("never sends a reference solution or a case lock", async () => {
+    const res = await get();
+    const exercises = await exerciseDirs();
+    expect(exercises.length).toBeGreaterThan(0);
+    for (const dir of exercises) {
+      for (const name of SOLUTION_FILES) {
+        const solution = await readFile(path.join(dir, name), "utf8").catch(
+          () => undefined,
+        );
+        // As it would look inside a JSON string
+        if (solution)
+          expect(res.body).not.toContain(JSON.stringify(solution).slice(1, -1));
+      }
+      const lock = await readFile(
+        path.join(dir, "cases.lock.json"),
+        "utf8",
+      ).catch(() => undefined);
+      for (const hash of Object.values(JSON.parse(lock ?? "{}"))) {
+        expect(res.body).not.toContain(hash);
+      }
+    }
+  });
+});
+
+/** Every exercise folder in the real curriculum */
+async function exerciseDirs(): Promise<string[]> {
+  const found: string[] = [];
+  const entries = await readdir(CONTENT_DIR, {
+    recursive: true,
+    withFileTypes: true,
+  });
+  for (const entry of entries) {
+    if (
+      entry.isDirectory() &&
+      path.basename(entry.parentPath) === "exercises"
+    ) {
+      found.push(path.join(entry.parentPath, entry.name));
+    }
+  }
+  return found;
+}
+
 describe("security headers", () => {
   it.each([
     ["a success", "/v1/health/live"],
@@ -631,7 +739,12 @@ describe("openapi", () => {
     const spec = res.json();
     expect(spec.openapi).toMatch(/^3\./);
     expect(Object.keys(spec.paths)).toEqual(
-      expect.arrayContaining(["/v1/health/live", "/v1/health/ready", "/v1/me"]),
+      expect.arrayContaining([
+        "/v1/health/live",
+        "/v1/health/ready",
+        "/v1/me",
+        "/v1/content",
+      ]),
     );
   });
 });

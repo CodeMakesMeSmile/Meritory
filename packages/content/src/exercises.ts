@@ -8,6 +8,7 @@ import {
   type Param,
   type Signature,
   SOLUTION_FILES,
+  type TestCase,
 } from "./exercise.ts";
 import { checkExplanation } from "./explanation.ts";
 import type { TrackRubrics } from "./rubrics.ts";
@@ -17,7 +18,6 @@ import {
   LOCK_FILE,
   readCases,
   readLock,
-  type TestCase,
 } from "./test-cases.ts";
 import { isListType } from "./values.ts";
 import {

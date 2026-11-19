@@ -12,8 +12,16 @@ import {
 } from "@meritory/server";
 import { buildApp } from "./app.ts";
 import { readConfig } from "./config.ts";
+import { loadContent } from "./content.ts";
 
 const config = readConfig(process.env);
+// Before anything connects, so a bad bundle stops the start cleanly
+const content = await loadContent(config.contentBundlePath).catch(
+  (error: Error) => {
+    console.error(error.message);
+    process.exit(1);
+  },
+);
 const database = createDatabase(config.databaseUrl);
 const boss = createBoss({
   url: config.databaseUrl,
@@ -65,6 +73,7 @@ const app = await buildApp(
       log,
     }),
     currentSession: createSessionLookup(auth),
+    content,
   },
   { logger: { level: config.logLevel } },
 );

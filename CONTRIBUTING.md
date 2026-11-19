@@ -16,6 +16,8 @@ pnpm dev
 
 In `.env`, set `BETTER_AUTH_SECRET` and `MAIL_JOB_KEY` first. `openssl rand -base64 32` makes a good value for each.
 
+`pnpm dev` builds the content bundle first, because the API won't start without it. Run `pnpm content:build` again after changing content, then restart the API.
+
 | What | Where |
 |---|---|
 | Web | http://localhost:3000 |

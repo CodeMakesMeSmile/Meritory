@@ -795,7 +795,7 @@ Records hashes for new cases and versions for new or changed items, in every tra
 pnpm content:build
 ```
 
-Checks every track and writes the bundle to `packages/content/dist/bundle.json`, which isn't committed. If anything is wrong, it prints each problem as `file:line`, writes nothing, and fails. CI runs it on every pull request.
+Checks every track and writes the bundle to `packages/content/dist/bundle.json`, which isn't committed. If anything is wrong, it prints each problem as `file:line`, writes nothing, and fails. CI runs it on every pull request. The API serves the bundle at `/v1/content` to signed-in users, and won't start without it.
 
 ```powershell
 pnpm content:recheck

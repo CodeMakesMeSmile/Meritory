@@ -6,5 +6,4 @@ export * from "./exercise.ts";
 export * from "./fact.ts";
 export * from "./recheck.ts";
 export * from "./rubric.ts";
-export type { TestCase } from "./test-cases.ts";
 export { canonicalJson, fitsType, isListType } from "./values.ts";

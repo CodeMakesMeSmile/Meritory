@@ -13,6 +13,7 @@
     "typecheck": "tsc"
   },
   "dependencies": {
+    "@meritory/content": "workspace:*",
     "typebox": "^1.4.4"
   },
   "devDependencies": {

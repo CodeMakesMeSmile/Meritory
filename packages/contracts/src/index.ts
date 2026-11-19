@@ -1,3 +1,4 @@
+export { ContentResponse } from "./content.ts";
 export { ErrorResponse } from "./errors.ts";
 export { CheckStatus, LiveResponse, ReadyResponse } from "./health.ts";
 export {

@@ -1,10 +1,11 @@
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import Value from "typebox/value";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { stringify } from "yaml";
 import { buildBundle } from "./build.ts";
-import type { Bundle } from "./bundle.ts";
+import { Bundle } from "./bundle.ts";
 import { lockTrack } from "./lock.ts";
 import { canonicalJson } from "./values.ts";
 import { formatProblem } from "./yaml-file.ts";
@@ -243,6 +244,12 @@ describe("content bundle", () => {
     );
     expect(twoSum?.kind === "coding" && twoSum.cases.length).toBe(1);
     expect(bundle.hash).toMatch(/^[0-9a-f]{64}$/);
+  });
+
+  it("builds a bundle that fits the bundle schema", async () => {
+    await lockTrack(track);
+    const bundle = await built();
+    expect([...Value.Errors(Bundle, bundle)]).toEqual([]);
   });
 
   it("leaves out reference solutions, lock files, and file paths", async () => {

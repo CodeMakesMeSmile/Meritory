@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url";
 import { type ProviderConfig, readMailKey } from "@meritory/server";
 
 export interface ApiConfig {
@@ -19,7 +20,13 @@ export interface ApiConfig {
   providers: ProviderConfig;
   /** Asks Have I Been Pwned about new passwords */
   breachCheck: boolean;
+  /** The bundle `pnpm content:build` writes */
+  contentBundlePath: string;
 }
+
+const BUILT_BUNDLE = fileURLToPath(
+  new URL("../../../packages/content/dist/bundle.json", import.meta.url),
+);
 
 const MIN_SECRET_LENGTH = 32;
 
@@ -90,5 +97,6 @@ export function readConfig(env: Record<string, string | undefined>): ApiConfig {
       google: credentials(env.GOOGLE_CLIENT_ID, env.GOOGLE_CLIENT_SECRET),
     },
     breachCheck: readBreachCheck(env),
+    contentBundlePath: env.CONTENT_BUNDLE_PATH || BUILT_BUNDLE,
   };
 }

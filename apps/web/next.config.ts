@@ -28,6 +28,7 @@ const config: NextConfig = {
   },
   // Workspace packages ship TypeScript source
   transpilePackages: [
+    "@meritory/content",
     "@meritory/contracts",
     "@meritory/design-tokens",
     "@meritory/password",

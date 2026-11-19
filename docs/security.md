@@ -53,7 +53,7 @@ React escapes every value it renders as text or as an attribute. Keep it that wa
 ### 6. Send security headers
 
 - Web pages: a Content Security Policy with a new nonce on every request, `frame-ancestors 'none'`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, and HSTS.
-- API: `nosniff` on every response, and `Cache-Control: no-store` on anything personal.
+- API: `nosniff` on every response, and `Cache-Control: no-store` on anything personal. Signed-in routes get `no-store` unless they set their own rule, and only `/v1/content`, which holds no personal data, does: `private, no-cache`, so only the user's own device keeps a copy and checks its ETag first.
 - Nothing sends `X-Powered-By`.
 
 ### 7. Keep secrets out of code
