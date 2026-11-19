@@ -18,7 +18,7 @@
     "node": "26.13.0"
   },
   "scripts": {
-    "dev": "pnpm --parallel --filter @meritory/api --filter @meritory/worker --filter @meritory/web dev",
+    "dev": "pnpm content:build && pnpm --parallel --filter @meritory/api --filter @meritory/worker --filter @meritory/web dev",
     "dev:mobile": "pnpm --filter @meritory/mobile start",
     "services:up": "docker compose up -d --wait",
     "services:down": "docker compose down",
