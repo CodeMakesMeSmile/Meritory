@@ -194,6 +194,9 @@ importers:
       '@fastify/type-provider-typebox':
         specifier: ^6.3.0
         version: 6.3.0(ajv-formats@3.0.1)(typebox@1.4.4)
+      '@meritory/content':
+        specifier: workspace:*
+        version: link:../../packages/content
       '@meritory/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
@@ -206,6 +209,10 @@ importers:
       typebox:
         specifier: ^1.4.4
         version: 1.4.4
+    devDependencies:
+      '@meritory/security-testing':
+        specifier: workspace:*
+        version: link:../../packages/security-testing
 
   apps/mobile:
     dependencies:
@@ -361,6 +368,9 @@ importers:
 
   packages/contracts:
     dependencies:
+      '@meritory/content':
+        specifier: workspace:*
+        version: link:../content
       typebox:
         specifier: ^1.4.4
         version: 1.4.4

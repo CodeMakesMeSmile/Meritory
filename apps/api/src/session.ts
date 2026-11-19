@@ -12,6 +12,7 @@ import {
 } from "@meritory/contracts";
 import type { FastifyInstance, FastifyReply } from "fastify";
 import { toFetchHeaders } from "./auth-routes.ts";
+import { registerContentRoutes, type ServedContent } from "./content.ts";
 
 export interface CurrentSession {
   user: SignedInUser;
@@ -70,6 +71,7 @@ export interface SessionDependencies {
   accountDeletion: AccountDeletionDependency;
   /** The only site allowed to send changes */
   webOrigin: string;
+  content: ServedContent;
 }
 
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
@@ -88,9 +90,11 @@ export async function registerSignedInRoutes(
     scope.decorateRequest("user", null);
     scope.decorateRequest("current", null);
 
-    // Everything here is personal, so no cache may keep a copy
+    // Personal unless a route sets its own rule, so no cache may keep a copy
     scope.addHook("onSend", async (_request, reply, payload) => {
-      reply.header("cache-control", "no-store");
+      if (!reply.hasHeader("cache-control")) {
+        reply.header("cache-control", "no-store");
+      }
       return payload;
     });
 
@@ -121,6 +125,8 @@ export async function registerSignedInRoutes(
       request.current = current;
       request.user = current.user;
     });
+
+    registerContentRoutes(scope, deps.content);
 
     const needsConfirm = (reply: FastifyReply) =>
       refuse(reply, 403, {
