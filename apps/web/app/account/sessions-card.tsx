@@ -20,11 +20,14 @@ import {
 } from "@/lib/pending-action";
 import { Card, Row } from "./card";
 import { ConfirmItsYou } from "./confirm-its-you";
+import { SignOutButton } from "./sign-out-button";
 
 type Action = SessionAction;
 
 const LOAD_FAILED =
   "We couldn't load your sessions. Check your connection and try again.";
+const SIGN_OUT_FAILED =
+  "We couldn't sign you out. Check your connection and try again.";
 const END_FAILED =
   "We couldn't sign that session out. Check your connection and try again.";
 
@@ -134,7 +137,12 @@ export function SessionsCard({
               {signedInText(new Date(session.signedInAt))}
             </span>
           </div>
-          {!session.current && (
+          {session.current ? (
+            <SignOutButton
+              disabled={ending !== null}
+              onFailed={() => setError(SIGN_OUT_FAILED)}
+            />
+          ) : (
             <Button
               variant="secondary"
               className="w-full sm:w-50"
