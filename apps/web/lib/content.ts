@@ -3,6 +3,10 @@ import type { ContentResponse } from "@meritory/contracts";
 export type Track = ContentResponse["tracks"][number];
 export type Chapter = Track["chapters"][number];
 export type Card = Chapter["cards"][number];
+export type PromptCard = Extract<Card, { type: "prompt" }>;
+export type PickOneCard = Extract<Card, { type: "pick-one" }>;
+export type OrderingCard = Extract<Card, { type: "ordering" }>;
+export type MatchingCard = Extract<Card, { type: "matching" }>;
 
 /** A short name for tags, such as DSA */
 export function trackLabel(track: Pick<Track, "id" | "title">): string {

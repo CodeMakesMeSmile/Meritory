@@ -3,6 +3,7 @@ import type {
   ContentResponse,
   MeResponse,
   RecallDueResponse,
+  RecallSessionResponse,
 } from "@meritory/contracts";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -37,4 +38,8 @@ export const getContent = cache((path: string) =>
 
 export function getDue(path: string): Promise<RecallDueResponse> {
   return serverGet<RecallDueResponse>("/v1/recall/due", path);
+}
+
+export function getSession(path: string): Promise<RecallSessionResponse> {
+  return serverGet<RecallSessionResponse>("/v1/recall/session", path);
 }
