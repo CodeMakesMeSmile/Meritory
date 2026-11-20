@@ -6,7 +6,7 @@ import { buttonClass } from "@/components/button";
 import { KeepSession } from "@/components/keep-session";
 import { TimeZoneSync } from "@/components/time-zone-sync";
 import { sittingCards } from "@/lib/recall-sitting";
-import { getContent, getSession, requireMe } from "@/lib/server-api";
+import { getContent, getDue, getSession, requireMe } from "@/lib/server-api";
 import { Sitting } from "./sitting";
 
 export const metadata: Metadata = { title: "Recall · Meritory" };
@@ -61,13 +61,25 @@ export default async function RecallPage() {
       />
     );
   } else if (items.length === 0) {
-    body = (
-      <Message
-        title="Nothing due right now"
-        text="You've done today's cards. Your next ones show up on Home."
-        action={home}
-      />
-    );
+    // Only asked when nothing is due, to tell a finished day from one not started
+    const due = await getDue(PATH).catch((error: unknown) => {
+      unstable_rethrow(error);
+      return null;
+    });
+    body =
+      due && due.chapters.length === 0 ? (
+        <Message
+          title="Nothing to recall yet"
+          text="Start a chapter and its cards join recall, up to 10 new a day."
+          action={home}
+        />
+      ) : (
+        <Message
+          title="Nothing due right now"
+          text="You've done today's cards. Your next ones show up on Home."
+          action={home}
+        />
+      );
   } else {
     body = <Sitting items={items} now={new Date().toISOString()} />;
   }

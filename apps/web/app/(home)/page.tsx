@@ -2,8 +2,9 @@ import type { RecallDueResponse } from "@meritory/contracts";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { unstable_rethrow } from "next/navigation";
+import { Suspense, use } from "react";
 import { AppShell } from "@/components/app-shell";
-import { buttonClass, linkClass } from "@/components/button";
+import { Button, buttonClass, linkClass } from "@/components/button";
 import { CountSquares } from "@/components/count-squares";
 import { LinkedNotice } from "@/components/linked-notice";
 import {
@@ -20,8 +21,8 @@ export const metadata: Metadata = { title: "Due for recall · Meritory" };
 
 // TODO: MER-38 replaces this with the Today screen
 
-/** Past this many due cards, the note says what happens to the rest */
-const LOTS_DUE = 20;
+type Chapters = { track: Track; chapter: Chapter }[];
+type DueLoad = Promise<RecallDueResponse | null>;
 
 interface QueueRow {
   track: Track;
@@ -84,8 +85,9 @@ function ChaptersCard({
   chapters,
   due,
 }: {
-  chapters: { track: Track; chapter: Chapter }[];
-  due: RecallDueResponse | null;
+  chapters: Chapters;
+  /** Undefined while the counts load, so nothing shows a false 0 */
+  due: RecallDueResponse | null | undefined;
 }) {
   const tracks = [...new Set(chapters.map(({ track }) => track))];
   return (
@@ -113,10 +115,14 @@ function ChaptersCard({
                     <span className="text-body font-semibold">
                       {chapter.title}
                     </span>
-                    <CountSquares filled={learned} total={total} />
-                    <span className="text-small text-secondary">
-                      {learned} of {plural(total, "card")} learned
-                    </span>
+                    {due !== undefined && (
+                      <>
+                        <CountSquares filled={learned} total={total} />
+                        <span className="text-small text-secondary">
+                          {learned} of {plural(total, "card")} learned
+                        </span>
+                      </>
+                    )}
                     <Link
                       href={chapterPath(track.id, chapter.id)}
                       className={`${linkClass} flex h-control items-center self-start`}
@@ -133,31 +139,36 @@ function ChaptersCard({
   );
 }
 
-export default async function Home({
-  searchParams,
-}: {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-}) {
-  const [me, content, { linked }] = await Promise.all([
-    requireMe("/"),
-    getContent("/"),
-    searchParams,
-  ]);
-  const due = await getDue("/").catch((error: unknown) => {
-    unstable_rethrow(error);
-    return null;
-  });
-  const chapters = allChapters(content);
+/** What the counts say, worked out the same way for the header and the queue */
+function homeState(due: RecallDueResponse | null, chapters: Chapters) {
   const rows = due ? queueRows(due, chapters) : [];
   const started = (due?.chapters.length ?? 0) > 0;
-  const first = chapters[0];
-  const dueCount = rows.reduce((sum, row) => sum + row.due, 0);
-  const newLater = (due?.chapters ?? []).reduce((sum, c) => sum + c.new, 0);
+  return { rows, started, first: chapters[0] };
+}
 
-  let action = null;
-  let body: React.ReactNode;
+/** Start recall, Read the first chapter, or nothing, whichever the counts call for */
+function HomeAction({ load, chapters }: { load: DueLoad; chapters: Chapters }) {
+  const due = use(load);
+  const { rows, started, first } = homeState(due, chapters);
+  if (!due) return null;
+  if (!started) {
+    return first ? (
+      <Link
+        href={chapterPath(first.track.id, first.chapter.id)}
+        className={`${buttonClass()} w-full sm:w-auto`}
+      >
+        Read {first.chapter.title}
+      </Link>
+    ) : null;
+  }
+  return rows.length > 0 ? <RecallButton /> : null;
+}
+
+function HomeBody({ load, chapters }: { load: DueLoad; chapters: Chapters }) {
+  const due = use(load);
+  const { rows, started } = homeState(due, chapters);
   if (!due) {
-    body = (
+    return (
       <div role="alert" className="flex flex-col gap-3">
         <h2 className="text-body font-semibold">Your cards didn't load</h2>
         <p className="text-small text-secondary">
@@ -168,16 +179,9 @@ export default async function Home({
         </Link>
       </div>
     );
-  } else if (!started) {
-    action = first ? (
-      <Link
-        href={chapterPath(first.track.id, first.chapter.id)}
-        className={`${buttonClass()} w-full sm:w-auto`}
-      >
-        Read {first.chapter.title}
-      </Link>
-    ) : null;
-    body = (
+  }
+  if (!started) {
+    return (
       <div className="flex flex-col gap-1">
         <h2 className="text-body font-semibold">Nothing to recall yet</h2>
         <p className="text-small text-secondary">
@@ -185,14 +189,16 @@ export default async function Home({
         </p>
       </div>
     );
-  } else if (rows.length === 0) {
+  }
+  if (rows.length === 0) {
+    const newLater = due.chapters.reduce((sum, c) => sum + c.new, 0);
     const tomorrow =
       due.dueTomorrow > 0
         ? ` ${due.dueTomorrow} come back tomorrow${newLater > 0 ? ", plus up to 10 new." : "."}`
         : newLater > 0
           ? " Up to 10 new cards arrive tomorrow."
           : "";
-    body = (
+    return (
       <div className="flex flex-col gap-1">
         <h2 className="text-body font-semibold">Nothing due right now</h2>
         <p className="text-small text-secondary">
@@ -200,25 +206,64 @@ export default async function Home({
         </p>
       </div>
     );
-  } else {
-    action = <RecallButton />;
-    body = (
-      <div className="flex flex-col gap-3">
-        <ul className="flex flex-col gap-3">
-          {rows.map((row) => (
-            <QueueItem key={`${row.track.id}/${row.chapter.id}`} row={row} />
-          ))}
-        </ul>
-        <QueueNote
-          fallback={
-            dueCount > LOTS_DUE
-              ? "Due cards come first, oldest first. Do what you can today, and the rest stay in the queue."
-              : "We add up to 10 new cards a day so reviews grow slowly."
-          }
-        />
-      </div>
-    );
   }
+  return (
+    <div className="flex flex-col gap-3">
+      <ul className="flex flex-col gap-3">
+        {rows.map((row) => (
+          <QueueItem key={`${row.track.id}/${row.chapter.id}`} row={row} />
+        ))}
+      </ul>
+      <QueueNote
+        fallback={
+          // Only true once cards wait from an earlier day
+          due.overdue > 0
+            ? "Due cards come first, oldest first. Do what you can today, and the rest stay in the queue."
+            : "We add up to 10 new cards a day so reviews grow slowly."
+        }
+      />
+    </div>
+  );
+}
+
+function ChaptersWithCounts({
+  load,
+  chapters,
+}: {
+  load: DueLoad;
+  chapters: Chapters;
+}) {
+  return <ChaptersCard chapters={chapters} due={use(load)} />;
+}
+
+/** Holds the queue's place while the counts load */
+function QueueLoading() {
+  return (
+    <div className="flex flex-col gap-3">
+      <div aria-hidden="true" className="h-20 bg-sunken" />
+      <p role="status" className="text-small text-secondary">
+        Loading your cards
+      </p>
+    </div>
+  );
+}
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const [me, content, { linked }] = await Promise.all([
+    requireMe("/"),
+    getContent("/"),
+    searchParams,
+  ]);
+  const chapters = allChapters(content);
+  // Not awaited, so the page shows while the counts load
+  const load: DueLoad = getDue("/").catch((error: unknown) => {
+    unstable_rethrow(error);
+    return null;
+  });
 
   return (
     <AppShell page="home" user={me}>
@@ -228,13 +273,29 @@ export default async function Home({
             <h1 className="text-display">Due for recall</h1>
             <LocalDate />
           </div>
-          {action}
+          <Suspense
+            fallback={
+              <Button waiting className="w-full sm:w-50">
+                Start recall
+              </Button>
+            }
+          >
+            <HomeAction load={load} chapters={chapters} />
+          </Suspense>
         </header>
         <LinkedNotice linked={linked} />
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
-          <div className="min-w-0">{body}</div>
+          <div className="min-w-0">
+            <Suspense fallback={<QueueLoading />}>
+              <HomeBody load={load} chapters={chapters} />
+            </Suspense>
+          </div>
           <aside>
-            <ChaptersCard chapters={chapters} due={due} />
+            <Suspense
+              fallback={<ChaptersCard chapters={chapters} due={undefined} />}
+            >
+              <ChaptersWithCounts load={load} chapters={chapters} />
+            </Suspense>
           </aside>
         </div>
       </div>

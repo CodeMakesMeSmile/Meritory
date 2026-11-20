@@ -21,6 +21,8 @@ const at = (iso: string) => new Date(iso);
 const NOW = at("2026-11-19T15:00:00Z");
 const later = (ms: number) => new Date(NOW.getTime() + ms);
 const MIN = 60_000;
+// 4 a.m. Toronto time, 18 hours after NOW
+const DAY_ENDS = at("2026-11-20T09:00:00Z");
 
 describe("shuffled", () => {
   const items = ["a", "b", "c", "d", "e", "f"];
@@ -154,6 +156,7 @@ describe("done screen", () => {
           saved("Two pointers", 3 * 24 * 60 * MIN),
         ],
         NOW,
+        DAY_ENDS,
       ),
     ).toBe(
       "Nice steady work on Arrays and hashing. 2 cards come back within 10 minutes for one more look.",
@@ -161,8 +164,29 @@ describe("done screen", () => {
   });
 
   it("says when nothing else is due today", () => {
-    expect(doneLine([saved("Two pointers", 2 * 24 * 60 * MIN)], NOW)).toBe(
-      "Nice steady work on Two pointers. Nothing else is due today.",
+    expect(
+      doneLine([saved("Two pointers", 2 * 24 * 60 * MIN)], NOW, DAY_ENDS),
+    ).toBe("Nice steady work on Two pointers. Nothing else is due today.");
+  });
+
+  it("counts any card back before today's recall day ends", () => {
+    expect(
+      doneLine(
+        [
+          saved("Arrays and hashing", 3 * 60 * MIN),
+          saved("Arrays and hashing", 20 * 60 * MIN),
+        ],
+        NOW,
+        DAY_ENDS,
+      ),
+    ).toBe(
+      "Nice steady work on Arrays and hashing. 1 card comes back within 3 hours for one more look.",
+    );
+  });
+
+  it("only praises when the day's end didn't load", () => {
+    expect(doneLine([saved("Two pointers", MIN)], NOW, null)).toBe(
+      "Nice steady work on Two pointers.",
     );
   });
 

@@ -25,6 +25,7 @@
   prompt: Match each array operation to its cost.
   reworded: What does each of these array operations cost for an array of n values?
   matchHeading: Cost
+  matchName: a cost
   pairs:
     - item: Read the value at index i
       match: O(1)
@@ -135,6 +136,7 @@
   prompt: Match each version of the pair problem to the approach that fits it best.
   reworded: Which approach suits each of these pair problems?
   matchHeading: Approach
+  matchName: an approach
   pairs:
     - item: Unsorted values, and you need the original indices
       match: A map from value to index, in one pass
@@ -235,6 +237,7 @@
   prompt: Match each grouping to a key that works for it.
   reworded: Which key puts each of these groupings together correctly?
   matchHeading: Key
+  matchName: a key
   pairs:
     - item: Words that use the same letters
       match: The word's letters, sorted

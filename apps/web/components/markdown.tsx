@@ -1,5 +1,5 @@
 import { isSafeUrl, parseMarkdown } from "@meritory/content/markdown";
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import { linkClass } from "./button";
 
 /** The parts of an mdast node this renderer reads */
@@ -67,6 +67,7 @@ type Tag = "h2" | "h3" | "h4" | "h5" | "h6";
 
 interface Context {
   slug: (text: string) => string;
+  renderText?: (text: string) => ReactNode;
 }
 
 function renderChildren(node: Node, context: Context): ReactNode[] {
@@ -120,7 +121,11 @@ function renderTable(node: Node, context: Context, key: string) {
 function render(node: Node, context: Context, key: string): ReactNode {
   switch (node.type) {
     case "text":
-      return node.value;
+      return context.renderText && node.value !== undefined ? (
+        <Fragment key={key}>{context.renderText(node.value)}</Fragment>
+      ) : (
+        node.value
+      );
     case "paragraph":
       return (
         <p key={key} className="my-4">
@@ -204,9 +209,10 @@ function render(node: Node, context: Context, key: string): ReactNode {
       if (node.url === undefined || !isSafeUrl(node.url)) {
         return <span key={key}>{renderChildren(node, context)}</span>;
       }
+      // Nothing interactive inside a link
       return (
         <a key={key} href={node.url} className={linkClass}>
-          {renderChildren(node, context)}
+          {renderChildren(node, { ...context, renderText: undefined })}
         </a>
       );
     case "image":
@@ -231,12 +237,19 @@ interface MarkdownProps {
   /** One paragraph shown without its own paragraph, such as a card prompt */
   inline?: boolean;
   className?: string;
+  /** Renders plain words outside code and links, such as to mark terms */
+  renderText?: (text: string) => ReactNode;
 }
 
 /** CommonMark and GFM tables as React elements, without raw HTML or unsafe links */
-export function Markdown({ text, inline = false, className }: MarkdownProps) {
+export function Markdown({
+  text,
+  inline = false,
+  className,
+  renderText,
+}: MarkdownProps) {
   const root = parseMarkdown(text) as Node;
-  const context = { slug: slugger() };
+  const context = { slug: slugger(), renderText };
   const [only] = root.children ?? [];
   if (inline && root.children?.length === 1 && only?.type === "paragraph") {
     return <span className={className}>{renderChildren(only, context)}</span>;

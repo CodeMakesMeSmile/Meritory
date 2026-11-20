@@ -34,11 +34,12 @@ export default async function ChapterPage({ params }: Props) {
   const me = await requireMe(path);
   const { track, chapter } = found;
   const headings = markdownHeadings(chapter.explanation);
-  const start = (
+  const start = (className?: string) => (
     <StartRecallButton
       trackId={track.id}
       chapterId={chapter.id}
       signInPath={path}
+      className={className}
     />
   );
 
@@ -67,12 +68,9 @@ export default async function ChapterPage({ params }: Props) {
           </p>
         </header>
         <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,42.5rem)_20rem]">
-          <article className="flex min-w-0 flex-col gap-8 border border-border bg-card p-5 md:p-10">
-            <Markdown text={chapter.explanation} />
-            <div className="border-t border-border pt-6 sm:w-60">{start}</div>
-          </article>
-          <aside className="flex flex-col gap-4 lg:sticky lg:top-9">
-            <div className="hidden lg:block">{start}</div>
+          {/* First, so keyboards and phones reach the contents before the text */}
+          <aside className="flex flex-col gap-4 lg:sticky lg:top-9 lg:col-start-2 lg:row-start-1">
+            <div className="hidden lg:block">{start("w-50 self-end")}</div>
             {headings.length > 0 && (
               <nav
                 aria-labelledby="contents-heading"
@@ -103,6 +101,10 @@ export default async function ChapterPage({ params }: Props) {
               </nav>
             )}
           </aside>
+          <article className="flex min-w-0 flex-col gap-8 border border-border bg-card p-5 md:p-10 lg:col-start-1 lg:row-start-1">
+            <Markdown text={chapter.explanation} />
+            <div className="border-t border-border pt-6 sm:w-60">{start()}</div>
+          </article>
         </div>
       </div>
     </AppShell>

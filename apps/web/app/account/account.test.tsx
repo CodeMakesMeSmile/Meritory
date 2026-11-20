@@ -13,6 +13,7 @@ const { default: AccountPage } = await import("./page.tsx");
 const { ConfirmItsYou } = await import("./confirm-its-you.tsx");
 const { onlyWayText, stillWorksText } = await import("./methods-card.tsx");
 const { deleteText } = await import("./delete-card.tsx");
+const { SignOutButton } = await import("./sign-out-button.tsx");
 
 const account = async (
   signInMethods: MeResponse["signInMethods"],
@@ -243,5 +244,16 @@ describe("Confirm it's you", () => {
     const html = confirm(null);
     expect(html).toContain("Enter your password to keep going.");
     expect(html).not.toContain("Continue with GitHub");
+  });
+});
+
+describe("Sign out", () => {
+  // Another session can share this device's name, so the label can't use it
+  it("names this device apart from other sessions", () => {
+    const html = renderToStaticMarkup(
+      <SignOutButton disabled={false} onFailed={() => {}} />,
+    );
+    expect(html).toContain('aria-label="Sign out of this device"');
+    expect(html).toContain(">Sign out<");
   });
 });

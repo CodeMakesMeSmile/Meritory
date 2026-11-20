@@ -1,6 +1,5 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { SignOutButton } from "@/app/sign-out-button";
 import { KeepSession } from "./keep-session";
 import { LogoLockup } from "./logo";
 import { TimeZoneSync } from "./time-zone-sync";
@@ -59,7 +58,6 @@ export function AppShell({
           <NavItem href="/account" current={false}>
             <span className="max-w-32 truncate md:max-w-none">{user.name}</span>
           </NavItem>
-          <SignOutButton />
         </div>
       </nav>
       <main className="graph-paper min-w-0 flex-1 px-4 py-8 md:px-10 md:py-9">

@@ -33,6 +33,10 @@ export const RecallDueResponse = Type.Object(
     newLeftToday: Count,
     /** Cards that come due during tomorrow's recall day */
     dueTomorrow: Count,
+    /** Due cards that were already due before today's recall day began */
+    overdue: Count,
+    /** When today's recall day ends, at 4 a.m. local time */
+    dayEndsAt: Time,
     chapters: Type.Array(
       Type.Object({
         trackId: Type.String(),

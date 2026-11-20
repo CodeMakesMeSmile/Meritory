@@ -3,6 +3,10 @@ import { ID_PATTERN, Source, TEXT_PATTERN } from "./fact.ts";
 
 const Id = Type.String({ pattern: ID_PATTERN, maxLength: 80 });
 
+/** One match with its article, such as "an approach", so hints never guess the article */
+// biome-ignore lint/security/noSecrets: a pattern, not a secret
+export const MATCH_NAME_PATTERN = "^an? [^\\u0000-\\u001F\\u007F]+$";
+
 /** Plain text, such as a title */
 const Text = (maxLength: number) =>
   Type.String({ minLength: 1, maxLength, pattern: TEXT_PATTERN });
@@ -86,6 +90,8 @@ export const MatchingCard = Type.Object(
     extraMatches: Type.Optional(Type.Array(Markdown(120), { maxItems: 4 })),
     /** The name above the matches, such as Causes */
     matchHeading: Text(40),
+    /** One match as it reads mid-sentence, such as "a cause" */
+    matchName: Type.String({ maxLength: 40, pattern: MATCH_NAME_PATTERN }),
   },
   { additionalProperties: false },
 );

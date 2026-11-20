@@ -10,10 +10,13 @@ export function StartRecallButton({
   trackId,
   chapterId,
   signInPath,
+  className = "w-full",
 }: {
   trackId: string;
   chapterId: string;
   signInPath: string;
+  /** The button's width and place, which differ beside the text and under it */
+  className?: string;
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
@@ -36,18 +39,26 @@ export function StartRecallButton({
   }
 
   return (
-    <div className="flex flex-col">
-      <Button type="button" onClick={start} disabled={busy} className="w-full">
+    <div className="flex flex-col gap-3">
+      <Button
+        type="button"
+        onClick={start}
+        disabled={busy}
+        className={className}
+      >
         Start recall
       </Button>
       {/* Kept in the page so the message is announced when it appears */}
-      <p role="status" className="text-small text-danger">
-        {failed ? (
-          <span className="mt-2 block">
-            Recall didn't start. Check your connection, then try again.
-          </span>
-        ) : null}
-      </p>
+      <div role="status">
+        {failed && (
+          <div className="flex flex-col gap-1 border border-danger bg-card p-4">
+            <p className="text-small font-semibold text-danger">
+              Recall didn't start
+            </p>
+            <p className="text-small">Check your connection, then try again.</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -6,7 +6,13 @@ import { Markdown } from "@/components/markdown";
 import type { OrderingCard as OrderingContent } from "@/lib/content";
 import { orderingIsRight, ordinal, shuffled } from "@/lib/recall-grading";
 import { promptOf, type SittingCard } from "@/lib/recall-sitting";
-import { CardBox, FeedbackHeading, Lesson, Prompt, useFocusOn } from "./parts";
+import {
+  CardBox,
+  Explanation,
+  FeedbackHeading,
+  Prompt,
+  useFocusOn,
+} from "./parts";
 import type { Checked } from "./sitting-types";
 
 type Term = NonNullable<OrderingContent["terms"]>[number];
@@ -14,10 +20,10 @@ type Term = NonNullable<OrderingContent["terms"]>[number];
 const escapeRegex = (text: string) =>
   text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-/** Markdown syntax that splitting around terms could break */
-const MARKUP = /[`*_[\]<>!#|~\\&]/;
-
-/** A step's words, with each defined term as a button that shows its meaning */
+/**
+ * A step's words, with each defined term as a button that shows its meaning.
+ * Terms are found in the rendered words, so formatting and code stay intact
+ */
 function StepText({
   text,
   terms,
@@ -27,35 +33,31 @@ function StepText({
   terms: readonly Term[];
   onTerm: (term: Term) => void;
 }) {
-  if (terms.length === 0 || MARKUP.test(text)) {
-    return <Markdown text={text} inline />;
-  }
+  if (terms.length === 0) return <Markdown text={text} inline />;
   const longestFirst = [...terms].sort((a, b) => b.term.length - a.term.length);
   const pattern = new RegExp(
     `(${longestFirst.map((t) => escapeRegex(t.term)).join("|")})`,
     "gi",
   );
-  return (
-    <span>
-      {text.split(pattern).map((part, at) => {
-        const term = longestFirst.find(
-          (t) => t.term.toLowerCase() === part.toLowerCase(),
-        );
-        return term ? (
-          <button
-            key={at}
-            type="button"
-            onClick={() => onTerm(term)}
-            className="focus-ring text-gold underline underline-offset-2"
-          >
-            {part}
-          </button>
-        ) : (
-          part
-        );
-      })}
-    </span>
-  );
+  const mark = (words: string) =>
+    words.split(pattern).map((part, at) => {
+      const term = longestFirst.find(
+        (t) => t.term.toLowerCase() === part.toLowerCase(),
+      );
+      return term ? (
+        <button
+          key={at}
+          type="button"
+          onClick={() => onTerm(term)}
+          className="focus-ring text-gold underline underline-offset-2"
+        >
+          {part}
+        </button>
+      ) : (
+        part
+      );
+    });
+  return <Markdown text={text} inline renderText={mark} />;
 }
 
 /** Put the steps in order by tapping them from first to last */
@@ -133,7 +135,7 @@ export function OrderingCard({
           <Prompt text={promptOf(item)} />
           <h3 className="text-small font-semibold">Your order</h3>
           {order}
-          {!checked.right && <Lesson card={card} missed />}
+          {!checked.right && <Explanation card={card} />}
         </CardBox>
         {after}
       </>

@@ -10,6 +10,7 @@ import {
   LineCounter,
   parseDocument,
 } from "yaml";
+import { MATCH_NAME_PATTERN } from "./card.ts";
 import {
   CLASS_PATTERN,
   KIND_PATTERN,
@@ -37,6 +38,7 @@ const PATTERN_MESSAGES: Record<string, string> = {
   [RETURN_PATTERN]:
     "must be void, or int, long, double, boolean, char, string, ListNode, or TreeNode, with up to two []",
   [NAME_PATTERN]: "must be a camelCase name",
+  [MATCH_NAME_PATTERN]: 'must start with "a " or "an ", such as "a cost"',
   [CLASS_PATTERN]: "must be a PascalCase name",
   [UUID_PATTERN]: "must be a lowercase version 4 uuid",
   [KIND_PATTERN]: "must be coding or design",
