@@ -1,12 +1,9 @@
-import { fromMarkdown } from "mdast-util-from-markdown";
+import { isSafeUrl, parseMarkdown } from "./markdown.ts";
 import type { Problem } from "./yaml-file.ts";
 
 // Control characters other than tab and newline
 // biome-ignore lint/suspicious/noControlCharactersInRegex: these are what it finds
 const CONTROL = /[\u0000-\u0008\u000B-\u001F\u007F]/;
-
-// Links may leave only for https pages or jump within the text
-const SAFE_URL = /^(https:\/\/[^/\\]|#)/;
 
 type MarkdownNode = {
   type: string;
@@ -26,7 +23,7 @@ export function markdownProblems(text: string): MarkdownProblem[] {
     if (node.type === "html") {
       problems.push({ line, message: "must not hold raw HTML" });
     }
-    if (node.url !== undefined && !SAFE_URL.test(node.url)) {
+    if (node.url !== undefined && !isSafeUrl(node.url)) {
       problems.push({
         line,
         // Quoted as JSON, so a control character in it can't reach a terminal
@@ -35,7 +32,7 @@ export function markdownProblems(text: string): MarkdownProblem[] {
     }
     for (const child of node.children ?? []) visit(child);
   };
-  visit(fromMarkdown(text.replaceAll("\r\n", "\n")));
+  visit(parseMarkdown(text));
   return problems;
 }
 
