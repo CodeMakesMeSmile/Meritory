@@ -31,12 +31,18 @@ export const RecallDueResponse = Type.Object(
   {
     /** New cards still allowed before 4 a.m. local time */
     newLeftToday: Count,
+    /** Cards that come due during tomorrow's recall day */
+    dueTomorrow: Count,
     chapters: Type.Array(
       Type.Object({
         trackId: Type.String(),
         chapterId: Type.String(),
         due: Count,
         new: Count,
+        /** Cards that have left their learning steps */
+        learned: Count,
+        /** Every card the chapter has */
+        total: Count,
       }),
     ),
   },
@@ -51,6 +57,8 @@ export const RecallSessionCard = Type.Object({
   /** The bundle's current version, which may be newer than the one last shown */
   version: Type.Integer({ minimum: 1 }),
   isNew: Type.Boolean(),
+  /** The latest rating was Missed, so the card is asked in other words */
+  retry: Type.Boolean(),
   dueAt: Time,
   /** When each rating would bring the card back, for the rating buttons */
   next: Type.Object({ again: Time, hard: Time, good: Time, easy: Time }),
