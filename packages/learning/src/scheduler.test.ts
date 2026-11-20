@@ -1,6 +1,7 @@
 import { DefaultScheduler, type Grade, Rating, State } from "ts-fsrs";
 import { describe, expect, it } from "vitest";
 import {
+  isLearned,
   newRecallCard,
   nextDueDates,
   type RecallRating,
@@ -149,5 +150,18 @@ describe("undoRecallReview", () => {
       card = next;
       now = card.dueAt;
     }
+  });
+});
+
+describe("isLearned", () => {
+  it("counts a card from leaving the learning steps until it lapses", () => {
+    let card = newRecallCard("dsa/arrays-and-hashing/c1", start);
+    expect(isLearned(card)).toBe(false);
+    card = reviewRecallCard(card, "good", start).card;
+    expect(isLearned(card)).toBe(false);
+    card = reviewRecallCard(card, "good", card.dueAt).card;
+    expect(isLearned(card)).toBe(true);
+    card = reviewRecallCard(card, "again", card.dueAt).card;
+    expect(isLearned(card)).toBe(false);
   });
 });

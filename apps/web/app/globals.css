@@ -38,6 +38,8 @@
   --text-h3: var(--type-heading3-size);
   --text-h3--line-height: var(--type-heading3-line-height);
   --text-h3--font-weight: var(--type-heading3-weight);
+  --text-prompt: var(--type-prompt-size);
+  --text-prompt--line-height: var(--type-prompt-line-height);
   --text-body: var(--type-body-size);
   --text-body--line-height: var(--type-body-line-height);
   --text-small: var(--type-small-size);
@@ -110,6 +112,16 @@ body {
     min-width: 0;
     background: transparent;
     outline: none;
+  }
+
+  /* Diagonal ink lines, the mark for a due tag */
+  .hatch {
+    border: 1px solid var(--color-accent-default);
+    background-image: repeating-linear-gradient(
+      -45deg,
+      var(--color-accent-default) 0 1px,
+      transparent 1px 3px
+    );
   }
 
   .focus-ring:focus-visible {

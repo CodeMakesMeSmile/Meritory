@@ -37,6 +37,11 @@ describe("package exports", () => {
     expect([...imports].sort()).toEqual(["typebox"]);
   });
 
+  it("keeps Node modules out of the Markdown export the web renders with", async () => {
+    const imports = await runtimeImports(path.join(srcDir, "markdown.ts"));
+    expect([...imports].filter((name) => name.startsWith("node:"))).toEqual([]);
+  });
+
   it("finds the Node modules the node export uses", async () => {
     const imports = await runtimeImports(path.join(srcDir, "node.ts"));
     expect(imports).toContain("node:path");

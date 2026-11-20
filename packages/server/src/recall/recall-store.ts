@@ -39,6 +39,8 @@ export interface StoredRecallCard extends CardKey {
   cardVersion: number;
   addedAt: Date;
   card: RecallCard;
+  /** Whether the latest rating that still counts was Missed */
+  lastMissed: boolean;
 }
 
 export interface ReviewInput extends CardKey {
@@ -278,11 +280,13 @@ export function createRecallStore(db: Database["db"]) {
     },
 
     async cards(userId: string): Promise<StoredRecallCard[]> {
+      // Undo clears lastReviewId, so an undone miss doesn't count
       const rows = await db
-        .select()
+        .select({ row: recallCards, lastRating: recallReviews.rating })
         .from(recallCards)
+        .leftJoin(recallReviews, eq(recallReviews.id, recallCards.lastReviewId))
         .where(eq(recallCards.userId, userId));
-      return rows.map((row) => ({
+      return rows.map(({ row, lastRating }) => ({
         trackId: row.trackId,
         chapterId: row.chapterId,
         cardId: row.cardId,
@@ -290,6 +294,7 @@ export function createRecallStore(db: Database["db"]) {
         cardVersion: row.cardVersion,
         addedAt: row.addedAt,
         card: toRecallCard(row),
+        lastMissed: lastRating === GRADES.again,
       }));
     },
 

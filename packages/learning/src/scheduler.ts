@@ -128,6 +128,11 @@ export function nextDueDates(
   return dates as Record<RecallRating, Date>;
 }
 
+/** Whether the card has left its learning steps */
+export function isLearned(card: RecallCard): boolean {
+  return card.scheduleStatus === "review";
+}
+
 /** The card exactly as it was before the review that produced this revlog */
 export function undoRecallReview(
   card: RecallCard,

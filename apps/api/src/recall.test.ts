@@ -267,15 +267,71 @@ describe.skipIf(!url)("recall routes against Postgres", () => {
     expect(due.headers["cache-control"]).toBe("no-store");
     expect(due.json()).toEqual({
       newLeftToday: 10,
+      dueTomorrow: 0,
       chapters: [
         {
           trackId: "dsa",
           chapterId: "arrays-and-hashing",
           due: 0,
           new: chapterCards().length,
+          learned: 0,
+          total: chapterCards().length,
         },
       ],
     });
+  });
+
+  it("counts learned cards, tomorrow's cards, and cards to ask again", async () => {
+    const me = await person();
+    const api = await signedIn([me]);
+    await api.inject({
+      method: "PUT",
+      url: "/v1/me/time-zone",
+      headers: me.headers,
+      payload: { timeZone: "America/Toronto" },
+    });
+    await api.inject({ method: "POST", url: START, headers: me.headers });
+    const rate = async (cardId: string, rating: string) =>
+      (
+        await api.inject({
+          method: "POST",
+          url: "/v1/recall/reviews",
+          headers: me.headers,
+          payload: review({ cardId, rating, answeredAt: clock.toISOString() }),
+        })
+      ).json();
+    const [first, second, third] = chapterCards();
+    if (!first || !second || !third) throw new Error("chapter too short");
+
+    await rate(first.id, "easy");
+    await rate(second.id, "again");
+    await rate(third.id, "good");
+    clock = new Date(NINE_AM.getTime() + 10 * MINUTE);
+    const graduated = await rate(third.id, "good");
+
+    const session = (
+      await api.inject({ url: "/v1/recall/session", headers: me.headers })
+    ).json();
+    const retryOf = (cardId: string) =>
+      session.cards.find((c: { cardId: string }) => c.cardId === cardId)?.retry;
+    expect(retryOf(second.id)).toBe(true);
+    expect(
+      session.cards.filter((c: { retry: boolean }) => c.retry),
+    ).toHaveLength(1);
+
+    const dueNow = async () =>
+      (await api.inject({ url: "/v1/recall/due", headers: me.headers })).json();
+    const today = await dueNow();
+    expect(today.chapters[0].learned).toBe(2);
+    expect(today.dueTomorrow).toBe(0);
+
+    // From the day before it's due, the graduated card counts for tomorrow
+    const due = new Date(graduated.dueAt);
+    clock = new Date(due.getTime() - DAY);
+    expect((await dueNow()).dueTomorrow).toBe(1);
+    // Tomorrow's recall day ends at 4 a.m. Toronto time
+    clock = new Date(due.getTime() - 2 * DAY);
+    expect((await dueNow()).dueTomorrow).toBe(0);
   });
 
   it("offers ten new cards with the learning-step times", async () => {

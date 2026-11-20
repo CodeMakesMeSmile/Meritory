@@ -9,13 +9,16 @@ const me = vi.hoisted(() => ({ name: "" }));
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ replace: () => {}, refresh: () => {} }),
+  unstable_rethrow: () => {},
 }));
-vi.mock("@/lib/me", () => ({
+vi.mock("@/lib/server-api", () => ({
   requireMe: async () => ({ id: "1", name: me.name, email: "a@b.test" }),
+  getContent: async () => ({ hash: "h", tracks: [] }),
+  getDue: async () => ({ newLeftToday: 10, dueTomorrow: 0, chapters: [] }),
 }));
 vi.mock("@/lib/sign-up-email", () => ({ useSignUpEmail: () => me.name }));
 
-const { default: Home } = await import("./page.tsx");
+const { default: Home } = await import("./(home)/page.tsx");
 const { SentTo } = await import("./check-email/sent-to.tsx");
 
 const home = (params: Record<string, string> = {}) =>
@@ -41,12 +44,11 @@ describe("people's text renders as text", () => {
     if (/[<>"']/.test(attack)) expect(html).not.toContain(attack);
   });
 
-  it("says GitHub was just linked, between the heading and Sign out", async () => {
+  it("says GitHub was just linked, under the heading", async () => {
     me.name = "Rowan";
     const html = renderToStaticMarkup(await home({ linked: "github" }));
     const note = html.indexOf("GitHub is now linked to your account.");
-    expect(note).toBeGreaterThan(html.indexOf("Signed in as Rowan"));
-    expect(html.indexOf("Sign out")).toBeGreaterThan(note);
+    expect(note).toBeGreaterThan(html.indexOf("Due for recall</h1>"));
   });
 
   it.each(ATTACKS)("an email of %j on check your email", (attack) => {

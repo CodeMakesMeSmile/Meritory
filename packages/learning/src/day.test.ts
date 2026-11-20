@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isKnownTimeZone, recallDayStart } from "./day.ts";
+import { isKnownTimeZone, nextRecallDayStart, recallDayStart } from "./day.ts";
 
 const at = (iso: string) => new Date(iso);
 
@@ -43,6 +43,24 @@ describe("recallDayStart", () => {
     expect(recallDayStart(at("2026-11-19T12:00:00Z"), "UTC")).toEqual(
       at("2026-11-19T04:00:00Z"),
     );
+  });
+});
+
+describe("nextRecallDayStart", () => {
+  it("finds the next 4 a.m. local time", () => {
+    expect(
+      nextRecallDayStart(at("2026-11-19T09:00:00Z"), "America/Toronto"),
+    ).toEqual(at("2026-11-20T09:00:00Z"));
+  });
+
+  it("is 23 or 25 hours on across a clock change", () => {
+    // The day of 2026-03-07 is followed by the short day of 2026-03-08
+    expect(
+      nextRecallDayStart(at("2026-03-07T09:00:00Z"), "America/Toronto"),
+    ).toEqual(at("2026-03-08T08:00:00Z"));
+    expect(
+      nextRecallDayStart(at("2026-10-31T08:00:00Z"), "America/Toronto"),
+    ).toEqual(at("2026-11-01T09:00:00Z"));
   });
 });
 

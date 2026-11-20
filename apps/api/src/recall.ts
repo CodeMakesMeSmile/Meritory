@@ -15,8 +15,10 @@ import {
 import {
   buildRecallQueue,
   isKnownTimeZone,
+  isLearned,
   NEW_CARDS_PER_DAY,
   nextDueDates,
+  nextRecallDayStart,
   recallDayStart,
 } from "@meritory/learning";
 import type { RecallStore, StoredRecallCard } from "@meritory/server";
@@ -104,13 +106,16 @@ export async function registerRecallRoutes(
         chapter.trackId === trackId && chapter.chapterId === chapterId,
     );
 
-  async function newLeftToday(userId: string, now: Date) {
+  /** Today's start in the learner's time zone, and how many new cards are left */
+  async function today(userId: string, now: Date) {
     const timeZone = await deps.store.timeZone(userId);
-    const seen = await deps.store.newSeenSince(
-      userId,
-      recallDayStart(now, timeZone),
-    );
-    return Math.max(0, NEW_CARDS_PER_DAY - seen);
+    const start = recallDayStart(now, timeZone);
+    const seen = await deps.store.newSeenSince(userId, start);
+    return {
+      timeZone,
+      start,
+      newLeft: Math.max(0, NEW_CARDS_PER_DAY - seen),
+    };
   }
 
   scope.post<{ Params: ChapterParams }>(
@@ -154,10 +159,20 @@ export async function registerRecallRoutes(
     async (request) => {
       const { user } = request.current as CurrentSession;
       const now = deps.now();
+      const day = await today(user.id, now);
+      const tomorrow = nextRecallDayStart(day.start, day.timeZone);
+      const dayAfter = nextRecallDayStart(tomorrow, day.timeZone);
       const cards = liveCards(await deps.store.cards(user.id), deps.chapters);
       const counts = new Map<
         string,
-        { trackId: string; chapterId: string; due: number; new: number }
+        {
+          trackId: string;
+          chapterId: string;
+          due: number;
+          new: number;
+          learned: number;
+          total: number;
+        }
       >();
       for (const chapter of deps.chapters) {
         counts.set(chapterKey(chapter.trackId, chapter.chapterId), {
@@ -165,19 +180,32 @@ export async function registerRecallRoutes(
           chapterId: chapter.chapterId,
           due: 0,
           new: 0,
+          learned: 0,
+          total: chapter.cards.length,
         });
       }
       const started = new Set<string>();
+      let dueTomorrow = 0;
       for (const { trackId, chapterId, card } of cards) {
         const key = chapterKey(trackId, chapterId);
         const count = counts.get(key);
         if (!count) continue;
         started.add(key);
+        if (isLearned(card)) count.learned += 1;
+        const due = card.dueAt.getTime();
         if (card.scheduleStatus === "new") count.new += 1;
-        else if (card.dueAt.getTime() <= now.getTime()) count.due += 1;
+        else if (due <= now.getTime()) count.due += 1;
+        if (
+          card.scheduleStatus !== "new" &&
+          due >= tomorrow.getTime() &&
+          due < dayAfter.getTime()
+        ) {
+          dueTomorrow += 1;
+        }
       }
       return {
-        newLeftToday: await newLeftToday(user.id, now),
+        newLeftToday: day.newLeft,
+        dueTomorrow,
         chapters: [...counts]
           .filter(([key]) => started.has(key))
           .map(([, count]) => count),
@@ -198,7 +226,7 @@ export async function registerRecallRoutes(
     async (request) => {
       const { user } = request.current as CurrentSession;
       const now = deps.now();
-      const left = await newLeftToday(user.id, now);
+      const left = (await today(user.id, now)).newLeft;
       const cards = liveCards(await deps.store.cards(user.id), deps.chapters);
       const queue = buildRecallQueue(
         cards.map((stored) => ({
@@ -219,6 +247,7 @@ export async function registerRecallRoutes(
             cardId: stored.cardId,
             version: stored.version,
             isNew: stored.card.scheduleStatus === "new",
+            retry: stored.lastMissed,
             dueAt: stored.card.dueAt.toISOString(),
             next: {
               again: next.again.toISOString(),

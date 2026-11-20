@@ -326,6 +326,30 @@ describe.skipIf(!url)("recall store against Postgres", () => {
     });
   });
 
+  describe("last missed", () => {
+    it("follows the latest rating that still counts", async () => {
+      const me = await user();
+      await store.start(me, CHAPTER, start);
+      expect((await card(me))?.lastMissed).toBe(false);
+
+      await store.review(me, input({ rating: "again" }), start);
+      expect((await card(me))?.lastMissed).toBe(true);
+      expect((await card(me, "card-b"))?.lastMissed).toBe(false);
+
+      await store.review(
+        me,
+        input({ rating: "good", answeredAt: later(MINUTE) }),
+        later(MINUTE),
+      );
+      expect((await card(me))?.lastMissed).toBe(false);
+
+      const miss = input({ cardId: "card-c", rating: "again" });
+      await store.review(me, miss, start);
+      await store.undo(me, miss.id, start);
+      expect((await card(me, "card-c"))?.lastMissed).toBe(false);
+    });
+  });
+
   describe("time zone", () => {
     it("falls back to UTC and keeps what's set", async () => {
       const me = await user();

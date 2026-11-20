@@ -65,3 +65,9 @@ export function recallDayStart(now: Date, timeZone: string): Date {
   time = wanted - offset(time, timeZone);
   return new Date(time);
 }
+
+/** When the recall day after the one starting at dayStart begins */
+export function nextRecallDayStart(dayStart: Date, timeZone: string): Date {
+  // 36 hours on lands inside the next day, even across a clock change
+  return recallDayStart(new Date(dayStart.getTime() + 36 * HOUR), timeZone);
+}
