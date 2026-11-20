@@ -14,18 +14,22 @@ import {
 import { shortWait } from "@/lib/recall-time";
 import {
   CardBox,
+  hasFinePointer,
   keyIsTaken,
+  Lesson,
   MixUp,
   Prompt,
   ShortcutHint,
   useFocusOn,
 } from "./parts";
+import type { Checked } from "./sitting-types";
 
 /** A free-recall card: answer, show the key points, then rate yourself */
 export function PromptCard({
   item,
   card,
   now,
+  checked,
   focusOnOpen,
   shortcuts,
   onToggleShortcuts,
@@ -36,6 +40,8 @@ export function PromptCard({
   item: SittingCard;
   card: PromptCardContent;
   now: Date;
+  /** Set once the card is rated Missed, to show its lesson */
+  checked: Checked | null;
   focusOnOpen: boolean;
   shortcuts: boolean;
   onToggleShortcuts: () => void;
@@ -47,14 +53,16 @@ export function PromptCard({
   const [revealed, setRevealed] = useState(false);
   const promptRef = useRef<HTMLDivElement>(null);
   const pointsRef = useRef<HTMLHeadingElement>(null);
+  const lessonRef = useRef<HTMLHeadingElement>(null);
   const answerId = useId();
   const legendId = useId();
 
   useFocusOn(promptRef, item.key, focusOnOpen);
   useFocusOn(pointsRef, revealed, false);
+  useFocusOn(lessonRef, checked !== null, false);
 
   useEffect(() => {
-    if (!shortcuts) return;
+    if (!shortcuts || !hasFinePointer()) return;
     function onKey(event: KeyboardEvent) {
       if (keyIsTaken(event)) return;
       if (!revealed && event.key === " ") {
@@ -63,21 +71,43 @@ export function PromptCard({
         return;
       }
       const rating = RATINGS[Number(event.key) - 1];
-      if (revealed && rating && !saving) {
+      if (revealed && rating && !saving && !checked) {
         event.preventDefault();
         onRate(rating);
       }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [shortcuts, revealed, saving, onRate]);
+  }, [shortcuts, revealed, saving, checked, onRate]);
 
   const typed = answer.trim();
+
+  if (checked) {
+    return (
+      <>
+        <CardBox>
+          <Prompt text={promptOf(item)} answered />
+          <Lesson
+            card={card}
+            missed
+            wait={checked.wait}
+            full={false}
+            titleRef={lessonRef}
+          />
+        </CardBox>
+        {after}
+      </>
+    );
+  }
 
   return (
     <>
       <CardBox>
-        <Prompt text={promptOf(item)} focusRef={promptRef} />
+        <Prompt
+          text={promptOf(item)}
+          focusRef={promptRef}
+          answered={revealed}
+        />
         {revealed ? (
           <>
             <div className="flex flex-col gap-1 bg-sunken p-3">
@@ -166,7 +196,7 @@ export function PromptCard({
           <Button
             type="button"
             onClick={() => setRevealed(true)}
-            className="w-full sm:w-50"
+            className="w-full sm:ml-auto sm:w-50"
           >
             Show key points
           </Button>

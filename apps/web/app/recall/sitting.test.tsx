@@ -9,6 +9,8 @@ vi.mock("next/navigation", () => ({
 }));
 
 const { Sitting } = await import("./sitting.tsx");
+const { PromptCard } = await import("./prompt-card.tsx");
+const { Explanation, Lesson } = await import("./parts.tsx");
 
 const NOW = "2026-11-19T15:00:00.000Z";
 
@@ -96,7 +98,8 @@ describe("a recall sitting", () => {
     const html = render([
       item({
         type: "matching",
-        matchHeading: "Costs",
+        matchHeading: "Cost",
+        matchName: "a cost",
         pairs: [
           { item: "Read index i", match: "O(1)" },
           { item: "Search unsorted", match: "O(n)" },
@@ -111,12 +114,103 @@ describe("a recall sitting", () => {
     expect(html).toContain("Check matches");
   });
 
+  // Every match name in the bundle, so the hints read as English for each
+  it.each([
+    ["Cost", "a cost", "cost"],
+    ["Approach", "an approach", "approach"],
+    ["Key", "a key", "key"],
+  ])("words the %s hints with its own article", (heading, name, bare) => {
+    const html = render([
+      item({
+        type: "matching",
+        matchHeading: heading,
+        matchName: name,
+        pairs: [
+          { item: "One", match: "First" },
+          { item: "Two", match: "Second" },
+        ],
+      }),
+    ]);
+    expect(html).toContain(`Tap a box, then the ${bare} that goes in it.`);
+    expect(html).toContain(`Now pick ${name}`);
+  });
+
+  it("shows a free-answer card's lesson and fix after Missed", () => {
+    const card = {
+      ...common,
+      type: "prompt",
+      points: ["Copies"],
+      misconception: "A slice is free.",
+      lesson: { ...lesson, fix: "Pass the start and end." },
+    } as unknown as Card & { type: "prompt" };
+    const html = renderToStaticMarkup(
+      <PromptCard
+        item={item(card)}
+        card={card}
+        now={new Date(NOW)}
+        checked={{ right: false, encourage: false, wait: "1 minute" }}
+        focusOnOpen={false}
+        shortcuts
+        onToggleShortcuts={() => {}}
+        saving={false}
+        onRate={() => {}}
+        after={<button type="button">Next card</button>}
+      />,
+    );
+    expect(html).toContain("Slices copy");
+    expect(html).toContain("You&#x27;ll get another go in 1 minute.");
+    expect(html).toContain("Each slice copies.");
+    expect(html).toContain("Next time");
+    expect(html).toContain("Pass the start and end.");
+    expect(html).toContain("Next card");
+    expect(html).not.toContain("Common mix-up");
+    expect(html).not.toContain("Missed</span>");
+  });
+
+  it("puts the fix after the explanation and before the mix-up on a miss", () => {
+    const card = {
+      ...common,
+      type: "pick-one",
+      misconception: "A slice is free.",
+      lesson: { ...lesson, fix: "Pass the start and end." },
+    } as unknown as Card;
+    const missed = renderToStaticMarkup(
+      <Lesson card={card} missed wait="1 minute" />,
+    );
+    expect(missed.indexOf("Each slice copies.")).toBeLessThan(
+      missed.indexOf("Next time"),
+    );
+    expect(missed.indexOf("Next time")).toBeLessThan(
+      missed.indexOf("Common mix-up"),
+    );
+    const right = renderToStaticMarkup(
+      <Lesson card={card} missed={false} wait="10 minutes" />,
+    );
+    expect(right).toContain("You&#x27;ll see this again in 10 minutes.");
+    expect(right).not.toContain("Next time");
+  });
+
+  it("shows only the explanation under a missed order or match", () => {
+    const card = { ...common, type: "ordering" } as unknown as Card;
+    const html = renderToStaticMarkup(<Explanation card={card} />);
+    expect(html).toContain("Each slice copies.");
+    expect(html).not.toContain("Slices copy");
+  });
+
+  it("hides the shortcut hint unless there's a mouse or trackpad", () => {
+    const html = render([item({ type: "prompt", points: ["Copies"] })]);
+    expect(html).toContain(
+      "hidden flex-wrap items-center gap-x-8 any-pointer-fine:flex",
+    );
+  });
+
   it.each(ATTACKS)("card text of %j renders as text", (attack) => {
     const html = render([
       item({
         type: "matching",
         prompt: attack,
-        matchHeading: "Costs",
+        matchHeading: "Cost",
+        matchName: "a cost",
         pairs: [
           { item: attack, match: "O(1)" },
           { item: "Other", match: attack },

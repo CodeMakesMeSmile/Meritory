@@ -6,13 +6,18 @@ import { Markdown } from "@/components/markdown";
 import type { MatchingCard as MatchingContent } from "@/lib/content";
 import { matchingIsRight, shuffled } from "@/lib/recall-grading";
 import { promptOf, type SittingCard } from "@/lib/recall-sitting";
-import { CardBox, FeedbackHeading, Lesson, Prompt, useFocusOn } from "./parts";
+import {
+  CardBox,
+  Explanation,
+  FeedbackHeading,
+  Prompt,
+  useFocusOn,
+} from "./parts";
 import type { Checked } from "./sitting-types";
 
-/** One of the heading's matches, such as cost for Costs */
-function singular(heading: string) {
-  const word = heading.toLowerCase();
-  return /[^s]s$/.test(word) ? word.slice(0, -1) : word;
+/** The match name without its article, such as cost for "a cost" */
+function bare(name: string) {
+  return name.replace(/^an? /, "");
 }
 
 function nextEmpty(filled: readonly (string | null)[], after: number) {
@@ -94,7 +99,7 @@ export function MatchingCard({
                 <li key={pair.item} className="flex flex-col gap-2">
                   <Markdown text={pair.item} className="font-semibold" />
                   <div
-                    className={`flex flex-col gap-1 p-3 ${wrong ? "border border-danger" : "bg-sunken"}`}
+                    className={`flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2 ${wrong ? "border border-danger" : "bg-sunken"}`}
                   >
                     <Markdown text={filled[at] ?? ""} inline />
                     {wrong && (
@@ -107,7 +112,7 @@ export function MatchingCard({
               );
             })}
           </ul>
-          {!checked.right && <Lesson card={card} missed />}
+          {!checked.right && <Explanation card={card} />}
         </CardBox>
         {after}
       </>
@@ -119,7 +124,7 @@ export function MatchingCard({
       <CardBox>
         <Prompt text={promptOf(item)} focusRef={promptRef} />
         <p className="text-small text-secondary">
-          Tap a box, then the {singular(card.matchHeading)} that goes in it.
+          Tap a box, then the {bare(card.matchName)} that goes in it.
         </p>
         <ul className="flex flex-col gap-4">
           {card.pairs.map((pair, at) => {
@@ -150,15 +155,15 @@ export function MatchingCard({
                   ) : (
                     <span className="text-small text-secondary">
                       {isSelected
-                        ? `Now pick a ${singular(card.matchHeading)}`
+                        ? `Now pick ${card.matchName}`
                         : "Tap to fill"}
                     </span>
                   )}
                 </button>
                 {isSelected && match !== null && (
                   <p className="text-small text-secondary">
-                    Pick a new {singular(card.matchHeading)}, or tap the box
-                    again to clear it.
+                    Pick a new {bare(card.matchName)}, or tap the box again to
+                    clear it.
                   </p>
                 )}
               </li>

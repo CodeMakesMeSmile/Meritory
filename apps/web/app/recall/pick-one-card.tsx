@@ -75,8 +75,12 @@ export function PickOneCard({
     return (
       <>
         <CardBox>
-          <FeedbackHeading {...checked} focusRef={headingRef} />
-          <Prompt text={promptOf(item)} />
+          <FeedbackHeading
+            {...checked}
+            focusRef={headingRef}
+            showWait={false}
+          />
+          <Prompt text={promptOf(item)} answered />
           <Choice option={pick} label="Your pick" missed={!checked.right} />
           {!checked.right && answer && (
             <div className="flex flex-col gap-1">
@@ -89,7 +93,7 @@ export function PickOneCard({
               />
             </div>
           )}
-          <Lesson card={card} missed={!checked.right} />
+          <Lesson card={card} missed={!checked.right} wait={checked.wait} />
         </CardBox>
         {after}
       </>

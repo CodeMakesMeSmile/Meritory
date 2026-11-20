@@ -60,11 +60,15 @@ export interface SavedRating {
   dueAt: Date;
 }
 
-/** Cards back within this long count as one more look today */
-const SOON = 60 * 60 * 1000;
-
-/** The done screen's line about this sitting */
-export function doneLine(saved: readonly SavedRating[], now: Date): string {
+/**
+ * The done screen's line about this sitting. Cards back before today's recall
+ * day ends count as one more look. Without the day's end, it only praises.
+ */
+export function doneLine(
+  saved: readonly SavedRating[],
+  now: Date,
+  dayEndsAt: Date | null,
+): string {
   const counts = new Map<string, number>();
   for (const { chapterTitle } of saved) {
     counts.set(chapterTitle, (counts.get(chapterTitle) ?? 0) + 1);
@@ -73,9 +77,8 @@ export function doneLine(saved: readonly SavedRating[], now: Date): string {
   const praise = chapter
     ? `Nice steady work on ${chapter}.`
     : "Nice steady work.";
-  const soon = saved.filter(
-    ({ dueAt }) => dueAt.getTime() - now.getTime() <= SOON,
-  );
+  if (!dayEndsAt) return praise;
+  const soon = saved.filter(({ dueAt }) => dueAt < dayEndsAt);
   if (soon.length === 0) return `${praise} Nothing else is due today.`;
   const last = new Date(Math.max(...soon.map(({ dueAt }) => dueAt.getTime())));
   const cards =

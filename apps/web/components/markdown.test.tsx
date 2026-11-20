@@ -7,6 +7,24 @@ const html = (text: string, inline = false) =>
   renderToStaticMarkup(<Markdown text={text} inline={inline} />);
 
 describe("Markdown", () => {
+  it("marks plain words but never code or link text", () => {
+    const out = renderToStaticMarkup(
+      <Markdown
+        text="Find the **hash** in `hash()` or [hash](https://example.com)"
+        inline
+        renderText={(words) =>
+          words
+            .split(/(hash)/)
+            .map((part) => (part === "hash" ? <b>{part}</b> : part))
+        }
+      />,
+    );
+    expect(out).toContain('<strong class="font-semibold"><b>hash</b></strong>');
+    expect(out).toContain("<code");
+    expect(out).toContain("hash()</code>");
+    expect(out).toMatch(/<a [^>]*>hash<\/a>/);
+  });
+
   it("renders the parts chapters use", () => {
     const out = html(
       "Intro with *stress*, **weight**, and `O(1)`.\n\n- one\n- two\n\n```\ncode\n```\n",
@@ -90,6 +108,18 @@ describe("Markdown", () => {
       expect(out).not.toMatch(/\son\w+=/i);
       expect(out).not.toMatch(/href="(?!https:\/\/|#)/i);
     }
+  });
+
+  it.each(ATTACKS)("keeps %j as text when words are marked", (attack) => {
+    const out = renderToStaticMarkup(
+      <Markdown
+        text={`Text ${attack} end`}
+        inline
+        renderText={(words) => <b>{words}</b>}
+      />,
+    );
+    expect(out).not.toMatch(/<(script|img|svg|iframe|style)/i);
+    expect(out).not.toMatch(/\son\w+=/i);
   });
 
   it("escapes words that look like markup", () => {

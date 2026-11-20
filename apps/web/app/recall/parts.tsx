@@ -31,35 +31,47 @@ export function useFocusOn(
   }, [ref, when, enabled]);
 }
 
+/** The question, smaller once it's answered so the answer leads */
 export function Prompt({
   text,
   focusRef,
+  answered = false,
 }: {
   text: string;
   focusRef?: RefObject<HTMLDivElement | null>;
+  answered?: boolean;
 }) {
   return (
     <div
       ref={focusRef}
       tabIndex={-1}
-      className="text-prompt focus:outline-none"
+      className={`${answered ? "font-semibold" : "text-prompt"} focus:outline-none`}
     >
       <Markdown text={text} />
     </div>
   );
 }
 
-/** Got it or Not quite, with when the card comes back */
+/** When the card comes back, such as "You'll get another go in 1 minute." */
+export function waitLine(right: boolean, wait: string) {
+  return right
+    ? `You'll see this again in ${wait}.`
+    : `You'll get another go in ${wait}.`;
+}
+
+/** Got it or Not quite, with when the card comes back unless the lesson says it */
 export function FeedbackHeading({
   right,
   encourage,
   wait,
   focusRef,
+  showWait = true,
 }: {
   right: boolean;
   encourage: boolean;
   wait: string;
   focusRef: RefObject<HTMLHeadingElement | null>;
+  showWait?: boolean;
 }) {
   return (
     <div className="flex flex-col gap-1">
@@ -71,33 +83,61 @@ export function FeedbackHeading({
           Trying first, then checking the answer, helps it stick.
         </p>
       )}
-      <p className="text-small text-secondary">
-        {right
-          ? `You'll see this again in ${wait}.`
-          : `You'll get another go in ${wait}.`}
-      </p>
+      {showWait && (
+        <p className="text-small text-secondary">{waitLine(right, wait)}</p>
+      )}
     </div>
   );
 }
 
-export function MixUp({ text }: { text: string }) {
+/** A small labelled note, such as the common mix-up */
+function Note({ label, text }: { label: string; text: string }) {
   return (
     <div className="flex flex-col gap-1">
-      <h3 className="text-small font-semibold">Common mix-up</h3>
+      <h3 className="text-small font-semibold">{label}</h3>
       <Markdown text={text} className="text-small" />
     </div>
   );
 }
 
-/** What the card teaches, shown after an answer is checked */
-export function Lesson({ card, missed }: { card: Card; missed: boolean }) {
+export function MixUp({ text }: { text: string }) {
+  return <Note label="Common mix-up" text={text} />;
+}
+
+/** What the card teaches, with when it comes back under the title */
+export function Lesson({
+  card,
+  missed,
+  wait,
+  full = true,
+  titleRef,
+}: {
+  card: Card;
+  missed: boolean;
+  wait: string;
+  /** With the mix-up and source, which a free-answer card already showed or leaves out */
+  full?: boolean;
+  titleRef?: RefObject<HTMLHeadingElement | null>;
+}) {
   const { lesson } = card;
   return (
-    <div className="flex flex-col gap-4 border-t border-border-subtle pt-5">
-      <h3 className="text-h2">{lesson.title}</h3>
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-1">
+        <h3
+          ref={titleRef}
+          tabIndex={titleRef ? -1 : undefined}
+          className="text-h2 focus:outline-none"
+        >
+          {lesson.title}
+        </h3>
+        <p className="text-small text-secondary">{waitLine(!missed, wait)}</p>
+      </div>
       <Markdown text={lesson.explanation} />
-      {missed && card.misconception && <MixUp text={card.misconception} />}
-      {lesson.source && isSafeUrl(lesson.source.url) && (
+      {missed && lesson.fix && <Note label="Next time" text={lesson.fix} />}
+      {missed && full && card.misconception && (
+        <MixUp text={card.misconception} />
+      )}
+      {full && lesson.source && isSafeUrl(lesson.source.url) && (
         <a
           href={lesson.source.url}
           rel="noreferrer"
@@ -108,6 +148,24 @@ export function Lesson({ card, missed }: { card: Card; missed: boolean }) {
       )}
     </div>
   );
+}
+
+/** Just the lesson's explanation, under a checked order or set of matches */
+export function Explanation({ card }: { card: Card }) {
+  return (
+    <Markdown
+      text={card.lesson.explanation}
+      className="text-small text-secondary"
+    />
+  );
+}
+
+/**
+ * Whether the device has a mouse or trackpad. Without one there are no
+ * shortcuts, since a speech tool could press keys with no way to turn them off
+ */
+export function hasFinePointer() {
+  return window.matchMedia("(any-pointer: fine)").matches;
 }
 
 /** The hint line for single-key shortcuts, with a way to turn them off */
@@ -121,7 +179,7 @@ export function ShortcutHint({
   onToggle: () => void;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-x-8">
+    <div className="hidden flex-wrap items-center gap-x-8 any-pointer-fine:flex">
       <p className="text-small text-secondary">
         {on ? hint : "Keyboard shortcuts are off."}
       </p>

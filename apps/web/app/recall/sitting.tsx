@@ -38,18 +38,23 @@ function plural(count: number, one: string) {
 
 function Done({ count, saved }: { count: number; saved: SavedRating[] }) {
   const headingRef = useRef<HTMLHeadingElement>(null);
-  const [line] = useState(() => doneLine(saved, new Date()));
+  const [line, setLine] = useState<string | null>(null);
   const [tomorrow, setTomorrow] = useState<string | null>(null);
 
   useEffect(() => {
     headingRef.current?.focus();
     writeStoppedAt(null);
     loadDue().then((result) => {
-      if (!result.ok) return;
+      const now = new Date();
+      if (!result.ok) {
+        setLine(doneLine(saved, now, null));
+        return;
+      }
+      setLine(doneLine(saved, now, new Date(result.data.dayEndsAt)));
       const newWaiting = result.data.chapters.some((c) => c.new > 0);
       setTomorrow(tomorrowLine(result.data.dueTomorrow, newWaiting));
     });
-  }, []);
+  }, [saved]);
 
   return (
     <>
@@ -62,7 +67,7 @@ function Done({ count, saved }: { count: number; saved: SavedRating[] }) {
         >
           That's {plural(count, "card")} done
         </h1>
-        <p>{line}</p>
+        {line && <p>{line}</p>}
         {tomorrow && (
           <div className="flex flex-col gap-1">
             <h2 className="text-small font-semibold">Next up</h2>
@@ -147,12 +152,22 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
     [item],
   );
 
+  // Missed on a free-answer card shows its lesson before the next card
   const rate = useCallback(
     (rating: RecallRating) => {
       const next = review(rating);
-      if (next && saving.state !== "saving") save(next, true);
+      if (!next || !item || saving.state === "saving") return;
+      const missed = rating === "again";
+      if (missed) {
+        setChecked({
+          right: false,
+          encourage: false,
+          wait: longWait(loadedAt, new Date(item.session.next.again)),
+        });
+      }
+      save(next, !missed);
     },
-    [review, save, saving.state],
+    [review, save, saving.state, item, loadedAt],
   );
 
   function check(right: boolean) {
@@ -206,7 +221,9 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
           role="alert"
           className="flex flex-col gap-3 border border-danger bg-card p-4"
         >
-          <h2 className="text-body font-semibold">That rating didn't save</h2>
+          <h2 className="text-small font-semibold text-danger">
+            That rating didn't save
+          </h2>
           <p className="text-small">
             The connection dropped before {RATING_LABELS[failed.rating]} reached
             us. Your answer is still here.
@@ -214,7 +231,12 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
           <Button
             type="button"
             variant="secondary"
-            onClick={() => save(failed, item.card.type === "prompt")}
+            onClick={() =>
+              save(
+                failed,
+                item.card.type === "prompt" && failed.rating !== "again",
+              )
+            }
             className="self-start"
           >
             Save again
@@ -272,6 +294,7 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
           {...shared}
           card={card}
           now={loadedAt}
+          checked={checked}
           shortcuts={shortcuts}
           onToggleShortcuts={toggleShortcuts}
           saving={saving.state === "saving"}
