@@ -1,0 +1,83 @@
+import type {
+  RecallDueResponse,
+  RecallRating,
+  RecallSessionResponse,
+  RecordReviewResponse,
+  StartChapterResponse,
+} from "@meritory/contracts";
+
+export type { RecallRating, RecallSessionResponse };
+export type RecallSessionCard = RecallSessionResponse["cards"][number];
+
+/** What a recall request came back with, in terms the page acts on */
+export type RecallResult<T> =
+  | { ok: true; data: T }
+  | { ok: false; reason: "signed_out" | "failed" };
+
+const BASE = "/api/v1";
+
+async function call<T>(
+  path: string,
+  init: RequestInit = {},
+): Promise<RecallResult<T>> {
+  let res: Response;
+  try {
+    res = await fetch(`${BASE}${path}`, { cache: "no-store", ...init });
+  } catch {
+    return { ok: false, reason: "failed" };
+  }
+  if (res.status === 401) return { ok: false, reason: "signed_out" };
+  if (!res.ok) return { ok: false, reason: "failed" };
+  const data = res.status === 204 ? undefined : await res.json();
+  return { ok: true, data: data as T };
+}
+
+const json = (body: unknown): RequestInit => ({
+  headers: { "content-type": "application/json" },
+  body: JSON.stringify(body),
+});
+
+export function loadSession() {
+  return call<RecallSessionResponse>("/recall/session");
+}
+
+export function loadDue() {
+  return call<RecallDueResponse>("/recall/due");
+}
+
+export function startChapter(trackId: string, chapterId: string) {
+  const path = `/recall/tracks/${encodeURIComponent(trackId)}/chapters/${encodeURIComponent(chapterId)}/start`;
+  return call<StartChapterResponse>(path, { method: "POST" });
+}
+
+export interface ReviewToSave {
+  /** Made once per answer, so Save again can't count it twice */
+  id: string;
+  card: RecallSessionCard;
+  rating: RecallRating;
+  answeredAt: Date;
+  durationMs: number;
+}
+
+export function saveReview(review: ReviewToSave) {
+  return call<RecordReviewResponse>("/recall/reviews", {
+    method: "POST",
+    ...json({
+      id: review.id,
+      trackId: review.card.trackId,
+      chapterId: review.card.chapterId,
+      cardId: review.card.cardId,
+      cardVersion: review.card.version,
+      rating: review.rating,
+      answeredAt: review.answeredAt.toISOString(),
+      durationMs: Math.max(0, Math.round(review.durationMs)),
+    }),
+  });
+}
+
+export function saveTimeZone(timeZone: string) {
+  return call<undefined>("/me/time-zone", {
+    method: "PUT",
+    ...json({ timeZone }),
+  });
+}

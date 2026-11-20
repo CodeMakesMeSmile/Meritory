@@ -112,6 +112,16 @@ body {
     outline: none;
   }
 
+  /* Diagonal ink lines, the mark for a due tag */
+  .hatch {
+    border: 1px solid var(--color-accent-default);
+    background-image: repeating-linear-gradient(
+      -45deg,
+      var(--color-accent-default) 0 1px,
+      transparent 1px 3px
+    );
+  }
+
   .focus-ring:focus-visible {
     outline: none;
     box-shadow: var(--focus-ring);
