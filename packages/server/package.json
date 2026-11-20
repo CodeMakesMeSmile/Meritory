@@ -16,17 +16,17 @@
     "mail:preview": "node --env-file-if-exists=../../.env src/mail/preview.ts"
   },
   "dependencies": {
-    "@better-auth/drizzle-adapter": "1.7.17",
-    "@better-auth/expo": "1.7.17",
+    "@better-auth/drizzle-adapter": "1.7.25",
+    "@better-auth/expo": "1.7.25",
     "@meritory/design-tokens": "workspace:*",
     "@meritory/learning": "workspace:*",
     "@meritory/password": "workspace:*",
-    "better-auth": "1.7.17",
+    "better-auth": "1.7.25",
     "bowser": "^2.15.0",
     "drizzle-orm": "^0.45.4",
-    "nodemailer": "^10.3.1",
-    "pg-boss": "^12.38.1",
-    "postgres": "^4.0.0"
+    "nodemailer": "^10.6.0",
+    "pg-boss": "^12.38.2",
+    "postgres": "^4.1.1"
   },
   "devDependencies": {
     "@meritory/security-testing": "workspace:*",
