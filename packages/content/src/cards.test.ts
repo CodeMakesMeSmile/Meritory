@@ -39,6 +39,7 @@ const STEPS = `  steps:
 `;
 
 const PAIRS = `  matchHeading: Costs
+  matchName: a cost
   pairs:
     - item: Read by index
       match: Constant
@@ -177,6 +178,30 @@ describe("cards", () => {
     ]);
   });
 
+  it("reports a matching card with no match name", async () => {
+    await writeCards(
+      card(
+        "match-costs",
+        "matching",
+        PAIRS.replace("  matchName: a cost\n", ""),
+      ),
+    );
+    expect(await problemLines()).toEqual([
+      "cards.yaml:1 card match-costs must have required properties matchName",
+      "cards.yaml skill indexing has no card that asks why or when",
+    ]);
+  });
+
+  it("reports a match name with no article", async () => {
+    await writeCards(
+      card("match-costs", "matching", PAIRS.replace("a cost", "cost")),
+    );
+    expect(await problemLines()).toEqual([
+      'cards.yaml:8 matchName must start with "a " or "an ", such as "a cost"',
+      "cards.yaml skill indexing has no card that asks why or when",
+    ]);
+  });
+
   it("reports a field that belongs to another type", async () => {
     await writeCards(card("read-steps", "ordering", STEPS + POINTS));
     expect(await problemLines()).toEqual([
@@ -288,10 +313,10 @@ describe("cards", () => {
     );
     expect(await problemLines()).toEqual([
       "cards.yaml:11 steps/3 repeats an earlier step",
-      "cards.yaml:27 pairs/2/item repeats an earlier item",
-      "cards.yaml:28 pairs/2/match repeats an earlier match",
-      "cards.yaml:30 extraMatches/0 repeats an earlier match",
-      "cards.yaml:46 options/2/text repeats an earlier option",
+      "cards.yaml:28 pairs/2/item repeats an earlier item",
+      "cards.yaml:29 pairs/2/match repeats an earlier match",
+      "cards.yaml:31 extraMatches/0 repeats an earlier match",
+      "cards.yaml:47 options/2/text repeats an earlier option",
     ]);
   });
 

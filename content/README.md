@@ -84,7 +84,7 @@ A folder is a track once it has a `chapters/` folder with a chapter in it. Track
 - **Unique in a track**: chapter ids, chapter orders, skill ids, card ids, exercise ids, and case uuids.
 - **YAML** is read as YAML 1.2, and a file that starts with a `%YAML 1.1` directive is refused, because 1.1 turns values like `no` into false.
 - **Text** can hold any character except control characters. Tab and newline are fine.
-- **Markdown** is CommonMark. It can't hold raw HTML, and links and images must start with `https://` or `#`. Explanations, statements, model answers, rubric levels, and every card field except `id`, `skill`, `asks`, `type`, `title`, `term`, `matchHeading`, and `url` are Markdown.
+- **Markdown** is CommonMark. It can't hold raw HTML, and links and images must start with `https://` or `#`. Explanations, statements, model answers, rubric levels, and every card field except `id`, `skill`, `asks`, `type`, `title`, `term`, `matchHeading`, `matchName`, and `url` are Markdown.
 - **Unknown fields** are refused, so a typo in a field name is caught.
 
 ## Track
@@ -190,6 +190,7 @@ The explanation can't be empty, and it follows the Markdown rules.
   prompt: Match each problem to what fits it best.
   reworded: Which approach suits each of these problems?
   matchHeading: Approaches
+  matchName: an approach
   pairs:
     - item: Many range sum queries on a list that never changes
       match: Prefix sums
@@ -238,7 +239,7 @@ Each type adds its own fields.
 |---|---|
 | `prompt` | `points`: 1 to 8 things a good answer covers, shown on reveal, up to 500 characters each |
 | `ordering` | `steps`: 3 to 10 steps in the right order, shuffled when shown, up to 300 characters each and none repeated. Optional `terms`: up to 10, each a `term` and its `definition`. |
-| `matching` | `pairs`: 2 to 6, each an `item` and its `match`. Optional `extraMatches`: up to 4 wrong matches. `matchHeading`: the name above the matches, up to 40 characters. No item or match can repeat. |
+| `matching` | `pairs`: 2 to 6, each an `item` and its `match`. Optional `extraMatches`: up to 4 wrong matches. `matchHeading`: the name above the matches, up to 40 characters. `matchName`: one match with its article, as it reads mid-sentence, such as `a cost` or `an approach`, up to 40 characters. It must start with `a` or `an`. The hints use it, as in "Now pick a cost" and "Tap a box, then the cost that goes in it." No item or match can repeat. |
 | `pick-one` | `options`: 2 to 6, each with `text`, a `reason` shown after the answer, and `correct: true` on exactly one. No option can repeat. |
 
 ## Rubrics

@@ -31,6 +31,7 @@ const PLAIN_FIELDS = new Set([
   "title",
   "term",
   "matchHeading",
+  "matchName",
   "url",
 ]);
 
