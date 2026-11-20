@@ -14,7 +14,7 @@ import { FSRS7_DEFAULT_WEIGHTS, FSRS7Model } from "ts-fsrs/models/fsrs-7";
  * Recorded on every review so schedules can be traced back to the rules that
  * produced them. Bump it whenever the settings below or the model change.
  */
-export const SCHEDULER_VERSION = "fsrs7-v1";
+export const SCHEDULER_VERSION = "fsrs7-v2";
 
 /** The chance of recalling a card when it comes due */
 export const DEFAULT_RECALL_TARGET = 0.9;
@@ -61,7 +61,8 @@ function createScheduler(target: number) {
       learningSteps: ["1m", "10m"],
       relearningSteps: ["10m"],
       graduatingInterval: 1,
-      allowModelOverride: true,
+      // Keeps new cards on the 1m and 10m steps instead of jumping to days
+      allowModelOverride: false,
       maximumInterval: 36500,
       clearStatsOnForget: false,
     },
@@ -125,4 +126,12 @@ export function nextDueDates(
     if (rating) dates[rating] = item.card.dueAt;
   }
   return dates as Record<RecallRating, Date>;
+}
+
+/** The card exactly as it was before the review that produced this revlog */
+export function undoRecallReview(
+  card: RecallCard,
+  revlog: RecallRevlog,
+): RecallCard {
+  return schedulerFor(DEFAULT_RECALL_TARGET).rollback({ card, revlog });
 }

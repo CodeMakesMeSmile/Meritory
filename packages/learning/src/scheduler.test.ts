@@ -5,6 +5,7 @@ import {
   nextDueDates,
   type RecallRating,
   reviewRecallCard,
+  undoRecallReview,
 } from "./scheduler.ts";
 
 const start = new Date("2026-11-01T09:00:00Z");
@@ -23,6 +24,7 @@ function preset(target: number) {
     enableFuzz: false,
     learningSteps: ["1m", "10m"],
     relearningSteps: ["10m"],
+    allowModelOverride: false,
     maximumInterval: 36500,
   });
 }
@@ -122,5 +124,30 @@ describe("nextDueDates", () => {
       );
     }
     expect(dates.again.getTime()).toBeLessThan(dates.easy.getTime());
+  });
+});
+
+describe("learning steps", () => {
+  const minutes = (date: Date) => (date.getTime() - start.getTime()) / 60_000;
+
+  it("brings a new card back within the session unless it's easy", () => {
+    const dates = nextDueDates(newRecallCard("card-1", start), start);
+    expect(minutes(dates.again)).toBe(1);
+    expect(Math.round(minutes(dates.hard))).toBe(6);
+    expect(minutes(dates.good)).toBe(10);
+    expect(Math.round(minutes(dates.easy) / (24 * 60))).toBe(54);
+  });
+});
+
+describe("undoRecallReview", () => {
+  it("puts the card back exactly as it was", () => {
+    let card = newRecallCard("card-1", start);
+    let now = start;
+    for (const rating of ["good", "good", "again", "hard", "easy"] as const) {
+      const { card: next, revlog } = reviewRecallCard(card, rating, now);
+      expect(undoRecallReview(next, revlog)).toEqual(card);
+      card = next;
+      now = card.dueAt;
+    }
   });
 });

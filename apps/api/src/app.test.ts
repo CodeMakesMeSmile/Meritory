@@ -2,6 +2,7 @@ import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { SOLUTION_FILES } from "@meritory/content";
 import { SQL_ATTACKS } from "@meritory/security-testing";
+import type { RecallStore } from "@meritory/server";
 import Type from "typebox";
 import { afterEach, describe, expect, it } from "vitest";
 import { buildApp } from "./app.ts";
@@ -23,6 +24,13 @@ const ANNA = {
   name: "Anna",
   email: "anna@example.com",
 };
+
+// These tests never reach recall, which has its own tests against Postgres
+const NO_RECALL = new Proxy({} as RecallStore, {
+  get: () => () => {
+    throw new Error("Recall isn't used in these tests");
+  },
+});
 
 const HERE = "11111111-1111-4111-8111-111111111111";
 const PHONE = "22222222-2222-4222-8222-222222222222";
@@ -127,6 +135,7 @@ async function start(
     signInMethods,
     accountDeletion,
     content: content ?? (await builtContent()),
+    recall: NO_RECALL,
   });
   return app;
 }
@@ -744,6 +753,10 @@ describe("openapi", () => {
         "/v1/health/ready",
         "/v1/me",
         "/v1/content",
+        "/v1/recall/due",
+        "/v1/recall/session",
+        "/v1/recall/reviews",
+        "/v1/me/time-zone",
       ]),
     );
   });

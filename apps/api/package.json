@@ -10,10 +10,12 @@
     "typecheck": "tsc"
   },
   "dependencies": {
+    "@fastify/rate-limit": "11.2.2",
     "@fastify/swagger": "^9.9.3",
     "@fastify/type-provider-typebox": "^6.3.0",
     "@meritory/content": "workspace:*",
     "@meritory/contracts": "workspace:*",
+    "@meritory/learning": "workspace:*",
     "@meritory/server": "workspace:*",
     "fastify": "^5.12.8",
     "typebox": "^1.4.4"

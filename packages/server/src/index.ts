@@ -44,3 +44,16 @@ export {
   readSmtpConfig,
   type SmtpConfig,
 } from "./mail/mailer.ts";
+export {
+  type CardKey,
+  type ChapterCards,
+  createRecallStore,
+  MAX_DURATION_MS,
+  type RecallStore,
+  type ReviewInput,
+  type ReviewResult,
+  type SavedReview,
+  type StoredRecallCard,
+  UNDO_WINDOW_MS,
+  type UndoResult,
+} from "./recall/recall-store.ts";

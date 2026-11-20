@@ -47,6 +47,9 @@ React escapes every value it renders as text or as an attribute. Keep it that wa
 - Every API route that changes data checks the `Origin` and `Sec-Fetch-Site` headers and rejects other sites.
 - Every protected route checks the session on the server. The proxy's cookie check only decides where to send people.
 - Check that the signed-in person owns the record they're reading or changing, not only that they're signed in.
+- A request someone else's record would answer gets the same 404 as one that doesn't exist.
+- Writes the app may retry carry an id the app made, such as a recall review's UUID. The server stores it once, answers a retry the same way, and refuses the id with a different body.
+- Recall routes have a per-user rate limit from `@fastify/rate-limit`. It counts in memory, which only works while one API server runs.
 - Session cookies stay HttpOnly, SameSite=Lax, and Secure on https.
 - Better Auth refuses requests from other sites on its own routes. Its check is set on explicitly, because Better Auth turns it off under tests by default.
 

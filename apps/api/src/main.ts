@@ -7,6 +7,7 @@ import {
   createBreachCheck,
   createDatabase,
   createQueuedMailer,
+  createRecallStore,
   createSessionLookup,
   createSignInMethods,
 } from "@meritory/server";
@@ -74,6 +75,7 @@ const app = await buildApp(
     }),
     currentSession: createSessionLookup(auth),
     content,
+    recall: createRecallStore(database.db),
   },
   { logger: { level: config.logLevel } },
 );

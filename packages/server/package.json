@@ -6,7 +6,8 @@
   "license": "AGPL-3.0-only",
   "description": "Backend modules and persistence adapters",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./testing": "./src/testing.ts"
   },
   "scripts": {
     "typecheck": "tsc",
@@ -18,6 +19,7 @@
     "@better-auth/drizzle-adapter": "1.7.17",
     "@better-auth/expo": "1.7.17",
     "@meritory/design-tokens": "workspace:*",
+    "@meritory/learning": "workspace:*",
     "@meritory/password": "workspace:*",
     "better-auth": "1.7.17",
     "bowser": "^2.15.0",

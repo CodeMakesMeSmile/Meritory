@@ -12,6 +12,20 @@ export {
 /** Prefix for every versioned route */
 export const API_PREFIX = "/v1";
 export {
+  ChapterParams,
+  RECALL_ERRORS,
+  RecallDueResponse,
+  RecallRating,
+  RecallSessionCard,
+  RecallSessionResponse,
+  RecordReviewBody,
+  RecordReviewResponse,
+  ReviewParams,
+  StartChapterResponse,
+  TimeZoneBody,
+  UndoReviewResponse,
+} from "./recall.ts";
+export {
   AccountSession,
   ConfirmPasswordBody,
   EndOthersResponse,
