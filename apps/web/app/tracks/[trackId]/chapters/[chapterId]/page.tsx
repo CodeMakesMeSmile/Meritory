@@ -49,7 +49,10 @@ export default async function ChapterPage({ params }: Props) {
           <nav aria-label="Breadcrumb">
             <ol className="flex items-center gap-2 text-small text-secondary">
               <li>
-                <Link href="/" className={linkClass}>
+                <Link
+                  href="/"
+                  className={`${linkClass} flex h-control items-center`}
+                >
                   Home
                 </Link>
               </li>

@@ -241,5 +241,11 @@ export function Markdown({ text, inline = false, className }: MarkdownProps) {
   if (inline && root.children?.length === 1 && only?.type === "paragraph") {
     return <span className={className}>{renderChildren(only, context)}</span>;
   }
-  return <div className={className}>{renderChildren(root, context)}</div>;
+  // Paragraph margins only space blocks apart, never pad the edges
+  const edges = "[&>:first-child]:mt-0 [&>:last-child]:mb-0";
+  return (
+    <div className={className ? `${edges} ${className}` : edges}>
+      {renderChildren(root, context)}
+    </div>
+  );
 }

@@ -45,19 +45,19 @@ export function AppShell({
       <TimeZoneSync userId={user.id} />
       <nav
         aria-label="Main"
-        className="flex flex-col gap-6 bg-rail p-4 md:sticky md:top-0 md:h-screen md:w-59 md:shrink-0 md:p-6"
+        className="flex flex-wrap items-center gap-x-2 gap-y-3 bg-rail px-4 py-3 md:sticky md:top-0 md:h-screen md:w-59 md:shrink-0 md:flex-col md:flex-nowrap md:items-stretch md:gap-6 md:p-6"
       >
-        <span className="px-3">
+        <span className="w-full px-3 md:w-auto">
           <LogoLockup />
         </span>
-        <div className="flex flex-col gap-1">
+        <div className="flex gap-1 md:flex-col">
           <NavItem href="/" current={page === "home"}>
             Home
           </NavItem>
         </div>
-        <div className="flex flex-col gap-3 md:mt-auto">
+        <div className="ml-auto flex min-w-0 items-center gap-2 md:mt-auto md:ml-0 md:flex-col md:items-stretch md:gap-3">
           <NavItem href="/account" current={false}>
-            {user.name}
+            <span className="max-w-32 truncate md:max-w-none">{user.name}</span>
           </NavItem>
           <SignOutButton />
         </div>
