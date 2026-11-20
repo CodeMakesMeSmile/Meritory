@@ -14,7 +14,13 @@ vi.mock("next/navigation", () => ({
 vi.mock("@/lib/server-api", () => ({
   requireMe: async () => ({ id: "1", name: me.name, email: "a@b.test" }),
   getContent: async () => ({ hash: "h", tracks: [] }),
-  getDue: async () => ({ newLeftToday: 10, dueTomorrow: 0, chapters: [] }),
+  getDue: async () => ({
+    newLeftToday: 10,
+    dueTomorrow: 0,
+    overdue: 0,
+    dayEndsAt: "2026-11-20T09:00:00.000Z",
+    chapters: [],
+  }),
 }));
 vi.mock("@/lib/sign-up-email", () => ({ useSignUpEmail: () => me.name }));
 

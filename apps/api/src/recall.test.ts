@@ -268,6 +268,8 @@ describe.skipIf(!url)("recall routes against Postgres", () => {
     expect(due.json()).toEqual({
       newLeftToday: 10,
       dueTomorrow: 0,
+      overdue: 0,
+      dayEndsAt: expect.any(String),
       chapters: [
         {
           trackId: "dsa",
@@ -281,7 +283,7 @@ describe.skipIf(!url)("recall routes against Postgres", () => {
     });
   });
 
-  it("counts learned cards, tomorrow's cards, and cards to ask again", async () => {
+  it("counts learned, tomorrow's, overdue, and missed cards", async () => {
     const me = await person();
     const api = await signedIn([me]);
     await api.inject({
@@ -324,6 +326,15 @@ describe.skipIf(!url)("recall routes against Postgres", () => {
     const today = await dueNow();
     expect(today.chapters[0].learned).toBe(2);
     expect(today.dueTomorrow).toBe(0);
+    // The missed card is due, but not from before today
+    expect(today.overdue).toBe(0);
+    expect(today.dayEndsAt).toBe("2026-11-20T09:00:00.000Z");
+
+    // A day later the missed card is overdue, and today ends at 4 a.m. Toronto time
+    clock = new Date(NINE_AM.getTime() + DAY);
+    const nextDay = await dueNow();
+    expect(nextDay.overdue).toBe(1);
+    expect(nextDay.dayEndsAt).toBe("2026-11-21T09:00:00.000Z");
 
     // From the day before it's due, the graduated card counts for tomorrow
     const due = new Date(graduated.dueAt);
@@ -540,8 +551,9 @@ describe.skipIf(!url)("recall routes against Postgres", () => {
     const changed = body.cards.find(
       (c: { cardId: string }) => c.cardId === "array-operation-costs",
     );
+    const before = cards.find((card) => card.id === "array-operation-costs");
     expect(changed).toMatchObject({
-      version: 2,
+      version: (before?.version ?? 0) + 1,
       isNew: false,
       dueAt: new Date(NINE_AM.getTime() + MINUTE).toISOString(),
     });

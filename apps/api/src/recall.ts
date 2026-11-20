@@ -186,6 +186,7 @@ export async function registerRecallRoutes(
       }
       const started = new Set<string>();
       let dueTomorrow = 0;
+      let overdue = 0;
       for (const { trackId, chapterId, card } of cards) {
         const key = chapterKey(trackId, chapterId);
         const count = counts.get(key);
@@ -194,7 +195,10 @@ export async function registerRecallRoutes(
         if (isLearned(card)) count.learned += 1;
         const due = card.dueAt.getTime();
         if (card.scheduleStatus === "new") count.new += 1;
-        else if (due <= now.getTime()) count.due += 1;
+        else if (due <= now.getTime()) {
+          count.due += 1;
+          if (due < day.start.getTime()) overdue += 1;
+        }
         if (
           card.scheduleStatus !== "new" &&
           due >= tomorrow.getTime() &&
@@ -206,6 +210,8 @@ export async function registerRecallRoutes(
       return {
         newLeftToday: day.newLeft,
         dueTomorrow,
+        overdue,
+        dayEndsAt: tomorrow.toISOString(),
         chapters: [...counts]
           .filter(([key]) => started.has(key))
           .map(([, count]) => count),
