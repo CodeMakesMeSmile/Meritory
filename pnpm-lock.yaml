@@ -301,6 +301,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@meritory/content':
+        specifier: workspace:*
+        version: link:../../packages/content
       '@meritory/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts

@@ -24,6 +24,7 @@ export default defineConfig({
       "apps/web/*.test.ts",
       "apps/web/lib/**/*.test.ts",
       "apps/web/app/**/*.test.tsx",
+      "apps/web/components/**/*.test.tsx",
       "apps/mobile/lib/**/*.test.ts",
       "tools/**/*.test.ts",
     ],
