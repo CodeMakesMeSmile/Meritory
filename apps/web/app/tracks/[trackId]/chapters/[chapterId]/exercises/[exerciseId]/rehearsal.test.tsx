@@ -96,7 +96,7 @@ describe("rehearsal stages", () => {
       T0 + 13 * MINUTE + 18_000,
     );
     expect(html).toContain('role="timer"');
-    expect(html).toContain("31:42");
+    expect(html).toMatch(/role="timer">.*31:42.*> left</);
     expect(html).toContain("Finish early");
     expect(html).toContain("Queue the sync jobs");
     expect(textarea(html)).not.toContain("readOnly");

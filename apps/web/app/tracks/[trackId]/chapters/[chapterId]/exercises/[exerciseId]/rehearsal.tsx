@@ -291,10 +291,10 @@ export function RehearsalStage(props: StageProps) {
             {heading}
           </h2>
           {(stage === "running" || (stage === "locked" && outOfTime)) && (
-            <p role="timer" className="flex items-baseline gap-2">
+            <p role="timer">
               <span className="font-mono text-body">{clock(left)}</span>
               {stage === "running" && (
-                <span className="text-small text-secondary">left</span>
+                <span className="text-small text-secondary"> left</span>
               )}
             </p>
           )}
