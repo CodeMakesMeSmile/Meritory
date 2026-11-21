@@ -1,0 +1,10 @@
+id: ownership-story
+kind: design
+title: A problem you owned end to end
+difficulty: medium
+skills:
+  - structure-star
+  - choose-stories
+  - story-bank
+sibling: customer-story
+rubric: story-review

@@ -1,0 +1,77 @@
+{
+  "card/bank-steps": [
+    "a3abf2a43a741973c0ffa55ee68bc7053598a977cacaa1add10a2d0207408cee"
+  ],
+  "card/pitch-order": [
+    "5c1b8e5212af6ad0b71a6958dcb1348d1c9cb623582c11e15862eb4888c31d04"
+  ],
+  "card/question-reveals": [
+    "38f175ca43913c8ccb1006090f4c263170cf512b3fb5904e9566e20634b003dc"
+  ],
+  "card/research-where": [
+    "abff3b65c8ba7f354e7d908fab619ca1c5925b2b0add1098a6a44a58693b01d0"
+  ],
+  "card/star-order": [
+    "cc91d7c672ac01b67a041ea86d7f3c1c0f5f9ecc84a4120d2dfd46808de261dc"
+  ],
+  "card/star-part-match": [
+    "a242246e4d95368a2fdfc67649265e2ad024b0928d04486e591ca89dd4f61947"
+  ],
+  "card/strongest-conflict-story": [
+    "170ea7fd4b851a51f72f0ae0da118955b43ac4aac3457cce235af69458133c3c"
+  ],
+  "card/theme-match": [
+    "38c256054e07d1b9d00decbd62da005d454630daf95d237399c343a9c87de380"
+  ],
+  "card/when-add-reflection": [
+    "cbeddb56a9df8e7382ed6b21acce6ada26d1f3ab078daf95761c70c13f7f54a5"
+  ],
+  "card/when-customer-story": [
+    "97f75de7190145924752d0515361a8121e35f6f527732d0170b0c58087f2c02b"
+  ],
+  "card/when-reuse-story": [
+    "53034f8558fec95774d919a712096e84e4eb9b1ae57b0d9447abaf0b8e09dca3"
+  ],
+  "card/when-social-event": [
+    "8794d92a2a0794dd567f328248bc636f19e2bba6a6fd6ca63ae1ccce3379e4d7"
+  ],
+  "card/when-thirty-second": [
+    "369fa9032801a7e5fa3ff56fb6cc580a36fc520c239f0881968cc9ca1952a000"
+  ],
+  "card/why-actions-most-time": [
+    "21cd822428225a0b7bbb96be95006fd7865860858be888c4136a6a88909989d2"
+  ],
+  "card/why-ask-questions": [
+    "a268e9d807c981d6b9e302213a0c8eda6c79863bfaa4c7a6cfe9edcd64cfb032"
+  ],
+  "card/why-few-stories": [
+    "15bc0bc9f15a505060580f8f3d46ff8633b90b27de69f686876860689d2e9fc7"
+  ],
+  "card/why-i-not-we": [
+    "115806cfebc3946706c2511cb1f6c77458ef270f314b6cd686f72d50116bf8f6"
+  ],
+  "card/why-no-history-lesson": [
+    "413ed4c21b512d15a2b7b443806fe61ce5bea79018447beb1124276001522f1a"
+  ],
+  "card/why-ownership-goes-past-fix": [
+    "e7101615b3a321907d484291ebb519094fce8d0985da14cde4096a8acd89735f"
+  ],
+  "card/why-real-failure": [
+    "3a44b7e45eb110133fa61919bea473ec21010b8a8b84ee863d98923d62c1e178"
+  ],
+  "card/why-specific-research": [
+    "759d2fddcc146aa82ffd33a0be46b58b61046e558dced2922bba44d2bb86b8b8"
+  ],
+  "chapter/star-stories": [
+    "81cd76e4f8c2bcaa0c5f3683de9fd21d8fece80d0f7d126622e3b6cb8017b2db"
+  ],
+  "exercise/customer-story": [
+    "23d455fcd104637e1f8b911b57a357bff97e33c7757f9a0580617f7da4ff2cd3"
+  ],
+  "exercise/ownership-story": [
+    "4d9f55dc35e82748f70d960975edf9fbe3f5d05c0ca57f796b8745f7b4435594"
+  ],
+  "rubric/story-review": [
+    "b1940deae697dcdb237105d70ecd6dbb885e7f6ff281fcd30b6af0d2ee29e21d"
+  ]
+}

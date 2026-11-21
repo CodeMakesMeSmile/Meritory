@@ -1,0 +1,16 @@
+id: star-stories
+title: Stories with STAR
+order: 1
+skills:
+  - id: structure-star
+    name: Structure a story with STAR
+  - id: choose-stories
+    name: Choose a story for a common theme
+  - id: story-bank
+    name: Build a story bank that reuses one story for several themes
+  - id: short-pitch
+    name: Give a short pitch about yourself
+  - id: why-company
+    name: Answer "why this company" from real research
+  - id: ask-questions
+    name: Ask good questions of the team
