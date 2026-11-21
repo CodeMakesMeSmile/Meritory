@@ -94,3 +94,67 @@ export function tomorrowLine(dueTomorrow: number, newWaiting: boolean) {
   ].filter(Boolean);
   return parts.length > 0 ? `Tomorrow: ${parts.join(" and ")}` : null;
 }
+
+// Copied so the page doesn't bundle the schema library. A test keeps them equal.
+export const UNDO_ERRORS = {
+  notLatest: "not_latest_review",
+  undoExpired: "undo_expired",
+} as const;
+
+/** Why an Undo didn't happen, or null when trying again could still work */
+export function undoKeptText(
+  code: string | undefined,
+  rating: RecallRating,
+): string | null {
+  if (code === UNDO_ERRORS.notLatest) {
+    return "That card was rated again on another device, so this rating stays.";
+  }
+  if (code === UNDO_ERRORS.undoExpired) {
+    return `Undo has run out for that card, so it stays as ${RATING_LABELS[rating]}.`;
+  }
+  return null;
+}
+
+export const UNDO_OFFLINE =
+  "Undo didn't reach us. Check your connection, then try again.";
+
+/** The line above the next card after a free-answer rating, at that card's place */
+export type UndoLine =
+  | {
+      kind: "offer";
+      id: string;
+      rating: RecallRating;
+      at: number;
+      busy: boolean;
+      offline: boolean;
+    }
+  | { kind: "kept"; text: string; at: number };
+
+export type UndoOffer = Extract<UndoLine, { kind: "offer" }>;
+
+/** Offers Undo after a free-answer rating, since only those are tapped */
+export function lineAfterSave(
+  items: readonly SittingCard[],
+  card: SessionCard,
+  id: string,
+  rating: RecallRating,
+): UndoLine | null {
+  const at = items.findIndex((item) => item.session === card);
+  if (items[at]?.card.type !== "prompt") return null;
+  return { kind: "offer", id, rating, at, busy: false, offline: false };
+}
+
+/** A refused Undo keeps the rating, and one that didn't arrive can be tried again */
+export function lineAfterFailedUndo(
+  line: UndoOffer,
+  code: string | undefined,
+): UndoLine {
+  const kept = undoKeptText(code, line.rating);
+  return kept
+    ? { kind: "kept", text: kept, at: line.at }
+    : { ...line, busy: false, offline: true };
+}
+
+/** The line shows on the card right after the rated one, or on the done screen */
+export const showsUndo = (line: UndoLine | null, index: number) =>
+  line !== null && index === line.at + 1;
