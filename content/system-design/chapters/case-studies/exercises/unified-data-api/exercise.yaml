@@ -1,0 +1,14 @@
+id: unified-data-api
+kind: design
+title: A unified API over hundreds of data providers
+difficulty: hard
+skills:
+  - run-a-case
+  - build-connectors
+  - schedule-syncs
+  - normalize-data
+  - track-health
+  - deliver-to-customers
+  - isolate-tenants
+sibling: webhook-delivery-service
+rubric: design-review

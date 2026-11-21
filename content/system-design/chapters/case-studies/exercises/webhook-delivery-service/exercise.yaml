@@ -1,0 +1,11 @@
+id: webhook-delivery-service
+kind: design
+title: A webhook delivery service for many customers
+difficulty: medium
+skills:
+  - run-a-case
+  - fan-out-webhooks
+  - track-health
+  - isolate-tenants
+sibling: unified-data-api
+rubric: design-review

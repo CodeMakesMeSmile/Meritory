@@ -1,0 +1,20 @@
+id: case-studies
+title: Case studies
+order: 10
+skills:
+  - id: run-a-case
+    name: Run a 45-minute design case from prompt to wrap-up
+  - id: build-connectors
+    name: Design a connector framework for many providers
+  - id: schedule-syncs
+    name: Schedule syncs, on-demand refreshes, and backfills
+  - id: normalize-data
+    name: Normalize to a common model while keeping raw payloads
+  - id: track-health
+    name: Track the health of connections, endpoints, and providers
+  - id: deliver-to-customers
+    name: Deliver data by API, webhooks, and bulk export
+  - id: isolate-tenants
+    name: Keep tenants isolated and capacity fair
+  - id: fan-out-webhooks
+    name: Fan out webhooks with per-endpoint queues and backoff
