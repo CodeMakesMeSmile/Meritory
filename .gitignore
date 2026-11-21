@@ -35,3 +35,6 @@ apps/mobile/expo-env.d.ts
 
 # Course Resources
 /content/resources
+
+# Private tracks that only load on this machine
+/content/private-*/
