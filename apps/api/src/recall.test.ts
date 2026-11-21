@@ -671,7 +671,13 @@ describe.skipIf(!url)("recall routes against Postgres", () => {
       const notReal = await put("2026-02-30");
       expect(notReal.statusCode).toBe(400);
       expect(notReal.json().code).toBe("not_a_date");
-      for (const bad of ["tomorrow", "2026-12-14T00:00", 20261214, {}]) {
+      for (const bad of [
+        "tomorrow",
+        "2026-12-14T00:00",
+        20261214,
+        {},
+        ...SQL_ATTACKS,
+      ]) {
         expect((await put(bad)).statusCode).toBe(400);
       }
       expect((await get()).date).toBeNull();
