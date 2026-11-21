@@ -1,0 +1,390 @@
+- id: case-time-plan
+  skill: run-a-case
+  asks: what
+  type: ordering
+  prompt: Put the parts of a 45-minute integration platform case in order.
+  reworded: In what order should you spend the 45 minutes of a design case about syncing data from many providers?
+  steps:
+    - Ask how providers deliver data, how fresh it must be, and what must never happen.
+    - Estimate records per day, sync jobs per second, and provider calls per second.
+    - List the core entities and the calls customers make.
+    - Draw one record's path from the provider to the customer, end to end.
+    - Add the control plane for connections, schedules, and health.
+    - Go deep on rate limits, failure handling, and correctness under retries.
+    - Sum up trade-offs, failure modes, and next steps.
+  lesson:
+    title: One record end to end, then harden it
+    explanation: Getting a single record from provider to customer proves the design works. Everything after that is about keeping it working when providers, tenants, and your own code misbehave.
+    source:
+      url: https://www.hellointerview.com/learn/system-design/in-a-hurry/delivery
+      title: System Design Delivery Framework
+- id: when-behind-on-time
+  skill: run-a-case
+  asks: when
+  type: pick-one
+  prompt: Twenty-five minutes in, you've covered only half the requirements in your design. What should you do?
+  reworded: Halfway through a case with only part of the design drawn, how do you recover?
+  options:
+    - text: Finish one core path well, describe the rest in a sentence each, and move to deep dives on the riskiest part
+      correct: true
+      reason: Depth on the hard part earns more signal than a wide design with nothing explained.
+    - text: Speed up and add every remaining component without explaining them
+      reason: Boxes without reasons don't show judgement, and you'll have no time for deep dives.
+    - text: Go back and redo the requirements more carefully
+      reason: That spends the time you need for a working design.
+    - text: Skip the wrap-up so you can keep drawing
+      reason: The wrap-up is short and shows you can judge your own design.
+  lesson:
+    title: Cut breadth, not depth
+    explanation: Interviewers would rather see one provider type handled well and the rest sketched than a long feature list with no reasoning behind it.
+- id: why-say-hardest-part
+  skill: run-a-case
+  asks: why
+  type: prompt
+  prompt: Why is it worth saying the hardest requirement out loud before you start drawing?
+  reworded: What does naming the hardest part of the problem early do for your interview?
+  points:
+    - It shows you know where the real difficulty is, which is a strong senior signal.
+    - It gives you and the interviewer a shared target for the deep dives.
+    - It helps you decide what to keep simple and where to spend time.
+    - For integration platforms it's usually unreliable, rate-limited providers plus freshness and isolation.
+  lesson:
+    title: Point at the hard part first
+    explanation: A design is judged by how it handles its hardest requirement. Naming it early keeps the whole session aimed at it.
+- id: why-connector-runtime-split
+  skill: build-connectors
+  asks: why
+  type: prompt
+  prompt: With 300 providers, why split each integration into a small connector plus a shared runtime, and what goes in each?
+  reworded: In a platform with hundreds of provider integrations, what belongs in each provider's connector and what belongs in shared code?
+  points:
+    - The connector holds what varies, like auth style, REST or SOAP calls, pagination, rate limits, and mapping.
+    - The runtime holds what doesn't, like scheduling, retries, rate limiting, credential storage, raw capture, metrics, and health.
+    - Fixing a retry or rate-limit bug in the runtime fixes it for every provider at once.
+    - Much of a connector can be configuration, with code hooks only for quirks.
+  lesson:
+    title: Vary the edges, share the core
+    explanation: Hand-writing a full service per provider multiplies every bug by 300. A fixed connector interface over a shared runtime keeps each integration small and the hard parts in one place.
+- id: connector-rollout-steps
+  skill: build-connectors
+  asks: what
+  type: ordering
+  prompt: Put the steps for shipping a new version of a provider connector in order.
+  reworded: In what order should a changed connector reach production?
+  steps:
+    - Test it against recorded responses from the provider.
+    - Deploy it as a new version alongside the current one.
+    - Route a small share of connections to the new version.
+    - Watch error rates and data issues for those connections.
+    - Widen the rollout, or roll back automatically if errors rise.
+  lesson:
+    title: Canary every connector change
+    explanation: Provider APIs are full of surprises that tests miss. Sending a few connections first limits the damage of a bad mapping or a missed quirk.
+- id: when-provider-changes-shape
+  skill: build-connectors
+  asks: when
+  type: pick-one
+  prompt: A provider starts returning a field under a new name without warning. What should the platform do when it sees responses that don't match the expected shape?
+  reworded: How should a sync pipeline react when a provider's response no longer matches what the connector expects?
+  options:
+    - text: Keep the raw page, raise a data issue for the affected connections, and alert the connector's owner
+      correct: true
+      reason: Nothing is lost, customers see an honest status, and the fix can replay the stored raw pages.
+    - text: Retry the request until the old field comes back
+      reason: The change is permanent. Retrying wastes rate limit and hides the problem.
+    - text: Mark every affected connection as disconnected
+      reason: The credentials still work. Disconnected tells customers to reconnect, which won't help.
+    - text: Drop the records that don't match
+      reason: That's silent data loss, the outcome the design must avoid.
+  lesson:
+    title: Drift is a data issue, not a retry
+    explanation: Detecting unknown or missing fields quickly, keeping the raw data, and routing the problem to the right owner turns a silent failure into a short replay.
+- id: sync-kinds
+  skill: schedule-syncs
+  asks: what
+  type: matching
+  prompt: Match each kind of sync work to how the platform should run it.
+  reworded: How should each of these kinds of sync be queued and run?
+  matchHeading: How it runs
+  matchName: a way to run it
+  pairs:
+    - item: A routine sync every 15 minutes
+      match: Normal lane, with start times spread by jitter
+    - item: A customer asking for fresh data now
+      match: High-priority lane, skipped if one is already queued
+    - item: Two years of history for a new connection
+      match: Low-priority lane, in time chunks that can resume
+  extraMatches:
+    - Run inline in the customer's API request
+  lesson:
+    title: Same workers, different lanes
+    explanation: Scheduled, on-demand, and backfill work share workers but not priority. Separate lanes keep big history loads from hurting everyone's freshness.
+- id: why-backfill-lane
+  skill: schedule-syncs
+  asks: why
+  type: prompt
+  prompt: Why do backfills get their own low-priority lane and a capped share of each provider's rate limit?
+  reworded: What would go wrong if backfills shared the same queue and rate limits as routine syncs?
+  points:
+    - A large customer's history load could use most of a provider's rate limit.
+    - Routine syncs for every other customer would fall behind their freshness targets.
+    - A capped share, like 20 percent of a provider's tokens, keeps backfills moving without hurting others.
+    - Chunking by time lets a backfill pause during provider incidents and resume where it stopped.
+  lesson:
+    title: History can wait a little, freshness can't
+    explanation: Backfills are big and patient. Routine syncs are small and time-sensitive. Giving them separate lanes and budgets protects the work customers notice first.
+- id: when-workflow-backfill
+  skill: schedule-syncs
+  asks: when
+  type: pick-one
+  prompt: Why might a backfill run as a durable workflow while routine syncs stay as plain queue jobs?
+  reworded: When is a workflow engine worth it for sync work, and when is a queue enough?
+  options:
+    - text: A backfill has many chunks, runs for hours or days, and must resume after failures, while a routine sync is one short step
+      correct: true
+      reason: Durable workflows save progress per step. Single short jobs only need a queue and a dead-letter queue.
+    - text: Workflow engines are faster than queues
+      reason: They aren't chosen for speed. They hold state across many steps.
+    - text: Routine syncs can't fail
+      reason: They fail often, and the queue's retries and dead-letter queue handle that.
+    - text: Queues can't hold backfill jobs
+      reason: They can, but tracking progress across hundreds of chunks would have to be built by hand.
+  lesson:
+    title: Match the tool to the shape of the work
+    explanation: Long, multi-step, resumable work fits Temporal or Step Functions Standard, which can run up to a year. Independent short jobs fit SQS with a dead-letter queue.
+    source:
+      url: https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html
+      title: What is Step Functions?
+- id: why-keep-raw
+  skill: normalize-data
+  asks: why
+  type: prompt
+  prompt: Why write every raw provider response to object storage before normalizing it?
+  reworded: What does keeping each provider's original response give an integration platform?
+  points:
+    - After a mapping bug, you can replay raw pages through the fixed mapping instead of calling hundreds of providers again.
+    - You can debug a customer complaint by seeing exactly what the provider sent.
+    - Customers who need a field your model lacks can get it from the raw data.
+    - Object storage makes keeping it cheap, with a retention policy to limit cost.
+  lesson:
+    title: Raw data turns bugs into replays
+    explanation: Providers are slow, rate-limited, and sometimes can't return history at all. A stored copy of what they sent is the cheapest way to fix your own mistakes.
+- id: mapping-bug-replay
+  skill: normalize-data
+  asks: what
+  type: ordering
+  prompt: A mapping bug shipped a week ago. Put the steps for fixing the affected data in order.
+  reworded: In what order do you repair normalized records after finding a bug in a provider mapping?
+  steps:
+    - Find the affected connections and dates from the mapping version stored on each record.
+    - Fix the mapping and ship it as a new version.
+    - Re-publish the affected raw pages from object storage.
+    - Let the normalizers upsert corrected records, keeping the higher version.
+    - Emit change events so customers see the corrected data.
+  lesson:
+    title: Version mappings, replay raw, upsert
+    explanation: Recording which mapping produced each record tells you what to replay. Idempotent upserts make the replay safe to run more than once.
+- id: health-states
+  skill: track-health
+  asks: what
+  type: matching
+  prompt: Match each cause to the connection state it should produce.
+  reworded: Which connection state fits each of these problems?
+  matchHeading: State
+  matchName: a state
+  pairs:
+    - item: The end user revoked access at the provider
+      match: Disconnected, the customer must reconnect
+    - item: The provider returns 503 on every call for an hour
+      match: Sync failing, the platform keeps retrying
+    - item: Records arrive with a required field missing
+      match: Data issue, routed to whoever owns the cause
+    - item: Syncs succeed on schedule
+      match: Healthy
+  extraMatches:
+    - Deleted
+  lesson:
+    title: Different causes, different owners
+    explanation: A single error flag hides who needs to act. Separate states tell the customer when they must do something and tell your team when the problem is yours.
+- id: why-dedupe-issues
+  skill: track-health
+  asks: why
+  type: pick-one
+  prompt: Why store connection problems as deduplicated issue codes, with first seen, last seen, and a count?
+  reworded: What's the benefit of keeping one open issue per connection and code instead of logging every failure?
+  options:
+    - text: A connection that fails every 15 minutes would otherwise flood dashboards and alerts with the same problem
+      correct: true
+      reason: One open issue with a count shows how long and how often, without the noise.
+    - text: Issue codes use less storage than log lines
+      reason: Storage is a minor benefit. Readable status and meaningful alerts are the point.
+    - text: Customers can only see one issue at a time
+      reason: A connection can have several open issues with different codes.
+    - text: It lets the platform skip retries
+      reason: Retries are decided by the error type, not by how issues are stored.
+  lesson:
+    title: Signal, not noise
+    explanation: Repeated failures of the same kind are one problem. Deduplicating by connection and code keeps alerts actionable and lets status change events fire only when something new happens.
+- id: when-provider-incident
+  skill: track-health
+  asks: when
+  type: prompt
+  prompt: When should the platform treat failures as a provider outage instead of many separate connection problems, and what changes when it does?
+  reworded: How do you tell a provider-wide outage apart from individual broken connections, and how should the system respond?
+  points:
+    - When one provider's error rate jumps across many connections at the same time.
+    - Open a provider incident, slow its retries with a retry budget, and pause backfills to it.
+    - Keep connections in sync failing, not disconnected, and suppress per-connection alerts.
+    - Show the incident on a status page, and let normal syncs with the trailing window catch up after recovery.
+  lesson:
+    title: Look across connections
+    explanation: A single failing connection is usually that connection's problem. Hundreds failing at once at one provider is the provider's problem, and treating it as one incident avoids alert storms and wrong advice to customers.
+- id: why-one-change-stream
+  skill: deliver-to-customers
+  asks: why
+  type: pick-one
+  prompt: Why should the API, webhooks, and bulk exports all be fed from one change stream of the normalized store?
+  reworded: What's gained by building every delivery channel on the same stream of record changes?
+  options:
+    - text: Every channel then sees the same changes in the same order per record, so they stay consistent with each other
+      correct: true
+      reason: One source, produced through an outbox or change data capture, avoids channels that disagree.
+    - text: Change streams are cheaper than databases
+      reason: The API still reads the store. The point is consistency across channels.
+    - text: Customers must use all three channels
+      reason: Most use one or two. Consistency matters for whichever they pick.
+    - text: Webhooks can't be sent without Kafka
+      reason: They can, but separate pipelines would drift apart.
+  lesson:
+    title: One truth, many doors
+    explanation: If a webhook says a record changed, the API and the next export must agree. Feeding all of them from the same stream makes that true by construction.
+- id: why-poll-with-provider-webhooks
+  skill: deliver-to-customers
+  asks: why
+  type: pick-one
+  prompt: A provider offers webhooks for data changes. Why keep scheduled polling for its connections anyway?
+  reworded: If a provider can push changes to you, what's the reason to still sync on a schedule?
+  options:
+    - text: Provider webhooks get lost or delayed, so polling is the safety net that catches what they miss
+      correct: true
+      reason: Use the webhook to trigger a sync sooner, and keep the schedule for completeness.
+    - text: Webhooks from providers are always slower than polling
+      reason: They're usually faster. They just aren't guaranteed.
+    - text: Polling uses no rate limit
+      reason: Polling spends rate limit, which is why the interval can be longer when webhooks work.
+    - text: Customers can't receive data that came from a webhook
+      reason: Data is normalized the same way whichever way it arrived.
+  lesson:
+    title: Push for speed, poll for safety
+    explanation: Treat a provider's webhook as a hint to sync now. The schedule plus the trailing window guarantees that a dropped webhook only delays data instead of losing it.
+- id: when-big-tenant-arrives
+  skill: isolate-tenants
+  asks: when
+  type: pick-one
+  prompt: One customer adds 50,000 connections to the same provider in an hour. What keeps other customers' syncs to that provider fresh?
+  reworded: How does the platform stay fair when one tenant suddenly floods a provider with new connections?
+  options:
+    - text: Backfills go to the low-priority lane, and the scheduler shares each provider's rate limit round-robin across tenants
+      correct: true
+      reason: The big tenant still makes progress, but only with its fair share of the provider's capacity.
+    - text: Add more sync workers
+      reason: The provider's rate limit, not worker count, is the bottleneck.
+    - text: Reject the new connections
+      reason: Customers expect growth to work. Fair scheduling absorbs it.
+    - text: Raise the provider's rate limit
+      reason: That's the provider's decision, not yours.
+  lesson:
+    title: Fairness is per shared resource
+    explanation: Each provider's rate limit is a shared resource across all tenants. Scheduling by tenant within it stops one customer's growth from becoming everyone's delay.
+- id: why-tenant-in-every-key
+  skill: isolate-tenants
+  asks: why
+  type: prompt
+  prompt: What should a multi-tenant integration platform do to keep each tenant's data isolated, and why is each step needed?
+  reworded: How do you make sure one customer can never see another customer's synced data?
+  points:
+    - Derive the tenant from the API credential, because anything in the request can be forged.
+    - Put the tenant id in every key, query, and log line, so no access path forgets it.
+    - Store provider credentials encrypted, readable only by the sync runtime.
+    - Test cross-tenant access on purpose and audit reads, because isolation bugs are silent.
+    - Use separate cells for the largest tenants to limit the blast radius of incidents.
+  lesson:
+    title: Isolation is designed in, not added
+    explanation: Data leaks between tenants usually come from one query that forgot the tenant filter. Making the tenant part of every key makes forgetting it hard.
+- id: why-per-endpoint-queues
+  skill: fan-out-webhooks
+  asks: why
+  type: prompt
+  prompt: In a webhook delivery service, why queue deliveries per endpoint instead of in one shared queue?
+  reworded: What goes wrong if all webhook deliveries for all customers share a single queue and worker pool?
+  points:
+    - A slow or dead endpoint would tie up workers and delay deliveries to healthy endpoints.
+    - Per-endpoint queues, often virtual ones in a table, let each endpoint back up only its own work.
+    - A concurrency cap per endpoint stops one endpoint from holding many workers.
+    - Endpoints that keep timing out can move to a separate slow lane.
+  lesson:
+    title: Contain the blast radius per endpoint
+    explanation: Customer endpoints fail in every way imaginable. Isolating them from each other keeps one customer's outage from becoming everyone's delay.
+    source:
+      url: https://github.com/standard-webhooks/standard-webhooks/blob/main/spec/standard-webhooks.md
+      title: Standard Webhooks specification
+- id: slow-endpoint-math
+  skill: fan-out-webhooks
+  asks: what
+  type: pick-one
+  prompt: A sender makes 9,000 deliveries a second, and 1 percent go to endpoints that hang until a 20-second timeout. About how many extra requests are in flight because of them?
+  reworded: If 90 deliveries a second each wait 20 seconds for a timeout, how many requests are open at once just for those?
+  options:
+    - text: About 1,800
+      correct: true
+      reason: In flight equals rate times duration, so 90 per second times 20 seconds is 1,800.
+    - text: About 90
+      reason: That's the rate. Each of those requests stays open for 20 seconds.
+    - text: About 180,000
+      reason: That multiplies the full 9,000 by 20. Only 1 percent are slow.
+    - text: About 20
+      reason: That's the timeout in seconds, not a count of requests.
+  lesson:
+    title: Rate times time in flight
+    explanation: A tiny share of slow endpoints can nearly double open connections. That estimate is what justifies a slow lane and per-endpoint caps.
+- id: why-ordered-endpoints-cost
+  skill: fan-out-webhooks
+  asks: why
+  type: pick-one
+  prompt: Why is per-endpoint ordered delivery offered only as an opt-in?
+  reworded: What does a customer give up by asking for their webhooks in strict order?
+  options:
+    - text: Only one delivery can be in flight, so a single failing event blocks everything behind it until it succeeds or gives up
+      correct: true
+      reason: That head-of-line blocking can delay an endpoint for days during a retry schedule.
+    - text: Ordered delivery can't be signed
+      reason: Signing works the same either way.
+    - text: Ordered delivery sends every event twice
+      reason: It sends each event once per attempt, like unordered delivery.
+    - text: Ordered endpoints can't be replayed
+      reason: Replay still works, in order.
+  lesson:
+    title: Order costs throughput and resilience
+    explanation: Most customers do better with unordered delivery plus versions in each payload. Those who truly need order should know that one bad event holds up the rest.
+- id: why-replay-same-id
+  skill: fan-out-webhooks
+  asks: why
+  type: pick-one
+  prompt: When a customer replays webhooks for a time range, why should each replayed delivery keep the original event id?
+  reworded: Why shouldn't a webhook replay create new event ids?
+  options:
+    - text: The customer's handler dedupes by event id, so events it already processed are skipped safely
+      correct: true
+      reason: Same id means a replay can't double-apply anything the handler already handled.
+    - text: New ids would break the signature
+      reason: Signatures are computed per delivery either way.
+    - text: Event ids can't be generated twice
+      reason: They can, but that would defeat the customer's idempotency.
+    - text: Replays don't need ids at all
+      reason: Every delivery needs an id for deduplication.
+  lesson:
+    title: Replays rely on idempotent handlers
+    explanation: The event id stays the same across retries and replays, which is exactly what lets customers use it as an idempotency key.
+    source:
+      url: https://github.com/standard-webhooks/standard-webhooks/blob/main/spec/standard-webhooks.md
+      title: Standard Webhooks specification

@@ -1,0 +1,467 @@
+- id: status-code-meanings
+  skill: model-resources
+  asks: what
+  type: matching
+  prompt: Match each HTTP status code to what it tells an API client.
+  reworded: What should a client understand from each of these status codes?
+  matchHeading: Meaning
+  matchName: a meaning
+  pairs:
+    - item: "401"
+      match: No valid credentials were sent
+    - item: "403"
+      match: Valid credentials, but not allowed to do this
+    - item: "409"
+      match: The request conflicts with current state
+    - item: "429"
+      match: Too many requests, so slow down and retry later
+    - item: "503"
+      match: Server-side trouble that may pass, so retry with backoff
+  extraMatches:
+    - The request is malformed and will never succeed
+  lesson:
+    title: Status codes drive client behavior
+    explanation: SDKs, proxies, and retry logic all read the status code. Using each one for its standard meaning lets generic tools do the right thing, like retrying a 503 but not a 403.
+- id: problem-details-members
+  skill: model-resources
+  asks: what
+  type: matching
+  prompt: Match each member of an RFC 9457 problem details object to its job.
+  reworded: What is each field of a problem details error body for?
+  matchHeading: Job
+  matchName: a job
+  pairs:
+    - item: type
+      match: A URI naming the kind of problem, which clients branch on
+    - item: title
+      match: A short summary that stays the same for every occurrence of that type
+    - item: detail
+      match: An explanation of this occurrence that helps the client fix it
+    - item: instance
+      match: An identifier for this specific occurrence
+    - item: An extension member like balance
+      match: Extra machine-readable data for this problem type
+  extraMatches:
+    - A stack trace for debugging
+  lesson:
+    title: A standard error body
+    explanation: RFC 9457 defines application/problem+json so APIs don't each invent an error format. A missing type means about:blank, a problem with no meaning beyond the status code.
+    source:
+      url: https://www.rfc-editor.org/rfc/rfc9457
+      title: RFC 9457, Problem Details for HTTP APIs
+- id: why-branch-on-type
+  skill: model-resources
+  asks: why
+  type: pick-one
+  prompt: Why should clients branch on a problem's type URI and extension members rather than parse its detail string?
+  reworded: In an RFC 9457 error, why is reading the detail text a fragile way for code to decide what to do?
+  options:
+    - text: Detail is human-readable text about one occurrence and can change or be translated, while type is the stable identifier
+      correct: true
+      reason: The spec says consumers shouldn't parse detail and should use type as the primary identifier.
+    - text: Detail is always empty
+      reason: It's optional, but often present. It's meant for people, not code.
+    - text: Type is shorter, so it's faster to compare
+      reason: Speed isn't the reason. Stability is.
+    - text: Detail contains the stack trace
+      reason: It shouldn't. Error bodies must not leak implementation details.
+  lesson:
+    title: Code reads type, people read detail
+    explanation: Wording changes break string matching. A stable type URI, plus extension members for data like ids, gives clients something reliable to act on.
+    source:
+      url: https://www.rfc-editor.org/rfc/rfc9457
+      title: RFC 9457, Problem Details for HTTP APIs
+- id: why-cursor-pagination
+  skill: paginate-with-cursors
+  asks: why
+  type: prompt
+  prompt: Why do large, changing lists read by machines usually use cursor pagination instead of offsets?
+  reworded: What goes wrong with offset pagination on a big list that changes while clients page through it?
+  points:
+    - With offsets, rows added or removed during paging shift items between pages, so clients skip some and see others twice.
+    - Deep offsets are slow, because the database still walks past every skipped row.
+    - A cursor marks a position in a stable sort, so the next page is "rows after this point," which an index finds quickly at any depth.
+    - Changes elsewhere in the list don't move the cursor's position.
+  misconception: That cursors are only about speed.
+  lesson:
+    title: A cursor is a bookmark, not a count
+    explanation: An offset says "skip 200 rows," which means something different once rows change. A cursor says "continue after this row," which stays true.
+    source:
+      url: https://docs.stripe.com/api/pagination
+      title: Pagination, Stripe API Reference
+- id: why-cursor-tie-breaker
+  skill: paginate-with-cursors
+  asks: why
+  type: pick-one
+  prompt: A list is sorted by created_at. Why should the cursor also include the record id?
+  reworded: What problem does adding the id to a timestamp-based cursor solve?
+  options:
+    - text: Several records can share a timestamp, and without a tie-breaker some of them fall between pages
+      correct: true
+      reason: Sorting by (created_at, id) gives every record a unique position, so "after this position" is exact.
+    - text: Ids are shorter than timestamps
+      reason: Length isn't the issue. Uniqueness is.
+    - text: The id lets the client jump to any page
+      reason: Cursors don't support jumping. They continue from a position.
+    - text: Timestamps can't be stored in a cursor
+      reason: They can. They just aren't unique on their own.
+  lesson:
+    title: Positions must be unique
+    explanation: A cursor needs a total order. When the sort key can repeat, add a unique column, usually the id, so every row has exactly one place.
+    fix: Encode (created_at, id) in an opaque cursor and query for rows after that pair.
+- id: why-trailing-window
+  skill: sync-incrementally
+  asks: why
+  type: prompt
+  prompt: Why does an incremental sync re-query a trailing window before its checkpoint, and what makes that safe?
+  reworded: Why start each modified-after sync a little before the last checkpoint, and what keeps the overlap from creating duplicates?
+  points:
+    - Records can become visible after the checkpoint moved past their updated time, through replica lag, late commits, late uploads, or clock skew.
+    - Starting from the checkpoint minus an overlap catches those late records.
+    - Writes are idempotent upserts keyed by the source's record id, keeping the higher version, so re-reading costs only some repeat reads.
+    - The overlap size comes from how late that source's data tends to arrive.
+  misconception: That a modified-after filter alone never misses records.
+  lesson:
+    title: Overlap plus upserts
+    explanation: A checkpoint that jumps to the newest timestamp seen loses anything that shows up late with an older timestamp. Re-reading a window and upserting makes the sync both complete and duplicate-free.
+- id: sync-run-steps
+  skill: sync-incrementally
+  asks: what
+  type: ordering
+  prompt: Put the steps of one incremental sync run in order.
+  reworded: In what order does a modified-after sync run do its work?
+  steps:
+    - Load the saved checkpoint for this connection.
+    - Subtract the overlap window to get the start time.
+    - Fetch a page of records updated after the start time.
+    - Upsert the page and note the newest updated time seen.
+    - Repeat with the next cursor until there are no more pages.
+    - Save the newest updated time as the new checkpoint.
+  lesson:
+    title: Move the checkpoint last
+    explanation: The checkpoint only advances once every page is written. A run that dies halfway leaves the old checkpoint, so the next run redoes the work safely.
+- id: when-save-checkpoint
+  skill: sync-incrementally
+  asks: when
+  type: pick-one
+  prompt: When should a sync worker save its new checkpoint?
+  reworded: At what point in a sync run is it safe to move the checkpoint forward?
+  options:
+    - text: After every page in the run has been written durably
+      correct: true
+      reason: If the run fails earlier, the old checkpoint makes the next run start over safely.
+    - text: Before fetching the first page, so a crash doesn't repeat work
+      reason: A crash would then skip the whole window, and those records would be lost.
+    - text: After each page is fetched, before it's written
+      reason: A crash between fetch and write would skip that page forever.
+    - text: Only once a day, at midnight
+      reason: The timing doesn't matter as much as saving after the writes succeed.
+  lesson:
+    title: Never move the bookmark past unwritten data
+    explanation: Repeating work is cheap when writes are idempotent. Skipping work is permanent. Save the checkpoint only when everything before it is safely stored.
+- id: sync-and-deletes
+  skill: sync-incrementally
+  asks: why
+  type: pick-one
+  prompt: Why can't a modified-after sync on its own find records that were deleted at the source?
+  reworded: What does a sync based on updated-after timestamps miss, and why?
+  options:
+    - text: Deleted records no longer exist to be returned, so the query never mentions them
+      correct: true
+      reason: You need tombstones, a deleted-events feed, or a periodic full comparison of ids.
+    - text: Deleted records have a very old updated time
+      reason: They don't have any time at all in the results, because they're gone.
+    - text: The cursor skips them
+      reason: The cursor never sees them. They aren't in the result set.
+    - text: Deletes are always returned as errors
+      reason: A list query doesn't report what's missing.
+  lesson:
+    title: Absence is invisible
+    explanation: A query can only return what exists. Catch deletes with tombstones or a deleted-events feed from the source, or reconcile ids on a schedule and mark missing ones as deleted.
+- id: webhook-verify-steps
+  skill: design-webhooks
+  asks: what
+  type: ordering
+  prompt: Put the steps for receiving a signed webhook in order.
+  reworded: In what order should a webhook receiver handle an incoming delivery?
+  steps:
+    - Read the raw request body before any parsing.
+    - Check that the timestamp header is within the allowed tolerance.
+    - Compute the HMAC over the id, timestamp, and raw body with the endpoint's secret.
+    - Compare it with each signature in the header in constant time.
+    - Skip the event if its id was already processed.
+    - Queue the event for processing and return a 2xx quickly.
+  lesson:
+    title: Verify, dedupe, queue, acknowledge
+    explanation: Signing covers the id, timestamp, and exact body. Checking the timestamp blocks replays, the event id catches duplicates, and quick acknowledgement avoids timeouts that cause retries.
+    source:
+      url: https://github.com/standard-webhooks/standard-webhooks/blob/main/spec/standard-webhooks.md
+      title: Standard Webhooks specification
+- id: why-signed-timestamp
+  skill: design-webhooks
+  asks: why
+  type: pick-one
+  prompt: Why does a webhook signature cover a timestamp, and why is the receiver told to reject old timestamps?
+  reworded: What attack does including and checking a timestamp in a webhook signature prevent?
+  options:
+    - text: It stops an attacker from replaying a captured, validly signed request later
+      correct: true
+      reason: The timestamp is signed, so it can't be changed, and a stale one gets rejected.
+    - text: It tells the receiver the order events happened in
+      reason: Webhook order isn't guaranteed, and the attempt timestamp changes on every retry.
+    - text: It makes the HMAC faster to compute
+      reason: It adds a few bytes. Speed isn't the point.
+    - text: It lets the receiver skip signature checks for recent events
+      reason: Every delivery must be verified.
+  lesson:
+    title: Signed time limits replay
+    explanation: A valid signature proves the content came from the sender, but not when. Signing the timestamp and allowing only a few minutes of drift, often five, closes the replay window. A tolerance of zero turns the check off.
+    source:
+      url: https://docs.stripe.com/webhooks
+      title: Receive Stripe events in your webhook endpoint
+- id: why-raw-body
+  skill: design-webhooks
+  asks: why
+  type: pick-one
+  prompt: Why must a webhook receiver verify the signature against the raw request body?
+  reworded: What breaks if a framework parses the webhook JSON before the signature is checked?
+  options:
+    - text: Parsing and re-serializing can change bytes, like spacing or key order, so the signature no longer matches
+      correct: true
+      reason: HMAC is sensitive to every byte, so it must run over exactly what was sent.
+    - text: Parsed JSON can't be hashed
+      reason: It can be, but the result won't match the sender's bytes.
+    - text: The raw body is encrypted
+      reason: Signing doesn't encrypt. HTTPS does that.
+    - text: The signature is inside the JSON
+      reason: It's in a header, and it covers the raw body.
+  lesson:
+    title: Sign bytes, verify bytes
+    explanation: The sender signed the exact bytes it sent. Any change, even whitespace, gives a different HMAC. Read the raw body first, verify, then parse.
+    source:
+      url: https://docs.stripe.com/webhooks
+      title: Receive Stripe events in your webhook endpoint
+- id: webhook-duplicates-order
+  skill: design-webhooks
+  asks: why
+  type: prompt
+  prompt: Why must webhook handlers cope with duplicate and out-of-order events, and how should they do it?
+  reworded: What makes webhook events arrive twice or in the wrong order, and what should a handler do about each?
+  points:
+    - Retries after a timeout can deliver an event the handler already processed.
+    - Each event has an id that stays the same across retries, so record processed ids and skip repeats.
+    - Retries and parallel delivery mean a later event can arrive before an earlier one.
+    - Don't rely on order. Compare a version or updated time, or fetch current state from the API.
+  lesson:
+    title: At least once, in no particular order
+    explanation: Senders retry until they see a 2xx, and they don't promise order. Handlers that dedupe by event id and check versions stay correct either way.
+    source:
+      url: https://docs.stripe.com/webhooks
+      title: Receive Stripe events in your webhook endpoint
+- id: when-thin-payload
+  skill: design-webhooks
+  asks: when
+  type: pick-one
+  prompt: When is a thin webhook payload, with only the event type and ids, the better choice?
+  reworded: In which situation should webhooks carry ids only, and let customers fetch the rest?
+  options:
+    - text: When events can arrive out of order and access to the data should be authorized and audited
+      correct: true
+      reason: Fetching gives the current state, and every read goes through the API's access controls.
+    - text: When customers can't make API calls back to you
+      reason: Then they need the full data in the payload.
+    - text: When each event must be fully self-contained for offline storage
+      reason: That calls for a fat payload.
+    - text: When payloads must be as large as possible
+      reason: Small payloads are usually better, often well under 20 KB.
+  lesson:
+    title: Thin events, fresh reads
+    explanation: Thin payloads cost an extra call per event, but they never carry stale data, keep payloads small, and are easier to evolve. Fat payloads save the call but send data to every endpoint.
+    source:
+      url: https://github.com/standard-webhooks/standard-webhooks/blob/main/spec/standard-webhooks.md
+      title: Standard Webhooks specification
+- id: when-disable-endpoint
+  skill: design-webhooks
+  asks: when
+  type: prompt
+  prompt: When should a webhook sender stop delivering to a customer's endpoint, and what should it do around that?
+  reworded: How should a webhook service handle an endpoint that keeps failing?
+  points:
+    - Retry with exponential backoff and jitter over a schedule that spans days.
+    - After failures persist for a long time, disable the endpoint and notify the customer by another channel, like email.
+    - Treat 410 Gone as the customer asking to stop right away.
+    - Keep the undelivered events and offer replay of one event or a time range once the endpoint is fixed.
+  lesson:
+    title: Stop politely, keep the data
+    explanation: Endless retries to a dead endpoint waste capacity. Disabling it, telling the customer, and keeping events for replay protects both sides.
+    source:
+      url: https://github.com/standard-webhooks/standard-webhooks/blob/main/spec/standard-webhooks.md
+      title: Standard Webhooks specification
+- id: token-bucket-behavior
+  skill: apply-rate-limits
+  asks: what
+  type: pick-one
+  prompt: A tenant's token bucket holds up to 100 tokens and refills at 10 per second. What does that allow?
+  reworded: With a bucket size of 100 and a refill rate of 10 per second, how can a client send requests?
+  options:
+    - text: A burst of up to 100 requests, then about 10 per second on average
+      correct: true
+      reason: The bucket size sets the burst, and the refill rate sets the long-run average.
+    - text: Exactly 10 requests in every one-second window, never more
+      reason: That's a fixed window. A token bucket allows bursts up to its size.
+    - text: 100 requests per second forever
+      reason: Only until the bucket empties. After that, the refill rate limits it.
+    - text: 110 requests per second
+      reason: Size and rate don't add up that way.
+  lesson:
+    title: Size for bursts, rate for average
+    explanation: Each request takes a token, and tokens refill steadily up to the maximum. Idle clients save up a burst, and busy clients settle to the refill rate.
+- id: why-per-tenant-limits
+  skill: apply-rate-limits
+  asks: why
+  type: prompt
+  prompt: Why should a multi-tenant API limit requests per tenant, and often per endpoint, instead of only globally?
+  reworded: What goes wrong if a multi-tenant API has only one global rate limit?
+  points:
+    - One tenant's burst, like a large backfill, could use up the shared capacity and slow everyone else.
+    - Per-tenant buckets give each customer a fair share.
+    - Expensive endpoints, like lists and exports, need lower limits or a cap on requests in flight.
+    - Counters live in a shared fast store, like Redis, so every server enforces the same limits.
+  lesson:
+    title: Fairness needs a key
+    explanation: A global limit protects the service but not the customers from each other. Keying limits by tenant, and by endpoint for heavy calls, keeps one customer's spike from becoming everyone's outage.
+- id: when-provider-429
+  skill: apply-rate-limits
+  asks: when
+  type: pick-one
+  prompt: Your sync worker gets a 429 from a provider with a Retry-After header. What should it do?
+  reworded: How should a client react when a third-party API returns 429 and says when to retry?
+  options:
+    - text: Wait at least the Retry-After time, add jitter, and lower its own rate with a client-side token bucket for that provider
+      correct: true
+      reason: Respecting the header avoids more 429s, and the bucket stops the worker from hitting the limit again.
+    - text: Retry immediately, since 429 errors are brief
+      reason: Immediate retries add load and usually earn more 429s.
+    - text: Mark the connection as broken and stop syncing
+      reason: A 429 is temporary throttling, not a broken connection.
+    - text: Switch to another customer's credentials for that provider
+      reason: That breaks tenant isolation and the provider's terms.
+  lesson:
+    title: Their limits are your design constraints
+    explanation: Back off with jitter on 429, and control your own rate so you rarely hit it. A provider's limit often decides how fast a backfill can possibly run.
+    source:
+      url: https://docs.stripe.com/rate-limits
+      title: Rate limits, Stripe Documentation
+- id: why-not-hash-body-key
+  skill: idempotent-posts
+  asks: why
+  type: pick-one
+  prompt: Why should the client generate a random idempotency key instead of the server deriving one from a hash of the request body?
+  reworded: What's wrong with treating two POST requests with identical bodies as duplicates?
+  options:
+    - text: Two identical requests can be two intentional actions, like two equal payments, so only the client can say which requests are repeats
+      correct: true
+      reason: A caller-chosen key states intent. A body hash guesses at it.
+    - text: Hashing is too slow for an API
+      reason: Hashing is cheap. The problem is meaning, not speed.
+    - text: Request bodies are never identical
+      reason: They often are, which is exactly the risk.
+    - text: Hashes can't be stored in a database
+      reason: They can. They just can't tell repeats from new requests.
+  lesson:
+    title: Intent comes from the caller
+    explanation: A random key, like a V4 UUID reused on every retry, marks one logical request. The server stores it with the parameters and response, and errors if the same key arrives with a different body.
+    source:
+      url: https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/
+      title: Making retries safe with idempotent APIs
+- id: concurrent-idempotent-repeat
+  skill: idempotent-posts
+  asks: what
+  type: pick-one
+  prompt: A POST with an idempotency key is still running when a retry with the same key arrives. What's a sensible response to the retry?
+  reworded: How should an API answer a duplicate request whose original, with the same key, hasn't finished yet?
+  options:
+    - text: 409 Conflict, so the client can retry shortly and then get the saved result
+      correct: true
+      reason: Running both would risk doing the work twice, and there's no saved result to return yet.
+    - text: Run it too, since the first might fail
+      reason: Then both could succeed and the change happens twice.
+    - text: 200 with an empty body
+      reason: That tells the client it worked without saying what happened.
+    - text: 400 Bad Request
+      reason: Nothing is wrong with the request. It just conflicts with one in progress.
+  lesson:
+    title: One in flight per key
+    explanation: The idempotency layer lets one request per key run at a time. A concurrent repeat is told to come back, and once the first finishes, repeats get its saved response.
+    source:
+      url: https://docs.stripe.com/api/idempotent_requests
+      title: Idempotent requests, Stripe API Reference
+- id: why-handle-unknown-enums
+  skill: version-apis
+  asks: why
+  type: prompt
+  prompt: Why should an API tell clients to ignore unknown fields and handle unknown enum values, and which changes stay safe because of it?
+  reworded: What does asking clients to tolerate unknown fields and enum values let an API change without a new version?
+  points:
+    - Strict clients break when a response gains a field or an enum gains a value.
+    - If clients tolerate unknowns, adding response fields and open enum values is backwards compatible.
+    - Adding endpoints, optional request fields, and event types also stays safe.
+    - Removing or renaming fields, changing types, or adding required fields still needs a new version.
+  lesson:
+    title: Compatibility is a two-way contract
+    explanation: An API can only grow without versions if clients expect growth. Documenting open enums and the ignore-unknown rule turns many changes into safe ones.
+    source:
+      url: https://docs.stripe.com/api/pagination
+      title: Stripe API Reference, Versioning and Enums sections
+- id: retire-version-steps
+  skill: version-apis
+  asks: what
+  type: ordering
+  prompt: Put the steps for retiring an old API version in order.
+  reworded: In what order should you move customers off an API version you want to turn off?
+  steps:
+    - Publish the new version and a migration guide.
+    - Announce a deprecation date for the old version.
+    - Measure which customers still call the old version.
+    - Reach out and help those customers move.
+    - Turn off the old version after the published date.
+  lesson:
+    title: Measure before you remove
+    explanation: Usage data tells you who would break. Pinning each account to a version and giving a published window lets customers move on their own schedule.
+- id: which-server-auth
+  skill: authenticate-servers
+  asks: when
+  type: matching
+  prompt: Match each situation to the authentication approach that fits it best.
+  reworded: Which way of authenticating suits each of these server-to-server cases?
+  matchHeading: Approach
+  matchName: an approach
+  pairs:
+    - item: A customer's backend calls your API for its own account
+      match: A scoped API key kept in a secrets store
+    - item: A service needs short-lived tokens with no user involved
+      match: OAuth 2.0 client credentials
+    - item: Calls act for one end customer's linked account
+      match: A token scoped to that one connection
+  extraMatches:
+    - A browser session cookie
+  lesson:
+    title: Scope the credential to the job
+    explanation: API keys are simple for one account. Client credentials trade a secret for short-lived tokens with no refresh token. Per-connection tokens limit a leak to one connection.
+    source:
+      url: https://oauth.net/2/grant-types/client-credentials/
+      title: Client Credentials Grant, OAuth 2.0
+- id: why-tenant-from-credential
+  skill: authenticate-servers
+  asks: why
+  type: prompt
+  prompt: In a multi-tenant API, why must the tenant come from the credential, and what else should every request check?
+  reworded: How should a multi-tenant API decide which tenant a request belongs to, and what must it verify before returning data?
+  points:
+    - A tenant id in the path or body is input the caller controls and could name someone else.
+    - The verified credential is the only trustworthy source of the tenant and connection.
+    - Every request must check that the resource belongs to that tenant.
+    - Returning 404 for other tenants' resources avoids confirming that they exist.
+  lesson:
+    title: Authorization on every read
+    explanation: Most cross-tenant leaks come from trusting an id the caller sent. Derive the tenant from the credential and scope every query by it.

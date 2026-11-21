@@ -1,0 +1,507 @@
+- id: why-jitter
+  skill: retry-safely
+  asks: why
+  type: pick-one
+  prompt: Why add jitter to exponential backoff?
+  reworded: What problem does randomizing the wait between retries solve?
+  options:
+    - text: Clients that failed together would otherwise retry together, recreating the spike
+      correct: true
+      reason: Random waits spread the retries over time, so the load arrives at a steady rate instead of in bursts.
+    - text: It makes each retry more likely to succeed on its own
+      reason: A single retry's odds don't change. Jitter helps by spreading the load from many clients.
+    - text: It lets the client skip the backoff when the server is healthy
+      reason: Jitter doesn't detect health. It randomizes the wait within the backoff ceiling.
+    - text: It guarantees the server sees each request only once
+      reason: That's what idempotency is for. Jitter is about timing.
+  misconception: That backoff alone spreads retries out.
+  lesson:
+    title: Backoff without jitter still clusters
+    explanation: When many clients back off by the same schedule, their retries line up in waves with quiet gaps between. Full jitter, a random wait between zero and the current ceiling, removes the waves and cuts the total number of calls.
+    fix: Sleep for a random time between 0 and min(cap, base x 2 to the power of the attempt).
+    source:
+      url: https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/
+      title: Exponential Backoff and Jitter
+- id: which-errors-to-retry
+  skill: retry-safely
+  asks: when
+  type: matching
+  prompt: Match each failure to how a client should respond.
+  reworded: How should a client handle each of these failed calls?
+  matchHeading: Response
+  matchName: a response
+  pairs:
+    - item: 503 Service Unavailable on a read
+      match: Retry with capped backoff and jitter
+    - item: 400 Bad Request
+      match: Fix the request and don't retry it
+    - item: 429 Too Many Requests with a Retry-After of 30 seconds
+      match: Wait at least as long as Retry-After says
+    - item: A timeout on a create call that has no idempotency key
+      match: Check whether it happened before trying again
+  extraMatches:
+    - Retry right away in a tight loop
+  lesson:
+    title: Retry only what might succeed
+    explanation: Server errors and throttling are often temporary. Client errors will fail the same way again. A timeout on an unsafe write is ambiguous, because the work may already be done.
+    source:
+      url: https://builder.aws.com/content/3EumjoZascWd1oZiEgL8ORlv3qE/timeouts-retries-and-backoff-with-jitter
+      title: Timeouts, retries, and backoff with jitter
+- id: why-timeouts
+  skill: retry-safely
+  asks: why
+  type: prompt
+  prompt: Why does every remote call need a timeout, and how would you pick its value?
+  reworded: What goes wrong without timeouts on remote calls, and what's a sensible way to choose one?
+  points:
+    - A call that never returns holds a connection, thread, or invocation, and enough of them exhaust the caller.
+    - Too long a timeout wastes resources while waiting. Too short a one times out normal calls and adds retry load.
+    - Start from the dependency's latency at a high percentile, like p99.9, for about one false timeout in a thousand.
+    - Add room for network delay on calls over the internet, like those to outside providers.
+  lesson:
+    title: Waiting forever is a failure mode
+    explanation: Slow dependencies often show up as calls that hang rather than fail. A timeout turns a hang into an error you can handle, and choosing it from real latency data keeps false timeouts rare.
+    source:
+      url: https://builder.aws.com/content/3EumjoZascWd1oZiEgL8ORlv3qE/timeouts-retries-and-backoff-with-jitter
+      title: Timeouts, retries, and backoff with jitter
+- id: retry-amplification
+  skill: limit-retry-load
+  asks: what
+  type: pick-one
+  prompt: A request passes through five layers of services, and each layer tries every failing call three times. How many calls can reach the database for one request when it starts failing?
+  reworded: Five service layers each make up to three attempts. How much can retries multiply the load on the bottom layer?
+  options:
+    - text: "243"
+      correct: true
+      reason: Three attempts at each of five layers multiply to 3 to the fifth power.
+    - text: "15"
+      reason: That adds the attempts. Retries at each layer multiply, because each attempt above triggers a full set below.
+    - text: "3"
+      reason: That's true only if just one layer retries.
+    - text: "125"
+      reason: That's 5 to the third power. The base is the attempts per layer, 3, raised to the number of layers, 5.
+  lesson:
+    title: Retries multiply across layers
+    explanation: Each attempt at one layer causes a full round of attempts at the layer below. That's why the usual rule is to retry at a single point in the stack and let other layers fail fast.
+    fix: Pick one layer to own retries, usually near the top, and have the others pass errors up.
+    source:
+      url: https://builder.aws.com/content/3EumjoZascWd1oZiEgL8ORlv3qE/timeouts-retries-and-backoff-with-jitter
+      title: Timeouts, retries, and backoff with jitter
+- id: when-retry-budget
+  skill: limit-retry-load
+  asks: when
+  type: prompt
+  prompt: How does a token-bucket retry budget behave when failures are rare, and when a dependency is badly down? Why is that better than unlimited retries?
+  reworded: Describe what a retry budget does during normal operation and during a big outage.
+  points:
+    - Each retry spends a token, and tokens refill at a slow, fixed rate.
+    - When failures are rare, there are always tokens, so every failure gets retried.
+    - During a big outage the bucket empties, and retries drop to the refill rate instead of multiplying traffic.
+    - Keeping one budget per dependency, like per provider, stops one bad provider from using everyone's retries.
+  misconception: That a circuit breaker is the only way to stop retry storms.
+  lesson:
+    title: Retry freely until it stops helping
+    explanation: A retry budget keeps the benefit of retries for random failures and caps their cost during overload. It avoids the hard on or off switch of a circuit breaker, which can be hard to test and slow to recover.
+    source:
+      url: https://builder.aws.com/content/3EumjoZascWd1oZiEgL8ORlv3qE/timeouts-retries-and-backoff-with-jitter
+      title: Timeouts, retries, and backoff with jitter
+- id: idempotency-key-flow
+  skill: idempotent-consumers
+  asks: what
+  type: ordering
+  prompt: Put the steps of handling a POST with an idempotency key in order.
+  reworded: In what order does a server process a request that carries an idempotency key?
+  steps:
+    - The client makes a unique key for the logical request and sends it with every attempt.
+    - The server looks the key up for that caller.
+    - If the key is new, the server does the work and saves the key, the parameters, and the result in one transaction.
+    - On a retry with the same key and parameters, the server returns the saved result without redoing the work.
+  terms:
+    - term: Idempotency key
+      definition: A unique value, often a UUID, that marks repeats of the same request.
+  lesson:
+    title: The key marks one intent
+    explanation: The client decides what counts as the same request by reusing the key. The server's job is to recognise the repeat and give back an equivalent answer.
+    source:
+      url: https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/
+      title: Making retries safe with idempotent APIs
+- id: same-key-different-body
+  skill: idempotent-consumers
+  asks: what
+  type: pick-one
+  prompt: A request arrives with an idempotency key the server has seen before, but with different parameters. What should the server do?
+  reworded: How should an API respond when a known idempotency key comes back with a changed request body?
+  options:
+    - text: Reject it with an error, because the caller is asking for something different under the same key
+      correct: true
+      reason: Storing the original parameters with the key lets the server catch this misuse.
+    - text: Return the stored response from the first request
+      reason: That would silently ignore what the caller is now asking for.
+    - text: Process it as a new request
+      reason: Then the key no longer protects against duplicates.
+    - text: Overwrite the stored result with the new one
+      reason: That changes history and can repeat side effects.
+  lesson:
+    title: Same key, same request
+    explanation: An idempotency key promises that repeats are the same request. When the body changes, the safest reading is that the caller meant something else, so the server refuses instead of guessing.
+    source:
+      url: https://docs.stripe.com/api/idempotent_requests
+      title: Idempotent requests, Stripe API Reference
+- id: why-atomic-idempotency
+  skill: idempotent-consumers
+  asks: why
+  type: prompt
+  prompt: Why must saving the idempotency key and making the change happen in one atomic transaction?
+  reworded: What goes wrong if an idempotency key is recorded separately from the work it protects?
+  points:
+    - If the key is saved but the change fails, a retry sees the key and wrongly skips the work.
+    - If the change is made but the key isn't saved, a retry does the work a second time.
+    - One transaction means the key exists exactly when the change does.
+    - The same rule applies to consumers that record processed message ids.
+  lesson:
+    title: All or nothing
+    explanation: The idempotency record is only useful if it tells the truth about whether the work happened. Writing both in one transaction is what makes it true.
+    source:
+      url: https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/
+      title: Making retries safe with idempotent APIs
+- id: exactly-once-in-practice
+  skill: idempotent-consumers
+  asks: why
+  type: pick-one
+  prompt: A queue product advertises exactly-once processing. Why do you still need idempotent consumers?
+  reworded: If the broker promises exactly-once, what can still cause work to happen twice?
+  options:
+    - text: The guarantee covers the broker, not side effects like a consumer calling an outside API and crashing before it acknowledges
+      correct: true
+      reason: Any boundary that leaves the broker can still see the same work twice.
+    - text: Exactly-once guarantees are always false advertising
+      reason: They're real but narrow, like dropping duplicate sends in a window or atomic offset commits within Kafka.
+    - text: Idempotent consumers make the broker faster
+      reason: Speed isn't the point. Safety on redelivery is.
+    - text: You don't, because exactly-once removes all duplicates
+      reason: Redelivery after a crash still happens at the consumer's side effects.
+  lesson:
+    title: Exactly-once effect is at-least-once plus idempotency
+    explanation: SQS FIFO drops duplicate sends within five minutes, and Kafka transactions can commit offsets with output. Neither stops a consumer from repeating a call to a third party, so design every consumer to be safe to run twice.
+    source:
+      url: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues-exactly-once-processing.html
+      title: Exactly-once processing in Amazon SQS
+- id: visibility-timeout-expiry
+  skill: handle-failed-messages
+  asks: what
+  type: pick-one
+  prompt: An SQS consumer receives a message but doesn't delete it before the visibility timeout ends. What happens?
+  reworded: What becomes of an SQS message whose consumer runs past the visibility timeout without deleting it?
+  options:
+    - text: It becomes visible again, and the same or another consumer can receive it
+      correct: true
+      reason: That's how SQS avoids losing work, and why a slow consumer can cause duplicates.
+    - text: It moves straight to the dead-letter queue
+      reason: It only moves after maxReceiveCount receives, if a redrive policy is set.
+    - text: It's deleted automatically
+      reason: SQS never deletes an unprocessed message at timeout. It makes it visible again.
+    - text: It stays hidden until the consumer comes back
+      reason: The hold lasts only for the visibility timeout.
+  lesson:
+    title: Hidden, not removed
+    explanation: Receiving a message only hides it. The default hold is 30 seconds. Extend it with ChangeMessageVisibility while working, up to 12 hours from the first receive.
+    source:
+      url: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html
+      title: Amazon SQS visibility timeout
+- id: why-dead-letter-queue
+  skill: handle-failed-messages
+  asks: why
+  type: prompt
+  prompt: Why put a dead-letter queue behind a work queue, and why not set maxReceiveCount to 1?
+  reworded: What does a dead-letter queue protect against, and what's wrong with moving a message there after its first failure?
+  points:
+    - A poison message that can never succeed would otherwise cycle forever, wasting capacity.
+    - Moving it aside lets you inspect it, fix the cause, and redrive it later.
+    - A maxReceiveCount of 1 sends messages to the dead-letter queue after one brief failure, like a short provider outage.
+    - Set it high enough to ride out temporary failures, and alarm on anything that lands in the dead-letter queue.
+  lesson:
+    title: Isolate what can't succeed
+    explanation: The dead-letter queue separates permanent failures from temporary ones. maxReceiveCount is the dial between giving up too soon and retrying a broken message forever.
+    source:
+      url: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html
+      title: Using dead-letter queues in Amazon SQS
+- id: why-longer-dlq-retention
+  skill: handle-failed-messages
+  asks: why
+  type: pick-one
+  prompt: Why should a standard SQS dead-letter queue keep messages longer than its source queue does?
+  reworded: What can go wrong if a standard queue's dead-letter queue has the same or shorter retention as the source?
+  options:
+    - text: A message's expiry counts from when it was first sent, so time spent in the source queue is already used up
+      correct: true
+      reason: A message that spent a day in the source has a day less in the dead-letter queue.
+    - text: Dead-letter queues delete messages as soon as they arrive
+      reason: They keep messages for their retention period, counted from the original send.
+    - text: Longer retention makes redrive faster
+      reason: Retention doesn't affect redrive speed. It affects whether the message is still there.
+  lesson:
+    title: The clock doesn't restart
+    explanation: For standard queues, moving a message to the dead-letter queue keeps its original timestamp. With equal retention, a message could expire before anyone looks at it.
+    source:
+      url: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html
+      title: Using dead-letter queues in Amazon SQS
+- id: lambda-partial-batch
+  skill: handle-failed-messages
+  asks: what
+  type: pick-one
+  prompt: A Lambda function reads a batch of ten SQS messages, and one of them throws. Without partial batch responses, what happens?
+  reworded: What does Lambda do with a batch from SQS when one message fails and partial batch responses are off?
+  options:
+    - text: All ten messages become visible again, including the nine that succeeded
+      correct: true
+      reason: The whole batch counts as failed, so successful messages are processed again.
+    - text: Only the failed message returns to the queue
+      reason: That's the behavior you get after turning on ReportBatchItemFailures and returning the failed ids.
+    - text: The failed message goes straight to the dead-letter queue
+      reason: It only moves after reaching maxReceiveCount.
+    - text: Lambda drops the failed message
+      reason: For a function error, the batch returns to the queue after the visibility timeout.
+  lesson:
+    title: Report failures per message
+    explanation: Turn on ReportBatchItemFailures, catch errors per message, and return the failed message ids in batchItemFailures. An exception that escapes the handler still fails the whole batch.
+    fix: With a FIFO queue, stop at the first failure and return it plus every message after it.
+    source:
+      url: https://docs.aws.amazon.com/lambda/latest/dg/services-sqs-errorhandling.html
+      title: Handling errors for an SQS event source in Lambda
+- id: cost-of-ordering
+  skill: order-messages
+  asks: why
+  type: prompt
+  prompt: Why does strict ordering cost throughput, and how do you limit that cost?
+  reworded: What do you give up by requiring messages to be processed in order, and how can you keep the loss small?
+  points:
+    - Order means one message at a time per key, so a slow or failing message blocks everything behind it.
+    - Parallelism is capped by the number of message groups or partitions.
+    - A hot key, like one huge tenant, becomes a bottleneck that more consumers can't fix.
+    - Order only per entity, like per connection or record, not globally, to keep many keys running in parallel.
+  lesson:
+    title: Order is paid for in parallelism
+    explanation: Both SQS FIFO groups and Kafka partitions keep order by processing each key in sequence. The finer the key, the more work can run at once.
+    source:
+      url: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues-understanding-logic.html
+      title: FIFO queue delivery logic in Amazon SQS
+- id: ordering-tools
+  skill: order-messages
+  asks: what
+  type: matching
+  prompt: Match each tool to the ordering it gives you.
+  reworded: What ordering guarantee does each of these give?
+  matchHeading: Ordering
+  matchName: an ordering
+  pairs:
+    - item: SQS FIFO queue
+      match: In order within a message group id
+    - item: Kafka topic
+      match: In order within a partition
+    - item: SQS standard queue
+      match: No ordering guarantee
+    - item: Upserts that keep the higher version
+      match: Delivery order stops mattering
+  extraMatches:
+    - One global order across every message
+  lesson:
+    title: Order is always per key
+    explanation: Practical systems order within a group or a partition, never globally at scale. Versioned writes let you skip ordering by making older copies harmless.
+    source:
+      url: https://kafka.apache.org/intro
+      title: Introduction, Apache Kafka
+- id: when-skip-ordering
+  skill: order-messages
+  asks: when
+  type: pick-one
+  prompt: When can a consumer safely process updates to the same record out of order?
+  reworded: In what situation can you drop the requirement that updates arrive in order?
+  options:
+    - text: When each update carries a version or source timestamp, and the consumer ignores anything older than what it has
+      correct: true
+      reason: An older update arriving late changes nothing, so order no longer matters.
+    - text: When the queue is fast enough
+      reason: Speed doesn't prevent reordering under retries and parallel consumers.
+    - text: When there's only one consumer
+      reason: Retries and redelivery can still reorder messages.
+    - text: Never, updates must always be ordered
+      reason: Versioned writes are a common way to avoid paying for ordering.
+  lesson:
+    title: Turn ordering into idempotency
+    explanation: A conditional write, like updating only if the incoming version is newer, makes late or repeated messages harmless. That's usually cheaper than enforcing order.
+- id: why-outbox
+  skill: publish-reliably
+  asks: why
+  type: pick-one
+  prompt: A service updates its database and then publishes an event to a broker. Why is that unreliable, and what fixes it?
+  reworded: What's the risk of writing to the database and publishing an event as two separate steps?
+  options:
+    - text: A crash between the two leaves a change nobody hears about, so write the event to an outbox table in the same transaction and relay it later
+      correct: true
+      reason: The outbox makes the event exist if and only if the change commits.
+    - text: Brokers are slower than databases, so publish first
+      reason: Publishing first can announce a change that then rolls back.
+    - text: Use a longer timeout on the publish call
+      reason: A crash isn't a timeout. The gap between the two writes is the problem.
+    - text: Publish twice to be safe
+      reason: That creates duplicates and still doesn't cover a crash before publishing.
+  misconception: That retrying the publish is enough.
+  lesson:
+    title: One transaction, then relay
+    explanation: Two-phase commit across a database and a broker is usually unavailable or unwise. The outbox keeps one local transaction and moves publishing to a relay that reads the outbox.
+    source:
+      url: https://microservices.io/patterns/data/transactional-outbox.html
+      title: Pattern, Transactional outbox
+- id: outbox-steps
+  skill: publish-reliably
+  asks: what
+  type: ordering
+  prompt: Put the steps of the transactional outbox pattern in order.
+  reworded: In what order does an event travel through a transactional outbox?
+  steps:
+    - Start a database transaction.
+    - Make the business change.
+    - Insert the event into the outbox table.
+    - Commit the transaction.
+    - A relay reads new outbox rows, by polling or by tailing the change log, and publishes them.
+    - The relay marks the rows as sent.
+  terms:
+    - term: Message relay
+      definition: The process that moves events from the outbox to the broker.
+  lesson:
+    title: The relay may publish twice
+    explanation: If the relay crashes after publishing but before marking the row sent, it publishes again on restart. That's why consumers of outbox events must be idempotent.
+    source:
+      url: https://microservices.io/patterns/data/transactional-outbox.html
+      title: Pattern, Transactional outbox
+- id: saga-compensation
+  skill: coordinate-long-work
+  asks: why
+  type: prompt
+  prompt: Why is a saga's compensating transaction different from a database rollback, and how should you design compensations?
+  reworded: In a saga, what makes undoing a finished step harder than rolling back a transaction?
+  points:
+    - Each step already committed in its own service, so there's nothing to roll back automatically.
+    - Other work may have seen the intermediate state, because sagas lack isolation.
+    - Some actions can't be undone, like a sent email, so put irreversible steps last.
+    - Write compensations as new forward actions, like a refund or marking a record reverted.
+  lesson:
+    title: Undo by doing something new
+    explanation: A saga is a series of local transactions. When a later step fails, compensating transactions explicitly reverse the earlier ones, and the design has to cope with others seeing the in-between state.
+    source:
+      url: https://microservices.io/patterns/data/saga.html
+      title: Pattern, Saga
+- id: which-workflow-tool
+  skill: coordinate-long-work
+  asks: when
+  type: matching
+  prompt: Match each job to the tool that fits it best.
+  reworded: Which tool suits each of these kinds of work?
+  matchHeading: Tool
+  matchName: a tool
+  pairs:
+    - item: An independent single-step job per message
+      match: An SQS queue with a dead-letter queue
+    - item: A multi-step, auditable process of AWS calls that can take days
+      match: A Step Functions Standard workflow
+    - item: High-volume event processing that finishes in seconds
+      match: A Step Functions Express workflow
+    - item: Complex per-entity logic written as code that runs for months
+      match: A Temporal workflow
+  extraMatches:
+    - A cron job on one server
+  lesson:
+    title: Pick the lightest tool that holds the state
+    explanation: Standard workflows run up to a year with exactly-once steps. Express workflows run up to five minutes, at least once, at much higher rates. Temporal suits long, code-heavy workflows. Single-step jobs don't need a workflow at all.
+    source:
+      url: https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html
+      title: What is Step Functions?
+- id: why-temporal-determinism
+  skill: coordinate-long-work
+  asks: why
+  type: pick-one
+  prompt: Why must Temporal workflow code be deterministic?
+  reworded: What would break if a Temporal workflow read the clock or called an API directly?
+  options:
+    - text: After a crash, a worker replays the workflow against its event history to rebuild state, and replay must take the same path
+      correct: true
+      reason: Nondeterministic code could take a different branch on replay and no longer match the recorded history.
+    - text: Deterministic code runs faster on Temporal workers
+      reason: Speed isn't the reason. Correct replay is.
+    - text: Temporal can only run pure functions
+      reason: Side effects are fine, but they belong in activities, not in workflow code.
+    - text: It lets Temporal skip storing history
+      reason: The event history is what makes durable execution possible.
+  lesson:
+    title: Replay needs the same answers
+    explanation: Durable execution rebuilds a workflow by rerunning its code against the recorded events. Anything that touches the outside world goes in an activity, which has its own timeouts and retry policy.
+    source:
+      url: https://docs.temporal.io/evaluate/understanding-temporal
+      title: Understanding Temporal
+- id: bus-queue-or-log
+  skill: bus-or-log
+  asks: when
+  type: matching
+  prompt: Match each need to the messaging tool that fits it best.
+  reworded: Which of a queue, an event bus, or a log suits each of these needs?
+  matchHeading: Tool
+  matchName: a tool
+  pairs:
+    - item: Share sync jobs across a pool of workers
+      match: A queue like SQS
+    - item: Route events from many services to different targets by rules
+      match: An event bus like EventBridge
+    - item: Let several teams read a high-volume stream at their own pace and replay last week
+      match: A log like Kafka
+  extraMatches:
+    - A shared database table polled every second
+  lesson:
+    title: Work, routing, or history
+    explanation: A queue shares out work and deletes it when done. A bus routes events to matching targets. A log keeps events for its retention period so many readers can read, and reread, at their own pace.
+    source:
+      url: https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html
+      title: What Is Amazon EventBridge?
+- id: kafka-replay
+  skill: bus-or-log
+  asks: what
+  type: pick-one
+  prompt: A bug corrupted a store built from a Kafka topic over the last two days. How do you rebuild it?
+  reworded: How does Kafka let a consumer process the last two days of events again?
+  options:
+    - text: Fix the bug, stop the consumer group, reset its offsets to a point before the bug, and let it reprocess with idempotent writes
+      correct: true
+      reason: Events stay in the topic for its retention period, so moving the offset back replays them.
+    - text: Ask producers to send the events again
+      reason: There's no need. The log still holds them, as long as retention covers the window.
+    - text: Read them from the dead-letter queue
+      reason: Kafka topics don't delete consumed events, so the history is in the topic itself.
+    - text: It can't be done, because consumed events are deleted
+      reason: Unlike a queue, Kafka keeps events after they're read.
+  lesson:
+    title: The offset is just a bookmark
+    explanation: Each consumer group tracks its position per partition. Moving that position back replays history, which is why retention and idempotent consumers matter together.
+    source:
+      url: https://docs.confluent.io/platform/current/clients/consumer.html
+      title: Kafka Consumer for Confluent Platform
+- id: why-consumers-capped
+  skill: bus-or-log
+  asks: why
+  type: pick-one
+  prompt: Why doesn't adding a tenth consumer to a group reading a topic with eight partitions add throughput?
+  reworded: What limits how many consumers in one group can do useful work on a Kafka topic?
+  options:
+    - text: Each partition goes to one consumer in the group, so consumers beyond the partition count sit idle
+      correct: true
+      reason: The partition count caps a group's parallelism, so plan partitions for peak load.
+    - text: Kafka limits every group to eight consumers
+      reason: There's no such fixed limit. The cap comes from the partition count.
+    - text: Extra consumers duplicate every message
+      reason: Consumers in one group split partitions. They don't each get every message.
+    - text: The tenth consumer must wait for a rebalance that never ends
+      reason: It joins after a rebalance but gets no partition to read.
+  lesson:
+    title: Partitions set the ceiling
+    explanation: A consumer group should have no more consumers than partitions. To read faster, add partitions, and remember that changing the partition count moves which partition a key maps to.
+    source:
+      url: https://docs.confluent.io/platform/current/clients/consumer.html
+      title: Kafka Consumer for Confluent Platform

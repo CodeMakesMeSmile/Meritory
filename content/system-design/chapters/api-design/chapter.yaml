@@ -1,0 +1,20 @@
+id: api-design
+title: API design
+order: 8
+skills:
+  - id: model-resources
+    name: Model resources, status codes, and error bodies
+  - id: paginate-with-cursors
+    name: Page through results with cursors
+  - id: sync-incrementally
+    name: Sync incrementally and catch late-arriving data
+  - id: design-webhooks
+    name: Design webhooks that are signed, retried, and safe to repeat
+  - id: apply-rate-limits
+    name: Apply rate limits and respect other APIs' limits
+  - id: idempotent-posts
+    name: Make POST requests safe to retry
+  - id: version-apis
+    name: Change an API without breaking its clients
+  - id: authenticate-servers
+    name: Authenticate server-to-server calls
