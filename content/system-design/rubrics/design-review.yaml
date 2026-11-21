@@ -1,0 +1,54 @@
+id: design-review
+title: Design review
+criteria:
+  - id: requirements
+    name: Requirements
+    scoredBy: self
+    levels:
+      - Starts drawing without asking what the system must do or how big it is.
+      - Asks a few questions but misses a core feature, or never pins down a quality like latency, durability, or freshness.
+      - Agrees on a short list of core features and the qualities that matter, with numbers where they help.
+      - Does all of that, says what's out of scope, and names the requirement that will shape the design most.
+  - id: estimates
+    name: Scale and back-of-envelope estimates
+    scoredBy: self
+    levels:
+      - Skips scale entirely, or uses numbers that are off by orders of magnitude.
+      - Does arithmetic that doesn't feed any decision, or makes a slip that goes unnoticed.
+      - Estimates the numbers that matter, like peak requests per second and storage, closely enough to guide choices.
+      - Estimates only what changes the design, rounds sensibly, sanity-checks the result, and ties each number to a decision.
+  - id: high-level-design
+    name: High-level design
+    scoredBy: self
+    levels:
+      - Has no working design, or boxes with no clear flow of data between them.
+      - Covers some requirements, but a core flow is missing or hand-waved.
+      - Meets every core requirement, with a clear path from each request to storage and back.
+      - Keeps the design simple and complete, walks each API call through it, and puts the data model next to the stores that hold it.
+  - id: deep-dives
+    name: Deep dives
+    scoredBy: self
+    levels:
+      - Doesn't go deeper than the first sketch.
+      - Goes deeper only where the interviewer points, and the fixes stay vague.
+      - Picks one or two real weak spots, like a hot partition or a failing dependency, and fixes them soundly.
+      - Leads with the riskiest parts, ties each fix to a requirement, and covers failure, scale, and data correctness.
+  - id: trade-offs
+    name: Trade-offs
+    scoredBy: self
+    levels:
+      - Names no alternatives and no risks.
+      - Mentions an alternative without saying why it lost.
+      - Compares options on cost, latency, consistency, or complexity, and names at least one failure mode.
+      - Explains why each choice fits these requirements, what it gives up, how it fails, and what would change the decision.
+  - id: communication
+    name: Communication
+    scoredBy: self
+    levels:
+      - Works in silence, or talks past the interviewer's questions.
+      - Explains when asked, but loses the thread or runs out of time before a working design.
+      - Thinks aloud, checks in at each step, and keeps to time.
+      - Drives the session with a clear plan, invites questions, adapts to hints, and sums up the decisions at the end.
+pass:
+  total: 16
+  lowest: 2

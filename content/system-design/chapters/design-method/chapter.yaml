@@ -1,0 +1,16 @@
+id: design-method
+title: Interview method and estimates
+order: 1
+skills:
+  - id: clarify-requirements
+    name: Clarify functional and non-functional requirements
+  - id: estimate-scale
+    name: Estimate scale with back-of-envelope math
+  - id: define-api-and-data
+    name: Define the API and the core data model
+  - id: draw-high-level
+    name: Draw a high-level design that meets the requirements
+  - id: run-deep-dives
+    name: Pick and run deep dives
+  - id: wrap-up-trade-offs
+    name: Wrap up with trade-offs and failure modes

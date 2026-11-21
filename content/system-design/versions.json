@@ -1,0 +1,68 @@
+{
+  "card/bandwidth-from-volume": [
+    "5045bca2bdb78b8ac94a9e788a3c1ac11f613f9a6b0cd900e25060ab90e040ce"
+  ],
+  "card/deep-dive-pattern": [
+    "93b407081a303af145e8aa938e06c78b192fda9da4f99f7de45e9a8e976a6cb2"
+  ],
+  "card/deep-dive-sources": [
+    "bb41a0e97a407136950abc424234ac05e51659d07615b4b5c37f8893043d3207"
+  ],
+  "card/interview-step-order": [
+    "6ee07670a0be872383e5eae5d7c7675386b675fd100e9f303f5d8191f29b8402"
+  ],
+  "card/latency-numbers": [
+    "f5fc04dbd6179b58e2a22f4ceb56a5377ef055a00d5e95594678966d9d26a619"
+  ],
+  "card/per-day-to-per-second": [
+    "795eb0ff53cba9186d498b7445664f59cf9812c0b3fad63d8b9ddd8a64cd6eb8"
+  ],
+  "card/requirement-drives-design": [
+    "35f91882e265d3851e39c3bd247487adaebe775883059222646ad60fb2d3ffd7"
+  ],
+  "card/storage-estimate-steps": [
+    "c299cb7280433e222b6aa76233b5881a60f9394c91aa15aa8c666132673aac66"
+  ],
+  "card/strongest-trade-off": [
+    "2962855f3efd823fbc94383f15715404086a8ea2265e7ec749c17fbdb09fed68"
+  ],
+  "card/when-add-component": [
+    "81bb56acd9c2d669fd812b4616d67e0ab8bf113c56fd2fdaf52252875229a7ac"
+  ],
+  "card/when-ask-about-providers": [
+    "845765e5e5d8428a1b44e63f2cbcf871a92bea9d65592d48c7239d636ba9cbd7"
+  ],
+  "card/when-lead-deep-dives": [
+    "2ad1389710c0d3b4cd6777227143cf8e11d1090e1fa80326ddd5a300d4e2abb7"
+  ],
+  "card/when-to-estimate": [
+    "406f35d354a76859ee718016b5bc06403e327a343738143b4819f0d7be2da8ad"
+  ],
+  "card/when-which-delivery-style": [
+    "033c703bc9445cbcf43962b5e26c993a9aaf6938a0ac1e237978f1ea2fabd5c0"
+  ],
+  "card/why-api-before-boxes": [
+    "b185a1ef84e94698ea3c677a08f57540d50f6f3f24fbb3c170c24d854e149f15"
+  ],
+  "card/why-few-features": [
+    "58aea8cd01fd083fa7269fb4df20b08657938e04c358f78f2c28580440f3a423"
+  ],
+  "card/why-identity-from-token": [
+    "433b057039064b0c2c376820ffe33fef2f40bc7cbd400b6e1e3b2e7712cdf933"
+  ],
+  "card/why-name-failure-modes": [
+    "d3fd9ee525a40ac97f901438afcca730d2ad58529cf53a452ab090db6180f1dd"
+  ],
+  "card/why-quantify-nfrs": [
+    "27a60c469f64f5c423be6585cc411a7fd8d2b6426e032ebd9293ea26db711934"
+  ],
+  "card/why-simple-first": [
+    "341fc681211b75e08a9939951df2ed279b65b891d6e62687b65ed17067a9d9c4"
+  ],
+  "chapter/design-method": [
+    "e7046426247c9d266a9a80cf354779f3275ae164e267b6df9ed51d52479049da"
+  ],
+  "rubric/design-review": [
+    "e2969c7c8714d2b36cff6ef672620c7cf00099ad8b3fa2c203d30a707ba8b8c6"
+  ]
+}

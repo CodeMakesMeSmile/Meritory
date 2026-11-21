@@ -1,0 +1,376 @@
+- id: interview-step-order
+  skill: draw-high-level
+  asks: what
+  type: ordering
+  prompt: Put the steps of a 45-minute system design interview in order.
+  reworded: In what order should you work through a system design interview?
+  steps:
+    - Agree on the functional and non-functional requirements.
+    - Estimate the numbers that will change a decision.
+    - Write down the core entities and the API.
+    - Draw a simple design that meets every core requirement.
+    - Go deep on the riskiest parts of the design.
+    - Sum up the trade-offs and failure modes.
+  lesson:
+    title: Each step needs the one before it
+    explanation: You can't judge a design before you know what it's for, and you can't deepen a design that doesn't exist yet. The times bend to the question, but the order holds.
+    source:
+      url: https://www.hellointerview.com/learn/system-design/in-a-hurry/delivery
+      title: System Design Delivery Framework
+- id: why-quantify-nfrs
+  skill: clarify-requirements
+  asks: why
+  type: prompt
+  prompt: Why should a non-functional requirement be specific to the system and carry a number where it can?
+  reworded: What's wrong with a non-functional requirement like "the system should be fast"?
+  points:
+    - Every system wants to be fast, available, and secure, so a generic statement doesn't guide any choice.
+    - A number, like reads under 300 ms at p99, tells you which path needs the effort.
+    - Tying it to one part of the system shows where the hard problem is.
+    - Numbers give you something to check the design against in the deep dives.
+  misconception: That listing qualities like "scalable" and "reliable" is enough.
+  lesson:
+    title: Vague qualities don't shape a design
+    explanation: A requirement earns its place when it rules something in or out. "Search returns in under 500 ms" points at the search path. "Low latency" points nowhere.
+    fix: For each quality, ask which part of the system it applies to and what number would count as good enough.
+    source:
+      url: https://www.hellointerview.com/learn/system-design/in-a-hurry/delivery
+      title: System Design Delivery Framework
+- id: requirement-drives-design
+  skill: clarify-requirements
+  asks: what
+  type: matching
+  prompt: Match each requirement to the design choice it most directly leads to.
+  reworded: Which design choice does each of these requirements push you toward?
+  matchHeading: Design choice
+  matchName: a design choice
+  pairs:
+    - item: Customers can replay the last seven days of events
+      match: Keep events in a log with a retention period
+    - item: No record may be lost when a step fails after the provider call
+      match: Store the raw response durably before processing it
+    - item: One tenant's large backfill can't slow down other tenants
+      match: Separate queues or quotas per tenant
+    - item: Reads of current data in under 200 ms at p99
+      match: Serve reads from a store shaped for that query
+  extraMatches:
+    - Add a second region
+    - Rewrite the service in another language
+  lesson:
+    title: Requirements are where the design comes from
+    explanation: Each non-functional requirement should point at a specific mechanism. If a requirement doesn't change any box or arrow, it probably isn't specific enough yet.
+- id: why-few-features
+  skill: clarify-requirements
+  asks: why
+  type: pick-one
+  prompt: Why should you narrow the functional requirements to three or four core features?
+  reworded: What's the reason to keep the feature list short at the start of a design interview?
+  options:
+    - text: Every feature you accept costs design time, and the interviewer assesses whether you can focus on what matters
+      correct: true
+      reason: A short, agreed list leaves time to build a complete design and go deep on it.
+    - text: Interviewers only allow four features
+      reason: There's no fixed number. The point is prioritizing, not hitting a count.
+    - text: Non-functional requirements replace the rest
+      reason: Non-functional requirements describe qualities. They don't stand in for features.
+    - text: More features make the estimates too hard
+      reason: Estimates depend on scale, not on how many features there are.
+  lesson:
+    title: Focus is part of the score
+    explanation: Real products have hundreds of features. Picking the few that define the system, and saying what you're leaving out, is itself a signal of judgement.
+    source:
+      url: https://www.hellointerview.com/learn/system-design/in-a-hurry/delivery
+      title: System Design Delivery Framework
+- id: when-ask-about-providers
+  skill: clarify-requirements
+  asks: when
+  type: prompt
+  prompt: When the system depends on many outside data providers, what should you ask about them before designing, and why?
+  reworded: Before designing a system that pulls from third-party providers, which questions about those providers matter most?
+  points:
+    - How reliable they are, since frequent failures call for retries, backoff, and health tracking.
+    - Whether they push data to you or you must pull it, which decides between webhooks and scheduled syncs.
+    - Their rate limits, which cap how fast you can sync and may rule out a plan.
+    - How fresh the data must be, which sets how often you poll.
+    - Whether past data can be fetched again, which decides how much raw data you must keep.
+  lesson:
+    title: Outside systems shape the design
+    explanation: In an integration-heavy system, the providers' behavior constrains you more than any feature. Rate limits, outages, and push versus pull decide the core of the architecture.
+- id: per-day-to-per-second
+  skill: estimate-scale
+  asks: what
+  type: pick-one
+  prompt: About how many events per second, on average, is 100 million events per day?
+  reworded: If a system takes in 100 million events a day, what's the rough average rate per second?
+  options:
+    - text: About 1,200
+      correct: true
+      reason: A day has 86,400 seconds, close to 100,000, so 100 million divided by 100,000 is about 1,000, and the exact answer is near 1,160.
+    - text: About 120
+      reason: That would be 10 million a day. Check the powers of ten.
+    - text: About 12,000
+      reason: That would be about a billion a day.
+    - text: About 70,000
+      reason: That's 100 million divided by the minutes in a day, not the seconds.
+  lesson:
+    title: Round a day to 100,000 seconds
+    explanation: A day has 86,400 seconds. Rounding to 100,000 makes the math one shift of the decimal point, and the answer is close enough to guide a design.
+    fix: Divide the daily count by 100,000, then multiply by a peak factor of 2 to 10 for the rate you design for.
+- id: when-to-estimate
+  skill: estimate-scale
+  asks: when
+  type: pick-one
+  prompt: When is a back-of-envelope estimate worth the time in an interview?
+  reworded: Which situation calls for doing the math out loud?
+  options:
+    - text: When the number decides something, like whether the data fits on one machine or how many partitions you need
+      correct: true
+      reason: An estimate earns its time by changing or confirming a decision.
+    - text: Always at the start, before any design, for users, requests, and storage
+      reason: Computing numbers that lead nowhere spends time and shows only that you can multiply.
+    - text: Only when the interviewer asks for it
+      reason: Waiting can mean making a design choice on a guess. Estimate when a decision depends on it.
+    - text: Never, because modern hardware handles any load
+      reason: Modern hardware is strong, but rate limits, partition counts, and storage costs still depend on scale.
+  lesson:
+    title: Estimate to decide
+    explanation: The goal is a decision, not arithmetic. You can tell the interviewer you'll estimate as you go, and then do the math at the moment a choice depends on it.
+    source:
+      url: https://www.hellointerview.com/learn/system-design/in-a-hurry/delivery
+      title: System Design Delivery Framework
+- id: storage-estimate-steps
+  skill: estimate-scale
+  asks: what
+  type: ordering
+  prompt: Put the steps for estimating how much storage a system needs in order.
+  reworded: In what order do you work out total storage for a system?
+  steps:
+    - Estimate how many records arrive per day.
+    - Multiply by the average size of one record.
+    - Multiply by the number of days you keep the data.
+    - Multiply by the number of copies you store.
+    - Sanity-check the units and say what the total means for the design.
+  lesson:
+    title: Count, size, time, copies
+    explanation: A billion 1 KB records a day is 1 TB a day. Kept for 90 days with three copies, that's 270 TB. The last step matters most, because a KB and MB slip is the most common mistake.
+- id: bandwidth-from-volume
+  skill: estimate-scale
+  asks: what
+  type: prompt
+  prompt: A system ingests 2 TB a day. Roughly what average and peak throughput should you plan for, and how do you get there?
+  reworded: How would you turn 2 TB of ingestion per day into a per-second throughput figure?
+  points:
+    - Divide bytes per day by about 100,000 seconds, so 2e12 / 1e5 is about 20 MB per second.
+    - The exact figure, using 86,400 seconds, is about 23 MB per second.
+    - Multiply by a peak factor, say 3 to 5, for roughly 60 to 100 MB per second at peak.
+    - Then say what it means, like how many partitions or workers that needs.
+  lesson:
+    title: Bytes per day over 100,000
+    explanation: Bandwidth estimates use the same trick as request rates. Keep the numbers in powers of ten and round hard, then design for the peak, not the average.
+- id: latency-numbers
+  skill: estimate-scale
+  asks: what
+  type: matching
+  prompt: Match each network path to its typical round-trip time on a modern cloud network.
+  reworded: About how long does a round trip take on each of these network paths?
+  matchHeading: Round trip
+  matchName: a round trip
+  pairs:
+    - item: Between two servers in the same availability zone
+      match: Under 1 ms
+    - item: Between availability zones in one region
+      match: About 1 to 2 ms
+    - item: Between two regions
+      match: About 50 to 150 ms
+  extraMatches:
+    - About 10 seconds
+    - About 1 microsecond
+  lesson:
+    title: Network time sets the floor
+    explanation: Calls inside a region are cheap, so a few service hops add little. Calls across regions cost tens of milliseconds each, which shapes where data and services should live.
+    source:
+      url: https://www.hellointerview.com/learn/system-design/core-concepts/numbers-to-know
+      title: Numbers to Know for System Design Interviews
+- id: why-identity-from-token
+  skill: define-api-and-data
+  asks: why
+  type: pick-one
+  prompt: Why should an API take the caller's identity from the auth token instead of a field in the request body?
+  reworded: What goes wrong if an API trusts a user or tenant id sent in the request body?
+  options:
+    - text: A caller could put someone else's id in the body and act as them
+      correct: true
+      reason: The token is checked by the server, so identity drawn from it can't be forged by editing the request.
+    - text: Request bodies can't hold ids
+      reason: They can. The problem is that the caller controls them.
+    - text: It makes responses faster
+      reason: Speed isn't the reason. Security is.
+    - text: REST forbids ids in bodies
+      reason: REST says nothing about this. It's a security rule.
+  lesson:
+    title: Identity comes from authentication
+    explanation: Anything in the body is input the caller controls. The tenant or user an API acts for must come from the credential the server verified.
+    source:
+      url: https://www.hellointerview.com/learn/system-design/in-a-hurry/delivery
+      title: System Design Delivery Framework
+- id: why-api-before-boxes
+  skill: define-api-and-data
+  asks: why
+  type: prompt
+  prompt: Why write down the core entities and the API before drawing the high-level design?
+  reworded: What does sketching the API first do for the rest of the design?
+  points:
+    - It fixes the contract the design has to serve, so every box has a reason to exist.
+    - You can build the design one call at a time, which keeps it complete.
+    - Read patterns, like listing by connection newest first, tell you what keys and indexes you need.
+    - It shows early which writes must be safe to retry and need an idempotency key.
+  lesson:
+    title: The API is the checklist for the design
+    explanation: A design is finished when every call in the API has a path through it. Writing the calls first gives you that checklist and stops you building parts nobody uses.
+- id: when-which-delivery-style
+  skill: define-api-and-data
+  asks: when
+  type: matching
+  prompt: Match each client need to the delivery style that fits it best.
+  reworded: Which way of delivering data suits each of these client needs?
+  matchHeading: Delivery style
+  matchName: a delivery style
+  pairs:
+    - item: Fetch one record by its id
+      match: A REST GET request
+    - item: Be told soon after data changes, without polling
+      match: A webhook to the client's endpoint
+    - item: Load a year of history into a data warehouse
+      match: A bulk export of files
+    - item: Several internal services react to every change in order per key
+      match: A partitioned event log
+  extraMatches:
+    - Polling every second
+  lesson:
+    title: Match the delivery to the reader
+    explanation: Request and response suits small lookups. Webhooks push changes. Bulk files move history cheaply. A log lets many readers consume the same changes at their own pace.
+- id: why-simple-first
+  skill: draw-high-level
+  asks: why
+  type: pick-one
+  prompt: Why should the first high-level design be the simplest one that meets every core requirement?
+  reworded: What's the danger of adding caches, queues, and shards while drawing the first design?
+  options:
+    - text: Complexity added early eats the time you need to finish a working design and go deep on it
+      correct: true
+      reason: An interviewer can't assess deep dives on a system that never worked end to end.
+    - text: Simple designs always scale better
+      reason: They often don't. That's what the deep dives are for.
+    - text: Interviewers don't allow queues in the first design
+      reason: Use a queue when a requirement needs it. Just don't add parts that nothing needs yet.
+    - text: Caches are never needed in interviews
+      reason: Caches are often needed. Note them and add them when a requirement calls for them.
+  lesson:
+    title: Working first, then better
+    explanation: When you see a spot for a cache or a queue that correctness doesn't need, say so in one sentence, write a note, and keep going. Come back to it in the deep dives.
+    fix: Walk the API one call at a time and add only what each call needs.
+    source:
+      url: https://www.hellointerview.com/learn/system-design/in-a-hurry/delivery
+      title: System Design Delivery Framework
+- id: when-add-component
+  skill: draw-high-level
+  asks: when
+  type: prompt
+  prompt: When should a component like a cache, a queue, or a second database go into your design?
+  reworded: What should justify each extra box you draw in a system design?
+  points:
+    - When a stated requirement needs it, like a latency target that a cache meets or a burst a queue absorbs.
+    - When an estimate shows the simpler design won't hold the load.
+    - When it removes a failure mode you named, like losing work when a worker crashes.
+    - Say which requirement it serves as you draw it.
+  misconception: That a design looks more senior with more components.
+  lesson:
+    title: Every box answers a requirement
+    explanation: Adding parts because real systems have them makes a design harder to defend. A senior answer ties each component to the requirement or number that made it necessary.
+- id: deep-dive-sources
+  skill: run-deep-dives
+  asks: what
+  type: prompt
+  prompt: Where do good deep-dive topics come from once a working design is on the board?
+  reworded: How do you choose what to go deep on after the high-level design?
+  points:
+    - The non-functional requirements, like showing how the write path reaches the promised peak.
+    - Weak spots you noted while drawing, like a single database, a hot key, or a slow outside call.
+    - Steps that aren't safe to retry or that can lose data on failure.
+    - The interviewer's questions, which often point at what they want to assess.
+  lesson:
+    title: Deep dives harden the promises
+    explanation: The deep dives exist to show the design meets its non-functional requirements and survives failure. Start with whatever is most likely to break.
+    source:
+      url: https://www.hellointerview.com/learn/system-design/in-a-hurry/delivery
+      title: System Design Delivery Framework
+- id: when-lead-deep-dives
+  skill: run-deep-dives
+  asks: when
+  type: pick-one
+  prompt: When the high-level design is done in a senior or staff interview, who should pick the deep-dive topics?
+  reworded: At senior level and above, how should the deep dives get started?
+  options:
+    - text: You, by naming the riskiest parts and why, while leaving room for the interviewer's questions
+      correct: true
+      reason: Leading shows you can find the hard parts yourself. Pausing for questions keeps it a conversation.
+    - text: The interviewer, and you wait for them to point at problems
+      reason: That's fine at mid level, but at senior level it reads as missing the hard parts.
+    - text: You, and you should keep talking so the interviewer doesn't interrupt
+      reason: Talking over the interviewer can hide what they wanted to hear and costs you on communication.
+    - text: Nobody, because deep dives are optional
+      reason: Deep dives are where senior candidates earn most of their signal.
+  lesson:
+    title: Lead, but listen
+    explanation: The more senior the role, the more you're expected to drive. Driving still means checking in, because the interviewer's questions show what they need to assess.
+    source:
+      url: https://www.hellointerview.com/learn/system-design/in-a-hurry/delivery
+      title: System Design Delivery Framework
+- id: deep-dive-pattern
+  skill: run-deep-dives
+  asks: what
+  type: ordering
+  prompt: Put the parts of a well-run deep dive in order.
+  reworded: In what order should you talk through one deep-dive topic?
+  steps:
+    - State the problem and which requirement it threatens.
+    - Lay out two or three options.
+    - Pick one and say why it fits these requirements.
+    - Name what the choice costs and how you'd handle that cost.
+  lesson:
+    title: Problem, options, choice, cost
+    explanation: For example, providers fail often, so you could retry inline, retry from a queue, or use a durable workflow. Pick the queue, and note that syncs may run twice, so the upsert must be idempotent.
+- id: why-name-failure-modes
+  skill: wrap-up-trade-offs
+  asks: why
+  type: prompt
+  prompt: Why name failure modes in the wrap-up even when your design already handles them?
+  reworded: What does talking through how your design fails show the interviewer?
+  points:
+    - It shows you think about running the system, not only drawing it.
+    - It covers cases like a provider down for a day, a region outage, a bad deploy, or a dead customer endpoint.
+    - Saying how you'd notice each one, through metrics, alarms, or a health status, shows operational sense.
+    - It gives the interviewer an easy place to probe further.
+  lesson:
+    title: Show how it breaks and how you'd know
+    explanation: Every system fails. A strong wrap-up says how this one fails, what limits the damage, and what signal tells the team something is wrong.
+- id: strongest-trade-off
+  skill: wrap-up-trade-offs
+  asks: why
+  type: pick-one
+  prompt: Which wrap-up statement makes the strongest case for a trade-off?
+  reworded: Which of these is the best way to explain a trade-off at the end of a design?
+  options:
+    - text: I chose a log over a plain queue because customers need replay. It costs more to run, and if replay weren't needed I'd use the queue.
+      correct: true
+      reason: It names the reason, the cost, and what would change the decision.
+    - text: I chose a log because it's the industry standard.
+      reason: Popularity isn't a reason tied to these requirements.
+    - text: A log and a queue are both fine here.
+      reason: It doesn't compare them or commit to a choice.
+    - text: I chose a log because it scales infinitely.
+      reason: Nothing scales infinitely, and the claim skips the cost.
+  lesson:
+    title: Reason, cost, and what would change it
+    explanation: A trade-off is only convincing when it's tied to this system's requirements and is honest about what it gives up.
+    fix: Say what you chose, why it fits, what it costs, and what would make you choose differently.
