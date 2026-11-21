@@ -1,6 +1,6 @@
 # A unified API over hundreds of data providers
 
-Your company sells one API that gives business customers a single, consistent view of data held by more than 300 outside providers, such as vehicle, payroll, or banking data providers. A customer's end users connect their accounts at those providers, and the customer then reads the data through your API without writing a separate integration for each provider.
+Your company sells one API that gives business customers a single, consistent view of data held by more than 300 outside providers, such as payroll, banking, or accounting systems. A customer's end users connect their accounts at those providers, and the customer then reads the data through your API without writing a separate integration for each provider.
 
 The providers are a mixed bunch. Some use OAuth, some API keys, and some only a username and password. Most offer REST APIs, a few still use SOAP, and each has its own rate limits and its own way of paging through results. They go down, change their responses without warning, and sometimes send data hours late.
 
