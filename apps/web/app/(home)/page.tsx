@@ -1,4 +1,7 @@
-import type { RecallDueResponse } from "@meritory/contracts";
+import type {
+  InterviewDateResponse,
+  RecallDueResponse,
+} from "@meritory/contracts";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { unstable_rethrow } from "next/navigation";
@@ -14,7 +17,13 @@ import {
   type Track,
   trackLabel,
 } from "@/lib/content";
-import { getContent, getDue, requireMe } from "@/lib/server-api";
+import { dayName } from "@/lib/interview";
+import {
+  getContent,
+  getDue,
+  getInterviewDate,
+  requireMe,
+} from "@/lib/server-api";
 import { LocalDate, QueueNote, RecallButton } from "./home-parts";
 
 export const metadata: Metadata = { title: "Due for recall · Meritory" };
@@ -23,6 +32,7 @@ export const metadata: Metadata = { title: "Due for recall · Meritory" };
 
 type Chapters = { track: Track; chapter: Chapter }[];
 type DueLoad = Promise<RecallDueResponse | null>;
+type InterviewLoad = Promise<InterviewDateResponse | null>;
 
 interface QueueRow {
   track: Track;
@@ -236,6 +246,21 @@ function ChaptersWithCounts({
   return <ChaptersCard chapters={chapters} due={use(load)} />;
 }
 
+/** Under Chapters while a date is coming up, linking to where it changes */
+function InterviewLink({ load }: { load: InterviewLoad }) {
+  const interview = use(load);
+  if (!interview?.date) return null;
+  if (interview.status !== "on" && interview.status !== "later") return null;
+  return (
+    <Link
+      href="/account"
+      className={`${linkClass} flex h-control items-center self-start`}
+    >
+      Interview on {dayName(interview.date)}
+    </Link>
+  );
+}
+
 /** Holds the queue's place while the counts load */
 function QueueLoading() {
   return (
@@ -264,6 +289,13 @@ export default async function Home({
     unstable_rethrow(error);
     return null;
   });
+  // The date is extra, so a failed read only hides its line
+  const interview: InterviewLoad = getInterviewDate("/").catch(
+    (error: unknown) => {
+      unstable_rethrow(error);
+      return null;
+    },
+  );
 
   return (
     <AppShell page="home" user={me}>
@@ -290,11 +322,14 @@ export default async function Home({
               <HomeBody load={load} chapters={chapters} />
             </Suspense>
           </div>
-          <aside>
+          <aside className="flex flex-col gap-4">
             <Suspense
               fallback={<ChaptersCard chapters={chapters} due={undefined} />}
             >
               <ChaptersWithCounts load={load} chapters={chapters} />
+            </Suspense>
+            <Suspense fallback={null}>
+              <InterviewLink load={interview} />
             </Suspense>
           </aside>
         </div>

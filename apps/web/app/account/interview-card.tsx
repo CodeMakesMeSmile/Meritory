@@ -6,6 +6,7 @@ import { type FormEvent, useRef, useState } from "react";
 import { Alert } from "@/components/alert";
 import { Button } from "@/components/button";
 import { TextField } from "@/components/text-field";
+import { dayName } from "@/lib/interview";
 import { INTERVIEW_ERRORS, saveInterviewDate } from "@/lib/recall-api";
 import { Card, Row } from "./card";
 
@@ -15,15 +16,6 @@ const PASSED = "That date has passed. Pick a date after today.";
 const NOT_A_DATE = "That isn't a date. Pick one from the calendar.";
 const SOONER =
   "cards come back a bit sooner, aiming for 95% recall instead of 90%.";
-
-/** December 14, from 2026-12-14, whatever the reader's time zone */
-export function dayName(date: string) {
-  return new Intl.DateTimeFormat("en-US", {
-    month: "long",
-    day: "numeric",
-    timeZone: "UTC",
-  }).format(new Date(`${date}T00:00:00Z`));
-}
 
 /** What the line under the field says for each stage */
 export function statusLine(state: InterviewDateResponse): string | null {

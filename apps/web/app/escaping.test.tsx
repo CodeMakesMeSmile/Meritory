@@ -21,6 +21,7 @@ vi.mock("@/lib/server-api", () => ({
     dayEndsAt: "2026-11-20T09:00:00.000Z",
     chapters: [],
   }),
+  getInterviewDate: async () => null,
 }));
 vi.mock("@/lib/sign-up-email", () => ({ useSignUpEmail: () => me.name }));
 
