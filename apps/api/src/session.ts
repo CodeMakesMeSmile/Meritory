@@ -13,6 +13,7 @@ import {
 import type { RecallStore } from "@meritory/server";
 import type { FastifyInstance, FastifyReply } from "fastify";
 import { toFetchHeaders } from "./auth-routes.ts";
+import { type CodeRunner, registerCodeRoutes } from "./code.ts";
 import { registerContentRoutes, type ServedContent } from "./content.ts";
 import { registerRecallRoutes } from "./recall.ts";
 
@@ -75,6 +76,8 @@ export interface SessionDependencies {
   webOrigin: string;
   content: ServedContent;
   recall: RecallStore;
+  /** Checks coding answers, unset until the runner is set up */
+  codeRunner?: CodeRunner;
   /** The server's clock, which tests replace */
   now?: () => Date;
 }
@@ -138,6 +141,12 @@ export async function registerSignedInRoutes(
         store: deps.recall,
         chapters: deps.content.chapters,
         now: deps.now ?? (() => new Date()),
+      }),
+    );
+    await scope.register((code) =>
+      registerCodeRoutes(code, {
+        runner: deps.codeRunner,
+        chapters: deps.content.chapters,
       }),
     );
 

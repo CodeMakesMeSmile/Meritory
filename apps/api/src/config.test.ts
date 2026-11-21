@@ -8,6 +8,32 @@ const base = {
 };
 
 describe("readConfig", () => {
+  it("sets up the runner only with a loopback URL and a long token", () => {
+    const token = "r".repeat(32);
+    expect(readConfig(base).runner).toBeUndefined();
+    expect(
+      readConfig({
+        ...base,
+        RUNNER_URL: "http://localhost:4100/",
+        RUNNER_TOKEN: token,
+      }).runner,
+    ).toEqual({ url: "http://localhost:4100", token });
+    expect(() =>
+      readConfig({
+        ...base,
+        RUNNER_URL: "http://example.com:4100",
+        RUNNER_TOKEN: token,
+      }),
+    ).toThrow(/localhost/);
+    expect(() =>
+      readConfig({
+        ...base,
+        RUNNER_URL: "http://localhost:4100",
+        RUNNER_TOKEN: "short",
+      }),
+    ).toThrow(/RUNNER_TOKEN/);
+  });
+
   it("trusts Expo Go outside production only", () => {
     expect(readConfig(base).expoGoScheme).toBe("exp://");
     expect(

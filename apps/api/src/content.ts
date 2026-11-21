@@ -6,11 +6,19 @@ import type { FastifyInstance } from "fastify";
 import Type from "typebox";
 import Value from "typebox/value";
 
+/** A coding exercise's signature and cases, which the code runner checks against */
+export interface ServedCoding {
+  id: string;
+  signature: Record<string, unknown>;
+  cases: unknown[];
+}
+
 /** A chapter's cards, which recall needs to start and check reviews */
 export interface ServedChapter {
   trackId: string;
   chapterId: string;
   cards: { id: string; version: number }[];
+  coding?: ServedCoding[];
 }
 
 /** The built bundle, kept as the exact text that's sent */
@@ -31,6 +39,17 @@ export function indexContent(bundle: Pick<Bundle, "tracks">): ServedChapter[] {
         id: card.id,
         version: card.version,
       })),
+      coding: chapter.exercises.flatMap((exercise) =>
+        exercise.kind === "coding"
+          ? [
+              {
+                id: exercise.id,
+                signature: exercise.signature as Record<string, unknown>,
+                cases: exercise.cases,
+              },
+            ]
+          : [],
+      ),
     })),
   );
 }
