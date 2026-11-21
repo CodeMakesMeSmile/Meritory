@@ -7,6 +7,7 @@ import { Markdown } from "@/components/markdown";
 import { chapterPath, findChapter, trackLabel } from "@/lib/content";
 import { exercisePath, findExercise } from "@/lib/practice";
 import { getContent, requireMe } from "@/lib/server-api";
+import { CodePractice } from "./code-practice";
 import { DesignPractice } from "./design-practice";
 
 interface Props {
@@ -82,12 +83,14 @@ export default async function ExercisePage({ params }: Props) {
             requires={exercise.requires ?? []}
             answer={exercise.answer}
           />
-        ) : (
-          <p className="text-body">
-            The app can't run code yet. Solve this in your own editor, and
-            practise its ideas with this chapter's recall cards.
-          </p>
-        )}
+        ) : exercise.kind === "coding" ? (
+          <CodePractice
+            trackId={track.id}
+            chapterId={chapter.id}
+            exerciseId={exercise.id}
+            signature={exercise.signature}
+          />
+        ) : null}
       </div>
     </AppShell>
   );

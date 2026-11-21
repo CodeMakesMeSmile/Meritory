@@ -12,6 +12,7 @@ import {
   createSignInMethods,
 } from "@meritory/server";
 import { buildApp } from "./app.ts";
+import { createCodeRunner } from "./code.ts";
 import { readConfig } from "./config.ts";
 import { loadContent } from "./content.ts";
 
@@ -76,6 +77,7 @@ const app = await buildApp(
     currentSession: createSessionLookup(auth),
     content,
     recall: createRecallStore(database.db),
+    codeRunner: config.runner && createCodeRunner(config.runner),
   },
   { logger: { level: config.logLevel } },
 );

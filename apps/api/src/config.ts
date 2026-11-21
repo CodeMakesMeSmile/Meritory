@@ -22,6 +22,8 @@ export interface ApiConfig {
   breachCheck: boolean;
   /** The bundle `pnpm content:build` writes */
   contentBundlePath: string;
+  /** The code runner inside WSL2, set only once both are, see docs/runner.md */
+  runner?: { url: string; token: string };
 }
 
 const BUILT_BUNDLE = fileURLToPath(
@@ -98,5 +100,23 @@ export function readConfig(env: Record<string, string | undefined>): ApiConfig {
     },
     breachCheck: readBreachCheck(env),
     contentBundlePath: env.CONTENT_BUNDLE_PATH || BUILT_BUNDLE,
+    runner: readRunner(env),
   };
+}
+
+// Only on loopback, since the token and the code travel in plain HTTP
+function readRunner(env: Record<string, string | undefined>) {
+  const url = env.RUNNER_URL;
+  const token = env.RUNNER_TOKEN;
+  if (!url || !token) return undefined;
+  const { hostname, protocol } = new URL(url);
+  if (protocol !== "http:" || !["localhost", "127.0.0.1"].includes(hostname)) {
+    throw new Error("RUNNER_URL must be http://localhost with a port.");
+  }
+  if (token.length < MIN_SECRET_LENGTH) {
+    throw new Error(
+      `RUNNER_TOKEN needs at least ${MIN_SECRET_LENGTH} characters.`,
+    );
+  }
+  return { url: url.replace(/\/$/, ""), token };
 }
