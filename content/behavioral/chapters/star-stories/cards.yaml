@@ -1,0 +1,405 @@
+- id: why-actions-most-time
+  skill: structure-star
+  asks: why
+  type: pick-one
+  prompt: Why should the actions take up most of a STAR answer?
+  reworded: What makes the action part of a story worth more of your time than the situation or the result?
+  options:
+    - text: The actions are the behaviors the interviewer is trying to predict
+      correct: true
+      reason: The company wants to know how you'll act on its problems, and your past actions are the evidence.
+    - text: The situation is usually confidential
+      reason: Some details can be, but you can almost always describe the situation in general terms. That isn't why actions get the most time.
+    - text: Results are easy to exaggerate, so interviewers ignore them
+      reason: Interviewers care a lot about results. They just aren't where most of the time goes.
+    - text: Longer answers score higher
+      reason: Length isn't the goal. A two-minute answer that is mostly actions beats a five-minute one.
+  lesson:
+    title: Actions are the evidence
+    explanation: A behavioral interview uses what you did before to predict what you'll do next. The situation sets it up and the result shows it worked, but the actions are what the interviewer is scoring. MIT's career office suggests giving them around 60 percent of your answer.
+    fix: Cut the situation to a sentence or two and spend the time you save on the decisions you made and why.
+    source:
+      url: https://capd.mit.edu/resources/the-star-method-for-behavioral-interviews/
+      title: Using the STAR method for your next behavioral interview, MIT CAPD
+- id: star-order
+  skill: structure-star
+  asks: what
+  type: ordering
+  prompt: Put the parts of a STAR answer with a reflection in order.
+  reworded: In what order do the pieces of a well-told behavioral story come?
+  steps:
+    - Set the scene in a sentence or two.
+    - Say what you were responsible for or what goal you set.
+    - Walk through what you did and why.
+    - Give the result, with numbers if you have them.
+    - Say what you learned or would do differently.
+  terms:
+    - term: STAR
+      definition: Situation, task, action, and result.
+    - term: Reflection
+      definition: An extra closing part about what the story taught you.
+  lesson:
+    title: Context, role, actions, outcome, lesson
+    explanation: The listener needs just enough context to follow, then your part, then what you did, then whether it worked. The reflection closes the story and shows you grew from it.
+- id: why-i-not-we
+  skill: structure-star
+  asks: why
+  type: prompt
+  prompt: Why should you say "I" rather than "we" when telling a team story?
+  reworded: What goes wrong when a behavioral answer keeps saying "we did this"?
+  points:
+    - The interviewer is hiring you, not your old team, so they need to hear your part.
+    - '"We" hides which decisions were yours and which were someone else''s.'
+    - You can still credit the team, then say clearly what you did.
+  misconception: That saying "I" sounds arrogant or takes credit from teammates.
+  lesson:
+    title: Credit the team, then name your part
+    explanation: '"We" is kind but vague. The interviewer can''t score behavior they can''t see. MIT''s career office recommends "I" statements for exactly this reason, especially in teamwork stories.'
+    fix: Try "The team shipped it in a month. My part was the data migration, and here is how I planned it."
+    source:
+      url: https://capd.mit.edu/resources/the-star-method-for-behavioral-interviews/
+      title: Using the STAR method for your next behavioral interview, MIT CAPD
+- id: star-part-match
+  skill: structure-star
+  asks: what
+  type: matching
+  prompt: Match each sentence from a story to the STAR part it belongs to.
+  reworded: Which part of a STAR answer does each of these sentences fill?
+  matchHeading: STAR part
+  matchName: a part
+  pairs:
+    - item: Our nightly billing export was silently dropping records for some customers.
+      match: Situation
+    - item: It wasn't my team's job, but I said I'd find and fix it.
+      match: Task
+    - item: I added a nightly check that compares record counts and alerts on any gap.
+      match: Action
+    - item: We corrected 312 invoices and nothing has been missed since.
+      match: Result
+    - item: Next time I'd agree on who owns an alert before I build it.
+      match: Reflection
+  lesson:
+    title: Each sentence has a job
+    explanation: The situation is what was going on, the task is why it was yours, the actions are what you did, the result is what changed, and the reflection is what you'd keep or change next time.
+- id: when-add-reflection
+  skill: structure-star
+  asks: when
+  type: pick-one
+  prompt: When does adding a reflection to the end of a story matter most?
+  reworded: In which kind of answer is the closing lesson most important?
+  options:
+    - text: In a failure story, and in any story for a senior role
+      correct: true
+      reason: A failure story without a lesson is just a failure, and senior interviewers look for signs that you learn and change how you work.
+    - text: Only when the interviewer asks for it
+      reason: They often won't ask. Adding it yourself shows growth without being prompted.
+    - text: Only when the result was good
+      reason: A good result needs a lesson less than a bad one does.
+  lesson:
+    title: The lesson turns a failure into growth
+    explanation: Tech Interview Handbook suggests adding a reflection to STAR to show seniority and growth. For a failure story it's the part that matters most, because it shows what you changed.
+    source:
+      url: https://www.techinterviewhandbook.org/behavioral-interview/
+      title: Behavioral interviews for Software Engineers, Tech Interview Handbook
+- id: theme-match
+  skill: choose-stories
+  asks: when
+  type: matching
+  prompt: Match each question to the theme it's really asking about.
+  reworded: Which theme is each of these interview questions testing?
+  matchHeading: Theme
+  matchName: a theme
+  pairs:
+    - item: Tell me about a time you shipped something before it was perfect.
+      match: Speed vs quality
+    - item: Tell me about a time you got another team to change its plan.
+      match: Influencing without authority
+    - item: Tell me about a time the requirements were unclear.
+      match: Ambiguity and scoping
+    - item: Tell me about a time you were wrong.
+      match: Failure and mistakes
+    - item: Tell me about a time you pushed back on a senior colleague.
+      match: Conflict and disagreement
+  extraMatches:
+    - Customer work
+    - Ownership
+  lesson:
+    title: Hear the theme behind the wording
+    explanation: Questions come in many wordings, but most map to a handful of themes. Once you hear the theme, you can pick the story in your bank that covers it.
+    fix: When a question catches you off guard, ask yourself which theme it is before you pick a story.
+- id: why-real-failure
+  skill: choose-stories
+  asks: why
+  type: pick-one
+  prompt: Why should a failure story be about a real failure with a real cost?
+  reworded: What's wrong with answering "Tell me about a time you failed" with a weakness that's secretly a strength?
+  options:
+    - text: A disguised strength sounds like dodging, and a real failure shows you can own mistakes and learn
+      correct: true
+      reason: Interviewers have heard "I work too hard" many times. A real mistake, owned and fixed, builds trust.
+    - text: Interviewers want to rule out anyone who has failed
+      reason: Everyone fails. They want to see how you handle it.
+    - text: The bigger the failure, the better the score
+      reason: Size doesn't matter much. What you did next and what you changed does.
+  lesson:
+    title: Own it, then show what changed
+    explanation: A failure story still ends well, because the ending is what you learned and the steps you took to improve. The Muse makes the same point, that even a story about a mistake should close on the lesson.
+    fix: Pick a mistake that cost something real, say plainly what you got wrong, and spend the last part on what you do differently now.
+    source:
+      url: https://www.themuse.com/advice/star-interview-method
+      title: STAR Method, The Muse
+- id: when-customer-story
+  skill: choose-stories
+  asks: when
+  type: prompt
+  prompt: When a company says it values customer obsession, what should your customer story show?
+  reworded: For a team that puts customers first, what makes a customer story strong?
+  points:
+    - You talked to the customer yourself, on a call, in a thread, or on site.
+    - You found the goal behind the request, not just the bug in front of you.
+    - You fixed it so other customers won't hit the same problem.
+    - A result measured for the customer, like fewer failures or less time lost.
+  misconception: That any story about fixing a ticket counts as customer work.
+  lesson:
+    title: Show the customer, not just the ticket
+    explanation: A ticket someone else triaged shows you can fix bugs. A customer story shows you understand what the customer is trying to do and that you care whether it works for them. Published values like Amazon's Customer Obsession describe the same habit of starting from the customer and working back.
+    source:
+      url: https://www.amazon.jobs/content/en/our-workplace/leadership-principles
+      title: Leadership Principles, Amazon
+- id: strongest-conflict-story
+  skill: choose-stories
+  asks: what
+  type: pick-one
+  prompt: Which of these makes the strongest conflict story?
+  reworded: Which version of a disagreement story would an interviewer trust most?
+  options:
+    - text: You and a reasonable colleague disagreed on a design, you tested both ideas, and you committed to the result
+      correct: true
+      reason: It shows listening, evidence, and the ability to commit once a decision is made.
+    - text: A difficult coworker kept blocking you until your manager stepped in
+      reason: The other person sounds like a villain and someone else solved it, so it says little about you.
+    - text: You were right, and the team eventually admitted it
+      reason: Being right isn't the skill being tested. How you disagreed is.
+  lesson:
+    title: Disagree well, then commit
+    explanation: The interviewer is imagining working with you. A story where the other side was reasonable and you settled it with evidence is reassuring. A story with a villain makes them wonder how you'd describe them.
+- id: why-ownership-goes-past-fix
+  skill: choose-stories
+  asks: why
+  type: prompt
+  prompt: Why should an ownership story go past the moment the bug was fixed?
+  reworded: In an ownership story, what should come after "and then I fixed it," and why?
+  points:
+    - Owners make sure the problem stays fixed, with a test, an alert, or a check.
+    - They clean up the damage, like correcting bad data or telling affected customers.
+    - They hand it over well, with a runbook or a clear owner for what comes next.
+    - It shows long-term thinking, not just a quick patch.
+  misconception: That ownership means working late until the bug is gone.
+  lesson:
+    title: Owners keep it fixed
+    explanation: A fix is the middle of an ownership story, not the end. What you did to stop it happening again, and to repair the damage, is what shows you think like an owner. Published values like Amazon's Ownership principle describe the same idea of thinking long term and acting beyond your own team.
+    source:
+      url: https://www.amazon.jobs/content/en/our-workplace/leadership-principles
+      title: Leadership Principles, Amazon
+- id: why-few-stories
+  skill: story-bank
+  asks: why
+  type: pick-one
+  prompt: Why prepare a small bank of rich stories instead of an answer for every possible question?
+  reworded: What's the advantage of a handful of flexible stories over a long list of prepared answers?
+  options:
+    - text: Questions are hard to predict, and one rich story can answer several themes
+      correct: true
+      reason: A big project usually has some ownership, some ambiguity, and some conflict in it, so it bends to fit many questions.
+    - text: Interviewers get bored if you tell more than five stories
+      reason: That's not the reason. Within one round you might only tell two or three anyway.
+    - text: Short answers are always better than prepared ones
+      reason: A prepared story told from notes is still natural. It's scripts that sound stiff.
+  lesson:
+    title: Few stories, many angles
+    explanation: Tech Interview Handbook suggests picking three to five projects with high impact, high complexity, and heavy personal involvement. MIT's career office makes the same point, that one example can be adapted to several questions.
+    fix: For a senior loop, aim for five to seven stories so you don't repeat one to the same panel.
+    source:
+      url: https://www.techinterviewhandbook.org/behavioral-interview/
+      title: Behavioral interviews for Software Engineers, Tech Interview Handbook
+- id: bank-steps
+  skill: story-bank
+  asks: what
+  type: ordering
+  prompt: Put the steps for building a story bank in order.
+  reworded: In what order do you turn your past work into a set of ready stories?
+  steps:
+    - List projects, incidents, and launches with high impact and heavy personal involvement.
+    - Write STAR bullet notes for each, with the key numbers.
+    - Mark which themes each story could answer.
+    - Find themes with no story and fill the gaps.
+    - Say each story out loud and time it.
+  lesson:
+    title: Collect, outline, map, fill, rehearse
+    explanation: You need the raw material first, then a short outline of each story, then a map of which themes it covers. The map shows the gaps. Rehearsing comes last, once the stories are settled.
+- id: when-reuse-story
+  skill: story-bank
+  asks: when
+  type: prompt
+  prompt: When you reuse one story for a different theme, what changes and what stays the same?
+  reworded: How do you tell the same project as an answer to two different questions?
+  points:
+    - The situation stays the same.
+    - The emphasis of the actions shifts to the part that matches the theme.
+    - You pick the result that fits, like a customer outcome for a customer question.
+    - The reflection is about the theme being asked.
+  misconception: That you should tell the story word for word every time.
+  lesson:
+    title: Same story, different spotlight
+    explanation: A project where you cut scope for a demo can answer a speed question, an ambiguity question, or a customer question. Each time, spend most of the time on the part the question is about.
+- id: pitch-order
+  skill: short-pitch
+  asks: what
+  type: ordering
+  prompt: Put the parts of a short pitch about yourself in order.
+  reworded: What order should "Tell me about yourself" follow?
+  steps:
+    - Past, with one or two highlights that lead to this role.
+    - Present, with what you do now and a recent result.
+    - Why this role, with what draws you and what you'd bring.
+  lesson:
+    title: Past, present, why this role
+    explanation: Starting with the past gives context, the present shows your current level, and ending on this role hands the conversation back to the interviewer with a reason to keep talking.
+- id: why-no-history-lesson
+  skill: short-pitch
+  asks: why
+  type: pick-one
+  prompt: Why should a short pitch skip the year-by-year history of your career?
+  reworded: What's wrong with opening "Tell me about yourself" with every job in order?
+  options:
+    - text: It uses up your time on details that don't show why you fit this role
+      correct: true
+      reason: A list of jobs gives the listener no takeaway. One or two relevant highlights do.
+    - text: Interviewers aren't allowed to ask about past jobs
+      reason: They ask about past jobs all the time. It's the format that's the problem.
+    - text: Your resume is confidential
+      reason: The interviewer has usually read it. That's why repeating it adds little.
+  lesson:
+    title: Highlights, not a timeline
+    explanation: Tech Interview Handbook warns against the history lesson and suggests tailoring the introduction to the role, with the projects and numbers that matter most.
+    fix: Pick the one or two moments that lead most directly to this job, and summarize the rest in a phrase like "across large and small companies."
+    source:
+      url: https://www.techinterviewhandbook.org/self-introduction/
+      title: Crafting the perfect self introduction, Tech Interview Handbook
+- id: when-thirty-second
+  skill: short-pitch
+  asks: when
+  type: pick-one
+  prompt: When should you use the 30-second version of your pitch instead of the full minute?
+  reworded: In which moment is the shortest version of your introduction the right one?
+  options:
+    - text: When someone at a team lunch or social event asks what you do
+      correct: true
+      reason: In casual talk, a short answer that turns the question back to them keeps the conversation flowing.
+    - text: When the hiring manager opens a round with "Tell me about yourself"
+      reason: That's the place for the full minute, since it sets up the whole round.
+    - text: Never, since a pitch should always be complete
+      reason: A short version is useful any time the setting is quick or informal.
+  lesson:
+    title: Fit the pitch to the moment
+    explanation: The full pitch opens a formal round. The 30-second version is for quick hellos, panel introductions, and social events, where a long answer feels like a speech.
+- id: why-specific-research
+  skill: why-company
+  asks: why
+  type: prompt
+  prompt: Why does a specific, researched answer to "Why this company?" beat general praise?
+  reworded: What makes "I love your mission" a weak answer to "Why do you want to work here?"
+  points:
+    - General praise could be said about any company, so it shows no real interest.
+    - A specific detail proves you did the research.
+    - Tying it to your own experience shows you'd fit and why.
+    - Values the company publishes tell you what it will ask about.
+  misconception: That enthusiasm alone is enough.
+  lesson:
+    title: Specific beats sincere
+    explanation: Interviewers hear the same praise all day. One concrete thing you found, why it matters to you, and how your experience connects is far more convincing. Tech Interview Handbook also recommends researching a company's values so your stories show fit.
+    fix: Build the answer from three pieces, what you found, why it matters to you, and a story that connects.
+    source:
+      url: https://www.techinterviewhandbook.org/behavioral-interview/
+      title: Behavioral interviews for Software Engineers, Tech Interview Handbook
+- id: research-where
+  skill: why-company
+  asks: when
+  type: matching
+  prompt: Match each thing you want to learn about a company to where you'd look first.
+  reworded: Where would you go to find out each of these before an interview?
+  matchHeading: Where to look
+  matchName: a place
+  pairs:
+    - item: Who the customers are and what they struggle with
+      match: Case studies and public reviews
+    - item: How the product works under the hood
+      match: API docs
+    - item: How often the team ships
+      match: The changelog
+    - item: What the team will likely ask about
+      match: Published values and the job post
+  extraMatches:
+    - Salary sites
+  lesson:
+    title: Each question has a best source
+    explanation: Reviews show what customers feel, docs show how it works, the changelog shows the pace, and the values and job post show what the interviewers are listening for.
+- id: why-ask-questions
+  skill: ask-questions
+  asks: why
+  type: pick-one
+  prompt: Why is "No, I think you've covered everything" a weak answer to "Do you have any questions?"
+  reworded: What do you lose by not asking the team anything at the end of a round?
+  options:
+    - text: It can read as low interest, and your questions show what you care about
+      correct: true
+      reason: Asking is expected. A good question also helps you judge whether you'd be happy there.
+    - text: Interviewers score you on the number of questions
+      reason: There's no count. One thoughtful question beats five generic ones.
+    - text: It ends the interview early, which looks rude
+      reason: Ending on time is fine. The issue is the missed chance to show interest and learn.
+  lesson:
+    title: Your questions are part of the interview
+    explanation: Tech Interview Handbook points out that candidates are expected to ask questions, and that what you ask reveals what you care about. It's also your best chance to spot problems before you accept an offer.
+    fix: Bring more questions than you need, grouped by topic, since earlier rounds may answer some.
+    source:
+      url: https://www.techinterviewhandbook.org/final-questions/
+      title: Best end of interview questions to ask, Tech Interview Handbook
+- id: question-reveals
+  skill: ask-questions
+  asks: what
+  type: matching
+  prompt: Match each question to what it helps you learn about the team.
+  reworded: What does each of these questions tell you about the place you'd be joining?
+  matchHeading: What it reveals
+  matchName: a topic
+  pairs:
+    - item: Can you walk me through a recent incident and what changed afterward?
+      match: How they handle incidents
+    - item: How do engineers hear from customers today?
+      match: How close engineers are to customers
+    - item: When two engineers disagree on a design, how does it get settled?
+      match: How decisions get made
+    - item: What would a great first 90 days look like?
+      match: What success looks like
+  extraMatches:
+    - How much they pay
+  lesson:
+    title: Ask about how the work really happens
+    explanation: These four topics tell you most of what daily life will be like in a backend role close to customers. Each question invites a story, which is more honest than a policy.
+- id: when-social-event
+  skill: ask-questions
+  asks: when
+  type: prompt
+  prompt: When you're at a casual company event during an interview loop, how should you talk with people?
+  reworded: What makes you easy to talk to at a team lunch or drinks with the company?
+  points:
+    - Listen more than you talk.
+    - Ask about their work and what's hard about it right now.
+    - Ask a follow-up on what they just said.
+    - Have a 30-second version of your story, then turn the question back to them.
+    - Keep it human and skip complaints about past employers.
+  misconception: That a social event is a chance to keep pitching yourself.
+  lesson:
+    title: Be curious, not salesy
+    explanation: People remember how a conversation felt. Real interest in their work, and a short answer when they ask about yours, leaves a better impression than a polished speech.

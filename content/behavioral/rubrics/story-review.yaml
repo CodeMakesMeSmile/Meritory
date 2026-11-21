@@ -1,0 +1,46 @@
+id: story-review
+title: Story review
+criteria:
+  - id: situation
+    name: Situation
+    scoredBy: self
+    levels:
+      - The listener is lost, either from a long backstory or from almost no context.
+      - The context is clear but wanders into details the story never uses.
+      - The context and my goal take two or three sentences.
+      - The context and my goal fit in a sentence or two, with only the details the rest of the story needs.
+  - id: actions
+    name: Actions
+    scoredBy: self
+    levels:
+      - Mostly what the team did, with no clear part for me.
+      - What I did in general terms, like "I looked into it" or "I worked hard on it."
+      - Specific things I did, told in the first person.
+      - Specific decisions I made, why I made them, and what else I considered.
+  - id: result
+    name: Result
+    scoredBy: self
+    levels:
+      - No result, or the story just stops.
+      - A vague result, like "it went well."
+      - A clear result that follows from my actions.
+      - A measurable result with numbers, and what it meant for the customer or the team.
+  - id: reflection
+    name: Reflection
+    scoredBy: self
+    levels:
+      - No reflection.
+      - A generic lesson, like "communication matters."
+      - A specific lesson that comes from this story.
+      - A specific lesson and what I changed, or would do differently, because of it.
+  - id: length
+    name: Length
+    scoredBy: self
+    levels:
+      - Over four minutes, or under thirty seconds.
+      - Three to four minutes, with repeats or side stories.
+      - Two to three minutes and mostly on track.
+      - About two minutes with no rambling, leaving room for follow-up questions.
+pass:
+  total: 14
+  lowest: 2

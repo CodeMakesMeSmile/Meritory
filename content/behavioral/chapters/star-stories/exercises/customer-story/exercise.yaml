@@ -1,0 +1,10 @@
+id: customer-story
+kind: design
+title: A hard problem fixed with a customer
+difficulty: medium
+skills:
+  - structure-star
+  - choose-stories
+  - story-bank
+sibling: ownership-story
+rubric: story-review
