@@ -1,0 +1,20 @@
+id: queues-and-async
+title: Queues and async work
+order: 6
+skills:
+  - id: retry-safely
+    name: Set timeouts and retry with capped backoff and jitter
+  - id: limit-retry-load
+    name: Keep retries from multiplying load
+  - id: idempotent-consumers
+    name: Make operations and consumers safe to repeat
+  - id: handle-failed-messages
+    name: Handle failed messages with visibility timeouts and dead-letter queues
+  - id: order-messages
+    name: Choose an ordering guarantee and pay its cost
+  - id: publish-reliably
+    name: Publish events reliably with a transactional outbox
+  - id: coordinate-long-work
+    name: Coordinate multi-step work with sagas and workflow engines
+  - id: bus-or-log
+    name: Choose between an event bus, a queue, and a log
