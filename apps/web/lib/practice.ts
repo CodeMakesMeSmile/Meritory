@@ -118,6 +118,19 @@ function draftKey(trackId: string, exerciseId: string, version: number) {
 
 export const MAX_ANSWER = 20000;
 
+/** Keeps only whole-number levels from 1 to LEVELS */
+export function cleanScores(value: unknown): Scores {
+  const scores: Scores = {};
+  if (typeof value === "object" && value !== null) {
+    for (const [id, score] of Object.entries(value)) {
+      if (Number.isInteger(score) && score >= 1 && score <= LEVELS) {
+        scores[id] = score;
+      }
+    }
+  }
+  return scores;
+}
+
 /** Reads a saved draft, dropping anything that doesn't fit its shape */
 export function readDraft(
   trackId: string,
@@ -130,20 +143,12 @@ export function readDraft(
     const parsed: unknown = JSON.parse(raw);
     if (typeof parsed !== "object" || parsed === null) return EMPTY_DRAFT;
     const value = parsed as Partial<Record<keyof Draft, unknown>>;
-    const scores: Scores = {};
-    if (typeof value.scores === "object" && value.scores !== null) {
-      for (const [id, score] of Object.entries(value.scores)) {
-        if (Number.isInteger(score) && score >= 1 && score <= LEVELS) {
-          scores[id] = score;
-        }
-      }
-    }
     return {
       answer:
         typeof value.answer === "string"
           ? value.answer.slice(0, MAX_ANSWER)
           : "",
-      scores,
+      scores: cleanScores(value.scores),
       seconds:
         Number.isInteger(value.seconds) && (value.seconds as number) >= 0
           ? (value.seconds as number)
