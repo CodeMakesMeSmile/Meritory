@@ -329,7 +329,7 @@ export async function registerRecallRoutes(
     "/recall/reviews/:id/undo",
     {
       schema: {
-        summary: "Undo a card's latest rating, within 10 minutes",
+        summary: "Undo a card's latest rating, within a day",
         tags: ["recall"],
         params: ReviewParams,
         response: { 200: UndoReviewResponse },
@@ -358,7 +358,7 @@ export async function registerRecallRoutes(
       if (result.kind === "too_late") {
         return refuse(reply, 409, {
           code: RECALL_ERRORS.undoExpired,
-          message: "A rating can only be undone for 10 minutes.",
+          message: "A rating can only be undone for a day.",
         });
       }
       return { ...result.card, dueAt: result.card.dueAt.toISOString() };

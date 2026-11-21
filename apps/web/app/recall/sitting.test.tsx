@@ -8,7 +8,7 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ replace: () => {}, push: () => {}, refresh: () => {} }),
 }));
 
-const { Sitting } = await import("./sitting.tsx");
+const { Sitting, UndoBar } = await import("./sitting.tsx");
 const { PromptCard } = await import("./prompt-card.tsx");
 const { Explanation, Lesson } = await import("./parts.tsx");
 
@@ -202,6 +202,65 @@ describe("a recall sitting", () => {
     expect(html).toContain(
       "hidden flex-wrap items-center gap-x-8 any-pointer-fine:flex",
     );
+  });
+
+  it("offers Undo with the rating it would undo", () => {
+    const html = renderToStaticMarkup(
+      <UndoBar
+        line={{
+          kind: "offer",
+          id: "r1",
+          rating: "good",
+          at: 0,
+          busy: false,
+          offline: false,
+        }}
+        onUndo={() => {}}
+      />,
+    );
+    expect(html).toContain("Last card saved as Good.");
+    expect(html).toContain('aria-label="Undo the Good rating"');
+    expect(html).toContain(">Undo</button>");
+    expect(html).toContain('aria-disabled="false"');
+  });
+
+  it("keeps Undo to try again when it didn't arrive, and marks it busy while sending", () => {
+    const html = renderToStaticMarkup(
+      <UndoBar
+        line={{
+          kind: "offer",
+          id: "r1",
+          rating: "again",
+          at: 0,
+          busy: true,
+          offline: true,
+        }}
+        onUndo={() => {}}
+      />,
+    );
+    expect(html).toContain(
+      "Undo didn&#x27;t reach us. Check your connection, then try again.",
+    );
+    expect(html).toContain("text-danger");
+    expect(html).toContain('aria-label="Undo the Missed rating"');
+    expect(html).toContain('aria-busy="true"');
+    expect(html).toContain('aria-disabled="true"');
+  });
+
+  it("drops Undo once the rating is kept", () => {
+    const html = renderToStaticMarkup(
+      <UndoBar
+        line={{ kind: "kept", text: "Undo has run out.", at: 0 }}
+        onUndo={() => {}}
+      />,
+    );
+    expect(html).toContain("Undo has run out.");
+    expect(html).not.toContain("<button");
+  });
+
+  it("shows no Undo line on the first card", () => {
+    const html = render([item({ type: "prompt", points: ["Copies"] })]);
+    expect(html).not.toContain("Last card saved as");
   });
 
   it.each(ATTACKS)("card text of %j renders as text", (attack) => {

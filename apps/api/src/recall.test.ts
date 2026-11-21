@@ -388,7 +388,7 @@ describe.skipIf(!url)("recall routes against Postgres", () => {
     expect(first.json()).toEqual({
       id: payload.id,
       dueAt: new Date(NINE_AM.getTime() + 10 * MINUTE).toISOString(),
-      undoUntil: new Date(NINE_AM.getTime() + 10 * MINUTE).toISOString(),
+      undoUntil: new Date(NINE_AM.getTime() + DAY).toISOString(),
     });
     const retry = await post(payload);
     expect(retry.json()).toEqual(first.json());
@@ -430,7 +430,7 @@ describe.skipIf(!url)("recall routes against Postgres", () => {
     expect(due.json().chapters).toEqual([]);
   });
 
-  it("undoes the latest rating within ten minutes only", async () => {
+  it("undoes the latest rating within a day only", async () => {
     const me = await person();
     const api = await signedIn([me]);
     await api.inject({ method: "POST", url: START, headers: me.headers });
@@ -466,9 +466,14 @@ describe.skipIf(!url)("recall routes against Postgres", () => {
     expect(notLatest.statusCode).toBe(409);
     expect(notLatest.json().code).toBe("not_latest_review");
 
+    const slow = review();
+    await rate(slow);
+    clock = new Date(NINE_AM.getTime() + 11 * MINUTE);
+    expect((await undo(slow.id)).statusCode).toBe(200);
+
     const late = review();
     await rate(late);
-    clock = new Date(NINE_AM.getTime() + 11 * MINUTE);
+    clock = new Date(clock.getTime() + DAY + MINUTE);
     const expired = await undo(late.id);
     expect(expired.statusCode).toBe(409);
     expect(expired.json().code).toBe("undo_expired");

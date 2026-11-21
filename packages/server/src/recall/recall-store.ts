@@ -16,8 +16,8 @@ import { alias } from "drizzle-orm/pg-core";
 import type { Database } from "../db/client.ts";
 import { recallCards, recallReviews, users } from "../db/schema.ts";
 
-/** How long after a review Undo still works */
-export const UNDO_WINDOW_MS = 10 * 60 * 1000;
+/** How long after a review Undo still works, past WCAG's 20-hour time limit exception */
+export const UNDO_WINDOW_MS = 24 * 60 * 60 * 1000;
 
 /** Longer answers are stored as this, so one forgotten tab can't skew the log */
 export const MAX_DURATION_MS = 10 * 60 * 1000;

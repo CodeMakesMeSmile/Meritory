@@ -11,9 +11,16 @@ import {
 } from "./recall-grading";
 import {
   doneLine,
+  lineAfterFailedUndo,
+  lineAfterSave,
   promptOf,
+  type SittingCard,
+  showsUndo,
   sittingCards,
   tomorrowLine,
+  UNDO_ERRORS,
+  type UndoOffer,
+  undoKeptText,
 } from "./recall-sitting";
 import { longWait, shortWait } from "./recall-time";
 
@@ -197,5 +204,71 @@ describe("done screen", () => {
     expect(tomorrowLine(0, true)).toBe("Tomorrow: up to 10 new");
     expect(tomorrowLine(3, false)).toBe("Tomorrow: 3 to recall");
     expect(tomorrowLine(0, false)).toBeNull();
+  });
+});
+
+describe("undo after a rating", () => {
+  const item = (type: string) =>
+    ({ session: { cardId: type }, card: { type } }) as unknown as SittingCard;
+  const items = [item("prompt"), item("pick-one"), item("prompt")];
+  const offer: UndoOffer = {
+    kind: "offer",
+    id: "r1",
+    rating: "good",
+    at: 2,
+    busy: true,
+    offline: false,
+  };
+
+  it("offers Undo after a free-answer rating, at that card's place", () => {
+    const at = items[2] as SittingCard;
+    expect(lineAfterSave(items, at.session, "r1", "good")).toEqual({
+      ...offer,
+      busy: false,
+    });
+  });
+
+  it("offers nothing after a graded card, since its rating isn't tapped", () => {
+    const at = items[1] as SittingCard;
+    expect(lineAfterSave(items, at.session, "r2", "again")).toBeNull();
+  });
+
+  it("shows only on the next card or the done screen", () => {
+    expect(showsUndo(offer, 2)).toBe(false);
+    expect(showsUndo(offer, 3)).toBe(true);
+    expect(showsUndo(offer, 4)).toBe(false);
+    expect(showsUndo(null, 3)).toBe(false);
+  });
+
+  it("keeps the rating when the API refuses, and says why", () => {
+    expect(lineAfterFailedUndo(offer, UNDO_ERRORS.notLatest)).toEqual({
+      kind: "kept",
+      text: "That card was rated again on another device, so this rating stays.",
+      at: 2,
+    });
+    expect(lineAfterFailedUndo(offer, UNDO_ERRORS.undoExpired)).toEqual({
+      kind: "kept",
+      text: "Undo has run out for that card, so it stays as Good.",
+      at: 2,
+    });
+  });
+
+  it("lets Undo be tried again when it didn't arrive", () => {
+    expect(lineAfterFailedUndo(offer, undefined)).toEqual({
+      ...offer,
+      busy: false,
+      offline: true,
+    });
+    expect(lineAfterFailedUndo(offer, "rate_limited")).toMatchObject({
+      kind: "offer",
+      offline: true,
+    });
+  });
+
+  it("names the rating that stays", () => {
+    expect(undoKeptText(UNDO_ERRORS.undoExpired, "again")).toBe(
+      "Undo has run out for that card, so it stays as Missed.",
+    );
+    expect(undoKeptText(undefined, "again")).toBeNull();
   });
 });

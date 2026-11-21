@@ -4,6 +4,7 @@ import type {
   RecallSessionResponse,
   RecordReviewResponse,
   StartChapterResponse,
+  UndoReviewResponse,
 } from "@meritory/contracts";
 
 export type { RecallRating, RecallSessionResponse };
@@ -12,7 +13,18 @@ export type RecallSessionCard = RecallSessionResponse["cards"][number];
 /** What a recall request came back with, in terms the page acts on */
 export type RecallResult<T> =
   | { ok: true; data: T }
-  | { ok: false; reason: "signed_out" | "failed" };
+  | { ok: false; reason: "signed_out" | "failed"; code?: string };
+
+/** The API's own error code, such as undo_expired, when the body has one */
+async function errorCode(res: Response): Promise<string | undefined> {
+  try {
+    const body: unknown = await res.json();
+    const code = (body as { code?: unknown } | null)?.code;
+    return typeof code === "string" ? code : undefined;
+  } catch {
+    return undefined;
+  }
+}
 
 const BASE = "/api/v1";
 
@@ -27,7 +39,8 @@ async function call<T>(
     return { ok: false, reason: "failed" };
   }
   if (res.status === 401) return { ok: false, reason: "signed_out" };
-  if (!res.ok) return { ok: false, reason: "failed" };
+  if (!res.ok)
+    return { ok: false, reason: "failed", code: await errorCode(res) };
   const data = res.status === 204 ? undefined : await res.json();
   return { ok: true, data: data as T };
 }
@@ -73,6 +86,13 @@ export function saveReview(review: ReviewToSave) {
       durationMs: Math.max(0, Math.round(review.durationMs)),
     }),
   });
+}
+
+export function undoReview(id: string) {
+  return call<UndoReviewResponse>(
+    `/recall/reviews/${encodeURIComponent(id)}/undo`,
+    { method: "POST" },
+  );
 }
 
 export function saveTimeZone(timeZone: string) {

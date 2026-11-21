@@ -280,7 +280,7 @@ describe.skipIf(!url)("recall store against Postgres", () => {
       });
     });
 
-    it("stops after ten minutes", async () => {
+    it("stops after a day", async () => {
       const me = await user();
       await store.start(me, CHAPTER, start);
       const review = input();
@@ -288,6 +288,17 @@ describe.skipIf(!url)("recall store against Postgres", () => {
       expect(
         await store.undo(me, review.id, later(UNDO_WINDOW_MS + 1)),
       ).toEqual({ kind: "too_late" });
+    });
+
+    it("still works the next morning", async () => {
+      const me = await user();
+      await store.start(me, CHAPTER, start);
+      const review = input();
+      await store.review(me, review, start);
+      expect(UNDO_WINDOW_MS).toBeGreaterThan(20 * 60 * MINUTE);
+      expect(
+        (await store.undo(me, review.id, later(UNDO_WINDOW_MS))).kind,
+      ).toBe("undone");
     });
 
     it("answers as if another user's review doesn't exist", async () => {
