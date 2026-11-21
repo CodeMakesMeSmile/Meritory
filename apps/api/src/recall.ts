@@ -2,6 +2,8 @@ import rateLimit from "@fastify/rate-limit";
 import {
   ChapterParams,
   type ErrorResponse,
+  InterviewDateBody,
+  InterviewDateResponse,
   RECALL_ERRORS,
   RecallDueResponse,
   RecallSessionResponse,
@@ -14,12 +16,17 @@ import {
 } from "@meritory/contracts";
 import {
   buildRecallQueue,
+  interviewStatus,
+  interviewWindowStart,
+  isCalendarDate,
   isKnownTimeZone,
   isLearned,
   NEW_CARDS_PER_DAY,
   nextDueDates,
   nextRecallDayStart,
+  recallDate,
   recallDayStart,
+  recallTargetFor,
 } from "@meritory/learning";
 import type { RecallStore, StoredRecallCard } from "@meritory/server";
 import type { FastifyInstance, FastifyReply } from "fastify";
@@ -35,6 +42,7 @@ export const RECALL_LIMITS = {
   reads: 60,
   starts: 10,
   timeZone: 10,
+  interviewDate: 10,
 } as const;
 
 /** Bodies here are a few hundred bytes at most */
@@ -115,6 +123,21 @@ export async function registerRecallRoutes(
       timeZone,
       start,
       newLeft: Math.max(0, NEW_CARDS_PER_DAY - seen),
+    };
+  }
+
+  /** The interview date as the learner sees it, and today's recall target */
+  async function interview(userId: string, now: Date) {
+    const { timeZone, interviewDate } = await deps.store.settings(userId);
+    const day = recallDate(now, timeZone);
+    return {
+      day,
+      answer: {
+        date: interviewDate,
+        startsOn: interviewDate ? interviewWindowStart(interviewDate) : null,
+        status: interviewStatus(interviewDate, day),
+        target: recallTargetFor(interviewDate, day),
+      } satisfies InterviewDateResponse,
     };
   }
 
@@ -233,6 +256,7 @@ export async function registerRecallRoutes(
       const { user } = request.current as CurrentSession;
       const now = deps.now();
       const left = (await today(user.id, now)).newLeft;
+      const { target } = (await interview(user.id, now)).answer;
       const cards = liveCards(await deps.store.cards(user.id), deps.chapters);
       const queue = buildRecallQueue(
         cards.map((stored) => ({
@@ -246,7 +270,7 @@ export async function registerRecallRoutes(
       return {
         newLeftToday: left,
         cards: queue.map(({ stored }) => {
-          const next = nextDueDates(stored.card, now);
+          const next = nextDueDates(stored.card, now, target);
           return {
             trackId: stored.trackId,
             chapterId: stored.chapterId,
@@ -291,6 +315,8 @@ export async function registerRecallRoutes(
           message: "That card doesn't exist.",
         });
       }
+      const now = deps.now();
+      const { target } = (await interview(user.id, now)).answer;
       const result = await deps.store.review(
         user.id,
         {
@@ -303,7 +329,8 @@ export async function registerRecallRoutes(
           answeredAt: new Date(body.answeredAt),
           durationMs: body.durationMs ?? null,
         },
-        deps.now(),
+        now,
+        target,
       );
       if (result.kind === "not_found") {
         return refuse(reply, 404, {
@@ -387,6 +414,58 @@ export async function registerRecallRoutes(
       }
       await deps.store.setTimeZone(user.id, timeZone);
       return reply.code(204).send();
+    },
+  );
+
+  scope.get(
+    "/me/interview-date",
+    {
+      schema: {
+        summary: "The interview date and today's recall target",
+        tags: ["account"],
+        response: { 200: InterviewDateResponse },
+      },
+      config: perMinute(RECALL_LIMITS.reads, "recall-reads"),
+    },
+    async (request) => {
+      const { user } = request.current as CurrentSession;
+      return (await interview(user.id, deps.now())).answer;
+    },
+  );
+
+  scope.put<{ Body: InterviewDateBody }>(
+    "/me/interview-date",
+    {
+      bodyLimit: BODY_LIMIT,
+      schema: {
+        summary:
+          "Set or clear the interview date. Recall aims higher in the 28 days before it.",
+        tags: ["account"],
+        body: InterviewDateBody,
+        response: { 200: InterviewDateResponse },
+      },
+      config: perMinute(RECALL_LIMITS.interviewDate, "interview-date"),
+    },
+    async (request, reply) => {
+      const { user } = request.current as CurrentSession;
+      const { date } = request.body;
+      if (date !== null) {
+        if (!isCalendarDate(date)) {
+          return refuse(reply, 400, {
+            code: RECALL_ERRORS.notADate,
+            message: "That isn't a date. Pick one from the calendar.",
+          });
+        }
+        const { day } = await interview(user.id, deps.now());
+        if (date < day) {
+          return refuse(reply, 400, {
+            code: RECALL_ERRORS.datePassed,
+            message: "That date has passed. Pick a date after today.",
+          });
+        }
+      }
+      await deps.store.setInterviewDate(user.id, date);
+      return (await interview(user.id, deps.now())).answer;
     },
   );
 }

@@ -172,6 +172,7 @@ export function createRecallStore(db: Database["db"]) {
     userId: string,
     input: ReviewInput,
     now: Date,
+    target: number,
   ): Promise<ReviewResult> {
     return db.transaction(async (tx) => {
       // Locks the card first, so two reviews of it take turns
@@ -202,7 +203,7 @@ export function createRecallStore(db: Database["db"]) {
         before,
         input.rating,
         reviewTime,
-        DEFAULT_RECALL_TARGET,
+        target,
       );
 
       const [stored] = await tx
@@ -221,7 +222,7 @@ export function createRecallStore(db: Database["db"]) {
           durationMs: input.durationMs,
           dueAt: card.dueAt,
           revlog,
-          recallTarget: DEFAULT_RECALL_TARGET,
+          recallTarget: target,
           schedulerVersion: SCHEDULER_VERSION,
           acceptedAt: now,
         })
@@ -249,6 +250,31 @@ export function createRecallStore(db: Database["db"]) {
 
     async setTimeZone(userId: string, timeZone: string): Promise<void> {
       await db.update(users).set({ timeZone }).where(eq(users.id, userId));
+    },
+
+    /** The time zone and interview date, which together set the recall target */
+    async settings(
+      userId: string,
+    ): Promise<{ timeZone: string; interviewDate: string | null }> {
+      const [row] = await db
+        .select({
+          timeZone: users.timeZone,
+          interviewDate: users.interviewDate,
+        })
+        .from(users)
+        .where(eq(users.id, userId));
+      return {
+        timeZone: row?.timeZone ?? DEFAULT_TIME_ZONE,
+        interviewDate: row?.interviewDate ?? null,
+      };
+    },
+
+    /** Saves a YYYY-MM-DD date, or clears it with null */
+    async setInterviewDate(
+      userId: string,
+      interviewDate: string | null,
+    ): Promise<void> {
+      await db.update(users).set({ interviewDate }).where(eq(users.id, userId));
     },
 
     /** Adds the chapter's cards as new, and skips any already there */
@@ -325,6 +351,7 @@ export function createRecallStore(db: Database["db"]) {
       userId: string,
       input: ReviewInput,
       now: Date,
+      target = DEFAULT_RECALL_TARGET,
     ): Promise<ReviewResult> {
       const capped = {
         ...input,
@@ -334,10 +361,11 @@ export function createRecallStore(db: Database["db"]) {
             : Math.min(input.durationMs, MAX_DURATION_MS),
       };
       try {
-        return await recordOnce(userId, capped, now);
+        return await recordOnce(userId, capped, now, target);
       } catch (error) {
         // Another request with this id got in first, so look again
-        if (isUniqueViolation(error)) return recordOnce(userId, capped, now);
+        if (isUniqueViolation(error))
+          return recordOnce(userId, capped, now, target);
         throw error;
       }
     },
