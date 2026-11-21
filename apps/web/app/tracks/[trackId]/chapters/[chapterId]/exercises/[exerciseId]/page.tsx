@@ -6,12 +6,45 @@ import { linkClass } from "@/components/button";
 import { Markdown } from "@/components/markdown";
 import { chapterPath, findChapter, trackLabel } from "@/lib/content";
 import { exercisePath, findExercise } from "@/lib/practice";
+import { rehearsalMinutes } from "@/lib/rehearsal";
 import { getContent, requireMe } from "@/lib/server-api";
 import { CodePractice } from "./code-practice";
 import { DesignPractice } from "./design-practice";
+import { Rehearsal } from "./rehearsal";
 
 interface Props {
   params: Promise<{ trackId: string; chapterId: string; exerciseId: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+/** Practice and Rehearse, as links so each mode has its own address */
+function ModeTabs({ path, rehearsing }: { path: string; rehearsing: boolean }) {
+  const tabs = [
+    { label: "Practice", href: path, current: !rehearsing },
+    { label: "Rehearse", href: `${path}?mode=rehearse`, current: rehearsing },
+  ];
+  return (
+    <nav aria-label="Answer mode" className="border-b border-border">
+      <ul className="flex">
+        {tabs.map((tab) => (
+          <li key={tab.label}>
+            <Link
+              href={tab.href}
+              scroll={false}
+              aria-current={tab.current ? "page" : undefined}
+              className={`focus-ring -mb-px flex h-control items-center border-b-2 px-4 text-body font-semibold ${
+                tab.current
+                  ? "border-gold text-gold"
+                  : "border-transparent text-secondary hover:text-primary"
+              }`}
+            >
+              {tab.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
 }
 
 async function load(params: Props["params"]) {
@@ -32,11 +65,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 const DIFFICULTY = { easy: "Easy", medium: "Medium", hard: "Hard" } as const;
 
-export default async function ExercisePage({ params }: Props) {
-  const { path, found } = await load(params);
+export default async function ExercisePage({ params, searchParams }: Props) {
+  const [{ path, found }, query] = await Promise.all([
+    load(params),
+    searchParams,
+  ]);
   if (!found) notFound();
   const me = await requireMe(path);
   const { track, chapter, exercise, rubric } = found;
+  const minutes =
+    exercise.kind === "design" && rubric ? rehearsalMinutes(rubric.id) : null;
+  const rehearsing = minutes !== null && query.mode === "rehearse";
 
   return (
     <AppShell page="chapter" user={me}>
@@ -75,14 +114,31 @@ export default async function ExercisePage({ params }: Props) {
           <Markdown text={exercise.statement} />
         </article>
         {exercise.kind === "design" && rubric ? (
-          <DesignPractice
-            trackId={track.id}
-            exerciseId={exercise.id}
-            version={exercise.version}
-            rubric={rubric}
-            requires={exercise.requires ?? []}
-            answer={exercise.answer}
-          />
+          <div className="flex flex-col gap-6">
+            {minutes !== null && (
+              <ModeTabs path={path} rehearsing={rehearsing} />
+            )}
+            {rehearsing && minutes !== null ? (
+              <Rehearsal
+                trackId={track.id}
+                exerciseId={exercise.id}
+                version={exercise.version}
+                minutes={minutes}
+                rubric={rubric}
+                requires={exercise.requires ?? []}
+                answer={exercise.answer}
+              />
+            ) : (
+              <DesignPractice
+                trackId={track.id}
+                exerciseId={exercise.id}
+                version={exercise.version}
+                rubric={rubric}
+                requires={exercise.requires ?? []}
+                answer={exercise.answer}
+              />
+            )}
+          </div>
         ) : exercise.kind === "coding" ? (
           <CodePractice
             trackId={track.id}

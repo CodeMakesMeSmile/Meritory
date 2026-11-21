@@ -15,6 +15,7 @@ import {
   wordCount,
   writeDraft,
 } from "@/lib/practice";
+import { ScoreCriteria } from "./score-criteria";
 
 type Stage = "writing" | "scoring" | "done";
 
@@ -162,54 +163,15 @@ export function DesignPractice({
               The model answer shows after this.
             </p>
           </div>
-          {criteria.map((criterion) => {
-            const name = `${answerId}-${criterion.id}`;
-            const required = requires.includes(criterion.id);
-            return (
-              <fieldset key={criterion.id} className="flex flex-col gap-2">
-                <legend className="mb-2 text-body font-semibold">
-                  {criterion.name}
-                  {required && (
-                    <span className="font-normal text-secondary">
-                      {" "}
-                      (needs level 3 to pass)
-                    </span>
-                  )}
-                </legend>
-                {criterion.levels.map((level, at) => {
-                  const value = at + 1;
-                  const picked = draft.scores[criterion.id] === value;
-                  return (
-                    <label
-                      key={value}
-                      className={`flex min-h-control cursor-pointer items-start gap-3 border px-3 py-3 has-focus-visible:shadow-(--focus-ring) ${
-                        picked ? "border-accent bg-sunken" : "border-border"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name={name}
-                        checked={picked}
-                        onChange={() =>
-                          setDraft((d) => ({
-                            ...d,
-                            scores: { ...d.scores, [criterion.id]: value },
-                          }))
-                        }
-                        className="mt-1 size-4 shrink-0 accent-(--color-accent-default)"
-                      />
-                      <span className="flex flex-col gap-1">
-                        <span className="text-small font-semibold">
-                          Level {value}
-                        </span>
-                        <Markdown text={level} inline />
-                      </span>
-                    </label>
-                  );
-                })}
-              </fieldset>
-            );
-          })}
+          <ScoreCriteria
+            idPrefix={answerId}
+            criteria={criteria}
+            requires={requires}
+            scores={draft.scores}
+            onPick={(id, value) =>
+              setDraft((d) => ({ ...d, scores: { ...d.scores, [id]: value } }))
+            }
+          />
           {stage === "scoring" && (
             <div className="flex flex-col items-end gap-2">
               <Button
