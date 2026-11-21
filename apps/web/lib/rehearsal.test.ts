@@ -174,7 +174,7 @@ describe("results and debrief", () => {
     );
     const next = setDebrief(scored, "trade-offs", "froze");
     expect(next.current?.debrief).toEqual({ "trade-offs": "froze" });
-    expect(next.past[0].debrief).toEqual({ "trade-offs": "froze" });
+    expect(next.past[0]?.debrief).toEqual({ "trade-offs": "froze" });
   });
 });
 
@@ -276,6 +276,6 @@ describe("rehearsal storage", () => {
     store.set("meritory.rehearsal.t.e.v1", JSON.stringify({ past }));
     const read = readRehearsals("t", "e", 1).past;
     expect(read).toHaveLength(MAX_PAST);
-    expect(read[0].startedAt).toBe(T0 + MAX_PAST + 4);
+    expect(read[0]?.startedAt).toBe(T0 + MAX_PAST + 4);
   });
 });

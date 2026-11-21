@@ -137,9 +137,23 @@ export function setDebrief(
   };
 }
 
-/** Criteria scored under the solid level, the ones the debrief asks about */
+export type Stage = "start" | "running" | "locked" | "done";
+
+export function stageOf(state: Rehearsals, now: number): Stage {
+  const run = state.current;
+  if (!run) return "start";
+  if (!isLocked(run, now)) return "running";
+  return run.scored ? "done" : "locked";
+}
+
+/** The solid level, or the rubric's lowest pass level if that's higher */
+export function debriefBar(rubric: Rubric) {
+  return Math.max(REQUIRED_LEVEL, rubric.pass.lowest);
+}
+
+/** Criteria scored under the bar, the ones the debrief asks about */
 export function debriefCriteria(rubric: Rubric, scores: Scores) {
-  const bar = Math.max(REQUIRED_LEVEL, rubric.pass.lowest);
+  const bar = debriefBar(rubric);
   return selfCriteria(rubric).flatMap((criterion) => {
     const level = scores[criterion.id] ?? 0;
     return level < bar
