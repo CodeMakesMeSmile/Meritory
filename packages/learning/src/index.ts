@@ -5,6 +5,17 @@ export {
   nextRecallDayStart,
   recallDayStart,
 } from "./day.ts";
+export {
+  addDays,
+  INTERVIEW_RECALL_TARGET,
+  INTERVIEW_WINDOW_DAYS,
+  type InterviewStatus,
+  interviewStatus,
+  interviewWindowStart,
+  isCalendarDate,
+  recallDate,
+  recallTargetFor,
+} from "./interview.ts";
 export { buildRecallQueue, NEW_CARDS_PER_DAY } from "./queue.ts";
 export { effectiveReviewTime } from "./review-time.ts";
 export {

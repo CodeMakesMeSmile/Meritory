@@ -13,6 +13,8 @@ export {
 export const API_PREFIX = "/v1";
 export {
   ChapterParams,
+  InterviewDateBody,
+  InterviewDateResponse,
   RECALL_ERRORS,
   RecallDueResponse,
   RecallRating,

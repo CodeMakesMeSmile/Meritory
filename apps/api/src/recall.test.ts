@@ -94,6 +94,12 @@ describe("recall routes refuse bad requests before the database", () => {
       url: "/v1/me/time-zone",
       payload: { timeZone: "UTC" },
     },
+    { method: "GET" as const, url: "/v1/me/interview-date" },
+    {
+      method: "PUT" as const,
+      url: "/v1/me/interview-date",
+      payload: { date: "2026-12-14" },
+    },
   ];
 
   it("answers 401 without a session", async () => {
@@ -588,6 +594,122 @@ describe.skipIf(!url)("recall routes against Postgres", () => {
     expect(unknown.statusCode).toBe(400);
     expect(unknown.json().code).toBe("unknown_time_zone");
     expect(await store.timeZone(me.id)).toBe("Asia/Kolkata");
+  });
+
+  describe("interview date", () => {
+    async function setUp() {
+      const me = await person();
+      const targets: number[] = [];
+      const spied: RecallStore = {
+        ...store,
+        review: (userId, input, at, target) => {
+          targets.push(target ?? 0);
+          return store.review(userId, input, at, target);
+        },
+      };
+      clock = NINE_AM;
+      const api = await start({
+        recall: spied,
+        sessions: { [me.cookie]: me.session },
+        content,
+        now,
+      });
+      const put = (date: unknown) =>
+        api.inject({
+          method: "PUT",
+          url: "/v1/me/interview-date",
+          headers: me.headers,
+          payload: { date },
+        });
+      const get = async () =>
+        (
+          await api.inject({
+            method: "GET",
+            url: "/v1/me/interview-date",
+            headers: me.headers,
+          })
+        ).json();
+      return { me, api, put, get, targets };
+    }
+
+    it("starts with no date and the usual target", async () => {
+      const { get } = await setUp();
+      expect(await get()).toEqual({
+        date: null,
+        startsOn: null,
+        status: "none",
+        target: 0.9,
+      });
+    });
+
+    it("aims higher from 28 days before through the day itself", async () => {
+      const { put, get } = await setUp();
+      // NINE_AM is November 19 in UTC
+      const on = await put("2026-12-17");
+      expect(on.statusCode).toBe(200);
+      expect(on.json()).toEqual({
+        date: "2026-12-17",
+        startsOn: "2026-11-19",
+        status: "on",
+        target: 0.95,
+      });
+      expect((await put("2026-12-18")).json()).toMatchObject({
+        startsOn: "2026-11-20",
+        status: "later",
+        target: 0.9,
+      });
+      expect((await put("2026-11-19")).json().target).toBe(0.95);
+      clock = new Date(NINE_AM.getTime() + DAY);
+      expect(await get()).toMatchObject({ status: "passed", target: 0.9 });
+    });
+
+    it("refuses a past date or something that isn't a date", async () => {
+      const { put, get } = await setUp();
+      const past = await put("2026-11-18");
+      expect(past.statusCode).toBe(400);
+      expect(past.json().code).toBe("interview_date_passed");
+      const notReal = await put("2026-02-30");
+      expect(notReal.statusCode).toBe(400);
+      expect(notReal.json().code).toBe("not_a_date");
+      for (const bad of [
+        "tomorrow",
+        "2026-12-14T00:00",
+        20261214,
+        {},
+        ...SQL_ATTACKS,
+      ]) {
+        expect((await put(bad)).statusCode).toBe(400);
+      }
+      expect((await get()).date).toBeNull();
+    });
+
+    it("clears the date with null", async () => {
+      const { put } = await setUp();
+      await put("2026-12-14");
+      expect((await put(null)).json()).toMatchObject({
+        date: null,
+        status: "none",
+        target: 0.9,
+      });
+    });
+
+    it("reviews with the target that applies today", async () => {
+      const { me, api, put, targets } = await setUp();
+      await api.inject({ method: "POST", url: START, headers: me.headers });
+      const rate = () =>
+        api.inject({
+          method: "POST",
+          url: "/v1/recall/reviews",
+          headers: me.headers,
+          payload: review({ answeredAt: clock.toISOString() }),
+        });
+      expect((await rate()).statusCode).toBe(200);
+      await put("2026-12-01");
+      expect((await rate()).statusCode).toBe(200);
+      await put(null);
+      expect((await rate()).statusCode).toBe(200);
+      expect(targets).toEqual([0.9, 0.95, 0.9]);
+    });
   });
 
   it("limits how often each user can call a route", async () => {

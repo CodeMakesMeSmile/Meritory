@@ -1,4 +1,5 @@
 import type {
+  InterviewDateResponse,
   RecallDueResponse,
   RecallRating,
   RecallSessionResponse,
@@ -99,5 +100,18 @@ export function saveTimeZone(timeZone: string) {
   return call<undefined>("/me/time-zone", {
     method: "PUT",
     ...json({ timeZone }),
+  });
+}
+
+/** The interview date codes from RECALL_ERRORS, kept here so pages don't load the API schemas */
+export const INTERVIEW_ERRORS = {
+  notADate: "not_a_date",
+  datePassed: "interview_date_passed",
+} as const;
+
+export function saveInterviewDate(date: string | null) {
+  return call<InterviewDateResponse>("/me/interview-date", {
+    method: "PUT",
+    ...json({ date }),
   });
 }

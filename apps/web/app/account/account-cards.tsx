@@ -1,10 +1,11 @@
 "use client";
 
-import type { SignInMethods } from "@meritory/contracts";
+import type { InterviewDateResponse, SignInMethods } from "@meritory/contracts";
 import type { ProviderNotice } from "@meritory/contracts/sign-in-messages";
 import { useState } from "react";
 import type { EmailStep } from "@/lib/email-change";
 import { DeleteCard } from "./delete-card";
+import { InterviewCard } from "./interview-card";
 import { MethodsCard } from "./methods-card";
 import { PasswordCard } from "./password-card";
 import { ProfileCard } from "./profile-card";
@@ -20,6 +21,8 @@ interface AccountCardsProps {
   confirmed: boolean;
   /** Where an emailed email change link left off */
   emailStep?: EmailStep | null;
+  /** The saved interview date and where today sits against it */
+  interview: InterviewDateResponse;
 }
 
 /** The cards that change together, since a new password ends other sessions */
@@ -30,6 +33,7 @@ export function AccountCards({
   notice,
   confirmed,
   emailStep = null,
+  interview,
 }: AccountCardsProps) {
   const [version, setVersion] = useState(0);
   // Without a password, signing in again with a provider confirms it's them
@@ -45,6 +49,7 @@ export function AccountCards({
         confirmed={confirmed}
         step={emailStep}
       />
+      <InterviewCard initial={interview} />
       <MethodsCard
         methods={signInMethods}
         notice={notice}

@@ -126,10 +126,41 @@ export const TimeZoneBody = Type.Object(
 );
 export type TimeZoneBody = Static<typeof TimeZoneBody>;
 
+const CalendarDate = Type.String({
+  pattern: "^\\d{4}-\\d{2}-\\d{2}$",
+  examples: ["2026-12-14"],
+});
+
+export const InterviewDateBody = Type.Object(
+  { date: Type.Union([CalendarDate, Type.Null()]) },
+  { additionalProperties: false },
+);
+export type InterviewDateBody = Static<typeof InterviewDateBody>;
+
+export const InterviewDateResponse = Type.Object(
+  {
+    date: Type.Union([CalendarDate, Type.Null()]),
+    /** The first day of the higher recall target, when a date is set */
+    startsOn: Type.Union([CalendarDate, Type.Null()]),
+    status: Type.Union([
+      Type.Literal("none"),
+      Type.Literal("later"),
+      Type.Literal("on"),
+      Type.Literal("passed"),
+    ]),
+    /** The recall target used today */
+    target: Type.Number(),
+  },
+  { $id: "InterviewDateResponse" },
+);
+export type InterviewDateResponse = Static<typeof InterviewDateResponse>;
+
 /** Error codes the recall routes answer with */
 export const RECALL_ERRORS = {
   idReused: "review_id_reused",
   notLatest: "not_latest_review",
   undoExpired: "undo_expired",
   unknownTimeZone: "unknown_time_zone",
+  notADate: "not_a_date",
+  datePassed: "interview_date_passed",
 } as const;

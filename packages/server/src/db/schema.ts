@@ -3,6 +3,7 @@ import {
   bigint,
   boolean,
   check,
+  date,
   doublePrecision,
   foreignKey,
   index,
@@ -35,6 +36,8 @@ export const users = pgTable("users", {
   image: text("image"),
   // IANA name from the app, used to start each recall day at 4 a.m. local time
   timeZone: text("time_zone"),
+  // Raises the recall target in the 4 weeks before it
+  interviewDate: date("interview_date", { mode: "string" }),
   createdAt: createdAt(),
   updatedAt: updatedAt(),
 });

@@ -127,6 +127,33 @@ describe.skipIf(!url)("recall store against Postgres", () => {
       });
     });
 
+    it("schedules with the target it's given and saves it", async () => {
+      const me = await user();
+      const other = await user();
+      await store.start(me, CHAPTER, start);
+      await store.start(other, CHAPTER, start);
+      // Two good ratings take a new card past its learning steps
+      const grow = async (who: string, target: number) => {
+        await store.review(who, input(), start, target);
+        const first = await card(who);
+        await store.review(
+          who,
+          input({ answeredAt: first?.card.dueAt }),
+          first?.card.dueAt ?? start,
+          target,
+        );
+        return card(who);
+      };
+      const usual = await grow(other, 0.9);
+      const higher = await grow(me, 0.95);
+      expect(higher?.card.dueAt.getTime()).toBeLessThan(
+        usual?.card.dueAt.getTime() ?? 0,
+      );
+      expect((await reviewsOf(me)).map((row) => row.recallTarget)).toEqual([
+        0.95, 0.95,
+      ]);
+    });
+
     it("stores a retry once and answers it the same way", async () => {
       const me = await user();
       await store.start(me, CHAPTER, start);
@@ -367,6 +394,24 @@ describe.skipIf(!url)("recall store against Postgres", () => {
       expect(await store.timeZone(me)).toBe("UTC");
       await store.setTimeZone(me, "America/Toronto");
       expect(await store.timeZone(me)).toBe("America/Toronto");
+    });
+  });
+
+  describe("settings", () => {
+    it("reads the time zone and interview date together", async () => {
+      const me = await user();
+      expect(await store.settings(me)).toEqual({
+        timeZone: "UTC",
+        interviewDate: null,
+      });
+      await store.setTimeZone(me, "America/Toronto");
+      await store.setInterviewDate(me, "2026-12-14");
+      expect(await store.settings(me)).toEqual({
+        timeZone: "America/Toronto",
+        interviewDate: "2026-12-14",
+      });
+      await store.setInterviewDate(me, null);
+      expect((await store.settings(me)).interviewDate).toBeNull();
     });
   });
 

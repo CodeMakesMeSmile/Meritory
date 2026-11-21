@@ -1,6 +1,6 @@
 import { RECALL_ERRORS } from "@meritory/contracts";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { undoReview } from "./recall-api";
+import { INTERVIEW_ERRORS, saveInterviewDate, undoReview } from "./recall-api";
 import { UNDO_ERRORS } from "./recall-sitting";
 
 const ID = "0b6f3c1e-8a3d-4f7a-9c2e-5d1b7e9f0a12";
@@ -24,6 +24,36 @@ describe("recall api", () => {
       notLatest: RECALL_ERRORS.notLatest,
       undoExpired: RECALL_ERRORS.undoExpired,
     });
+  });
+
+  it("uses the same interview date codes as the API contract", () => {
+    expect(INTERVIEW_ERRORS).toEqual({
+      notADate: RECALL_ERRORS.notADate,
+      datePassed: RECALL_ERRORS.datePassed,
+    });
+  });
+
+  it("saves or clears the interview date with PUT", async () => {
+    const saved = {
+      date: "2026-12-14",
+      startsOn: "2026-11-16",
+      status: "on",
+      target: 0.95,
+    };
+    const fetch = reply(200, saved);
+    vi.stubGlobal("fetch", fetch);
+    expect(await saveInterviewDate("2026-12-14")).toEqual({
+      ok: true,
+      data: saved,
+    });
+    await saveInterviewDate(null);
+    expect(fetch).toHaveBeenLastCalledWith(
+      "/api/v1/me/interview-date",
+      expect.objectContaining({
+        method: "PUT",
+        body: JSON.stringify({ date: null }),
+      }),
+    );
   });
 
   it("undoes with POST on the review's own path", async () => {
