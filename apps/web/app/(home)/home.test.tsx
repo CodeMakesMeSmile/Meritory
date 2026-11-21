@@ -7,6 +7,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const api = vi.hoisted(() => ({
   content: null as unknown,
   due: null as unknown,
+  interview: null as unknown,
 }));
 
 vi.mock("next/navigation", () => ({
@@ -20,6 +21,10 @@ vi.mock("@/lib/server-api", () => ({
     if (api.due === "down") throw new Error("GET /v1/recall/due failed");
     if (api.due === "slow") return new Promise(() => {});
     return api.due;
+  },
+  getInterviewDate: async () => {
+    if (api.interview === "down") throw new Error("GET failed");
+    return api.interview;
   },
 }));
 
@@ -87,6 +92,7 @@ async function home() {
 
 beforeEach(() => {
   api.content = content();
+  api.interview = null;
 });
 
 describe("Home", () => {
@@ -184,5 +190,33 @@ describe("Home", () => {
     const html = await home();
     expect(html).toContain(escapeHtml(attack));
     if (/[<>"']/.test(attack)) expect(html).not.toContain(attack);
+  });
+});
+
+describe("Interview line", () => {
+  const set = (date: string, status: string) => {
+    api.interview = { date, startsOn: null, status, target: 0.9 };
+  };
+
+  it("links to Account while the date is coming up", async () => {
+    api.due = due({ chapters: [counts("arrays", 2, 0)] });
+    set("2026-12-14", "on");
+    const html = await home();
+    expect(html).toContain("Interview on December 14");
+    expect(html).toContain('href="/account"');
+    set("2027-01-29", "later");
+    expect(await home()).toContain("Interview on January 29");
+  });
+
+  it("hides once the date has passed, with no date, or when it can't load", async () => {
+    api.due = due({ chapters: [counts("arrays", 2, 0)] });
+    set("2026-11-14", "passed");
+    expect(await home()).not.toContain("Interview on");
+    api.interview = { date: null, startsOn: null, status: "none", target: 0.9 };
+    expect(await home()).not.toContain("Interview on");
+    api.interview = "down";
+    const html = await home();
+    expect(html).not.toContain("Interview on");
+    expect(html).toContain("Arrays and hashing");
   });
 });
