@@ -3,7 +3,13 @@
 import type { RecallRating } from "@meritory/contracts";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Button, buttonClass, linkClass } from "@/components/button";
 import { CountSquares } from "@/components/count-squares";
 import {
@@ -12,13 +18,23 @@ import {
   shortcutsOn,
   writeStoppedAt,
 } from "@/lib/device-storage";
-import { loadDue, type ReviewToSave, saveReview } from "@/lib/recall-api";
+import {
+  loadDue,
+  type ReviewToSave,
+  saveReview,
+  undoReview,
+} from "@/lib/recall-api";
 import {
   doneLine,
+  lineAfterFailedUndo,
+  lineAfterSave,
   RATING_LABELS,
   type SavedRating,
   type SittingCard,
+  showsUndo,
   tomorrowLine,
+  UNDO_OFFLINE,
+  type UndoLine,
 } from "@/lib/recall-sitting";
 import { longWait } from "@/lib/recall-time";
 import { MatchingCard } from "./matching-card";
@@ -32,11 +48,55 @@ type Saving =
   | { state: "saving" }
   | { state: "failed"; review: ReviewToSave };
 
+export function UndoBar({
+  line,
+  onUndo,
+}: {
+  line: UndoLine;
+  onUndo: () => void;
+}) {
+  if (line.kind === "kept") {
+    return (
+      <p className="flex min-h-control items-center text-small text-danger">
+        {line.text}
+      </p>
+    );
+  }
+  const label = RATING_LABELS[line.rating];
+  return (
+    <div className="flex min-h-control flex-wrap items-center gap-x-2">
+      <p
+        className={`text-small ${line.offline ? "text-danger" : "text-secondary"}`}
+      >
+        {line.offline ? UNDO_OFFLINE : `Last card saved as ${label}.`}
+      </p>
+      <button
+        type="button"
+        onClick={onUndo}
+        aria-disabled={line.busy}
+        aria-busy={line.busy}
+        aria-label={`Undo the ${label} rating`}
+        className={`${linkClass} flex h-control items-center pr-5`}
+      >
+        Undo
+      </button>
+    </div>
+  );
+}
+
 function plural(count: number, one: string) {
   return `${count} ${count === 1 ? one : `${one}s`}`;
 }
 
-function Done({ count, saved }: { count: number; saved: SavedRating[] }) {
+function Done({
+  count,
+  saved,
+  undo,
+}: {
+  count: number;
+  saved: SavedRating[];
+  undo: ReactNode;
+}) {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const [line, setLine] = useState<string | null>(null);
   const [tomorrow, setTomorrow] = useState<string | null>(null);
@@ -59,6 +119,7 @@ function Done({ count, saved }: { count: number; saved: SavedRating[] }) {
   return (
     <>
       <CountSquares filled={count} total={count} className="pt-2" />
+      {undo}
       <div className="flex flex-col gap-4 border border-accent bg-card p-5 md:p-8">
         <h1
           ref={headingRef}
@@ -95,6 +156,9 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
   const [missedOnce, setMissedOnce] = useState(false);
   const [announcement, setAnnouncement] = useState("");
   const [shortcuts, setShortcuts] = useState(true);
+  const [line, setLine] = useState<UndoLine | null>(null);
+  // After an Undo the card comes back with focus, even when it was the first
+  const [undone, setUndone] = useState(false);
   // Cards done before Stop for now, when this sitting carries on from one
   const [before, setBefore] = useState<number | null>(null);
   const cardStart = useRef(Date.now());
@@ -130,6 +194,7 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
       ]);
       setSaving({ state: "idle" });
       setAnnouncement(`Last card saved as ${RATING_LABELS[review.rating]}.`);
+      setLine(lineAfterSave(items, review.card, review.id, review.rating));
       if (advance) {
         setIndex((at) => at + 1);
         cardStart.current = Date.now();
@@ -189,6 +254,29 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
     cardStart.current = Date.now();
   }
 
+  async function undo() {
+    if (line?.kind !== "offer" || line.busy) return;
+    setLine({ ...line, busy: true });
+    const result = await undoReview(line.id);
+    if (result.ok) {
+      setSaved((list) => list.slice(0, -1));
+      setLine(null);
+      setChecked(null);
+      setUndone(true);
+      setIndex(line.at);
+      cardStart.current = Date.now();
+      setAnnouncement("Rating undone.");
+      return;
+    }
+    if (result.reason === "signed_out") {
+      router.replace(`/sign-in?next=${encodeURIComponent("/recall")}`);
+      return;
+    }
+    const next = lineAfterFailedUndo(line, result.code);
+    setLine(next);
+    setAnnouncement(next.kind === "kept" ? next.text : UNDO_OFFLINE);
+  }
+
   function toggleShortcuts() {
     setShortcutsOn(!shortcuts);
     setShortcuts(!shortcuts);
@@ -204,10 +292,15 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
     </p>
   );
 
+  const undoBar =
+    line && showsUndo(line, index) ? (
+      <UndoBar line={line} onUndo={() => void undo()} />
+    ) : null;
+
   if (!item) {
     return (
       <>
-        <Done count={offset + saved.length} saved={saved} />
+        <Done count={offset + saved.length} saved={saved} undo={undoBar} />
         {liveRegion}
       </>
     );
@@ -260,7 +353,7 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
 
   const shared = {
     item,
-    focusOnOpen: index > 0,
+    focusOnOpen: index > 0 || undone,
     after,
   };
   const card = item.card;
@@ -288,6 +381,7 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
           total={total}
         />
       </div>
+      {undoBar}
       {card.type === "prompt" ? (
         <PromptCard
           key={item.key}
