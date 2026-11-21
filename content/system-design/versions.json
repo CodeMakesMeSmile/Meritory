@@ -5,6 +5,9 @@
   "card/bus-queue-or-log": [
     "52776a1e63ee050126915430aab61d91de4d6629c9e6738241b9ce6bf735cf49"
   ],
+  "card/concurrent-idempotent-repeat": [
+    "0ff0082815a0e21d51f55bdc9b1d5dd47752a9493bc496216588bee42be89dc8"
+  ],
   "card/cost-of-ordering": [
     "f6a277721e49174288371ec9442969910a8eaabf47d9d9e94eb95a57d6b0ba64"
   ],
@@ -41,8 +44,14 @@
   "card/per-day-to-per-second": [
     "795eb0ff53cba9186d498b7445664f59cf9812c0b3fad63d8b9ddd8a64cd6eb8"
   ],
+  "card/problem-details-members": [
+    "80902447345285722a0be4f00eca5338b1cf481274b50f0d0dcbefb9b9d9b26c"
+  ],
   "card/requirement-drives-design": [
     "35f91882e265d3851e39c3bd247487adaebe775883059222646ad60fb2d3ffd7"
+  ],
+  "card/retire-version-steps": [
+    "5be8976e6c30c6bcc7d54cfc0caa3107942182e8a822686ce8ec75c21e266246"
   ],
   "card/retry-amplification": [
     "6db782019db3ba2aee1db6111792ca8256bca8082771273a023bba84d2b8842b"
@@ -53,14 +62,32 @@
   "card/same-key-different-body": [
     "9455e9dfad6535cc9e18246b407676024f13c25115499b03a49eee40f03ed8b7"
   ],
+  "card/status-code-meanings": [
+    "e1cfe8f795f7df2d0cab2b8486c57421d8a7a098cda2ea026b8d06d6f04124e2"
+  ],
   "card/storage-estimate-steps": [
     "c299cb7280433e222b6aa76233b5881a60f9394c91aa15aa8c666132673aac66"
   ],
   "card/strongest-trade-off": [
     "2962855f3efd823fbc94383f15715404086a8ea2265e7ec749c17fbdb09fed68"
   ],
+  "card/sync-and-deletes": [
+    "b6ea58945404c42b9611907ecf6436badcca80600cc3ab5f3fe7cd5230fe2b33"
+  ],
+  "card/sync-run-steps": [
+    "77fa94bf3410a9f4a39b1cc3636ba7af13d9fc77fa6b520ad26034f1a4c97ee9"
+  ],
+  "card/token-bucket-behavior": [
+    "d348e84836cb01a69ceb0179382967141718cbd7b216c4551d52663a5d60933d"
+  ],
   "card/visibility-timeout-expiry": [
     "e43e3fa595ef19d5163d3df9b35a9490ba587ebcfebdbfc0a456d0ba0626c640"
+  ],
+  "card/webhook-duplicates-order": [
+    "ef3dd14c91889e9ce73c37c9c64a3b7aa38667316b1ba0127398f8c25dfe9b88"
+  ],
+  "card/webhook-verify-steps": [
+    "16abbd34b0a2ff50a381baaada4c19ee9e22493813eb401de5b14a78dadd2ddb"
   ],
   "card/when-add-component": [
     "81bb56acd9c2d669fd812b4616d67e0ab8bf113c56fd2fdaf52252875229a7ac"
@@ -68,14 +95,26 @@
   "card/when-ask-about-providers": [
     "845765e5e5d8428a1b44e63f2cbcf871a92bea9d65592d48c7239d636ba9cbd7"
   ],
+  "card/when-disable-endpoint": [
+    "22881527688fbd7490f17a5f3bc1e4d400937ba9540e8986fc445dde688af3bd"
+  ],
   "card/when-lead-deep-dives": [
     "2ad1389710c0d3b4cd6777227143cf8e11d1090e1fa80326ddd5a300d4e2abb7"
+  ],
+  "card/when-provider-429": [
+    "35623ff071297ea825d436bd063f2774b8e4a26a06626fd19b6ca7ce894bb649"
   ],
   "card/when-retry-budget": [
     "67d0658755139ee3da4b721dc328269e2c4b9ed7a0bf68be71c6d113377b7dde"
   ],
+  "card/when-save-checkpoint": [
+    "d2c999f527c488b2e5360c14022a1dd42978c1bdfdd1f4aed206a457c9fe6565"
+  ],
   "card/when-skip-ordering": [
     "f10cf20c1a3876a5e41de792628ce34e371d5c4ef57014870f31040323c3491c"
+  ],
+  "card/when-thin-payload": [
+    "846dac031e8f4cae30400b9c64e599416fb9dcc89610072be635ab2e70ee9b42"
   ],
   "card/when-to-estimate": [
     "406f35d354a76859ee718016b5bc06403e327a343738143b4819f0d7be2da8ad"
@@ -86,6 +125,9 @@
   "card/which-errors-to-retry": [
     "f7e09ae057e9a1c08d5942a5b12fff7ee6f7c732da5afd32d9e72c6ba61247d9"
   ],
+  "card/which-server-auth": [
+    "362b4fa0df3af18d3904273a20c7529d714703274b6c7885d5c5022bf6a9c81d"
+  ],
   "card/which-workflow-tool": [
     "f7b21d8b41acb81227779a3afbe5a91c177d6767bcc2e4623b9d9f7f028d8b3c"
   ],
@@ -95,14 +137,26 @@
   "card/why-atomic-idempotency": [
     "79df012460706ea7b9d829a151baf61d0a2a0e7db4bd37af2a9f811f99a801bb"
   ],
+  "card/why-branch-on-type": [
+    "53ffc058ad4cf012f95a5539f3c64854cadcb3e8379de4371d44d10a70267f44"
+  ],
   "card/why-consumers-capped": [
     "c38b2804bda3ca742acc2979422fd81c77f38b29d128a2de492c939a41aac04e"
+  ],
+  "card/why-cursor-pagination": [
+    "697b360a90f50f636ecbbf5a6b3903ba369d4daa6b24644bf93227b616d52769"
+  ],
+  "card/why-cursor-tie-breaker": [
+    "e35fc590533bfe2edd1c91d48627af8776f2142a6e23b2f9c25a156f46c5debd"
   ],
   "card/why-dead-letter-queue": [
     "669b50921aecbfec8a19cd5a7d1448faf670aa5766a07207dacb0ad429961f05"
   ],
   "card/why-few-features": [
     "58aea8cd01fd083fa7269fb4df20b08657938e04c358f78f2c28580440f3a423"
+  ],
+  "card/why-handle-unknown-enums": [
+    "3fa49cddff7a52a6d20db56d3d6d42a12de44b7bc7e7ddf1a652de069344f2c5"
   ],
   "card/why-identity-from-token": [
     "433b057039064b0c2c376820ffe33fef2f40bc7cbd400b6e1e3b2e7712cdf933"
@@ -116,11 +170,23 @@
   "card/why-name-failure-modes": [
     "d3fd9ee525a40ac97f901438afcca730d2ad58529cf53a452ab090db6180f1dd"
   ],
+  "card/why-not-hash-body-key": [
+    "51f25b3343e6117e23da492a43a1b254b434b197e3b2a8a78508943d6529030d"
+  ],
   "card/why-outbox": [
     "4c02aafe9a05b89e8fd9ecea2714fad210e3662f4482e2af1f9216f7318c1aea"
   ],
+  "card/why-per-tenant-limits": [
+    "669ef511ff5a7096df9be4cad24b9267c50fcfdcdaf491bb33f95936d0f06a42"
+  ],
   "card/why-quantify-nfrs": [
     "27a60c469f64f5c423be6585cc411a7fd8d2b6426e032ebd9293ea26db711934"
+  ],
+  "card/why-raw-body": [
+    "4aa41c19c45479adefff400b9872122ebac158b1b2680b39cf56bf03ba007041"
+  ],
+  "card/why-signed-timestamp": [
+    "64aec669cce89938c5a834638637c26abe309e5a6bcbb1ee44f9949840990ee1"
   ],
   "card/why-simple-first": [
     "341fc681211b75e08a9939951df2ed279b65b891d6e62687b65ed17067a9d9c4"
@@ -128,8 +194,17 @@
   "card/why-temporal-determinism": [
     "525145c546403843e0360914922b27573e8642cabb92447d693fd0796eb80d05"
   ],
+  "card/why-tenant-from-credential": [
+    "ac864284b9c90b16bf1e2a856451dc2824728747d120a64997d65d2e60d4ef5a"
+  ],
   "card/why-timeouts": [
     "af8874274379b794da2bacf25beb39012b954744c01685736ce98c39caf0c660"
+  ],
+  "card/why-trailing-window": [
+    "b2195840430383b3e63189902360b9004e5168c76fe784aa610f28606a9eade0"
+  ],
+  "chapter/api-design": [
+    "d8ed1518ba1404d751030aceaa7839b59d6102235230b8c31f72a5394ad083f2"
   ],
   "chapter/design-method": [
     "e7046426247c9d266a9a80cf354779f3275ae164e267b6df9ed51d52479049da"
