@@ -75,7 +75,14 @@ function content() {
                 sibling: "other",
                 rubric: "design-review",
                 statement: "Find two numbers.",
-                signature: { function: "f", params: [], returns: "int" },
+                signature: {
+                  function: "pairSum",
+                  params: [
+                    { name: "nums", type: "int[]" },
+                    { name: "target", type: "int" },
+                  ],
+                  returns: "int[]",
+                },
                 cases: [],
                 hash: "h",
                 version: 1,
@@ -115,10 +122,15 @@ describe("exercise page", () => {
     );
   });
 
-  it("says code can't run yet on a coding exercise", async () => {
+  it("gives a coding exercise an editor with starter code", async () => {
     const html = await render("pair-sum");
     expect(html).toContain("Find two numbers.");
-    expect(html).toContain("The app can&#x27;t run code yet.");
+    expect(html).toContain("Run tests");
+    expect(html).toContain("TypeScript");
+    expect(html).toContain("Python");
+    expect(html).toContain(
+      "export function pairSum(nums: number[], target: number): number[]",
+    );
     expect(html).not.toContain("Score my answer");
   });
 
