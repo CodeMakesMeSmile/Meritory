@@ -9,6 +9,18 @@ vi.mock("next/navigation", () => ({
 const me = vi.hoisted(() => ({ current: null as MeResponse | null }));
 vi.mock("@/lib/me", () => ({ requireMe: async () => me.current }));
 
+const interview = vi.hoisted(() => ({
+  current: {
+    date: null as string | null,
+    startsOn: null as string | null,
+    status: "none" as "none" | "later" | "on" | "passed",
+    target: 0.9,
+  },
+}));
+vi.mock("@/lib/server-api", () => ({
+  getInterviewDate: async () => interview.current,
+}));
+
 const { default: AccountPage } = await import("./page.tsx");
 const { ConfirmItsYou } = await import("./confirm-its-you.tsx");
 const { onlyWayText, stillWorksText } = await import("./methods-card.tsx");
@@ -255,5 +267,68 @@ describe("Sign out", () => {
     );
     expect(html).toContain('aria-label="Sign out of this device"');
     expect(html).toContain(">Sign out<");
+  });
+});
+
+describe("Interview date", () => {
+  const show = async (state: typeof interview.current) => {
+    interview.current = state;
+    const html = await account(withPassword);
+    interview.current = {
+      date: null,
+      startsOn: null,
+      status: "none",
+      target: 0.9,
+    };
+    return html;
+  };
+
+  it("sits between Profile and Sign-in methods, empty to start", async () => {
+    const html = await show(interview.current);
+    const card = html.indexOf("Interview date");
+    expect(card).toBeGreaterThan(html.indexOf("Profile"));
+    expect(html.indexOf("Sign-in methods")).toBeGreaterThan(card);
+    expect(html).toContain("a few more cards each day");
+    expect(html).toContain('type="date"');
+    expect(html).toContain("Save date");
+    expect(html).not.toContain("Remove date");
+  });
+
+  it("says when the higher target is on", async () => {
+    const html = await show({
+      date: "2026-12-14",
+      startsOn: "2026-11-16",
+      status: "on",
+      target: 0.95,
+    });
+    expect(html).toContain('value="2026-12-14"');
+    expect(html).toContain(
+      "On now. Until December 14, cards come back a bit sooner, aiming for 95% recall instead of 90%.",
+    );
+    expect(html).toContain("Remove date");
+  });
+
+  it("says when a saved date starts later", async () => {
+    const html = await show({
+      date: "2027-01-29",
+      startsOn: "2027-01-01",
+      status: "later",
+      target: 0.9,
+    });
+    expect(html).toContain("Saved. From January 1, cards come back");
+  });
+
+  it("empties the field once the date has passed", async () => {
+    const html = await show({
+      date: "2026-11-14",
+      startsOn: "2026-10-17",
+      status: "passed",
+      target: 0.9,
+    });
+    expect(html).toContain(
+      "November 14 has passed, so recall is back to its usual 90%. Add a new date any time.",
+    );
+    expect(html).not.toContain('value="2026-11-14"');
+    expect(html).not.toContain("Remove date");
   });
 });

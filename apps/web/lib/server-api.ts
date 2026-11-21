@@ -1,6 +1,7 @@
 import "server-only";
 import type {
   ContentResponse,
+  InterviewDateResponse,
   MeResponse,
   RecallDueResponse,
   RecallSessionResponse,
@@ -42,4 +43,8 @@ export function getDue(path: string): Promise<RecallDueResponse> {
 
 export function getSession(path: string): Promise<RecallSessionResponse> {
   return serverGet<RecallSessionResponse>("/v1/recall/session", path);
+}
+
+export function getInterviewDate(path: string): Promise<InterviewDateResponse> {
+  return serverGet<InterviewDateResponse>("/v1/me/interview-date", path);
 }
