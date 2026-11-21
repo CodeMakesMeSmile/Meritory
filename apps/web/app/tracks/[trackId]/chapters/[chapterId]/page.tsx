@@ -5,6 +5,7 @@ import { AppShell } from "@/components/app-shell";
 import { linkClass } from "@/components/button";
 import { Markdown, markdownHeadings } from "@/components/markdown";
 import { chapterPath, findChapter, trackLabel } from "@/lib/content";
+import { exercisePath, practiceOrder } from "@/lib/practice";
 import { getContent, requireMe } from "@/lib/server-api";
 import { StartRecallButton } from "./start-recall-button";
 
@@ -65,6 +66,8 @@ export default async function ChapterPage({ params }: Props) {
           <p className="text-small text-secondary">
             {plural(chapter.cards.length, "card")},{" "}
             {plural(chapter.skills.length, "skill")}
+            {chapter.exercises.length > 0 &&
+              `, ${plural(chapter.exercises.length, "exercise")}`}
           </p>
         </header>
         <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,42.5rem)_20rem]">
@@ -98,6 +101,34 @@ export default async function ChapterPage({ params }: Props) {
                   {plural(chapter.skills.length, "skill")}, each with a why or
                   when card. Recall starts with up to 10 new cards a day.
                 </p>
+              </nav>
+            )}
+            {chapter.exercises.length > 0 && (
+              <nav
+                aria-labelledby="practice-heading"
+                className="flex flex-col gap-3 border border-border bg-card p-5"
+              >
+                <h2 id="practice-heading" className="text-h3">
+                  Practice
+                </h2>
+                <ul className="flex flex-col gap-2">
+                  {practiceOrder(chapter.exercises).map((exercise) => (
+                    <li key={exercise.id} className="flex flex-col">
+                      <Link
+                        href={exercisePath(track.id, chapter.id, exercise.id)}
+                        className={`${linkClass} flex min-h-control items-center`}
+                      >
+                        {exercise.title}
+                      </Link>
+                      <span className="text-small text-secondary">
+                        {exercise.kind === "design"
+                          ? "Written answer"
+                          : "Coding"}
+                        , {exercise.difficulty}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
               </nav>
             )}
           </aside>
