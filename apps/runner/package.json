@@ -1,0 +1,16 @@
+{
+  "name": "@meritory/runner",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "AGPL-3.0-only",
+  "description": "Checks coding answers in Isolate sandboxes, inside WSL2 on the owner's PC",
+  "scripts": {
+    "start": "node src/main.ts",
+    "typecheck": "tsc"
+  },
+  "devDependencies": {
+    "@meritory/content": "workspace:*",
+    "@meritory/security-testing": "workspace:*"
+  }
+}

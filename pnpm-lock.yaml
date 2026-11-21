@@ -299,6 +299,15 @@ importers:
         specifier: ^19.3.0
         version: 19.3.0
 
+  apps/runner:
+    devDependencies:
+      '@meritory/content':
+        specifier: workspace:*
+        version: link:../../packages/content
+      '@meritory/security-testing':
+        specifier: workspace:*
+        version: link:../../packages/security-testing
+
   apps/web:
     dependencies:
       '@meritory/content':
