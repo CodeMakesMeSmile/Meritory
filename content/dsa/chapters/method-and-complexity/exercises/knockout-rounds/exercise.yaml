@@ -1,0 +1,17 @@
+id: knockout-rounds
+kind: coding
+title: Rounds in a knockout
+difficulty: easy
+skills:
+  - read-loop-costs
+  - growth-and-limits
+sibling: doubling-savings
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: knockoutRounds
+  params:
+    - name: players
+      type: int
+  returns: int

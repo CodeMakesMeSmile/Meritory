@@ -1,0 +1,91 @@
+{
+  "exercise": "knockout-rounds",
+  "cases": [
+    {
+      "uuid": "aa8ac88d-98d5-493d-99cc-1de455bed7df",
+      "description": "an odd player sits out a round",
+      "property": "knockoutRounds",
+      "input": {
+        "players": 5
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "726faa77-ef41-4f9e-9221-cc3d492532f7",
+      "description": "a power of two needs no one to sit out",
+      "property": "knockoutRounds",
+      "input": {
+        "players": 8
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "09b75240-5949-4255-9b13-266d6e76f0c4",
+      "description": "one past a power of two needs an extra round",
+      "property": "knockoutRounds",
+      "input": {
+        "players": 9
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "5abcb1f6-1d72-44c3-936b-cbfd40f1089b",
+      "description": "three players take two rounds",
+      "property": "knockoutRounds",
+      "input": {
+        "players": 3
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "1e5240aa-8fce-44b6-a930-92385a5f13e7",
+      "description": "a million players",
+      "property": "knockoutRounds",
+      "input": {
+        "players": 1000000
+      },
+      "expected": 20
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "16fd55ca-a24a-4c2d-a991-c087f1a6278e",
+          "description": "one player has already won",
+          "property": "knockoutRounds",
+          "input": {
+            "players": 1
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "b5989d61-9b5b-4268-8be6-60716089c684",
+          "description": "two players play one game",
+          "property": "knockoutRounds",
+          "input": {
+            "players": 2
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "62297d48-1ed3-445d-bf22-1780708d5c12",
+          "description": "the largest 32-bit int",
+          "property": "knockoutRounds",
+          "input": {
+            "players": 2147483647
+          },
+          "expected": 31
+        },
+        {
+          "uuid": "d1071584-1569-4095-be9b-3b8fbded2b4b",
+          "description": "exactly two to the thirtieth",
+          "property": "knockoutRounds",
+          "input": {
+            "players": 1073741824
+          },
+          "expected": 30
+        }
+      ]
+    }
+  ]
+}

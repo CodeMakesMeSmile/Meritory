@@ -1,0 +1,410 @@
+- id: coding-round-steps
+  skill: run-the-round
+  asks: what
+  type: ordering
+  prompt: Put the steps of a coding round in order.
+  reworded: In what order do you work through a coding question in an interview?
+  steps:
+    - Ask about the input, its size, and its edge cases.
+    - Work an example by hand.
+    - Describe the brute force and its cost.
+    - Find a faster approach and state its cost.
+    - Write the code, saying what each part does.
+    - Walk the code through an example and the edge cases.
+  lesson:
+    title: Understand, then plan, then code, then check
+    explanation: Each step catches a different mistake. Questions catch a misread problem, the example catches a wrong idea, the brute force gives you a baseline, and the hand test catches a wrong line.
+- id: why-say-brute-force
+  skill: run-the-round
+  asks: why
+  type: prompt
+  prompt: Why say the brute force out loud before looking for something faster?
+  reworded: What do you gain by describing the slow, simple approach first?
+  points:
+    - It shows you understood the problem, even before you find the best approach.
+    - Its cost is the baseline the better approach has to beat.
+    - Its repeated work often points at the improvement.
+    - If time runs short, you can still code something that works.
+  misconception: That mentioning a slow approach makes you look weak.
+  lesson:
+    title: The brute force is a starting point
+    explanation: Interviewers expect a first, simple idea. Naming it, with its time and space, shows clear thinking and gives you something to improve.
+    fix: Say it in one or two sentences with its cost, then ask yourself what work it repeats.
+- id: why-clarify-first
+  skill: run-the-round
+  asks: why
+  type: pick-one
+  prompt: Why ask how big the input can get before choosing an approach?
+  reworded: What does the size of the input tell you before you start?
+  options:
+    - text: It tells you how fast the solution has to be
+      correct: true
+      reason: A list of 20 values allows trying every subset, while a list of a million needs about one pass.
+    - text: It tells you which language to write in
+      reason: The language is usually set before the question starts.
+    - text: It's only a formality, since every answer should be O(n)
+      reason: Some problems can't be solved in O(n), and some small inputs are meant for a slower search.
+  lesson:
+    title: Limits pick the target
+    explanation: The input size, read against the growth rate table, tells you which costs are fast enough. Asking first saves you from aiming too high or too low.
+- id: when-stuck-talk
+  skill: run-the-round
+  asks: when
+  type: pick-one
+  prompt: When you're stuck partway through a coding round, what helps most?
+  reworded: If you can't see how to go on, what should you do in the interview?
+  options:
+    - text: Say what you're trying and why it isn't working
+      correct: true
+      reason: It shows how you think and gives the interviewer a chance to nudge you.
+    - text: Go quiet until you've worked it out
+      reason: Silence leaves the interviewer with nothing to judge and no way to help.
+    - text: Start coding the first idea, even if you think it's wrong
+      reason: Code built on an idea you doubt usually has to be thrown away.
+  lesson:
+    title: Think out loud
+    explanation: A stuck candidate who explains what they've tried still shows their reasoning. A small hint costs less than a long silence.
+- id: drop-constants-match
+  skill: big-o-basics
+  asks: what
+  type: matching
+  prompt: Match each count of steps to its Big O.
+  reworded: What does each of these step counts simplify to in Big O?
+  matchHeading: Big O
+  matchName: a cost
+  pairs:
+    - item: 3n + 10
+      match: O(n)
+    - item: n² + 5n
+      match: O(n²)
+    - item: 2n log n + n
+      match: O(n log n)
+    - item: 500 steps, whatever n is
+      match: O(1)
+  extraMatches:
+    - O(3n)
+    - O(n² + n)
+  lesson:
+    title: Drop constants and smaller terms
+    explanation: Big O keeps only how the work grows. Constant factors and terms that grow more slowly than the biggest one are dropped.
+- id: why-drop-constants
+  skill: big-o-basics
+  asks: why
+  type: prompt
+  prompt: Why does Big O drop constant factors, so that 3n and n are both O(n)?
+  reworded: What's the reason Big O treats two passes over a list the same as one?
+  points:
+    - Big O describes how the work grows as the input grows, not the exact step count.
+    - Doubling n doubles both 3n and n, so they grow the same way.
+    - Exact constants depend on the machine and language, which Big O sets aside.
+    - Constants still matter in practice, so mention them when two approaches share a Big O.
+  misconception: That O(n) and O(3n) are different costs to report.
+  lesson:
+    title: Big O is about the shape of growth
+    explanation: Any fixed number of passes grows at the same rate as one pass. What changes the Big O is work that grows with n, like a loop inside a loop.
+- id: when-two-variables
+  skill: big-o-basics
+  asks: when
+  type: pick-one
+  prompt: When should a cost use two variables, like O(n · m), instead of one?
+  reworded: In what case is writing O(n²) for a solution wrong, even though there's a loop inside a loop?
+  options:
+    - text: When the two loops run over two different inputs that can have different sizes
+      correct: true
+      reason: One input might be tiny and the other huge, and O(n²) hides that.
+    - text: When the inner loop starts at i + 1
+      reason: That's still one list, so it's O(n²), about half the pairs.
+    - text: Whenever there are two loops, even one after the other
+      reason: Loops one after the other add, so two loops over one list are still O(n).
+  lesson:
+    title: Name each input
+    explanation: Comparing n words with m words is O(n · m). Calling both n claims they're always the same size, which can make the cost look worse or better than it is.
+- id: space-counts-what
+  skill: big-o-basics
+  asks: what
+  type: pick-one
+  prompt: A solution reads a list of n values, keeps a running total and two indices, and returns one number. What's its extra space?
+  reworded: What extra memory does a solution use if it keeps only a total and two indices besides its input?
+  options:
+    - text: O(1)
+      correct: true
+      reason: A fixed number of variables doesn't grow with n, and the input itself isn't counted.
+    - text: O(n)
+      reason: That would need extra memory that grows with the input, like a copy or a set.
+    - text: O(log n)
+      reason: Nothing here halves or recurses.
+  lesson:
+    title: Space is the extra memory
+    explanation: Space counts what the solution adds on top of its input. A few variables are O(1). A set, a map, or a copy of the list is O(n).
+- id: loop-shape-costs
+  skill: read-loop-costs
+  asks: what
+  type: matching
+  prompt: Match each loop shape to its cost, for a list of n values.
+  reworded: What does each of these loop shapes cost on n values?
+  matchHeading: Cost
+  matchName: a cost
+  pairs:
+    - item: A loop, then a second loop, one after the other
+      match: O(n)
+    - item: A loop with a loop inside, each over the whole list
+      match: O(n²)
+    - item: A loop that halves the remaining range each time
+      match: O(log n)
+    - item: Sorting, then one loop
+      match: O(n log n)
+  extraMatches:
+    - O(2n²)
+    - O(n³)
+  lesson:
+    title: Loops in a row add, loops inside loops multiply
+    explanation: Two passes add to O(n). A loop inside a loop multiplies to O(n²). Halving takes about log₂ n steps. Sorting costs O(n log n), which is bigger than the pass after it.
+- id: why-halving-log
+  skill: read-loop-costs
+  asks: why
+  type: prompt
+  prompt: Why does a loop that halves n each time run only O(log n) times?
+  reworded: What makes a halving loop so much faster than a loop that counts down by one?
+  points:
+    - Each step cuts what's left in half.
+    - It takes about log₂ n halvings to get from n down to 1.
+    - A million halves to 1 in about 20 steps, and a billion in about 30.
+  misconception: That any loop over a range of n values is O(n).
+  lesson:
+    title: Halving shrinks fast
+    explanation: Doubling 1 thirty times passes a billion, so halving a billion thirty times gets back to 1. The step count grows with the number of digits, not the value.
+- id: when-hidden-loop
+  skill: read-loop-costs
+  asks: when
+  type: pick-one
+  prompt: When does a single loop over n values cost O(n²)?
+  reworded: How can code with only one loop still be quadratic?
+  options:
+    - text: When each step does an O(n) operation, like checking `value in some_list`
+      correct: true
+      reason: The search inside each step is a hidden loop, so n steps of O(n) work is O(n²).
+    - text: When the loop body has more than one line
+      reason: A fixed number of lines is a constant factor, which Big O drops.
+    - text: When the loop counts down instead of up
+      reason: The direction doesn't change how many times it runs.
+  lesson:
+    title: Some lines hide a loop
+    explanation: Searching a list, slicing, and building a string with `+=` each cost O(n). Put one inside a loop and the loop becomes O(n²).
+    fix: Use a set for membership checks, pass indices instead of slicing, and join strings once at the end.
+- id: size-to-growth
+  skill: growth-and-limits
+  asks: when
+  type: matching
+  prompt: Match each input limit to the slowest growth rate that usually fits in about a second.
+  reworded: For each input size, which cost is about the most you can afford?
+  matchHeading: Growth rate
+  matchName: a growth rate
+  pairs:
+    - item: n up to 10
+      match: O(n!)
+    - item: n up to 20
+      match: O(2ⁿ)
+    - item: n up to 5,000
+      match: O(n²)
+    - item: n up to 1,000,000
+      match: O(n log n)
+  extraMatches:
+    - O(n³)
+    - O(nⁿ)
+  lesson:
+    title: Read the limits backwards
+    explanation: About 100 million simple steps fit in a second in a compiled language. 10! is about 3.6 million, 2²⁰ is about a million, 5,000² is 25 million, and a million times 20 is 20 million.
+- id: why-small-limit-hint
+  skill: growth-and-limits
+  asks: why
+  type: prompt
+  prompt: A question says the list has at most 15 values. Why is that worth noticing?
+  reworded: What does a very small input limit, like 15 values, tell you about the intended approach?
+  points:
+    - 2¹⁵ is about 32,000, so trying every subset is cheap.
+    - A small limit often means an exponential search is the intended answer.
+    - It also means you shouldn't spend time hunting for an O(n) trick that may not exist.
+  lesson:
+    title: Small limits allow big searches
+    explanation: Limits are chosen so the intended answer fits. When n is tiny, the question is usually about trying every subset or ordering well, not about avoiding it.
+- id: when-too-slow
+  skill: growth-and-limits
+  asks: when
+  type: pick-one
+  prompt: The list can hold 100,000 values, and your idea checks every pair. What should you do?
+  reworded: Is checking every pair of 100,000 values fast enough, and if not, what next?
+  options:
+    - text: Look for an O(n log n) or O(n) approach, since every pair is about 5 billion checks
+      correct: true
+      reason: That's far past the roughly 100 million steps that fit in a second.
+    - text: Code it, since O(n²) is fine for any interview question
+      reason: At this size it would take close to a minute or more.
+    - text: Switch to recursion, which is faster than loops
+      reason: Recursion does the same work, plus the cost of each call.
+  lesson:
+    title: 100,000 squared is too many
+    explanation: n² for n = 100,000 is 10 billion, or about 5 billion pairs. Sorting or a hash map usually brings it down to O(n log n) or O(n).
+- id: why-doubling-amortized
+  skill: amortized-cost
+  asks: why
+  type: prompt
+  prompt: A growing list copies every value into a block twice the size when it runs out of room. Why is adding to the end still O(1) amortized?
+  reworded: How can adding to the end of a list be O(1) when it sometimes copies everything?
+  points:
+    - The copies happen at sizes 1, 2, 4, 8, and so on, doubling each time.
+    - Over n adds, the copies add up to less than 2n.
+    - Shared across n adds, that's a constant amount of work for each one.
+  misconception: That one O(n) copy makes every add O(n).
+  lesson:
+    title: Rare big steps, shared out
+    explanation: The expensive copies get rarer as the list grows. Their total stays under twice the number of adds, so the cost for each add is O(1) when averaged over the run.
+    source:
+      url: https://docs.python.org/3/builtins/time-complexity.html
+      title: Time complexity of operations on built-in types
+- id: amortized-vs-average
+  skill: amortized-cost
+  asks: what
+  type: pick-one
+  prompt: What's the difference between an amortized cost and an average cost?
+  reworded: How does O(1) amortized differ from O(1) on average?
+  options:
+    - text: Amortized is averaged over a run of operations, so it holds for any input, while an average can be beaten by unlucky input
+      correct: true
+      reason: A growing list's adds are O(1) amortized whatever you add, but a hash table can be slow on keys that all collide.
+    - text: They mean the same thing
+      reason: They're often confused, but an average over inputs can fail on bad input and an amortized bound can't.
+    - text: Amortized means the worst case for a single operation
+      reason: The worst single add to a growing list is O(n). Amortized is the share of the total.
+  lesson:
+    title: Over a run, not over inputs
+    explanation: An amortized cost spreads the total work of a run of operations across them. An average cost assumes the input behaves, like keys that spread out in a hash table.
+    source:
+      url: https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ArrayList.html
+      title: ArrayList (Java SE 21 and JDK 21)
+- id: when-amortized-matters
+  skill: amortized-cost
+  asks: when
+  type: pick-one
+  prompt: When should you worry that a single add to a growing list is O(n)?
+  reworded: In what situation does the occasional slow add to a growing list actually matter?
+  options:
+    - text: When one slow step on its own is a problem, like a deadline for each frame of a game
+      correct: true
+      reason: Amortized cost bounds the total, so a single step can still be slow.
+    - text: When you add a million values in a loop
+      reason: Across the whole loop, the total is still O(n), so the loop is fine.
+    - text: Never, since the slow step can't happen
+      reason: It does happen each time the list grows. It's just rare.
+  lesson:
+    title: Amortized bounds the total
+    explanation: For a loop that adds many values, only the total matters, and it's O(n). If each step has its own time limit, the occasional O(n) copy can still miss it.
+    fix: Reserve the room up front when you know the final size, like `ensureCapacity` on a Java `ArrayList`.
+- id: why-recursion-space
+  skill: recursion-cost
+  asks: why
+  type: prompt
+  prompt: Why does a recursion that goes one value smaller each call use O(n) space, even if it stores nothing?
+  reworded: Where does the memory go in a recursion that adds up a list one value at a time?
+  points:
+    - Every call waiting on a smaller call keeps its own frame, with its arguments and local variables.
+    - At the deepest point, n calls are waiting at once.
+    - A loop doing the same job uses O(1) space.
+    - Too deep a recursion fails outright, with a RecursionError in Python or a StackOverflowError in Java.
+  misconception: That recursion without a list or a map uses no extra memory.
+  lesson:
+    title: The call stack is memory
+    explanation: Space for a recursion is its deepest chain of waiting calls. Going one smaller at a time makes that chain n long. Halving makes it log n long.
+    source:
+      url: https://docs.python.org/3/library/sys.html#sys.getrecursionlimit
+      title: sys.getrecursionlimit, Python documentation
+- id: when-recursion-repeats
+  skill: recursion-cost
+  asks: when
+  type: pick-one
+  prompt: When does a recursion take exponential time?
+  reworded: What makes the number of calls in a recursion blow up?
+  options:
+    - text: When each call makes two or more calls that are only a little smaller
+      correct: true
+      reason: Two calls each one smaller form a tree with about 2ⁿ calls.
+    - text: Whenever a function calls itself
+      reason: One call each one smaller is only n calls, and one call on half is log n.
+    - text: When the base case returns 0
+      reason: The base case's value doesn't change how many calls there are.
+  lesson:
+    title: Count the branches and the depth
+    explanation: A call tree with b branches at each level and depth d has about bᵈ calls. If the same arguments repeat across branches, saving each answer once cuts the time to the number of different arguments.
+- id: recursion-cost-match
+  skill: recursion-cost
+  asks: what
+  type: matching
+  prompt: Match each recursion to its time.
+  reworded: What's the time cost of each of these recursions on n?
+  matchHeading: Time
+  matchName: a time
+  pairs:
+    - item: One call on n - 1, with O(1) work in each call
+      match: O(n)
+    - item: One call on n / 2, with O(1) work in each call
+      match: O(log n)
+    - item: Two calls on n - 1, with O(1) work in each call
+      match: O(2ⁿ)
+    - item: Two calls on n / 2, with O(n) work in each call
+      match: O(n log n)
+  extraMatches:
+    - O(n²)
+  lesson:
+    title: Calls times work
+    explanation: Halving twice with O(n) work at each level is how merge sort gets O(n log n). Two calls that shrink by one double at every level, which is O(2ⁿ).
+- id: why-trace-code
+  skill: test-by-hand
+  asks: why
+  type: prompt
+  prompt: Why trace the code line by line, instead of checking that the idea works?
+  reworded: What does stepping through your actual code catch that reasoning about the approach doesn't?
+  points:
+    - The idea can be right while a line is wrong, like an off-by-one bound or a missed update.
+    - Writing each variable's value as you go shows what the code really does.
+    - Interviewers want to see you find your own bugs.
+  lesson:
+    title: Test the code you wrote
+    explanation: Bugs live in the gap between what you meant and what you typed. Only stepping through the lines, with the variables written down, closes that gap.
+- id: edge-case-checklist
+  skill: test-by-hand
+  asks: when
+  type: matching
+  prompt: Match each edge case to the bug it most often catches.
+  reworded: Which bug does each of these test inputs tend to expose?
+  matchHeading: Bug
+  matchName: a bug
+  pairs:
+    - item: An empty list
+      match: Reading index 0 when there's nothing there
+    - item: The answer sits at the very end
+      match: Only updating the best value when a run breaks
+    - item: The largest allowed values
+      match: A 32-bit int overflowing
+    - item: All values the same
+      match: Treating equal values as bigger or smaller
+  extraMatches:
+    - Sorting in the wrong order
+  lesson:
+    title: Each edge has its own bug
+    explanation: Edges aren't random extra tests. Each one checks a specific place code tends to go wrong, so run through the list every time.
+- id: last-run-bug
+  skill: test-by-hand
+  asks: why
+  type: pick-one
+  prompt: A loop finds the longest run of rainy days but only updates the best run when a dry day ends a run. Why does it fail on `[false, true, true, true]`?
+  reworded: What goes wrong with a longest-run loop that only checks the best when a run ends, if the list ends mid-run?
+  options:
+    - text: The last run never ends inside the loop, so it's never compared with the best
+      correct: true
+      reason: The loop finishes while still counting, and returns 0.
+    - text: The first value is false, so the loop never starts
+      reason: The loop runs over every value. The problem is at the end, not the start.
+    - text: Three in a row overflows the counter
+      reason: A count of 3 is nowhere near any limit.
+  lesson:
+    title: Check after the loop too
+    explanation: A run that reaches the end of the list never triggers the update. Compare on every step, or once more after the loop.

@@ -1,0 +1,120 @@
+{
+  "exercise": "record-days",
+  "cases": [
+    {
+      "uuid": "99d91d00-ea85-4eb5-9c1b-5c5e1a07be67",
+      "description": "finds the days that beat every earlier high",
+      "property": "recordDays",
+      "input": {
+        "highs": [12, 15, 15, 9, 18, 17]
+      },
+      "expected": [0, 1, 4]
+    },
+    {
+      "uuid": "2e3a8f43-24f1-41e8-9736-b7d08addcd39",
+      "description": "every day is a record when highs keep rising",
+      "property": "recordDays",
+      "input": {
+        "highs": [1, 2, 3, 4]
+      },
+      "expected": [0, 1, 2, 3]
+    },
+    {
+      "uuid": "48d6ee1b-3de0-4b40-9856-8dbc4714a5d8",
+      "description": "only the first day counts when highs keep falling",
+      "property": "recordDays",
+      "input": {
+        "highs": [5, 4, 3]
+      },
+      "expected": [0]
+    },
+    {
+      "uuid": "607327fd-714b-4f81-8bee-657bf97e451d",
+      "description": "a record on the last day",
+      "property": "recordDays",
+      "input": {
+        "highs": [3, 1, 2, 4]
+      },
+      "expected": [0, 3]
+    },
+    {
+      "uuid": "075085e2-326c-46f8-991e-0bf1241f0a44",
+      "description": "a longer log of mixed highs",
+      "property": "recordDays",
+      "input": {
+        "highs": [
+          46, 4, 16, -50, 6, -47, 34, -9, 43, 33, 37, 42, 10, 22, 15, -15, -36,
+          -17, -27, -43, 27, -10, 40, 6, -45, 27, -16, -15, -18, 1, -27, 45, -9,
+          -50, 15, 12, -46, 48, -28, -44, 23, -24, -45, 6, 41, 27, 5, 8, 44, 19,
+          36, -11, 34, 42, 5, -6, 1, 36, -49, -32, -1, -13, 5, -22, -11, -22,
+          48, 24, 39, -18, 25, 23, 17, -45, 47, -2, 0, 32, -21, -39, -22, 16, 2,
+          8, 26, 23, 2, 15, -12, 32, -48, 40, 44, 47, 48, -27, 10, -23, 31, -7,
+          33, -18, 22, -42, 3, -20, -46, 26, -45, -49, -47, -4, -25, 0, -42, 27,
+          -21, 15, -38, 28, -21, 49, -9, -22, -19, 8, -40, 3, -42, 4, -27, -30,
+          0, 39, -14, -48, 19, -10, 19, 36, 33, -33, -47, 10, 19, 16, 13, 19,
+          -49, -38, 29, -3, 30, -40, -17, 48, -44, 6, -3, 28, -24, 7, 1, -36,
+          -9, -41, 34, 21, -35, -22, 47, -21, -18, -47, -6, 20, -19, -6, -36,
+          48, -2, 10, -26, 42, -26, 10, 0, -6, 32, -13, 14, 47, 30, 20, -50,
+          -36, -29, -21, -19, 32, 3, 1, 13, 46, 18, 33, -22, 45, 48, 24, -45,
+          17, -9, 29, -40, -23, 43, -10, -44, 33, 1, 38, 22, -39, -37, 11, 15,
+          -44, -30, -18, -33, -41, -17, -32, 10, 50, 20, -22, 10, -47, -36, -21,
+          -23, 24, -17, -29, 46, 45, 41, -38, -41, 44, 22, 36, -32, -34, 4, -34,
+          -47, 9, -3, 37, -32, 8, 23, -20, 33, -5, 48, 19, 12, 44, 10, 14, -44,
+          -31, -44, -8, -18, -30, -42, -14, -36, -27, -43, -50, -11, -36, 50,
+          -6, -14, -37, 36, -37, 38, 22, -1, 5, -19, 21
+        ]
+      },
+      "expected": [0, 37, 121, 235]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "950748de-cd00-4996-a5dc-3161ebeefba3",
+          "description": "no days means no records",
+          "property": "recordDays",
+          "input": {
+            "highs": []
+          },
+          "expected": []
+        },
+        {
+          "uuid": "8e427708-378a-43d0-b94e-762c6b1790bd",
+          "description": "one day is always a record",
+          "property": "recordDays",
+          "input": {
+            "highs": [3]
+          },
+          "expected": [0]
+        },
+        {
+          "uuid": "0b465e9d-0eea-4c64-af36-8da982645352",
+          "description": "tying the record doesn't set a new one",
+          "property": "recordDays",
+          "input": {
+            "highs": [7, 7, 7]
+          },
+          "expected": [0]
+        },
+        {
+          "uuid": "3b7e761b-a884-4cc7-98d8-6cfe06500d00",
+          "description": "cold days below zero",
+          "property": "recordDays",
+          "input": {
+            "highs": [-5, -8, -2, -2, 0]
+          },
+          "expected": [0, 2, 4]
+        },
+        {
+          "uuid": "92d4e36a-7b51-452a-b0d8-a860f2e82497",
+          "description": "the lowest and highest allowed highs",
+          "property": "recordDays",
+          "input": {
+            "highs": [-1000000000, 1000000000, 999999999]
+          },
+          "expected": [0, 1]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+id: record-days
+kind: coding
+title: Record highs
+difficulty: easy
+skills:
+  - run-the-round
+  - big-o-basics
+  - amortized-cost
+sibling: lowest-from-here
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: recordDays
+  params:
+    - name: highs
+      type: int[]
+  returns: int[]

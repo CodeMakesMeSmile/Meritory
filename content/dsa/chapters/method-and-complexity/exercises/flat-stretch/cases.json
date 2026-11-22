@@ -1,0 +1,124 @@
+{
+  "exercise": "flat-stretch",
+  "cases": [
+    {
+      "uuid": "3c1f3b27-40dc-46b2-bca6-855666b7e624",
+      "description": "finds the longest run of equal readings",
+      "property": "flatStretch",
+      "input": {
+        "levels": [3, 3, 5, 5, 5, 2]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "2dbab9b4-95a0-4b31-ac4c-3dc798f997ac",
+      "description": "the longest run is at the start",
+      "property": "flatStretch",
+      "input": {
+        "levels": [9, 9, 9, 1, 2]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "4f25620b-db64-4196-94f9-46316bb5178b",
+      "description": "two runs of the same length",
+      "property": "flatStretch",
+      "input": {
+        "levels": [4, 4, 1, 6, 6]
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "7aa083fa-0484-402c-950f-9b5348e08734",
+      "description": "no two readings in a row match",
+      "property": "flatStretch",
+      "input": {
+        "levels": [1, 2, 1, 2]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "683fa3ac-9257-43af-82d9-0f41af3b7aa1",
+      "description": "a longer log that ends on its longest run",
+      "property": "flatStretch",
+      "input": {
+        "levels": [
+          2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 1, 2, 2, 1, 2, 1, 2, 1, 2, 2, 1, 2, 1,
+          1, 1, 2, 1, 1, 2, 1, 2, 1, 2, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 2,
+          1, 1, 1, 1, 2, 1, 1, 2, 2, 2, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 2,
+          1, 1, 2, 2, 2, 1, 2, 1, 1, 2, 2, 1, 1, 2, 2, 1, 2, 1, 2, 1, 2, 2, 2,
+          2, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 2, 1, 2, 2, 2, 2, 2, 1,
+          2, 1, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 2, 2, 2, 1, 2, 1, 1, 1, 2, 1, 1,
+          2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 2, 2, 2, 1, 2, 1, 2,
+          1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 2, 2, 1, 1, 2, 1, 2, 2,
+          2, 1, 1, 2, 2, 1, 1, 2, 1, 1, 2, 1, 2, 2, 2, 1, 2, 2, 2, 2, 1, 2, 1,
+          2, 1, 1, 1, 2, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 2, 2, 1, 2, 2, 2, 2, 2,
+          2, 1, 2, 1, 2, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 2, 2, 2, 1, 2, 2,
+          2, 1, 2, 2, 2, 1, 2, 1, 1, 1, 2, 2, 2, 2, 1, 1, 2, 2, 1, 1, 2, 2, 2,
+          1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 2, 1, 1, 1, 2, 2, 1, 2, 1, 2, 2, 2, 2,
+          2, 4, 4, 4, 4, 4, 4, 4, 4, 4
+        ]
+      },
+      "expected": 9
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "81c97a3f-f86d-4c00-affa-3fdda6ee7698",
+          "description": "no readings",
+          "property": "flatStretch",
+          "input": {
+            "levels": []
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "f97a1713-9622-4af8-892a-2c72c7d0a0fd",
+          "description": "one reading",
+          "property": "flatStretch",
+          "input": {
+            "levels": [8]
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "c2c6db81-1ed4-4615-9a7b-e84983d0de48",
+          "description": "every reading is the same",
+          "property": "flatStretch",
+          "input": {
+            "levels": [0, 0, 0, 0]
+          },
+          "expected": 4
+        },
+        {
+          "uuid": "2112632d-2b76-485f-83c1-207b2f054329",
+          "description": "the longest run is at the very end",
+          "property": "flatStretch",
+          "input": {
+            "levels": [1, 2, 2, 2]
+          },
+          "expected": 3
+        },
+        {
+          "uuid": "69afaeeb-40a5-48dc-b26e-ccd14c3ad1e5",
+          "description": "readings below zero",
+          "property": "flatStretch",
+          "input": {
+            "levels": [-1, -1, 0, -1]
+          },
+          "expected": 2
+        },
+        {
+          "uuid": "a78f1362-2bf8-462d-950c-c166bf26c872",
+          "description": "the lowest and highest allowed readings",
+          "property": "flatStretch",
+          "input": {
+            "levels": [-1000000000, -1000000000, 1000000000]
+          },
+          "expected": 2
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+id: doubling-savings
+kind: coding
+title: Nights until the jar is full
+difficulty: easy
+skills:
+  - read-loop-costs
+  - growth-and-limits
+sibling: knockout-rounds
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: doublingNights
+  params:
+    - name: start
+      type: int
+    - name: goal
+      type: int
+  returns: int

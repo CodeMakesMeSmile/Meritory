@@ -1,0 +1,17 @@
+id: longest-climb
+kind: coding
+title: Longest climb
+difficulty: easy
+skills:
+  - test-by-hand
+  - run-the-round
+sibling: flat-stretch
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: longestClimb
+  params:
+    - name: heights
+      type: int[]
+  returns: int
