@@ -1,0 +1,120 @@
+{
+  "exercise": "fill-the-break",
+  "cases": [
+    {
+      "uuid": "fac4e288-3f26-4063-8294-37852f8ba37f",
+      "description": "returns the pair with the smallest first position",
+      "property": "fillTheBreak",
+      "input": {
+        "lengths": [100, 150, 180, 210, 260],
+        "target": 360
+      },
+      "expected": [0, 4]
+    },
+    {
+      "uuid": "715d877b-0b17-44cf-baac-69efc65c0176",
+      "description": "finds a pair in the middle",
+      "property": "fillTheBreak",
+      "input": {
+        "lengths": [60, 90, 120, 200, 300],
+        "target": 210
+      },
+      "expected": [1, 2]
+    },
+    {
+      "uuid": "279c2d7b-1509-44be-bfaa-e758f70cc33f",
+      "description": "picks the outermost of several pairs",
+      "property": "fillTheBreak",
+      "input": {
+        "lengths": [1, 2, 3, 4, 5, 6],
+        "target": 7
+      },
+      "expected": [0, 5]
+    },
+    {
+      "uuid": "f9771512-6260-48d8-8c2a-c852ca58985c",
+      "description": "two songs of the same length can make a pair",
+      "property": "fillTheBreak",
+      "input": {
+        "lengths": [100, 180, 180, 250],
+        "target": 360
+      },
+      "expected": [1, 2]
+    },
+    {
+      "uuid": "0493dd51-2751-4283-bd7f-c7d248b8a914",
+      "description": "uses the last matching song for the second position",
+      "property": "fillTheBreak",
+      "input": {
+        "lengths": [50, 100, 300, 310, 310],
+        "target": 360
+      },
+      "expected": [0, 4]
+    },
+    {
+      "uuid": "3726567d-8702-4743-85af-f1a8b75943a8",
+      "description": "no pair fills the break",
+      "property": "fillTheBreak",
+      "input": {
+        "lengths": [100, 200, 300],
+        "target": 450
+      },
+      "expected": []
+    },
+    {
+      "uuid": "2a6bec69-9f3a-4fc7-a7a8-ff83d2f43acd",
+      "description": "a song can't pair with itself",
+      "property": "fillTheBreak",
+      "input": {
+        "lengths": [180, 200],
+        "target": 360
+      },
+      "expected": []
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "7ee6ff4a-00f4-469b-aaa7-c004170aa9af",
+          "description": "no songs have no pair",
+          "property": "fillTheBreak",
+          "input": {
+            "lengths": [],
+            "target": 360
+          },
+          "expected": []
+        },
+        {
+          "uuid": "5c1ea121-dae3-4999-94d1-bbc92838df82",
+          "description": "one song has no pair",
+          "property": "fillTheBreak",
+          "input": {
+            "lengths": [180],
+            "target": 360
+          },
+          "expected": []
+        },
+        {
+          "uuid": "e54f420c-5b22-4405-9a18-700f249dc1c9",
+          "description": "two songs that fill the break",
+          "property": "fillTheBreak",
+          "input": {
+            "lengths": [150, 210],
+            "target": 360
+          },
+          "expected": [0, 1]
+        },
+        {
+          "uuid": "350151bb-6693-4de7-94d3-96bcdc363876",
+          "description": "handles the longest songs",
+          "property": "fillTheBreak",
+          "input": {
+            "lengths": [1000000, 1000000],
+            "target": 2000000
+          },
+          "expected": [0, 1]
+        }
+      ]
+    }
+  ]
+}

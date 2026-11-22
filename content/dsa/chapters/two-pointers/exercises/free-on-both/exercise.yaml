@@ -1,0 +1,19 @@
+id: free-on-both
+kind: coding
+title: Days you're both free
+difficulty: easy
+skills:
+  - merge-sorted
+  - skip-repeats
+sibling: merge-timetables
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: freeOnBoth
+  params:
+    - name: first
+      type: int[]
+    - name: second
+      type: int[]
+  returns: int[]

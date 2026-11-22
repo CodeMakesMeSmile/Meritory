@@ -1,0 +1,18 @@
+id: gifts-under-budget
+kind: coding
+title: Two gifts under budget
+difficulty: easy
+skills:
+  - ends-on-sorted
+sibling: fill-the-break
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: giftsUnderBudget
+  params:
+    - name: prices
+      type: int[]
+    - name: budget
+      type: int
+  returns: int

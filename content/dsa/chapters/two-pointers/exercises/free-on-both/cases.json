@@ -1,0 +1,100 @@
+{
+  "exercise": "free-on-both",
+  "cases": [
+    {
+      "uuid": "4b64d3c5-e90f-41e3-ba9e-2b55588d2b2d",
+      "description": "finds the days both friends are free",
+      "property": "freeOnBoth",
+      "input": {
+        "first": [2, 5, 5, 9, 14],
+        "second": [1, 5, 9, 9, 20]
+      },
+      "expected": [5, 9]
+    },
+    {
+      "uuid": "bad6e0d9-1208-4ae6-bfe6-c8892dc0dbfe",
+      "description": "no shared days",
+      "property": "freeOnBoth",
+      "input": {
+        "first": [1, 3],
+        "second": [2, 4]
+      },
+      "expected": []
+    },
+    {
+      "uuid": "04774ebe-d67f-4690-90fd-1d71e2cc6e15",
+      "description": "the same lists share every day",
+      "property": "freeOnBoth",
+      "input": {
+        "first": [4, 6],
+        "second": [4, 6]
+      },
+      "expected": [4, 6]
+    },
+    {
+      "uuid": "91cc3e54-022c-46e7-83bc-6bfb508afe79",
+      "description": "a day repeated in both lists appears once",
+      "property": "freeOnBoth",
+      "input": {
+        "first": [3, 3, 3],
+        "second": [3, 3]
+      },
+      "expected": [3]
+    },
+    {
+      "uuid": "ca0f8377-9cc2-4cf2-a3c5-1a9bf595fbe5",
+      "description": "shared days at both ends of the year",
+      "property": "freeOnBoth",
+      "input": {
+        "first": [1, 50, 366],
+        "second": [1, 366]
+      },
+      "expected": [1, 366]
+    },
+    {
+      "uuid": "ceefb8af-a8a6-4d5f-ade8-27b60b1b168c",
+      "description": "one day inside a longer list",
+      "property": "freeOnBoth",
+      "input": {
+        "first": [10],
+        "second": [1, 5, 10, 15]
+      },
+      "expected": [10]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "4a236f55-9a60-4c1b-a81b-70af6e12cbec",
+          "description": "one friend has no free days",
+          "property": "freeOnBoth",
+          "input": {
+            "first": [],
+            "second": [1]
+          },
+          "expected": []
+        },
+        {
+          "uuid": "05c8ed4b-b038-4346-bd91-330b117add35",
+          "description": "neither friend has free days",
+          "property": "freeOnBoth",
+          "input": {
+            "first": [],
+            "second": []
+          },
+          "expected": []
+        },
+        {
+          "uuid": "bcfc017c-15e7-4b59-b95d-2c3075305a1d",
+          "description": "one list is all repeats of a shared day",
+          "property": "freeOnBoth",
+          "input": {
+            "first": [7, 7, 7, 7],
+            "second": [2, 7, 8]
+          },
+          "expected": [7]
+        }
+      ]
+    }
+  ]
+}

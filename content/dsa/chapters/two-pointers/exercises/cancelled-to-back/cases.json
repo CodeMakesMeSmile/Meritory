@@ -1,0 +1,100 @@
+{
+  "exercise": "cancelled-to-back",
+  "cases": [
+    {
+      "uuid": "e0b287ad-027c-41ef-8c8a-595f290de41a",
+      "description": "moves cancelled orders to the back",
+      "property": "cancelledToBack",
+      "input": {
+        "orders": [5, 0, 3, 0, 8]
+      },
+      "expected": [5, 3, 8, 0, 0]
+    },
+    {
+      "uuid": "d2583510-abce-48ec-b0fc-87b37b56839a",
+      "description": "cancelled orders at the front",
+      "property": "cancelledToBack",
+      "input": {
+        "orders": [0, 0, 7, 9]
+      },
+      "expected": [7, 9, 0, 0]
+    },
+    {
+      "uuid": "db6609a6-2e39-4af7-9f92-4a44a708bd58",
+      "description": "repeated order numbers keep their order",
+      "property": "cancelledToBack",
+      "input": {
+        "orders": [2, 0, 2, 1, 0, 1]
+      },
+      "expected": [2, 2, 1, 1, 0, 0]
+    },
+    {
+      "uuid": "72d4abcf-ed4c-46cc-a6ce-15d8c6fdf948",
+      "description": "nothing cancelled stays the same",
+      "property": "cancelledToBack",
+      "input": {
+        "orders": [1, 2, 3]
+      },
+      "expected": [1, 2, 3]
+    },
+    {
+      "uuid": "d9d4f21e-8345-41b3-aa04-6efb22786b42",
+      "description": "a cancelled order already at the back stays",
+      "property": "cancelledToBack",
+      "input": {
+        "orders": [4, 0]
+      },
+      "expected": [4, 0]
+    },
+    {
+      "uuid": "fa068ec5-178c-4856-b9a2-992d4bb1f262",
+      "description": "every order cancelled",
+      "property": "cancelledToBack",
+      "input": {
+        "orders": [0, 0, 0]
+      },
+      "expected": [0, 0, 0]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "4c8150a2-197f-453c-8e70-4b8ee4339b99",
+          "description": "no orders",
+          "property": "cancelledToBack",
+          "input": {
+            "orders": []
+          },
+          "expected": []
+        },
+        {
+          "uuid": "957963ab-9d36-4756-ad96-c299bf4ce09b",
+          "description": "one cancelled order",
+          "property": "cancelledToBack",
+          "input": {
+            "orders": [0]
+          },
+          "expected": [0]
+        },
+        {
+          "uuid": "da03d973-6ddf-46d7-8d3a-f5796b819691",
+          "description": "one order",
+          "property": "cancelledToBack",
+          "input": {
+            "orders": [6]
+          },
+          "expected": [6]
+        },
+        {
+          "uuid": "eb13ab32-a45b-4207-8e8f-e5f858f9c220",
+          "description": "handles the largest order numbers",
+          "property": "cancelledToBack",
+          "input": {
+            "orders": [0, 1000000000, 0, 1000000000]
+          },
+          "expected": [1000000000, 1000000000, 0, 0]
+        }
+      ]
+    }
+  ]
+}

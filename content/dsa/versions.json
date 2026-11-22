@@ -3,6 +3,12 @@
     "4360c2cf4660f48da5f8bf3d2432736e2e7bb381416bb4e597a26f8cb7957c8b",
     "b75aa214068f5fa2de8413d4e68b045aa70ee307252e821bf2d5fdd46bb137b4"
   ],
+  "card/compact-steps": [
+    "e3f65e42adafb56a0bee2499c81823fddb4919f0ad8f05ecf638576cca414dcc"
+  ],
+  "card/ends-search-steps": [
+    "7adf57ceffa29b2c15fed3e8dadf732d1297528850d9ac3ab42cf446d8c662ca"
+  ],
   "card/group-key-choices": [
     "b1c429b6df0548b2e2da683255e6f1bcb0b575fd2bb37716f4e082f99fee4391",
     "a2f0a5ab5984e2e1814d268efa17b33d0f69b2cbac1ee464eb593aa9cf978910"
@@ -10,11 +16,23 @@
   "card/hash-lookup-steps": [
     "368d18e6b0a4d86ad7e7721468c94a0d499a6b01cd5dcf7a521a5735f88382fc"
   ],
+  "card/merge-steps": [
+    "dfcaccd661ff5ce9ad9d0f701aeb34e46d4886bb76a3d7cf11f553775b035ce5"
+  ],
   "card/pair-search-steps": [
     "69ca8dd4ca45400b30b95a6ba399fd28d8c3dbe538afe2bedf321c4960a4a9bb"
   ],
   "card/prefix-count-steps": [
     "0c6c6bd5aa04ca47c845d10c43fee594c88f5d98b6170ca4d369ed775e0b3a03"
+  ],
+  "card/proof-before-moving": [
+    "1e6704f5060013b301850d7b0a5e6e4e0336ef34f0a3a8b79b7dac8cccfe70db"
+  ],
+  "card/three-way-regions": [
+    "356e27936dfea23c68aa7b1912bf098c180cf8fe04e2472ef85edffaf9eab63a"
+  ],
+  "card/triple-search-steps": [
+    "69de4d5de7877e7725dcac54d56e76a8fef5adcf0fd350bfe93d1d960d987dc6"
   ],
   "card/two-pass-steps": [
     "e40c09dd05ce91902a1021a7326438b78ee600894c0fbf056850c8f8d543616a"
@@ -25,15 +43,33 @@
   "card/when-count-array": [
     "570a7c4f575f9387012e464b90848b71fdf7a270cc5b7c795af97dc192ca1ab7"
   ],
+  "card/when-ends-need-sorting": [
+    "3f6ed074a3f88818c8de29a68c0f372272cccf822d8ee231c911fa42ea062716"
+  ],
   "card/when-map-for-pairs": [
     "041a42140e8ba497ed268711803849a4e9686a08734137910cc9618b242090ea",
     "ae77c37b221e4e10deade57eb1789710f89c4a928ffbd0972b07cad748599595"
   ],
+  "card/when-merge-walk": [
+    "f059df356c042a3c96f5cabf945260c0145c9b9754a837488b4927819c8e2517"
+  ],
+  "card/when-not-remove-one-by-one": [
+    "dbefc7c1d84f98fca682a5b3e8c40df863a0489f62a26ee8f5ec13edc0e4e8fd"
+  ],
   "card/when-not-sliding-window": [
     "81283a81d5fcf5cc3aa284636d1b734f172630605bf530493231353df0508755"
   ],
+  "card/when-set-of-answers": [
+    "20a08a1f3cc0cb30fbe49ccd825fd7bb529b61a1af95d86d4e4c43f6dc28d535"
+  ],
+  "card/when-sort-first": [
+    "c3a86e774365acd46a494e10e3388997edf8bbc3ff3ebbf096a62035443ed62c"
+  ],
   "card/when-sort-for-runs": [
     "0f2aee169a13b007847c651ab93a4d5bd86606c34a4c705bf8e1967191d9296a"
+  ],
+  "card/when-swapping-breaks-order": [
+    "c9b83d5f7482d7400a8edaa2b4c00c8d635108309bc48d76bba7583fbaa3621f"
   ],
   "card/why-check-before-adding": [
     "45f84bb63408807d4835728e647fc9ff54b5d7c9c38859a4f26b36ddac7d5f7c"
@@ -47,11 +83,35 @@
   "card/why-insert-front-slow": [
     "57f18cd94a733ae538f9d0bd9d8b0a1cb38d7675be897553bc91b020bb3ae591"
   ],
+  "card/why-merge-linear": [
+    "8f492a5b6d9794ff69df646d4a4c3c28a59faf4eb194f80f039d384079a02a98"
+  ],
+  "card/why-mid-stays-after-swap": [
+    "27584cda4f1b07725b47086aaee73c4d25a9d7d66b26974897fe70e9bb68b84b"
+  ],
+  "card/why-move-left-when-small": [
+    "ad425eb8158049ef3e6f8ba755f7dfe9daf8dddaf3db6b3734b81f54c9dea287"
+  ],
+  "card/why-move-shorter-post": [
+    "55366fa2e1c9a51be5c97461bee5950b7677acacdbc8ffc366f0addf6c1b2839"
+  ],
   "card/why-not-divide": [
     "701e6cc1bff98e3d90b4f1cfe4222e250e1da32842e255cfa6486dbe0a5f66d8"
   ],
+  "card/why-quickselect-linear": [
+    "777417a5c46b2c267ba0165dd2bb0410c7c7459697d9a1ee4e0f0fcc2004372c"
+  ],
   "card/why-seed-zero": [
     "355d6212c70dc2e824c827048afd5de9f49327e5bd2a03ba259e119b9122e849"
+  ],
+  "card/why-settle-lower-side": [
+    "3324c5ee9262ace678ccc6e3e947f47638464094c85bd5dd3df580a1ec03710f"
+  ],
+  "card/why-skip-same-first": [
+    "9b1b0256c3c05d6a2a777203ea34f0c8b32810046142fe4b40e475caea728d4b"
+  ],
+  "card/why-sort-needs-compare": [
+    "dfd957210028e0c5a6998ff2ea608655142568afb6357ea5073ae2553f38e712"
   ],
   "card/why-start-of-run": [
     "2c0ed90e16629d71d08af846c00f2076b227bdcf8dbafa79fabb16f35e0e0886"
@@ -65,8 +125,14 @@
   "card/why-worst-case-linear": [
     "48efccd12d48138fa59bc0950657f1b3c529b7172bc3c052a5f24968fa883b8f"
   ],
+  "card/why-write-never-passes-read": [
+    "611aba8fe0dc1bad002c661b476382a3b74f4c6994844b2e413dcd020e559221"
+  ],
   "chapter/arrays-and-hashing": [
     "7279e5a2ae1ae974ff737e0fd4ab732eae5dc61d6495006491b878cacd341620"
+  ],
+  "chapter/two-pointers": [
+    "337609a8176950dfb103c35500ab602d38c7b724d0d1bf7e2405d80c371fe391"
   ],
   "exercise/as-ranges": [
     "7b670e484185298a56d9f9734542153245e27c96636be1bb89be22c74aeea589"
@@ -74,17 +140,41 @@
   "exercise/balance-point": [
     "f389f3aaca16f420dad6d44af2ab32d8cc75c55f15e663e0933eea7214fe905d"
   ],
+  "exercise/balanced-triples": [
+    "d554d6866ec9bb508b8d1a29fa56845369ac1fff592e04bd4334337af411ad61"
+  ],
+  "exercise/biggest-banner": [
+    "10febc525b906f4f4964611248d111d980d843b795016de72bcb2d5ade2ca122"
+  ],
+  "exercise/cancelled-to-back": [
+    "67369d746bf3f9db863960b382fe43428f01064e02ff72332798742c97c561ce"
+  ],
   "exercise/enough-tiles": [
     "a2f9e4e59451fa6b0b8fb0593601d9abd71840f33c6934750b3a70e1e59cad8b"
   ],
   "exercise/even-stretch": [
     "d215e309a07adfe79872290ef956daf226b3209e9fc2521d6eb73cf090a652e3"
   ],
+  "exercise/fill-the-break": [
+    "921897d0484707bd798031cd4a81fb742a377874d813a928d00498db37617a6f"
+  ],
+  "exercise/free-on-both": [
+    "e8479fde9ed3072c8aa5db908574381f8e66b2a0c0aa623a831a0c4c4bdf6d4f"
+  ],
+  "exercise/gifts-under-budget": [
+    "db8b9f6b142f19d314c02034ed9e57b6f267fa6bc2fb68dc940b14f92d6aec25"
+  ],
+  "exercise/kth-quickest": [
+    "3ec0d2a99acf064adfd7874c2ea7d092660988b9eeb57818e6e947799c0a43d0"
+  ],
   "exercise/letter-groups": [
     "7cb51e5edd4e6471fe13a9b20a5c93826317e7d071a53f7907d10149d0291ff6"
   ],
   "exercise/longest-run": [
     "ce1ee751f62ad32b05e194b84d34015ba2d2ea440c51907ce6363af0d57a8ee2"
+  ],
+  "exercise/merge-timetables": [
+    "758cb91aa1c8c26abfa156e8c1cdccd8089a1c5775528f87c896e1972f403d0a"
   ],
   "exercise/pairs-with-gap": [
     "c55a98a08e37e110da6c8421fe3238e60feabaac1e7843e341a62d5edeb60d94"
@@ -95,6 +185,15 @@
   "exercise/product-of-others": [
     "02eb84dcf89f10d67d2ece04ff6dac683957856ed94ef2d3acd3df30beb19964"
   ],
+  "exercise/rain-between-walls": [
+    "885e1e07443e4709cb10d9ee582b776311514ac3aebe19d98ed58ab48aa687a3"
+  ],
+  "exercise/rating-pairs": [
+    "038985c57e08706277b8f25214ac052dfb43a49d8637baf20229e95de52cfd22"
+  ],
+  "exercise/readings-once": [
+    "1859538497e1c626578eaaa68dc2fe9b201a3dd282749f233f45e094042b5ca6"
+  ],
   "exercise/same-letters": [
     "e998b9dc62400e1e9c84b0ed64ee8b38519caa0a2adbef661944be8567736dc2"
   ],
@@ -103,6 +202,9 @@
   ],
   "exercise/stretches-with-total": [
     "891cbcf6180bc86d9398cf4b9bac8eef9cff3de710a341781d18a6056e31eec9"
+  ],
+  "exercise/three-parcel-sizes": [
+    "81936e609276338018fa35d48f87bd8a08879bcd9b961a974b3e180e83378738"
   ],
   "rubric/coding-practice": [
     "a1f12ef7247a868a70b05439f946b7f3f42732d97276bf321dfa7e586ceb8fa5"

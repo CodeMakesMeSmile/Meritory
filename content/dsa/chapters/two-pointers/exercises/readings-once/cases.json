@@ -1,0 +1,100 @@
+{
+  "exercise": "readings-once",
+  "cases": [
+    {
+      "uuid": "0c33b01f-ad0b-439a-8407-9e1d6a190bf9",
+      "description": "keeps each reading once and marks the rest empty",
+      "property": "readingsOnce",
+      "input": {
+        "readings": [2, 2, 5, 7, 7, 7]
+      },
+      "expected": [2, 5, 7, -1, -1, -1]
+    },
+    {
+      "uuid": "c9dc13a1-35e0-4ede-a39e-d6238c223f94",
+      "description": "repeats at the start",
+      "property": "readingsOnce",
+      "input": {
+        "readings": [0, 0, 1]
+      },
+      "expected": [0, 1, -1]
+    },
+    {
+      "uuid": "843398d5-f33c-45fa-a191-fcb93a8ac294",
+      "description": "repeats at the end",
+      "property": "readingsOnce",
+      "input": {
+        "readings": [1, 2, 8, 8]
+      },
+      "expected": [1, 2, 8, -1]
+    },
+    {
+      "uuid": "0251c9f0-eb81-4acc-857c-967780941be4",
+      "description": "several runs of repeats",
+      "property": "readingsOnce",
+      "input": {
+        "readings": [3, 3, 4, 6, 6, 9, 9, 9]
+      },
+      "expected": [3, 4, 6, 9, -1, -1, -1, -1]
+    },
+    {
+      "uuid": "587f9b6e-4be7-41a1-97a7-e586492b1f5b",
+      "description": "no repeats stays the same",
+      "property": "readingsOnce",
+      "input": {
+        "readings": [1, 4, 9]
+      },
+      "expected": [1, 4, 9]
+    },
+    {
+      "uuid": "808591ba-6580-4c4e-a954-ae4ccae4a4b5",
+      "description": "every reading the same",
+      "property": "readingsOnce",
+      "input": {
+        "readings": [3, 3, 3, 3]
+      },
+      "expected": [3, -1, -1, -1]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "6b6b8b12-e53e-4667-8bef-113878be55ce",
+          "description": "an empty buffer",
+          "property": "readingsOnce",
+          "input": {
+            "readings": []
+          },
+          "expected": []
+        },
+        {
+          "uuid": "b64ae41c-d9f0-4815-b135-1e7299b817ed",
+          "description": "one reading",
+          "property": "readingsOnce",
+          "input": {
+            "readings": [5]
+          },
+          "expected": [5]
+        },
+        {
+          "uuid": "6c57f02c-22b4-45eb-963b-9964a471810e",
+          "description": "a reading of 0 is kept",
+          "property": "readingsOnce",
+          "input": {
+            "readings": [0, 0]
+          },
+          "expected": [0, -1]
+        },
+        {
+          "uuid": "01c1afdd-d965-4a91-89a6-6400cced6de1",
+          "description": "handles the largest readings",
+          "property": "readingsOnce",
+          "input": {
+            "readings": [999999999, 1000000000, 1000000000]
+          },
+          "expected": [999999999, 1000000000, -1]
+        }
+      ]
+    }
+  ]
+}
