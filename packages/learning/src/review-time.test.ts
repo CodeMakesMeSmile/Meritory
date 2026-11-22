@@ -20,8 +20,10 @@ describe("effectiveReviewTime", () => {
     expect(effectiveReviewTime(claimed, previous, accepted)).toEqual(accepted);
   });
 
-  it("only caps at acceptance for a prompt never reviewed", () => {
-    const claimed = new Date("2020-01-01T00:00:00Z");
-    expect(effectiveReviewTime(claimed, null, accepted)).toEqual(claimed);
+  it("moves a first review claimed before the card existed up to when it was added", () => {
+    const added = new Date("2026-11-02T08:00:00Z");
+    for (const claimed of [new Date("2000-01-01T00:00:00Z"), new Date(0)]) {
+      expect(effectiveReviewTime(claimed, added, accepted)).toEqual(added);
+    }
   });
 });

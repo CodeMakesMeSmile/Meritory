@@ -257,6 +257,27 @@ describe.skipIf(!url)("recall store against Postgres", () => {
       const [row] = await reviewsOf(me);
       expect(row?.reviewTime).toEqual(start);
     });
+
+    it("doesn't start a schedule before the card was added", async () => {
+      for (const answeredAt of [
+        new Date("2000-01-01T00:00:00Z"),
+        new Date(0),
+      ]) {
+        const me = await user();
+        await store.start(me, CHAPTER, start);
+        const saved = await store.review(
+          me,
+          input({ answeredAt }),
+          later(MINUTE),
+        );
+        expect(saved.kind).toBe("saved");
+        const [row] = await reviewsOf(me);
+        expect(row?.reviewTime).toEqual(start);
+        expect((await card(me))?.card.dueAt.getTime()).toBeGreaterThan(
+          start.getTime(),
+        );
+      }
+    });
   });
 
   describe("undo", () => {
