@@ -5,6 +5,7 @@ import {
   emailChanged,
   emailInUse,
   existingAccount,
+  finishSignUp,
   passwordChanged,
   providerLinked,
   providerUnlinked,
@@ -22,6 +23,7 @@ const next = "new-address@meritory.localhost";
 
 const mails: [MailKind, Mail][] = [
   ["verify-email", verifyEmail(to, link)],
+  ["finish-sign-up", finishSignUp(to, link)],
   ["reset-password", resetPassword(to, link)],
   ["password-changed", passwordChanged(to, origin)],
   ["existing-account", existingAccount(to, origin)],

@@ -12,6 +12,7 @@ export interface Mail {
 
 export type MailKind =
   | "verify-email"
+  | "finish-sign-up"
   | "reset-password"
   | "password-changed"
   | "existing-account"

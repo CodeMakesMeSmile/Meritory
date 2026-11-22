@@ -37,6 +37,21 @@ describe.skipIf(!url)("signing up with an email that has an account", () => {
       }),
     );
 
+  const signIn = (email: string, password: string) =>
+    auth.handler(
+      new Request(`${ORIGIN}/api/v1/auth/sign-in/email`, {
+        method: "POST",
+        headers: { "content-type": "application/json", origin: ORIGIN },
+        body: JSON.stringify({ email, password }),
+      }),
+    );
+
+  const linkIn = (mail: Mail | undefined, path: string) => {
+    const link = mail?.text.match(new RegExp(`https://\\S+/${path}\\S+`))?.[0];
+    if (!link) throw new Error(`No ${path} link in the email`);
+    return link;
+  };
+
   const newEmail = () => `existing-${randomUUID()}@meritory.test`;
 
   // Matches every casing, so a second row in any case would show up
@@ -61,6 +76,12 @@ describe.skipIf(!url)("signing up with an email that has an account", () => {
       inArray(
         verifications.identifier,
         mine.map(({ id }) => `email-link:${id}`),
+      ),
+    );
+    await db.delete(verifications).where(
+      inArray(
+        verifications.value,
+        mine.map(({ id }) => id),
       ),
     );
     await db.delete(users).where(like(users.email, "existing-%@meritory.test"));
@@ -131,16 +152,85 @@ describe.skipIf(!url)("signing up with an email that has an account", () => {
       .toContain("Someone tried to sign up with your email");
   });
 
-  it("sends an unconfirmed owner a new link instead", async () => {
+  it("asks an unconfirmed owner to choose the password instead", async () => {
     const email = newEmail();
     await signUp(email, "Owner", "violet harbor tractor sandwich");
     await expect.poll(() => mailTo(email).length).toBe(1);
 
     await signUp(email, "Someone", "maple glacier pencil drum");
 
-    expect(await accountsFor(email)).toHaveLength(1);
     await expect.poll(() => mailTo(email).length).toBe(2);
-    expect(mailTo(email)[1]?.text).toMatch(/verify-email/);
+    const finish = mailTo(email)[1];
+    expect(finish?.subject).toBe("Finish signing up for Meritory");
+    expect(finish?.text).toMatch(/reset-password/);
+    expect(finish?.text).not.toMatch(/verify-email/);
+    // Neither sign-up's password is kept until the inbox owner picks one
+    expect(await accountsFor(email)).toHaveLength(0);
+  });
+
+  it("lets only the inbox owner sign in after someone signed up first", async () => {
+    const email = newEmail();
+    const first = "violet harbor tractor sandwich";
+    const owner = "maple glacier pencil drum";
+    const chosen = "copper lantern meadow violin";
+    await signUp(email, "Someone", first);
+    await expect.poll(() => mailTo(email).length).toBe(1);
+    const verifyLink = linkIn(mailTo(email)[0], "verify-email");
+
+    await signUp(email, "Owner", owner);
+    await expect.poll(() => mailTo(email).length).toBe(2);
+    const resetLink = linkIn(mailTo(email)[1], "reset-password");
+
+    // The first link still confirms the email, but leaves no password to use
+    const verified = await auth.handler(
+      new Request(verifyLink, { redirect: "manual" }),
+    );
+    expect(verified.status).toBe(302);
+    expect((await signIn(email, first)).status).toBe(401);
+    expect((await signIn(email, owner)).status).toBe(401);
+
+    const opened = await auth.handler(
+      new Request(resetLink, { redirect: "manual" }),
+    );
+    const token = new URL(
+      opened.headers.get("location") ?? "",
+      ORIGIN,
+    ).searchParams.get("token");
+    const reset = await auth.handler(
+      new Request(`${ORIGIN}/api/v1/auth/reset-password`, {
+        method: "POST",
+        headers: { "content-type": "application/json", origin: ORIGIN },
+        body: JSON.stringify({ token, newPassword: chosen }),
+      }),
+    );
+    expect(reset.status).toBe(200);
+
+    expect((await signIn(email, first)).status).toBe(401);
+    expect((await signIn(email, chosen)).status).toBe(200);
+  });
+
+  it("finishes the sign-up when the owner resends the confirm link", async () => {
+    const email = newEmail();
+    const first = "violet harbor tractor sandwich";
+    await signUp(email, "Someone", first);
+    await signUp(email, "Owner", "maple glacier pencil drum");
+    await expect.poll(() => mailTo(email).length).toBe(2);
+
+    await auth.handler(
+      new Request(`${ORIGIN}/api/v1/auth/send-verification-email`, {
+        method: "POST",
+        headers: { "content-type": "application/json", origin: ORIGIN },
+        body: JSON.stringify({ email }),
+      }),
+    );
+    await expect.poll(() => mailTo(email).length).toBe(3);
+    await auth.handler(
+      new Request(linkIn(mailTo(email)[2], "verify-email"), {
+        redirect: "manual",
+      }),
+    );
+
+    expect((await signIn(email, first)).status).toBe(401);
   });
 
   it("makes one account when two sign-ups arrive at once", async () => {
