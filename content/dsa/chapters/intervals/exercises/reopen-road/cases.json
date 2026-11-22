@@ -1,0 +1,130 @@
+{
+  "exercise": "reopen-road",
+  "cases": [
+    {
+      "uuid": "2f1d2f89-4ff2-433d-a8b2-ad1567b8a132",
+      "description": "trims closures at both ends of the stretch",
+      "property": "reopenStretch",
+      "input": {
+        "closures": [[0, 4], [6, 12], [15, 20]],
+        "reopened": [3, 8]
+      },
+      "expected": [[0, 3], [8, 12], [15, 20]]
+    },
+    {
+      "uuid": "bf9aaf2d-f144-4880-9e32-3f0e814dc1dd",
+      "description": "splits a closure in two",
+      "property": "reopenStretch",
+      "input": {
+        "closures": [[10, 50]],
+        "reopened": [20, 30]
+      },
+      "expected": [[10, 20], [30, 50]]
+    },
+    {
+      "uuid": "1e608919-6715-4e1e-a09f-cb69d7f07f58",
+      "description": "removes whole closures",
+      "property": "reopenStretch",
+      "input": {
+        "closures": [[0, 5], [10, 15], [20, 25]],
+        "reopened": [0, 25]
+      },
+      "expected": []
+    },
+    {
+      "uuid": "d5d1d4c3-0a30-43e1-94fe-d554ca9b8bab",
+      "description": "closures that only touch the stretch stay",
+      "property": "reopenStretch",
+      "input": {
+        "closures": [[2, 5], [9, 12]],
+        "reopened": [5, 9]
+      },
+      "expected": [[2, 5], [9, 12]]
+    },
+    {
+      "uuid": "11de25b9-6229-4eda-bc94-10998152d714",
+      "description": "a stretch with no closures in it",
+      "property": "reopenStretch",
+      "input": {
+        "closures": [[0, 10], [40, 50]],
+        "reopened": [15, 30]
+      },
+      "expected": [[0, 10], [40, 50]]
+    },
+    {
+      "uuid": "02fb3119-250c-4b4d-8a7a-02ab45ed8d3d",
+      "description": "trims the start of a closure",
+      "property": "reopenStretch",
+      "input": {
+        "closures": [[100, 200]],
+        "reopened": [50, 150]
+      },
+      "expected": [[150, 200]]
+    },
+    {
+      "uuid": "a5685ff6-ca5b-412e-9805-6b1347e9eaf8",
+      "description": "trims the end of a closure",
+      "property": "reopenStretch",
+      "input": {
+        "closures": [[100, 200]],
+        "reopened": [150, 250]
+      },
+      "expected": [[100, 150]]
+    },
+    {
+      "uuid": "4ddccd8a-5a41-4a9f-b708-b1171eaa8b9a",
+      "description": "exactly one closure",
+      "property": "reopenStretch",
+      "input": {
+        "closures": [[0, 10], [20, 30], [40, 50]],
+        "reopened": [20, 30]
+      },
+      "expected": [[0, 10], [40, 50]]
+    },
+    {
+      "uuid": "40cc287f-0479-4484-9a1e-ecb06a0caa23",
+      "description": "reaches across several closures",
+      "property": "reopenStretch",
+      "input": {
+        "closures": [[0, 10], [20, 30], [40, 50], [60, 70]],
+        "reopened": [5, 65]
+      },
+      "expected": [[0, 5], [65, 70]]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "528538b6-181a-4734-a3d1-6f4e4dd0dae2",
+          "description": "no closures",
+          "property": "reopenStretch",
+          "input": {
+            "closures": [],
+            "reopened": [0, 10]
+          },
+          "expected": []
+        },
+        {
+          "uuid": "af2da363-3625-453a-b89b-efef04cfa7d3",
+          "description": "one kilometre out of the middle",
+          "property": "reopenStretch",
+          "input": {
+            "closures": [[0, 3]],
+            "reopened": [1, 2]
+          },
+          "expected": [[0, 1], [2, 3]]
+        },
+        {
+          "uuid": "9a8e089d-1a21-4c12-af9f-7e49a0afa20c",
+          "description": "a long closure",
+          "property": "reopenStretch",
+          "input": {
+            "closures": [[0, 1000000]],
+            "reopened": [1, 999999]
+          },
+          "expected": [[0, 1], [999999, 1000000]]
+        }
+      ]
+    }
+  ]
+}

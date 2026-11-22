@@ -1,0 +1,141 @@
+{
+  "exercise": "merge-bookings",
+  "cases": [
+    {
+      "uuid": "aaee6324-a852-4104-b0af-48511e56d761",
+      "description": "joins bookings that overlap or touch",
+      "property": "mergeBookings",
+      "input": {
+        "bookings": [[540, 600], [480, 550], [700, 760], [600, 630]]
+      },
+      "expected": [[480, 630], [700, 760]]
+    },
+    {
+      "uuid": "51ce37b3-a4e9-43b9-aca9-674581638a96",
+      "description": "bookings with gaps stay apart",
+      "property": "mergeBookings",
+      "input": {
+        "bookings": [[60, 120], [180, 240], [300, 360]]
+      },
+      "expected": [[60, 120], [180, 240], [300, 360]]
+    },
+    {
+      "uuid": "dfc1bd3c-b63d-4eee-9c23-dfd197d153eb",
+      "description": "bookings inside a longer one",
+      "property": "mergeBookings",
+      "input": {
+        "bookings": [[100, 400], [150, 200], [250, 300]]
+      },
+      "expected": [[100, 400]]
+    },
+    {
+      "uuid": "019f9a0d-c8cb-4614-91d5-acd4da215fa7",
+      "description": "a chain of touching bookings",
+      "property": "mergeBookings",
+      "input": {
+        "bookings": [[0, 30], [30, 60], [60, 90]]
+      },
+      "expected": [[0, 90]]
+    },
+    {
+      "uuid": "f6f1adff-6c48-4df4-abe0-5dc16c5cf38c",
+      "description": "a later start with an earlier end",
+      "property": "mergeBookings",
+      "input": {
+        "bookings": [[10, 100], [20, 30], [90, 120]]
+      },
+      "expected": [[10, 120]]
+    },
+    {
+      "uuid": "ac71b828-c6ff-4378-950f-3fbfa63c5a34",
+      "description": "the same booking three times",
+      "property": "mergeBookings",
+      "input": {
+        "bookings": [[300, 330], [300, 330], [300, 330]]
+      },
+      "expected": [[300, 330]]
+    },
+    {
+      "uuid": "fb363fd0-531d-41dc-a313-6f5b8427b862",
+      "description": "bookings in reverse order",
+      "property": "mergeBookings",
+      "input": {
+        "bookings": [[900, 960], [700, 800], [500, 600], [550, 720]]
+      },
+      "expected": [[500, 800], [900, 960]]
+    },
+    {
+      "uuid": "1edf9e5c-b7d5-4b02-ab34-021b862b48cd",
+      "description": "a busy day of bookings",
+      "property": "mergeBookings",
+      "input": {
+        "bookings": [
+          [1166, 1231],
+          [487, 568],
+          [787, 873],
+          [1263, 1268],
+          [127, 208],
+          [792, 795],
+          [350, 406],
+          [1019, 1083],
+          [464, 545],
+          [741, 780],
+          [816, 884],
+          [535, 624],
+          [1059, 1120],
+          [579, 623],
+          [281, 332],
+          [1062, 1110],
+          [1238, 1327],
+          [893, 970],
+          [459, 541],
+          [1135, 1171]
+        ]
+      },
+      "expected": [
+        [127, 208],
+        [281, 332],
+        [350, 406],
+        [459, 624],
+        [741, 780],
+        [787, 884],
+        [893, 970],
+        [1019, 1120],
+        [1135, 1231],
+        [1238, 1327]
+      ]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "e8782e7c-db3d-49e1-9f44-67b1132da9c5",
+          "description": "no bookings",
+          "property": "mergeBookings",
+          "input": {
+            "bookings": []
+          },
+          "expected": []
+        },
+        {
+          "uuid": "7245f4c8-d188-4eda-b4d2-2e0ab42466db",
+          "description": "one booking for the whole day",
+          "property": "mergeBookings",
+          "input": {
+            "bookings": [[0, 1440]]
+          },
+          "expected": [[0, 1440]]
+        },
+        {
+          "uuid": "d80b3d8b-e055-4503-a805-5e937a576c87",
+          "description": "a gap of one minute stays a gap",
+          "property": "mergeBookings",
+          "input": {
+            "bookings": [[0, 10], [11, 20]]
+          },
+          "expected": [[0, 10], [11, 20]]
+        }
+      ]
+    }
+  ]
+}

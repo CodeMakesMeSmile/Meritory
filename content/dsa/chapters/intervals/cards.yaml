@@ -1,0 +1,340 @@
+- id: why-sort-by-end-to-keep
+  skill: start-or-end
+  asks: why
+  type: prompt
+  prompt: To keep the most intervals with no two overlapping, why sort them by end rather than by start?
+  reworded: When choosing the largest set of intervals that don't clash, what makes the end the right thing to sort by?
+  points:
+    - The interval that ends first leaves the most room for everything after it.
+    - Sorted by start, a long interval that starts early can come first and block several short ones.
+    - With talks `[1, 10]`, `[2, 3]`, and `[4, 5]`, sorting by start keeps one talk, and sorting by end keeps two.
+  misconception: That sorting by start works for every interval question.
+  lesson:
+    title: Keep the one that frees up first
+    explanation: An early start says nothing about how long an interval blocks the rest. An early end does, so choosing questions sort by end.
+- id: when-start-or-end
+  skill: start-or-end
+  asks: when
+  type: matching
+  prompt: Match each task to what you'd sort the intervals by.
+  reworded: For each of these interval tasks, which sort fits?
+  matchHeading: Sort by
+  matchName: a sort
+  pairs:
+    - item: Merge overlapping bookings into busy stretches
+      match: Start, so each one can only join the last group
+    - item: Keep the most talks on one stage
+      match: End, so each talk kept leaves the most room
+    - item: Intersect two lists that are already sorted
+      match: No sort, walk both with two pointers
+  extraMatches:
+    - Length, shortest first
+  lesson:
+    title: Groups by start, choices by end
+    explanation: Building groups needs neighbours side by side, which a sort by start gives. Choosing what to keep needs to know what frees up first, which a sort by end gives. Input that's already sorted needs neither.
+- id: sort-with-no-compare
+  skill: start-or-end
+  asks: what
+  type: pick-one
+  prompt: "In TypeScript, what does `[[9, 12], [10, 11]].sort()` give, with no compare function?"
+  reworded: "A TypeScript list of intervals, `[[9, 12], [10, 11]]`, is sorted by calling `sort()` with nothing passed in. What's the order after?"
+  options:
+    - text: "`[[10, 11], [9, 12]]`, because it compares the intervals as text"
+      correct: true
+      reason: '`"10,11"` comes before `"9,12"` as text, since 1 comes before 9.'
+    - text: "`[[9, 12], [10, 11]]`, because 9 is less than 10"
+      reason: With no compare function, values are turned into strings first.
+    - text: It throws an error, since arrays can't be compared
+      reason: It doesn't throw. It quietly sorts as text.
+  lesson:
+    title: Always pass a compare function
+    explanation: "Write `sort((a, b) => a[0] - b[0])` to sort by start. Without it, numbers sort as text, and the mistake only shows up once values have different numbers of digits."
+- id: why-keep-larger-end
+  skill: merge-overlaps
+  asks: why
+  type: pick-one
+  prompt: When an interval joins the group you're merging, why does the group keep the larger of the two ends?
+  reworded: While merging sorted intervals, why not just set the group's end to the new interval's end?
+  options:
+    - text: The new interval can sit entirely inside the group, like `[2, 3]` after `[1, 10]`
+      correct: true
+      reason: Taking the new end would shrink the group to 3 and lose the time from 3 to 10.
+    - text: Because the list is sorted by end
+      reason: It's sorted by start, which is exactly why a later interval can end sooner.
+    - text: To keep touching intervals apart
+      reason: The end chosen doesn't decide that. The comparison with the start does.
+  lesson:
+    title: Starts are sorted, ends aren't
+    explanation: Sorting by start says nothing about the order of the ends, so a short interval can follow a long one. The group's end only ever grows.
+- id: merge-overlap-steps
+  skill: merge-overlaps
+  asks: what
+  type: ordering
+  prompt: Put the steps for merging overlapping intervals in order.
+  reworded: In what order does the merge of a list of intervals do its work?
+  steps:
+    - Sort a copy of the intervals by start.
+    - Start a group with the first interval.
+    - For each next interval, check whether it starts at or before the group's end.
+    - If it does, set the group's end to the larger of the two ends.
+    - If it doesn't, finish the group and start a new one with this interval.
+  terms:
+    - term: Group
+      definition: The merged interval being built, which the next interval may join.
+  lesson:
+    title: Sort once, compare with the last group
+    explanation: After sorting by start, an interval can only join the group just before it, so one pass after the sort is enough.
+- id: when-touching-join
+  skill: merge-overlaps
+  asks: when
+  type: pick-one
+  prompt: "A hall has bookings `[60, 120]` and `[120, 180]`, each running up to its end. When does merging them into `[60, 180]` make sense?"
+  reworded: "Two bookings, `[60, 120]` and `[120, 180]`, touch at 120. In which question should they become one stretch?"
+  options:
+    - text: When the question asks for the stretches when the hall is busy
+      correct: true
+      reason: The hall is busy from 60 to 180 with no gap, even though the bookings never overlap.
+    - text: When the question asks whether any two bookings clash
+      reason: They don't clash. One is over by the time the other starts.
+    - text: Never, since the bookings don't overlap
+      reason: Merging is about gaps, not only overlaps. There's no gap here.
+  lesson:
+    title: Overlap and gap are two questions
+    explanation: Touching intervals don't overlap, but they leave no gap. Read whether the question cares about clashes or about busy stretches, and use `<=` or `<` to match.
+- id: why-one-pass-insert
+  skill: insert-interval
+  asks: why
+  type: prompt
+  prompt: A list of intervals is sorted with no overlaps, and one new interval arrives. Why walk the list once rather than add the interval and merge everything again?
+  reworded: Why does adding one interval to a sorted list with no overlaps only need a single pass?
+  points:
+    - The list is already sorted and merged, so only the intervals the new one touches can change.
+    - The intervals before it and after it are copied as they are.
+    - One pass is O(n), and sorting again is O(n log n).
+  lesson:
+    title: Only the middle changes
+    explanation: Walk in three parts. Copy what ends before the new interval, fold in what overlaps it, then copy the rest.
+- id: insert-steps
+  skill: insert-interval
+  asks: what
+  type: ordering
+  prompt: Put the steps for adding an interval to a sorted list with no overlaps in order.
+  reworded: In what order do you fit one new interval into a sorted list, merging as you go?
+  steps:
+    - Copy every interval that ends before the new one starts.
+    - While the next interval starts at or before the new one's end, widen the new one to cover it.
+    - Add the widened interval.
+    - Copy every interval that's left.
+  lesson:
+    title: Before, during, after
+    explanation: The middle loop may run zero times, when the new interval fits in a gap, or for the whole list, when it covers everything.
+- id: insert-result
+  skill: insert-interval
+  asks: what
+  type: pick-one
+  prompt: "Intervals that touch are joined. What do you get when you add `[4, 8]` to `[[1, 3], [5, 6], [8, 10], [12, 15]]`?"
+  reworded: "Add `[4, 8]` to the sorted list `[[1, 3], [5, 6], [8, 10], [12, 15]]`, joining intervals that touch. What's the new list?"
+  options:
+    - text: "`[[1, 3], [4, 10], [12, 15]]`"
+      correct: true
+      reason: "`[4, 8]` swallows `[5, 6]` and touches `[8, 10]`, so it widens to `[4, 10]`. It doesn't reach `[1, 3]`, which ends at 3."
+    - text: "`[[1, 3], [4, 8], [8, 10], [12, 15]]`"
+      reason: That drops `[5, 6]` but leaves two touching intervals apart.
+    - text: "`[[1, 10], [12, 15]]`"
+      reason: "`[1, 3]` ends at 3 and the new interval starts at 4, so there's a gap."
+  lesson:
+    title: Touching counts as joining here
+    explanation: An interval that starts exactly at the new one's end is folded in when touching intervals join. Check the rule before choosing `<` or `<=`.
+- id: why-earliest-end-safe
+  skill: fewest-removals
+  asks: why
+  type: prompt
+  prompt: To keep the most talks on one stage with no clashes, why is it always safe to keep the talk that ends first?
+  reworded: In the fewest cancellations problem, what argument shows the earliest ending talk belongs in some best plan?
+  points:
+    - Take any best plan. Its first talk ends no earlier than the earliest ending talk overall.
+    - Swap the earliest ending talk in for it. It ends sooner, so it clashes with nothing the old one didn't.
+    - The plan keeps the same number of talks, so some best plan starts with the earliest end.
+  misconception: That the shortest talk is the safe one to keep.
+  lesson:
+    title: Swap in the earliest end
+    explanation: This is an exchange argument. Repeating it talk by talk shows the whole greedy plan is as good as any.
+- id: fewest-cancellations-answer
+  skill: fewest-removals
+  asks: what
+  type: pick-one
+  prompt: "Talks `[1, 4]`, `[2, 3]`, `[3, 5]`, and `[4, 6]` share one stage. A talk ending at a minute frees the stage for one starting then. What's the fewest to cancel?"
+  reworded: "With talks `[1, 4]`, `[2, 3]`, `[3, 5]`, and `[4, 6]`, and touching talks allowed, how many must be cancelled so none clash?"
+  options:
+    - text: "2"
+      correct: true
+      reason: "Sorted by end, keep `[2, 3]`, skip `[1, 4]`, keep `[3, 5]`, and skip `[4, 6]`. Two kept, two cancelled, and no three talks fit."
+    - text: "1"
+      reason: Any three of these talks include two that clash.
+    - text: "3"
+      reason: "`[2, 3]` and `[3, 5]` only touch, so both can stay."
+  lesson:
+    title: Count what you keep
+    explanation: The fewest to cancel is the number of talks minus the most that fit. Sort by end and keep each talk that starts at or after the last one kept.
+- id: when-new-visit
+  skill: fewest-removals
+  asks: when
+  type: pick-one
+  prompt: Each gauge must be read at some minute inside its window, and a window includes both ends. Walking the windows sorted by end, when do you need a new visit?
+  reworded: Finding the fewest visits that read every gauge, with windows sorted by end, which window forces another visit?
+  options:
+    - text: One that opens after the minute of the last visit
+      correct: true
+      reason: Every other window has opened by the last visit and hasn't closed yet, so that visit read it.
+    - text: One that closes after the minute of the last visit
+      reason: Most windows close after it. What matters is whether they had opened.
+    - text: Every window gets its own visit
+      reason: One visit at a window's end reads every window that covers that minute.
+  lesson:
+    title: Visit as late as you can
+    explanation: Visiting at the end of the first window reads the most other windows. Only a window that opens later needs another trip.
+- id: why-ends-first
+  skill: sweep-events
+  asks: why
+  type: pick-one
+  prompt: In a sweep of half-open intervals, why does an end event come before a start event at the same time?
+  reworded: When a sweep sees an end and a start at the same moment, and intervals don't include their end, which goes first and why?
+  options:
+    - text: So the count drops before it rises, and intervals that only touch never count together
+      correct: true
+      reason: An interval that runs up to 10 is over at 10, so it shouldn't overlap one starting at 10.
+    - text: So the running count never goes below zero
+      reason: Every end has its own start earlier, so the count stays at zero or above in any order.
+    - text: Because ends always have smaller times than starts
+      reason: Each interval's own end is later than its start. The tie is between different intervals.
+  lesson:
+    title: The tie order is the touching rule
+    explanation: Ends first means touching intervals don't overlap. Starts first means they do. Choose the order the question describes.
+- id: sweep-steps
+  skill: sweep-events
+  asks: what
+  type: ordering
+  prompt: Put the steps for finding the most intervals open at once with a sweep in order.
+  reworded: In what order does a sweep of start and end events find the busiest moment?
+  steps:
+    - Turn each interval into a +1 event at its start and a -1 event at its end.
+    - Sort the events by time, breaking ties the way the question needs.
+    - Walk the events, adding each change to a running count.
+    - Keep the largest count seen, which is the answer.
+  terms:
+    - term: Event
+      definition: A time paired with how much the count changes then.
+  lesson:
+    title: Two events per interval
+    explanation: Sorting 2n events is O(n log n), and the walk is O(n). Weighted versions add an amount other than 1.
+- id: when-starts-first
+  skill: sweep-events
+  asks: when
+  type: pick-one
+  prompt: Lamps are lit for closed stretches of minutes, so a lamp lit through minute 5 is still lit during minute 5. A sweep finds the most lamps lit at once. When two events fall on minute 5, which goes first?
+  reworded: "In a sweep over closed intervals, where a lamp lit through minute 5 still shines during it, how should a start and an end at minute 5 be ordered?"
+  options:
+    - text: The start, so a lamp lighting at 5 counts with one still lit through 5
+      correct: true
+      reason: Both lamps are lit during minute 5, so the count should rise before it drops.
+    - text: The end, so the count drops first
+      reason: That's the rule for half-open intervals, where an interval is over at its end.
+    - text: It doesn't matter, the most at once is the same either way
+      reason: Ties change the answer. Two touching lamps count as 2 one way and 1 the other.
+  lesson:
+    title: Closed means starts first
+    explanation: Or keep ends first and put each end event at `end + 1`. With whole minutes, a lamp lit through minute 5 is the same as one lit up to minute 6.
+- id: why-advance-earlier-end
+  skill: intersect-lists
+  asks: why
+  type: pick-one
+  prompt: When intersecting two sorted lists of intervals, why move past whichever current interval ends first?
+  reworded: Walking two sorted interval lists with two pointers, which pointer moves after each step, and why is that safe?
+  options:
+    - text: Everything later in the other list starts at or after its end, so it can't share any more time
+      correct: true
+      reason: The other list has no overlaps inside it, so its later intervals start after its current one, which ends at or after this one.
+    - text: It's the shorter interval, so it matters less
+      reason: Length doesn't decide it. The end does.
+    - text: Moving both pointers every step is too fast
+      reason: The interval that ends later may still share time with the next one in the other list.
+  lesson:
+    title: The earlier end is finished
+    explanation: The interval that ends later may still reach the next interval in the other list, so it stays. Each step moves one pointer, for O(n + m) in all.
+- id: intersect-steps
+  skill: intersect-lists
+  asks: what
+  type: ordering
+  prompt: Put one step of intersecting two sorted interval lists in order.
+  reworded: In what order does each step of the two pointer intersection of interval lists work?
+  steps:
+    - Take the later of the two current starts.
+    - Take the earlier of the two current ends.
+    - If the start is before the end, add that stretch to the answer.
+    - Move past whichever current interval ends first.
+  lesson:
+    title: Later start, earlier end
+    explanation: Two intervals share the stretch from the later start to the earlier end, when there's any stretch at all.
+- id: when-no-sort-intersect
+  skill: intersect-lists
+  asks: when
+  type: pick-one
+  prompt: When can you intersect two lists of intervals in O(n + m), with no sorting?
+  reworded: Under what condition does the two pointer walk find the shared time of two interval lists without sorting first?
+  options:
+    - text: When each list is sorted by start and has no overlaps inside it
+      correct: true
+      reason: Then each list's ends are sorted too, so moving past the earlier end never skips a shared stretch.
+    - text: When both lists have the same length
+      reason: The lengths can differ. The walk stops when either list runs out.
+    - text: Always, the walk doesn't care about order
+      reason: Out of order or overlapping intervals make it move past time that's still shared.
+  lesson:
+    title: Sorted and clean
+    explanation: If either list could overlap itself, merge it first, which needs a sort.
+- id: why-free-is-gaps
+  skill: free-time
+  asks: why
+  type: prompt
+  prompt: Why does merging everyone's busy times into one list find the times when nobody is busy?
+  reworded: To find free time shared by several calendars, why merge all the busy times together instead of comparing calendars two at a time?
+  points:
+    - Nobody is free exactly when no one's busy time covers that moment.
+    - Merging all the busy times gives the stretches when at least one person is busy.
+    - The gaps between those merged stretches are the shared free times.
+  lesson:
+    title: Free is what busy leaves behind
+    explanation: It doesn't matter whose busy time it is. Put them all in one list, merge, and read the gaps.
+- id: free-time-steps
+  skill: free-time
+  asks: what
+  type: ordering
+  prompt: Put the steps for finding the free time inside a working day across several calendars in order.
+  reworded: In what order do you find when nobody is busy during the day, given several calendars?
+  steps:
+    - Gather every busy time from every calendar into one list.
+    - Sort them by start, or merge the sorted calendars with a heap.
+    - Start with free time beginning at the start of the day.
+    - For each busy time that starts after that point, record the gap up to its start.
+    - Move the start of free time to the busy time's end, if that's later.
+    - Record the time from there to the end of the day, if any is left.
+  lesson:
+    title: Merge, then read the gaps
+    explanation: Clip to the day as you go, so busy times outside it never create a gap.
+- id: when-heap-for-calendars
+  skill: free-time
+  asks: when
+  type: pick-one
+  prompt: "With k calendars that are each sorted, and N busy times in all, when is a heap of each calendar's next busy time worth it over gathering everything and sorting?"
+  reworded: "Free time across k sorted calendars: when does merging them with a heap beat one big sort?"
+  options:
+    - text: When k is much smaller than N, since the heap is O(N log k) and the sort is O(N log N)
+      correct: true
+      reason: A few calendars with many busy times each gain the most from using the order they already have.
+    - text: When there are only two calendars
+      reason: Two sorted lists need no heap at all, just two pointers.
+    - text: Never, the heap is always slower
+      reason: It's slower to write, not slower to run when k is small next to N.
+  lesson:
+    title: Use the order you're given
+    explanation: The sort is simpler and often fine in an interview. Mention the heap when the calendars are sorted and there are many busy times in each.

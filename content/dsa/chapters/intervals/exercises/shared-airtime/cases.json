@@ -1,0 +1,120 @@
+{
+  "exercise": "shared-airtime",
+  "cases": [
+    {
+      "uuid": "5b29974d-0949-4269-a19e-b359a6236b39",
+      "description": "adds up every shared stretch",
+      "property": "sharedAirtime",
+      "input": {
+        "first": [[0, 30], [45, 90]],
+        "second": [[20, 50], [60, 120]]
+      },
+      "expected": 45
+    },
+    {
+      "uuid": "022f8a19-f5c4-4011-8e76-bdc6d637a5d7",
+      "description": "broadcasts that only touch add nothing",
+      "property": "sharedAirtime",
+      "input": {
+        "first": [[0, 60]],
+        "second": [[60, 90]]
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "0a2dc1a0-15d4-44e5-b77e-ba7a52cf4a02",
+      "description": "one station on air the whole time",
+      "property": "sharedAirtime",
+      "input": {
+        "first": [[0, 1000]],
+        "second": [[100, 200], [500, 550]]
+      },
+      "expected": 150
+    },
+    {
+      "uuid": "bdd11ba7-6295-49b4-a9b7-975f87f450f7",
+      "description": "the same schedule",
+      "property": "sharedAirtime",
+      "input": {
+        "first": [[10, 20], [40, 70]],
+        "second": [[10, 20], [40, 70]]
+      },
+      "expected": 40
+    },
+    {
+      "uuid": "5f7dff34-a4e4-481e-8f70-189c57974694",
+      "description": "no time in common",
+      "property": "sharedAirtime",
+      "input": {
+        "first": [[0, 10], [30, 40]],
+        "second": [[15, 25]]
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "8960752f-6002-4014-83e3-7162a3babf6d",
+      "description": "two long logs",
+      "property": "sharedAirtime",
+      "input": {
+        "first": [
+          [11, 21],
+          [59, 115],
+          [131, 228],
+          [238, 260],
+          [328, 331],
+          [338, 340],
+          [364, 366],
+          [383, 387],
+          [453, 499]
+        ],
+        "second": [
+          [8, 31],
+          [56, 58],
+          [63, 98],
+          [104, 127],
+          [134, 163],
+          [179, 229],
+          [244, 302],
+          [421, 455],
+          [462, 482]
+        ]
+      },
+      "expected": 172
+    },
+    {
+      "uuid": "5c00b5db-340b-49c9-8c92-b06d0640fa8f",
+      "description": "both on air for the longest time allowed",
+      "property": "sharedAirtime",
+      "input": {
+        "first": [[0, 1000000]],
+        "second": [[0, 1000000]]
+      },
+      "expected": 1000000
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "c300573b-ddc3-426b-ac96-b2bf1c970bb3",
+          "description": "one station never on air",
+          "property": "sharedAirtime",
+          "input": {
+            "first": [],
+            "second": [[0, 60]]
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "e62ff7cb-1073-463c-88c8-2f2784c6cc7d",
+          "description": "a single shared minute",
+          "property": "sharedAirtime",
+          "input": {
+            "first": [[5, 6]],
+            "second": [[0, 10]]
+          },
+          "expected": 1
+        }
+      ]
+    }
+  ]
+}

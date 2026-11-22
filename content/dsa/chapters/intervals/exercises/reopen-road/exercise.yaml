@@ -1,0 +1,18 @@
+id: reopen-road
+kind: coding
+title: Reopen part of the highway
+difficulty: medium
+skills:
+  - insert-interval
+sibling: add-booking
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: reopenStretch
+  params:
+    - name: closures
+      type: int[][]
+    - name: reopened
+      type: int[]
+  returns: int[][]

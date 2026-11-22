@@ -1,0 +1,137 @@
+{
+  "exercise": "team-free",
+  "cases": [
+    {
+      "uuid": "87cf0185-7313-45f6-b85b-8d5f5860cb79",
+      "description": "finds the gaps across three calendars",
+      "property": "teamFree",
+      "input": {
+        "calendars": [[540, 600, 720, 780], [570, 630], [840, 900, 960, 1020]],
+        "dayStart": 480,
+        "dayEnd": 1020
+      },
+      "expected": [[480, 540], [630, 720], [780, 840], [900, 960]]
+    },
+    {
+      "uuid": "9e6ae2c4-490f-4067-91b5-694af1531591",
+      "description": "busy times that touch leave no gap",
+      "property": "teamFree",
+      "input": {
+        "calendars": [[480, 600], [600, 720]],
+        "dayStart": 480,
+        "dayEnd": 720
+      },
+      "expected": []
+    },
+    {
+      "uuid": "2efbb837-8a4d-4321-8462-797b21d0327f",
+      "description": "busy times outside the day",
+      "property": "teamFree",
+      "input": {
+        "calendars": [[300, 500, 1000, 1200]],
+        "dayStart": 540,
+        "dayEnd": 960
+      },
+      "expected": [[540, 960]]
+    },
+    {
+      "uuid": "ccd97375-3ca5-4503-8452-a0d995f0a554",
+      "description": "busy times across the edges of the day",
+      "property": "teamFree",
+      "input": {
+        "calendars": [[400, 560], [900, 1100]],
+        "dayStart": 540,
+        "dayEnd": 960
+      },
+      "expected": [[560, 900]]
+    },
+    {
+      "uuid": "7f8828c5-2399-43b9-9bd2-b587d7305e30",
+      "description": "someone with nothing booked",
+      "property": "teamFree",
+      "input": {
+        "calendars": [[], [600, 660]],
+        "dayStart": 540,
+        "dayEnd": 720
+      },
+      "expected": [[540, 600], [660, 720]]
+    },
+    {
+      "uuid": "54a8d394-cbb3-4fbd-a358-4493894188de",
+      "description": "nobody has anything booked",
+      "property": "teamFree",
+      "input": {
+        "calendars": [[], []],
+        "dayStart": 540,
+        "dayEnd": 1020
+      },
+      "expected": [[540, 1020]]
+    },
+    {
+      "uuid": "3cb64c45-56ce-4da3-93fa-5618d1af1aec",
+      "description": "someone busy all day",
+      "property": "teamFree",
+      "input": {
+        "calendars": [[0, 1440], [600, 660]],
+        "dayStart": 540,
+        "dayEnd": 1020
+      },
+      "expected": []
+    },
+    {
+      "uuid": "b2e1ce5a-3e69-4b6f-8b6a-b48bc0ca66f3",
+      "description": "the same busy time in every calendar",
+      "property": "teamFree",
+      "input": {
+        "calendars": [[600, 660], [600, 660], [600, 660]],
+        "dayStart": 540,
+        "dayEnd": 720
+      },
+      "expected": [[540, 600], [660, 720]]
+    },
+    {
+      "uuid": "8a358a14-5279-43e5-a5fa-c9c129d26e08",
+      "description": "a team of five",
+      "property": "teamFree",
+      "input": {
+        "calendars": [
+          [501, 558, 625, 660, 687, 777, 777, 895],
+          [491, 614, 617, 716, 911, 1003, 1012, 1039],
+          [498, 527, 527, 731, 760, 791, 880, 990],
+          [535, 670, 694, 727, 727, 951, 977, 1010],
+          [619, 624, 627, 650, 650, 775]
+        ],
+        "dayStart": 480,
+        "dayEnd": 1080
+      },
+      "expected": [[480, 491], [1010, 1012], [1039, 1080]]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "327bef06-b981-4be2-980f-204e53e864ee",
+          "description": "no calendars",
+          "property": "teamFree",
+          "input": {
+            "calendars": [],
+            "dayStart": 0,
+            "dayEnd": 1440
+          },
+          "expected": [[0, 1440]]
+        },
+        {
+          "uuid": "91273c0d-8ba4-4d57-a660-90d4ac6c890d",
+          "description": "a day one minute long",
+          "property": "teamFree",
+          "input": {
+            "calendars": [[]],
+            "dayStart": 100,
+            "dayEnd": 101
+          },
+          "expected": [[100, 101]]
+        }
+      ]
+    }
+  ]
+}

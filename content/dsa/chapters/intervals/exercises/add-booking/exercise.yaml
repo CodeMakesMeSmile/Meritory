@@ -1,0 +1,18 @@
+id: add-booking
+kind: coding
+title: Fit a new lesson into the diary
+difficulty: medium
+skills:
+  - insert-interval
+sibling: reopen-road
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: addBooking
+  params:
+    - name: diary
+      type: int[][]
+    - name: booking
+      type: int[]
+  returns: int[][]

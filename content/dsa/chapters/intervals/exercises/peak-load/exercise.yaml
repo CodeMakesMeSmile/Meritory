@@ -1,0 +1,16 @@
+id: peak-load
+kind: coding
+title: The peak load on the generator
+difficulty: medium
+skills:
+  - sweep-events
+sibling: most-aboard
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: peakLoad
+  params:
+    - name: appliances
+      type: int[][]
+  returns: int

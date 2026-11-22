@@ -1,0 +1,17 @@
+id: fewest-cancellations
+kind: coding
+title: Cancel the fewest talks
+difficulty: medium
+skills:
+  - fewest-removals
+  - start-or-end
+sibling: gauge-trips
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: fewestCancellations
+  params:
+    - name: talks
+      type: int[][]
+  returns: int

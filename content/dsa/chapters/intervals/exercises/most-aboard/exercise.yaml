@@ -1,0 +1,16 @@
+id: most-aboard
+kind: coding
+title: The most riders on the bus
+difficulty: medium
+skills:
+  - sweep-events
+sibling: peak-load
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: mostAboard
+  params:
+    - name: riders
+      type: int[][]
+  returns: int

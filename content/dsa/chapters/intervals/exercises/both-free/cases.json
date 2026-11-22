@@ -1,0 +1,135 @@
+{
+  "exercise": "both-free",
+  "cases": [
+    {
+      "uuid": "92be0ded-7a08-4a4b-85d9-9623d908f4ff",
+      "description": "finds every shared stretch",
+      "property": "bothFree",
+      "input": {
+        "first": [[480, 600], [660, 720], [780, 900]],
+        "second": [[540, 690], [720, 840]]
+      },
+      "expected": [[540, 600], [660, 690], [780, 840]]
+    },
+    {
+      "uuid": "8445ac3b-3bfc-4eed-8a12-f80be4d0596c",
+      "description": "free times that only touch share nothing",
+      "property": "bothFree",
+      "input": {
+        "first": [[0, 60]],
+        "second": [[60, 120]]
+      },
+      "expected": []
+    },
+    {
+      "uuid": "4a627214-e25d-462a-82fb-c107a8ad2856",
+      "description": "one guide free all day",
+      "property": "bothFree",
+      "input": {
+        "first": [[0, 1440]],
+        "second": [[100, 200], [300, 400]]
+      },
+      "expected": [[100, 200], [300, 400]]
+    },
+    {
+      "uuid": "75d7a243-3484-418e-81a2-793500424a3a",
+      "description": "no time in common",
+      "property": "bothFree",
+      "input": {
+        "first": [[0, 10], [20, 30]],
+        "second": [[10, 20], [30, 40]]
+      },
+      "expected": []
+    },
+    {
+      "uuid": "fc701f8a-9575-4c61-ad48-96cc390da4cc",
+      "description": "one long time against several short ones",
+      "property": "bothFree",
+      "input": {
+        "first": [[100, 500]],
+        "second": [[50, 150], [200, 250], [450, 600]]
+      },
+      "expected": [[100, 150], [200, 250], [450, 500]]
+    },
+    {
+      "uuid": "339f9b7c-e613-422e-b39a-067612814ed7",
+      "description": "the same free times",
+      "property": "bothFree",
+      "input": {
+        "first": [[10, 20], [30, 40]],
+        "second": [[10, 20], [30, 40]]
+      },
+      "expected": [[10, 20], [30, 40]]
+    },
+    {
+      "uuid": "875dee71-4024-45fb-a056-0351412625e8",
+      "description": "two long lists",
+      "property": "bothFree",
+      "input": {
+        "first": [
+          [5, 56],
+          [60, 137],
+          [144, 146],
+          [154, 161],
+          [162, 163],
+          [164, 191],
+          [205, 230],
+          [248, 258]
+        ],
+        "second": [
+          [38, 47],
+          [77, 111],
+          [114, 119],
+          [173, 215],
+          [218, 262],
+          [272, 278],
+          [287, 294]
+        ]
+      },
+      "expected": [
+        [38, 47],
+        [77, 111],
+        [114, 119],
+        [173, 191],
+        [205, 215],
+        [218, 230],
+        [248, 258]
+      ]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "9f173318-4c00-4acc-83ed-1bf24dc3221c",
+          "description": "one guide is never free",
+          "property": "bothFree",
+          "input": {
+            "first": [],
+            "second": [[0, 60]]
+          },
+          "expected": []
+        },
+        {
+          "uuid": "ad8adf03-d59c-4c77-97f8-d70d85504829",
+          "description": "neither guide is free",
+          "property": "bothFree",
+          "input": {
+            "first": [],
+            "second": []
+          },
+          "expected": []
+        },
+        {
+          "uuid": "33aa6768-54eb-4ae3-ba5b-c5352f079e84",
+          "description": "a single shared minute",
+          "property": "bothFree",
+          "input": {
+            "first": [[5, 10]],
+            "second": [[9, 12]]
+          },
+          "expected": [[9, 10]]
+        }
+      ]
+    }
+  ]
+}

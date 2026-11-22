@@ -33,8 +33,14 @@
   "card/ends-search-steps": [
     "7adf57ceffa29b2c15fed3e8dadf732d1297528850d9ac3ab42cf446d8c662ca"
   ],
+  "card/fewest-cancellations-answer": [
+    "4d1ffbe1631d092bea484a9deb0f817ab0a285179238858e1e6860e7edcaf791"
+  ],
   "card/fixed-window-steps": [
     "9c1952fe93b2d64b85076fd12fab99c657647b86cd91cb26b460a4aced661d7e"
+  ],
+  "card/free-time-steps": [
+    "82e0916126c3e582f6de8c59a091a715a4ebe71ad1ae869981088d7ab5b51324"
   ],
   "card/gap-steps": [
     "fade2c51c9cee34b35b97236c44604fd5822bf13899335e03d002856f5b09199"
@@ -70,6 +76,15 @@
   "card/heap-pop-steps": [
     "bc1614cff30c7b63280a33d0bdbfe75ec1381cf5c0d80418c0fcfba98b80dbba"
   ],
+  "card/insert-result": [
+    "82cc673b8e6c5f0f9b38d26bfe11df23a368391a8f75f5b9274b2a497b09e1ad"
+  ],
+  "card/insert-steps": [
+    "a59d9ca68e1d114dcf620bf5b78a3886163a86ee5c4dffb9d11d75c82785c873"
+  ],
+  "card/intersect-steps": [
+    "332b7868329c87915a8409ffc303bd941e19497baf007e2bce61f68441e46ffc"
+  ],
   "card/kahn-steps": [
     "41ebf23d646d45b200ab9d391f114404189fe1f6917f3b778e1e4bccaa7b8be6"
   ],
@@ -96,6 +111,9 @@
   ],
   "card/merge-lists-steps": [
     "2e34bc36f30cdea3cc4ffe4b8d2457165ff0a9fc7da7888bf9f650601ced3128"
+  ],
+  "card/merge-overlap-steps": [
+    "5a763a3faf4419218ab1d648fa0dcb38a12f998feae997c86d4360d59eff46d7"
   ],
   "card/merge-steps": [
     "dfcaccd661ff5ce9ad9d0f701aeb34e46d4886bb76a3d7cf11f553775b035ce5"
@@ -144,6 +162,12 @@
   ],
   "card/smaller-problem-steps": [
     "468007a475d92f0acb7bfe633cd0212b0085cc5d41346274dd82ef180133e27f"
+  ],
+  "card/sort-with-no-compare": [
+    "9b28b2e01ad66dabb7f5539d6fb2ad5bbd7691ad522880285e57c9ebd729424c"
+  ],
+  "card/sweep-steps": [
+    "69e7cd02e93e39b1d86f344f8e4c2a0f065efe4bd9e0f6c47d9c3bf7bfa0134d"
   ],
   "card/three-way-regions": [
     "356e27936dfea23c68aa7b1912bf098c180cf8fe04e2472ef85edffaf9eab63a"
@@ -226,6 +250,9 @@
   "card/when-grid-method": [
     "66a210633086000cfa57098a555cfb0c3a1121d33258f0bc7bea9f53b84da0d5"
   ],
+  "card/when-heap-for-calendars": [
+    "c458b76bac5c90db172886082027652553e2ca12b433051fa321f9d9158da7e9"
+  ],
   "card/when-heap-or-sort": [
     "b1cfc250da6761363241cb1d1e1da78956e9b03cbb41901cb43bd2a3b794f78e"
   ],
@@ -271,6 +298,12 @@
   ],
   "card/when-multi-source": [
     "87f3319f22df63b8eb37fb418771fece838f861446b48e500852412ec046770e"
+  ],
+  "card/when-new-visit": [
+    "b75942f3d230ecfff52364a62dca889154f59d15f72d9ab6f8d6e24a1b7bfc46"
+  ],
+  "card/when-no-sort-intersect": [
+    "c982503dc53b38dab1a555de0807275c08422e07bfcaf038512700a74970f1bd"
   ],
   "card/when-not-remove-one-by-one": [
     "dbefc7c1d84f98fca682a5b3e8c40df863a0489f62a26ee8f5ec13edc0e4e8fd"
@@ -347,6 +380,12 @@
   "card/when-start-at-i": [
     "c82bd377969d37c4c362838422b6d7148e8b7a2267325aafab085eccf854b524"
   ],
+  "card/when-start-or-end": [
+    "3afdbfb62ffc318b76c79b2c39c7d9d50ef0cbf8f75390c752ab3a1864f217e3"
+  ],
+  "card/when-starts-first": [
+    "9a89ae0f191ea73b3f7e3b785d2acbb1e90b5dc8ff3c1a27f5c6331210e86e3c"
+  ],
   "card/when-stop-merge-early": [
     "b4df06d7cb88577f0ed243c548d9bf7502d17b653ecc92238fdc5f39c9be07f2"
   ],
@@ -364,6 +403,9 @@
   ],
   "card/when-top-k-heap-pays": [
     "92d8990ee0ec4657bde8f9226910ad8c410848a2e2cf511cdf49b9aa24eb1c6d"
+  ],
+  "card/when-touching-join": [
+    "8b24720fa402697e2c1e5064a332779822634ac5088563d4fb380e89a6c5f4d2"
   ],
   "card/when-two-stacks": [
     "58f9636dfa63e121ceb74ed6f73ee4e87499d5d89288a220f945a7221d0787eb"
@@ -385,6 +427,9 @@
   ],
   "card/why-adjacency-list": [
     "b5a2f581e09613e93c23afb4fe05551ffb63057e558a42e4871007460eef1504"
+  ],
+  "card/why-advance-earlier-end": [
+    "3c06c9a0867b697b384a77efe499ad80cb083f9fa70d3b907b3721957bd869ca"
   ],
   "card/why-all-sources-first": [
     "731c498101b4795854abf7c0b36f72e94a74e6264b31d9ab1c99083815c07c4b"
@@ -446,8 +491,14 @@
   "card/why-dummy-head": [
     "2228f0ca6b5161435d976a400d32a0ab4d333dc64d0efc70094d22639666d181"
   ],
+  "card/why-earliest-end-safe": [
+    "323fe60fbe05f12569d975a8d2ad48b1f50edd8fc06e76d76a993a8fd32d4192"
+  ],
   "card/why-end-times-heap": [
     "d8abd230c75f7f3e33ff1ba6e35e1ad6dae35eaa1842880eab512959df68eba3"
+  ],
+  "card/why-ends-first": [
+    "6819ad51123b536d65da4c1f5ff8d5de2fcc5eecf0f7a301bddf923a08fd70a0"
   ],
   "card/why-exactly-not-direct": [
     "eb2e6326033a265ee5b6fa8a824fc3fe83f97e6044cbff809e050b3044ecb6af"
@@ -463,6 +514,9 @@
   ],
   "card/why-flatten-grid": [
     "8b2b37137a281afa48e2e84e95ccd1e27d212079e72257465de9e6c73f380c81"
+  ],
+  "card/why-free-is-gaps": [
+    "71780c3bb6a36a18479bab217cf3b2a6b2c75cf5aa9c82908b92249a4ac30470"
   ],
   "card/why-gap-of-n-plus-one": [
     "27b5ae99cf7656bbe1cc48f8013793b5a250951d64da3f409606740de56d72b1"
@@ -487,6 +541,9 @@
   ],
   "card/why-kahn-leaves-cycles": [
     "42859dd09aa9adf8aca0b21e7b93f0a978511fa58e40e5e5f90ca935134c533e"
+  ],
+  "card/why-keep-larger-end": [
+    "8b6991f3f3af7bc0e0e5f27dcd3bcec03363543febf25c4ffbed1168f5309081"
   ],
   "card/why-left-never-back": [
     "de4a7757f93cee0dd4e48a17cf208d9ee5afedb3edd0927962498a7f4fb6819e"
@@ -538,6 +595,9 @@
   ],
   "card/why-one-front-per-list": [
     "80c78f2679b625eb66bc3100060de498fb996e7d3e81cf52294313f1e9d8ba05"
+  ],
+  "card/why-one-pass-insert": [
+    "57f398b01386e756dcdd90763dd4696430823284d4257282d5e4b30c2d84f800"
   ],
   "card/why-pass-sum-down": [
     "b8aa8ae48e817e0954f2e79a17ee6410f5fdcd2633e3f3f848fc72d67c1043d0"
@@ -604,6 +664,9 @@
   ],
   "card/why-sort-before-skipping": [
     "fc5813aaad0d357ec732a3a6b28b7b50eb216295f5b9458753b4ad78ae6e2079"
+  ],
+  "card/why-sort-by-end-to-keep": [
+    "68f318a562b50f72c32104f9942cfcda09f5c6964f57bc39965c7399a8c5d085"
   ],
   "card/why-sort-needs-compare": [
     "dfd957210028e0c5a6998ff2ea608655142568afb6357ea5073ae2553f38e712"
@@ -704,6 +767,9 @@
   "chapter/heaps": [
     "dd6c52fe16364026e9f51210bced081e0b23961d7fc41368b01cd526105bf8b3"
   ],
+  "chapter/intervals": [
+    "35ef678d1eb5006fd25cd792ee00b3c5a71045f94645fa2e14c9d43176af9cad"
+  ],
   "chapter/linked-lists": [
     "fd29cc63a98eef7f5eb0ed0e21ba435f7e4d8fb0061925ec300261eb870b9bf3"
   ],
@@ -718,6 +784,9 @@
   ],
   "chapter/two-pointers": [
     "337609a8176950dfb103c35500ab602d38c7b724d0d1bf7e2405d80c371fe391"
+  ],
+  "exercise/add-booking": [
+    "2a9b4930b26b0bcbeb4a4c12580809a5546dcfffcd015ec556bb7442b09a348f"
   ],
   "exercise/alternate-courses": [
     "315e5613dff17e27e029c4fbcd69357d9546d4d987c8808e10866c07939c40c9"
@@ -751,6 +820,9 @@
   ],
   "exercise/booking-range": [
     "ba67ad5b1ac5a7166bb4cb9e4f0b3e6c8b094b3f748bbc8f33780d4760edd6ff"
+  ],
+  "exercise/both-free": [
+    "2e13c3f351b070ed0c9c2a8d7f1862b9e3e5475aabdba11dfa9b348ed044ef80"
   ],
   "exercise/bracket-patterns": [
     "0ecc8568f568aadef760f56abbd1b006bc03d77d8574b5df4465159e8c3af161"
@@ -815,6 +887,9 @@
   "exercise/few-kinds": [
     "37da1eaedde5efa9804ceabae0857501bbe16659d78ecd8206af15136c870ab5"
   ],
+  "exercise/fewest-cancellations": [
+    "8a73b5ab28a05589814ec189c2739680d728865fdc8f28e719356c00bbc07586"
+  ],
   "exercise/fewest-days": [
     "75a60cd1c0b3d55932313135376fe445b5d7a98c64f5cde17b81a8169f1a54be"
   ],
@@ -851,6 +926,9 @@
   "exercise/fullest-shelf": [
     "8a58b7b2fc0a96cbd89c11c6f4b1813d48f7f9c7974f99c43c95fd1d08a100a8"
   ],
+  "exercise/gauge-trips": [
+    "2d9d30e5e167f16da3333795f20651a1143dca10e52d133c60de255c96fed1c3"
+  ],
   "exercise/gift-bundles": [
     "d85d4bab41c8d5840488a15e1c4820cdec520c068c6a9d0338482c13b6863c3c"
   ],
@@ -884,6 +962,9 @@
   "exercise/letter-groups": [
     "7cb51e5edd4e6471fe13a9b20a5c93826317e7d071a53f7907d10149d0291ff6"
   ],
+  "exercise/longest-quiet": [
+    "8208f34def8a616c308759a822ec94101e5bed39ac34ebbc6a835910f79739ab"
+  ],
   "exercise/longest-run": [
     "ce1ee751f62ad32b05e194b84d34015ba2d2ea440c51907ce6363af0d57a8ee2"
   ],
@@ -911,6 +992,9 @@
   "exercise/merge-all-gates": [
     "93e791e8db2f843eaa27fa502ef3f2c450c5929531a0ceb619590c62fd26f253"
   ],
+  "exercise/merge-bookings": [
+    "c7425e64238b50e9a17c01acce41949f67beae119644fbe9838e985d5a65a441"
+  ],
   "exercise/merge-deliveries": [
     "a6039c7598ccbc6a50f38882c424ba07353f68a14016f274601b8c2ab50ecdc2"
   ],
@@ -928,6 +1012,9 @@
   ],
   "exercise/mirror-pieces": [
     "50d5376eba30e52014e8e4241512a6b88b750ebbbac75efea9755f760f3ab1bc"
+  ],
+  "exercise/most-aboard": [
+    "7bda516263e1b2175ec860eaad5de0420f3e633aeca01a0d0d423bc63e2c8223"
   ],
   "exercise/move-the-crates": [
     "f814349a6246c3fbea20e9889454ade29b101ce40d7a9f1849304a6b3fe9acd3"
@@ -965,8 +1052,14 @@
   "exercise/pack-the-tree": [
     "3892d996a18c3d5ec0b2120e2d4e0369f26df4246baa229f5ba6702c96d3c9dd"
   ],
+  "exercise/painted-length": [
+    "fdea4676d6902f0a0f42453a3da3a0d358edc01ad514e4e3755d64c395603956"
+  ],
   "exercise/pairs-with-gap": [
     "c55a98a08e37e110da6c8421fe3238e60feabaac1e7843e341a62d5edeb60d94"
+  ],
+  "exercise/peak-load": [
+    "eebca9f86ea951f965c2c06e3a568e1a57d7cf2eaca46e79988daa3ddaa76b8a"
   ],
   "exercise/pond-count": [
     "f134a9ef76cbcfe65225df5b9821a24e2156b95e1df3954fc012727f3a3c19f4"
@@ -1013,6 +1106,9 @@
   "exercise/rebuild-from-orders": [
     "e71856c8f8a2abbb7ef670840980ce56923005ba6a2067880cd0249b52c420da"
   ],
+  "exercise/reopen-road": [
+    "c8dcc46f8e72b9ffa3a084cbd1be13fa191503cb54b3f704db9bc53c4c9c74f0"
+  ],
   "exercise/richest-route": [
     "0d39ccd393b31bc88e2702e3bb936587d21c56747a45dc9d6435e6d7723df880"
   ],
@@ -1033,6 +1129,9 @@
   ],
   "exercise/same-letters": [
     "e998b9dc62400e1e9c84b0ed64ee8b38519caa0a2adbef661944be8567736dc2"
+  ],
+  "exercise/shared-airtime": [
+    "549039dcf7460f8d9baff0d517b004ed3f96c3db338771f8d08499ea93feb338"
   ],
   "exercise/shelf-slot": [
     "27b4ff07e6c4e77dd853274f40c086ef4073f946fa0c5635f50b1ab6d46ed4fd"
@@ -1075,6 +1174,9 @@
   ],
   "exercise/tags-nest": [
     "c34c5a59572666bed0a27f4666a51701fa4d70324e61d52cd77d1111346ccba1"
+  ],
+  "exercise/team-free": [
+    "626a365abb9edc81615514e8b2dd055884c693af6623463508fcacff7b44c7bd"
   ],
   "exercise/three-parcel-sizes": [
     "81936e609276338018fa35d48f87bd8a08879bcd9b961a974b3e180e83378738"

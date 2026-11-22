@@ -1,0 +1,117 @@
+{
+  "exercise": "fewest-cancellations",
+  "cases": [
+    {
+      "uuid": "ff5abc7c-d0e8-4efb-82eb-5bd00943fc3d",
+      "description": "cancels two of four talks",
+      "property": "fewestCancellations",
+      "input": {
+        "talks": [[0, 30], [10, 20], [20, 40], [30, 50]]
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "246a60c7-8d12-421d-babc-37a32cf5e352",
+      "description": "talks back to back all stay",
+      "property": "fewestCancellations",
+      "input": {
+        "talks": [[0, 60], [60, 120], [120, 180]]
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "19a9c2f9-264f-4462-85d0-50991b93ffe6",
+      "description": "one long talk blocks three short ones",
+      "property": "fewestCancellations",
+      "input": {
+        "talks": [[0, 100], [10, 20], [30, 40], [50, 60]]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "12e5cdad-dfb3-426b-9785-3a00ad816a4f",
+      "description": "every talk clashes with every other",
+      "property": "fewestCancellations",
+      "input": {
+        "talks": [[0, 10], [1, 11], [2, 12], [3, 13]]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "af4ca9cd-eb86-4c67-895e-47b88cec5aed",
+      "description": "the same talk twice",
+      "property": "fewestCancellations",
+      "input": {
+        "talks": [[5, 10], [5, 10]]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "3e41a85b-8e45-4411-a209-412b384a3386",
+      "description": "talks in no particular order",
+      "property": "fewestCancellations",
+      "input": {
+        "talks": [[40, 70], [0, 30], [25, 45], [65, 90]]
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "f17fc7fe-825b-49b3-a8fc-72e33db44403",
+      "description": "an early start with a late end",
+      "property": "fewestCancellations",
+      "input": {
+        "talks": [[1, 10], [2, 3], [4, 5], [6, 7]]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "5722dcb8-8a2b-4577-9b7e-bfb2da863e93",
+      "description": "a full day of talks",
+      "property": "fewestCancellations",
+      "input": {
+        "talks": [
+          [94, 121],
+          [4, 30],
+          [54, 82],
+          [174, 185],
+          [35, 53],
+          [107, 114],
+          [72, 80],
+          [97, 109],
+          [125, 144],
+          [53, 83],
+          [179, 195],
+          [43, 69],
+          [39, 51],
+          [35, 72],
+          [122, 143],
+          [20, 28]
+        ]
+      },
+      "expected": 10
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "d1dbb25d-88dd-4685-89c0-78597fd95922",
+          "description": "no talks",
+          "property": "fewestCancellations",
+          "input": {
+            "talks": []
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "2744aeb1-acb7-4176-9fa0-872e2df220b8",
+          "description": "one talk",
+          "property": "fewestCancellations",
+          "input": {
+            "talks": [[0, 45]]
+          },
+          "expected": 0
+        }
+      ]
+    }
+  ]
+}

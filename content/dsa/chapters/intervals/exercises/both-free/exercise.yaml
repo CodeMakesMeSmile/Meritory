@@ -1,0 +1,18 @@
+id: both-free
+kind: coding
+title: When both guides are free
+difficulty: medium
+skills:
+  - intersect-lists
+sibling: shared-airtime
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: bothFree
+  params:
+    - name: first
+      type: int[][]
+    - name: second
+      type: int[][]
+  returns: int[][]

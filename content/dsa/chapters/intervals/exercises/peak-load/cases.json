@@ -1,0 +1,131 @@
+{
+  "exercise": "peak-load",
+  "cases": [
+    {
+      "uuid": "394cff50-a6b5-415f-a79e-b6ffe05c2369",
+      "description": "an appliance switched off at a minute still draws during it",
+      "property": "peakLoad",
+      "input": {
+        "appliances": [
+          [0, 10, 500],
+          [5, 20, 300],
+          [10, 15, 1000],
+          [16, 30, 200]
+        ]
+      },
+      "expected": 1800
+    },
+    {
+      "uuid": "3e9beb30-f421-4e0a-8130-30de7f6ce73a",
+      "description": "touching appliances overlap for one minute",
+      "property": "peakLoad",
+      "input": {
+        "appliances": [[0, 5, 100], [5, 9, 200]]
+      },
+      "expected": 300
+    },
+    {
+      "uuid": "2c3c5476-2e93-4e3e-beef-ecde69969121",
+      "description": "one large load for a single minute",
+      "property": "peakLoad",
+      "input": {
+        "appliances": [[7, 7, 2500], [0, 6, 1000], [8, 20, 1000]]
+      },
+      "expected": 2500
+    },
+    {
+      "uuid": "863b7b2b-730f-4638-a357-e6dd2dcab248",
+      "description": "several small loads beat one large one",
+      "property": "peakLoad",
+      "input": {
+        "appliances": [
+          [0, 10, 900],
+          [20, 30, 400],
+          [22, 28, 400],
+          [25, 26, 400]
+        ]
+      },
+      "expected": 1200
+    },
+    {
+      "uuid": "f18cc416-bd73-49f1-b8a5-0897a5d0b9e4",
+      "description": "appliances that never overlap",
+      "property": "peakLoad",
+      "input": {
+        "appliances": [[0, 4, 300], [5, 9, 400], [10, 14, 200]]
+      },
+      "expected": 400
+    },
+    {
+      "uuid": "521e47b5-9860-4d83-ab85-e56be994fda9",
+      "description": "everything on at once",
+      "property": "peakLoad",
+      "input": {
+        "appliances": [[0, 100, 10000], [0, 100, 10000], [50, 60, 10000]]
+      },
+      "expected": 30000
+    },
+    {
+      "uuid": "9034e69d-e16e-4907-99e6-42687d420710",
+      "description": "a busy afternoon",
+      "property": "peakLoad",
+      "input": {
+        "appliances": [
+          [59, 59, 712],
+          [1, 10, 234],
+          [3, 4, 2004],
+          [26, 29, 984],
+          [3, 9, 1992],
+          [49, 58, 2353],
+          [0, 10, 2343],
+          [56, 60, 999],
+          [30, 45, 1641],
+          [59, 60, 2540],
+          [0, 6, 63],
+          [33, 47, 2048],
+          [36, 47, 1434],
+          [55, 60, 893],
+          [0, 14, 493],
+          [24, 36, 221],
+          [34, 35, 919],
+          [50, 60, 2920],
+          [48, 60, 2653],
+          [18, 33, 460]
+        ]
+      },
+      "expected": 10717
+    },
+    {
+      "uuid": "e4acb230-31b4-477b-9912-979e7917f697",
+      "description": "a long festival",
+      "property": "peakLoad",
+      "input": {
+        "appliances": [[0, 1000000, 5], [999999, 1000000, 7]]
+      },
+      "expected": 12
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "8cdeb66d-2ec8-4284-93e0-a7eae83201f2",
+          "description": "nothing plugged in",
+          "property": "peakLoad",
+          "input": {
+            "appliances": []
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "7f6585fe-ea63-405f-b40e-9350d6466555",
+          "description": "one appliance",
+          "property": "peakLoad",
+          "input": {
+            "appliances": [[3, 9, 1200]]
+          },
+          "expected": 1200
+        }
+      ]
+    }
+  ]
+}

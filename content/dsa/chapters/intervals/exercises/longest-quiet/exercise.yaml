@@ -1,0 +1,21 @@
+id: longest-quiet
+kind: coding
+title: The longest quiet stretch in the music school
+difficulty: medium
+skills:
+  - free-time
+  - merge-overlaps
+sibling: team-free
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: longestQuiet
+  params:
+    - name: rooms
+      type: int[][]
+    - name: opensAt
+      type: int
+    - name: closesAt
+      type: int
+  returns: int
