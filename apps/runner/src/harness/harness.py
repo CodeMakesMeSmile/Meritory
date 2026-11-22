@@ -249,8 +249,8 @@ def main():
     for test in cases:
         record({"name": test["name"], "status": "started"})
         if not callable(target):
-            kind = "a class" if is_class else "a method on Solution"
-            record({"name": test["name"], "status": "error", "message": f"solution.py has no {kind} named {name}"})
+            kind = "a class" if is_class else "a Solution method"
+            record({"name": test["name"], "status": "error", "message": f"solution.py doesn't define {kind} named {name}"})
             continue
         result = run_class(target, signature, test) if is_class else run_function(target, signature, test)
         record({"name": test["name"], **result})

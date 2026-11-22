@@ -161,7 +161,9 @@ describe.each(["typescript", "python"] as const)(
         sandbox,
       );
       expect(result.status).toBe("error");
-      expect(result.tests[0]?.message).toMatch(/pricePair/);
+      expect(result.tests[0]?.message).toMatch(
+        /^solution.(ts|py) doesn't (export|define) a (function|Solution method) named pricePair$/,
+      );
     });
   },
 );
