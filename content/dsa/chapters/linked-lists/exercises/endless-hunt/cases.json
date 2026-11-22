@@ -1,0 +1,110 @@
+{
+  "exercise": "endless-hunt",
+  "cases": [
+    {
+      "uuid": "3f600474-92cb-4eb0-8a6a-01c83cfd44db",
+      "description": "the last clue points back into the middle",
+      "property": "huntLoops",
+      "input": {
+        "clues": [3, 1, 4, 1, 5],
+        "loopsTo": 1
+      },
+      "expected": true
+    },
+    {
+      "uuid": "c8deda29-aef8-4e31-a95a-a63c8c307028",
+      "description": "the last clue ends the hunt",
+      "property": "huntLoops",
+      "input": {
+        "clues": [3, 1, 4, 1, 5],
+        "loopsTo": -1
+      },
+      "expected": false
+    },
+    {
+      "uuid": "9671c780-81e0-4906-a4ac-fbca9d5be983",
+      "description": "the last clue points back to the first",
+      "property": "huntLoops",
+      "input": {
+        "clues": [3, 1, 4, 1, 5],
+        "loopsTo": 0
+      },
+      "expected": true
+    },
+    {
+      "uuid": "fc59f731-735e-4178-a74b-940aee26ac72",
+      "description": "the last clue points to itself",
+      "property": "huntLoops",
+      "input": {
+        "clues": [3, 1, 4, 1, 5],
+        "loopsTo": 4
+      },
+      "expected": true
+    },
+    {
+      "uuid": "d11d1757-b6d6-4cde-978c-7062c98a043f",
+      "description": "every clue holds the same number and the hunt ends",
+      "property": "huntLoops",
+      "input": {
+        "clues": [2, 2, 2, 2],
+        "loopsTo": -1
+      },
+      "expected": false
+    },
+    {
+      "uuid": "7c31e517-3132-47af-9d1e-3d8c453b3716",
+      "description": "every clue holds the same number and the hunt loops",
+      "property": "huntLoops",
+      "input": {
+        "clues": [2, 2, 2, 2],
+        "loopsTo": 2
+      },
+      "expected": true
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "14cd53fc-573b-42c2-b887-5cd5f09be1c1",
+          "description": "no clues",
+          "property": "huntLoops",
+          "input": {
+            "clues": [],
+            "loopsTo": -1
+          },
+          "expected": false
+        },
+        {
+          "uuid": "723d9f51-ba71-4ff1-a41a-5d03951a4bb6",
+          "description": "one clue that ends the hunt",
+          "property": "huntLoops",
+          "input": {
+            "clues": [8],
+            "loopsTo": -1
+          },
+          "expected": false
+        },
+        {
+          "uuid": "cdeaf290-af13-432d-930e-02aab5ebbaf4",
+          "description": "one clue that points to itself",
+          "property": "huntLoops",
+          "input": {
+            "clues": [8],
+            "loopsTo": 0
+          },
+          "expected": true
+        },
+        {
+          "uuid": "69d487a2-b717-4255-92a1-9e4882111652",
+          "description": "two clues that point to each other",
+          "property": "huntLoops",
+          "input": {
+            "clues": [8, 9],
+            "loopsTo": 0
+          },
+          "expected": true
+        }
+      ]
+    }
+  ]
+}

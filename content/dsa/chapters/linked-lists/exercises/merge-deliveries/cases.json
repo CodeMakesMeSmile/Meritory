@@ -1,0 +1,110 @@
+{
+  "exercise": "merge-deliveries",
+  "cases": [
+    {
+      "uuid": "dc7b34b4-f554-448e-8fd7-7a20d7153f23",
+      "description": "times from the two depots take turns",
+      "property": "mergeDeliveries",
+      "input": {
+        "north": [60, 180, 300],
+        "south": [120, 240, 360]
+      },
+      "expected": [60, 120, 180, 240, 300, 360]
+    },
+    {
+      "uuid": "d31c346c-f5a2-46b8-a0a2-7abfd50c5888",
+      "description": "every north time comes first",
+      "property": "mergeDeliveries",
+      "input": {
+        "north": [15, 30],
+        "south": [45, 90, 100]
+      },
+      "expected": [15, 30, 45, 90, 100]
+    },
+    {
+      "uuid": "50f1c57c-7911-4e94-8ac3-f170dc09d566",
+      "description": "every south time comes first",
+      "property": "mergeDeliveries",
+      "input": {
+        "north": [500, 600],
+        "south": [100, 200]
+      },
+      "expected": [100, 200, 500, 600]
+    },
+    {
+      "uuid": "c168ebb3-bca7-4614-84e9-c59cce7ff7e1",
+      "description": "times that tie across depots",
+      "property": "mergeDeliveries",
+      "input": {
+        "north": [100, 200, 200],
+        "south": [200, 300]
+      },
+      "expected": [100, 200, 200, 200, 300]
+    },
+    {
+      "uuid": "9033f251-6888-41d3-a3e8-4cfa2afa6fcf",
+      "description": "lists of very different lengths",
+      "property": "mergeDeliveries",
+      "input": {
+        "north": [5],
+        "south": [1, 2, 3, 4, 10]
+      },
+      "expected": [1, 2, 3, 4, 5, 10]
+    },
+    {
+      "uuid": "2a6f7a7a-81e1-4546-9bd7-34ed13cd1cbe",
+      "description": "the same times at both depots",
+      "property": "mergeDeliveries",
+      "input": {
+        "north": [7, 7],
+        "south": [7, 7]
+      },
+      "expected": [7, 7, 7, 7]
+    },
+    {
+      "uuid": "9959a204-b57f-4ca1-9447-473ed7259aac",
+      "description": "the first and last minutes of the day",
+      "property": "mergeDeliveries",
+      "input": {
+        "north": [0, 720],
+        "south": [1, 1439]
+      },
+      "expected": [0, 1, 720, 1439]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "423e7a70-6c50-4611-98cb-84d2cc4e1284",
+          "description": "no deliveries at either depot",
+          "property": "mergeDeliveries",
+          "input": {
+            "north": [],
+            "south": []
+          },
+          "expected": []
+        },
+        {
+          "uuid": "74ebe699-285b-4453-b96b-87543eb85737",
+          "description": "no north deliveries",
+          "property": "mergeDeliveries",
+          "input": {
+            "north": [],
+            "south": [3, 9]
+          },
+          "expected": [3, 9]
+        },
+        {
+          "uuid": "d9331eb6-4796-4b73-bac4-77bf08521394",
+          "description": "no south deliveries",
+          "property": "mergeDeliveries",
+          "input": {
+            "north": [2, 4],
+            "south": []
+          },
+          "expected": [2, 4]
+        }
+      ]
+    }
+  ]
+}

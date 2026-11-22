@@ -1,0 +1,19 @@
+id: merge-deliveries
+kind: coding
+title: Two depots, one schedule
+difficulty: easy
+skills:
+  - merge-sorted-lists
+  - dummy-head
+sibling: merge-all-gates
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: mergeDeliveries
+  params:
+    - name: north
+      type: ListNode
+    - name: south
+      type: ListNode
+  returns: ListNode

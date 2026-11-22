@@ -1,0 +1,19 @@
+id: cancel-from-end
+kind: coding
+title: Cancel a job near the end
+difficulty: medium
+skills:
+  - gap-pointers
+  - dummy-head
+sibling: last-to-front
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: cancelFromEnd
+  params:
+    - name: jobs
+      type: ListNode
+    - name: n
+      type: int
+  returns: ListNode

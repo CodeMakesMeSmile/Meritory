@@ -1,0 +1,326 @@
+- id: why-save-next-first
+  skill: reverse-pointers
+  asks: why
+  type: prompt
+  prompt: When reversing a linked list, why must you save `current.next` before pointing `current` back at `prev`?
+  reworded: In the loop that reverses a list, what goes wrong if you turn `current.next` around before keeping a copy of it?
+  points:
+    - "`current.next` is the only link to the rest of the list."
+    - Once it points back to `prev`, the nodes after `current` can't be reached.
+    - Saving it first in `next` keeps a way forward for the following step.
+  misconception: That the rest of the list can be found again from the head.
+  lesson:
+    title: Keep the way forward
+    explanation: The head now leads into the reversed part, which ends at null. The only path to the unreversed nodes is the pointer you're about to change, so copy it first.
+- id: reverse-steps
+  skill: reverse-pointers
+  asks: what
+  type: ordering
+  prompt: Put the steps inside the loop that reverses a linked list in order.
+  reworded: In what order does each pass of the list reversal loop do its work?
+  steps:
+    - Save `current.next` in `next`.
+    - Point `current.next` back at `prev`.
+    - Move `prev` forward to `current`.
+    - Move `current` forward to `next`.
+  terms:
+    - term: prev
+      definition: The head of the part already reversed, null at the start.
+  lesson:
+    title: Save, turn, step, step
+    explanation: Each pass turns one pointer around and moves both markers forward by one node. Any other order either loses the rest of the list or skips a node.
+- id: when-reverse-ends
+  skill: reverse-pointers
+  asks: when
+  type: pick-one
+  prompt: When the reversal loop ends because `current` is null, which node is the new head?
+  reworded: After every pointer in a list has been turned around, which variable holds the head of the reversed list?
+  options:
+    - text: "`prev`, the old last node"
+      correct: true
+      reason: The last pass turned the old last node around and moved `prev` onto it.
+    - text: The old `head`
+      reason: The old head is now the tail, pointing to null.
+    - text: "`current`"
+      reason: The loop only ends when `current` is null.
+  lesson:
+    title: Return prev
+    explanation: "`prev` always holds the head of the part already reversed. When nothing is left to reverse, that part is the whole list."
+- id: why-dummy-head
+  skill: dummy-head
+  asks: why
+  type: pick-one
+  prompt: Why put a dummy node in front of the head before removing nodes from a list?
+  reworded: What does a spare node pointing to the head save you when nodes might be removed?
+  options:
+    - text: Every real node, the head included, then has a node before it to update
+      correct: true
+      reason: Removing a node means changing the pointer of the node before it, and the head normally has none.
+    - text: It makes the list one node longer, so the loop runs fewer times
+      reason: It adds a node, and the loop runs about the same number of times.
+    - text: It stops the list from looping
+      reason: A dummy has nothing to do with cycles.
+  lesson:
+    title: A node before the head
+    explanation: With a dummy, removing the head is the same as removing any other node. Return `dummy.next` at the end, since the head may have changed.
+- id: when-dummy-head
+  skill: dummy-head
+  asks: when
+  type: matching
+  prompt: Match each task to whether a dummy head helps.
+  reworded: For each of these list tasks, would you reach for a dummy head?
+  matchHeading: Dummy head
+  matchName: an answer
+  pairs:
+    - item: Remove every node holding a given value
+      match: Yes, the head itself might be removed
+    - item: Merge two sorted lists into one
+      match: Yes, it gives the new list somewhere to start
+    - item: Find the value of the middle node
+      match: No, nothing is relinked
+  extraMatches:
+    - Only when the list is empty
+  lesson:
+    title: When the first node might change
+    explanation: A dummy helps whenever the answer might start with a different node than the input, or when you build a list one node at a time. When you only read the list, it adds nothing.
+- id: why-fast-slow-middle
+  skill: find-middle
+  asks: why
+  type: prompt
+  prompt: Why does `slow` stop at the middle when `fast` moves two nodes for each one `slow` moves?
+  reworded: How does moving one pointer twice as fast as another find the middle of a list in one pass?
+  points:
+    - "`fast` covers twice the distance of `slow` in the same number of steps."
+    - The loop stops when `fast` reaches the end, after about n nodes.
+    - "`slow` has then covered half that distance, which is the middle."
+  misconception: That you must count the nodes first and then walk half way.
+  lesson:
+    title: Half the distance in the same time
+    explanation: Counting first works too, but it's two passes. The two speeds find the middle in one pass with no count.
+- id: middle-of-even
+  skill: find-middle
+  asks: what
+  type: pick-one
+  prompt: "With `while (fast && fast.next)`, where does `slow` stop on the list `1, 2, 3, 4`?"
+  reworded: "A list holds 1, 2, 3, and 4. Moving `slow` one node and `fast` two while `fast` and `fast.next` exist, which node does `slow` end on?"
+  options:
+    - text: "3, the second middle"
+      correct: true
+      reason: After two steps `fast` is past the end and `slow` has moved from 1 to 3.
+    - text: "2, the first middle"
+      reason: That's where it stops if the loop checks `fast.next && fast.next.next` instead.
+    - text: "4, the last node"
+      reason: "`slow` only goes half as far as `fast`."
+  lesson:
+    title: Even lists have two middles
+    explanation: This loop stops on the second middle. Check which one the problem wants, since it decides where a split falls.
+- id: when-first-middle
+  skill: find-middle
+  asks: when
+  type: pick-one
+  prompt: When you split a list into halves to reverse the second half, why is stopping on the first middle useful?
+  reworded: Before cutting a list in two and reversing the back half, which middle do you want `slow` on, and why?
+  options:
+    - text: "`slow` is the last node of the first half, so `slow.next = null` cuts the list there"
+      correct: true
+      reason: Cutting needs the node before the second half, and with an even length the first middle is that node.
+    - text: It makes the second half longer, which is faster to reverse
+      reason: The second half ends up the same size or shorter.
+    - text: The second middle can't be found with two pointers
+      reason: The plain `fast && fast.next` loop finds it.
+  lesson:
+    title: Stop on the node before the cut
+    explanation: To cut a list you need the node before the cut. Looping while `fast.next && fast.next.next` leaves `slow` on the first middle, the end of the first half.
+- id: why-pointers-meet
+  skill: detect-cycle
+  asks: why
+  type: prompt
+  prompt: In a list with a loop, why is the fast pointer sure to land on the slow one, instead of jumping past it?
+  reworded: How do we know two pointers moving at one and two nodes per step will meet inside a loop?
+  points:
+    - Once both pointers are in the loop, each step `fast` gains exactly one node on `slow`.
+    - The gap between them shrinks by one each step, so it reaches zero.
+    - A gap that drops by one can't skip over zero, so they meet within one lap.
+  misconception: That a faster pointer, moving three or more at a time, would find the loop sooner.
+  lesson:
+    title: The gap closes one step at a time
+    explanation: Moving two against one means the gap drops by exactly 1 each step. With bigger speeds the gap could step over zero, so they might circle for a while before meeting.
+- id: why-restart-from-head
+  skill: detect-cycle
+  asks: why
+  type: prompt
+  prompt: After the pointers meet in a loop, why does moving one from the head and one from the meeting point, one step at a time, find where the loop starts?
+  reworded: What makes the second walk, from the head and from the meeting point at the same speed, end at the start of the loop?
+  points:
+    - Say the loop starts a nodes from the head, the meeting point is b nodes into the loop, and the loop is c long.
+    - "`slow` went a + b and `fast` went twice that, and the difference is whole laps, so a + b is a multiple of c."
+    - So a steps from the meeting point finish whole laps and land on the start, which is also a steps from the head.
+  lesson:
+    title: Both are a steps from the start
+    explanation: You never need to know a. Walking both pointers at the same speed makes them arrive at the start of the loop together.
+- id: when-set-or-pointers
+  skill: detect-cycle
+  asks: when
+  type: matching
+  prompt: Match each way of finding a loop in a list to what it costs.
+  reworded: What does each of these ways to check a list for a loop cost?
+  matchHeading: Cost
+  matchName: a cost
+  pairs:
+    - item: Keep a set of the nodes you've seen
+      match: O(n) time and O(n) memory
+    - item: Move fast and slow pointers
+      match: O(n) time and O(1) memory
+    - item: For each new node, walk from the head to see if it came up before
+      match: O(n²) time and O(1) memory
+  extraMatches:
+    - O(log n) time and O(1) memory
+  lesson:
+    title: Two pointers save the memory
+    explanation: A set is easy to write and fine when memory is cheap. When the question asks for O(1) extra memory, fast and slow pointers are the way.
+- id: merge-lists-steps
+  skill: merge-sorted-lists
+  asks: what
+  type: ordering
+  prompt: Put the steps for merging two sorted lists in order.
+  reworded: In what order do you merge two sorted linked lists by relinking their nodes?
+  steps:
+    - Make a dummy node and point `tail` at it.
+    - Compare the front nodes of the two lists.
+    - Attach the smaller one to `tail` and move forward in its list.
+    - Move `tail` to the node just attached, and repeat while both lists have nodes.
+    - Attach whatever is left of the other list, then return `dummy.next`.
+  lesson:
+    title: Take the smaller front each time
+    explanation: Each step attaches the smallest node not yet used. The dummy gives the result a place to start without a special case for the first node.
+- id: why-attach-the-rest
+  skill: merge-sorted-lists
+  asks: why
+  type: pick-one
+  prompt: When one list runs out during a merge, why can you attach the rest of the other list with one pointer, instead of looping over it?
+  reworded: At the end of merging two sorted lists, why does one assignment finish the job?
+  options:
+    - text: The rest is already sorted and already linked together
+      correct: true
+      reason: Its nodes still point to each other in order, and each is at least as big as everything merged so far.
+    - text: The leftover list is always one node long
+      reason: It can be any length. The other list just ran out first.
+    - text: The dummy head copies the rest for you
+      reason: The dummy only marks the start. Nothing is copied.
+  lesson:
+    title: The tail is already in order
+    explanation: Point `tail.next` at the leftover list. That joins every remaining node in O(1).
+- id: when-pair-up-lists
+  skill: merge-sorted-lists
+  asks: when
+  type: pick-one
+  prompt: When merging k sorted lists with N nodes in all, why merge them in pairs, round by round, instead of one at a time into a growing result?
+  reworded: What's gained by merging k sorted lists in rounds of pairs rather than folding them one by one into one list?
+  options:
+    - text: Each round touches every node once, and there are about log k rounds, so it's O(N log k)
+      correct: true
+      reason: One at a time walks the growing result again for every list, which is O(N × k).
+    - text: Pairing needs less memory for the result
+      reason: Both relink the same nodes, so the memory is the same.
+    - text: Merging one at a time gives the wrong order
+      reason: It gives the right order. It's just slower.
+  lesson:
+    title: Halve the number of lists each round
+    explanation: Like merge sort, merging in pairs keeps every node in about log k merges. A heap of the k front nodes gets the same time.
+- id: why-gap-of-n-plus-one
+  skill: gap-pointers
+  asks: why
+  type: prompt
+  prompt: To remove the nth node from the end in one pass, why start both pointers on a dummy head and move `lead` n + 1 steps ahead?
+  reworded: In the one pass removal of the nth node from the end, what do the dummy head and the gap of n + 1 each do?
+  points:
+    - To remove a node you must stop on the node before it.
+    - With a gap of n + 1, `trail` is on the node before the target when `lead` runs off the end.
+    - The dummy gives `trail` a node to stop on when the target is the head.
+  misconception: That a gap of n is enough.
+  lesson:
+    title: Stop one node early
+    explanation: A gap of n leaves `trail` on the node to remove, which is one too far to unlink it. One more step of gap fixes that.
+- id: gap-steps
+  skill: gap-pointers
+  asks: what
+  type: ordering
+  prompt: Put the steps for removing the nth node from the end of a list in order.
+  reworded: In what order do two pointers remove the nth node from the end in one pass?
+  steps:
+    - Point `lead` and `trail` at a dummy node in front of the head.
+    - Move `lead` forward n + 1 times.
+    - Move both forward together until `lead` is null.
+    - Set `trail.next` to `trail.next.next`.
+    - Return `dummy.next`.
+  lesson:
+    title: Make the gap, then slide it
+    explanation: The gap is set once and never changes. When the front pointer falls off the end, the back one is exactly where the change has to happen.
+- id: when-one-pass
+  skill: gap-pointers
+  asks: when
+  type: pick-one
+  prompt: When is the one pass, two pointer way of reaching the nth node from the end better than counting the nodes first?
+  reworded: Counting the length and then walking also finds the nth node from the end. When does the fixed gap do better?
+  options:
+    - text: When the list can only be read once, like a stream you can't rewind
+      correct: true
+      reason: The gap needs only one walk, while counting needs a second walk over the same nodes.
+    - text: When the list is very short
+      reason: Both are quick on a short list.
+    - text: When the list loops
+      reason: Neither works on a list that loops. Its end is never reached.
+  lesson:
+    title: Same time, one walk
+    explanation: Both are O(n). The gap wins when a second pass isn't possible, and interviewers often ask for one pass to see whether you know the trick.
+- id: reorder-steps
+  skill: reorder-in-place
+  asks: what
+  type: ordering
+  prompt: Put the steps for rearranging a list into first, last, second, second to last, and so on, in order.
+  reworded: In what order do you weave a list's front half with its back half reversed?
+  steps:
+    - Find the first middle with fast and slow pointers.
+    - Cut the list after the middle, so the first half ends in null.
+    - Reverse the second half.
+    - Take one node from each half in turn and link them together.
+  lesson:
+    title: Split, reverse, weave
+    explanation: Each step is a pattern from this chapter. Doing them in order needs only a few pointers, so the extra memory is O(1).
+- id: why-cut-before-weaving
+  skill: reorder-in-place
+  asks: why
+  type: pick-one
+  prompt: When weaving a list's two halves together, why must the first half be cut off from the second before you start?
+  reworded: What goes wrong if you reverse and weave the back half without ending the front half in null?
+  options:
+    - text: The first half still points into the second, so the weave can make a loop
+      correct: true
+      reason: The old middle keeps its pointer to a node that the weave moves elsewhere, and walking the list then goes round forever.
+    - text: The second half can't be reversed unless it's cut
+      reason: It can be reversed either way. The trouble shows up in the weave.
+    - text: Cutting makes the halves the same length
+      reason: The lengths come from where you split, not from the cut.
+  lesson:
+    title: End the first half in null
+    explanation: Set the middle's `next` to null before reversing. Then each half is a clean list, and weaving them can't create a loop.
+- id: when-copy-to-array
+  skill: reorder-in-place
+  asks: when
+  type: matching
+  prompt: Match each limit to the way to rearrange a list that fits it.
+  reworded: For each of these limits, which way of reordering a list's nodes fits?
+  matchHeading: Approach
+  matchName: an approach
+  pairs:
+    - item: Any extra memory is fine and the code should be short
+      match: Copy the nodes into an array, then relink them by position
+    - item: O(1) extra memory
+      match: Split, reverse, and weave the nodes you have
+    - item: The values can change but the nodes can't move
+      match: Copy the values out, then write them back in the new order
+  extraMatches:
+    - Sort the values first
+  lesson:
+    title: Ask what you're allowed to use
+    explanation: An array of nodes makes reordering easy at O(n) memory. Interviewers usually ask for O(1), which is where splitting, reversing, and weaving come in.

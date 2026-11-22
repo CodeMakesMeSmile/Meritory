@@ -1,0 +1,82 @@
+{
+  "exercise": "middle-stop",
+  "cases": [
+    {
+      "uuid": "e4ce701e-16db-4061-84c2-6d5a3be0b86c",
+      "description": "an odd number of stops has one middle",
+      "property": "middleStop",
+      "input": {
+        "stops": [4, 8, 15, 16, 23]
+      },
+      "expected": 15
+    },
+    {
+      "uuid": "3f3fd850-16e7-4e4b-8bd9-1264e4d7707a",
+      "description": "an even number of stops uses the later middle",
+      "property": "middleStop",
+      "input": {
+        "stops": [4, 8, 15, 16, 23, 42]
+      },
+      "expected": 16
+    },
+    {
+      "uuid": "e53facc7-4f30-4f09-88fa-fb6d445890c5",
+      "description": "three stops",
+      "property": "middleStop",
+      "input": {
+        "stops": [1, 2, 3]
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "d2473c29-7a7a-4e5b-95f0-c34d3987cf38",
+      "description": "repeated stop numbers",
+      "property": "middleStop",
+      "input": {
+        "stops": [2, 2, 3, 3]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "fa3473e7-8513-4fb8-adab-8fa58e638e12",
+      "description": "a longer odd route",
+      "property": "middleStop",
+      "input": {
+        "stops": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+      },
+      "expected": 6
+    },
+    {
+      "uuid": "51b93cb2-fd45-451e-bc8c-f658ccf7cd8c",
+      "description": "a longer even route",
+      "property": "middleStop",
+      "input": {
+        "stops": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+      },
+      "expected": 7
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "4187d751-4a4b-4bbc-8ddf-ce4e92f9ad47",
+          "description": "one stop",
+          "property": "middleStop",
+          "input": {
+            "stops": [7]
+          },
+          "expected": 7
+        },
+        {
+          "uuid": "b68ba584-c21b-468d-88f7-e593f028cd41",
+          "description": "two stops",
+          "property": "middleStop",
+          "input": {
+            "stops": [7, 9]
+          },
+          "expected": 9
+        }
+      ]
+    }
+  ]
+}

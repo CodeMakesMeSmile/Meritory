@@ -1,0 +1,100 @@
+{
+  "exercise": "merge-all-gates",
+  "cases": [
+    {
+      "uuid": "7916389b-89e6-4210-b651-5f4aca85721f",
+      "description": "three gates",
+      "property": "mergeGates",
+      "input": {
+        "gates": [[540, 600, 720], [550, 610], [530, 700, 800]]
+      },
+      "expected": [530, 540, 550, 600, 610, 700, 720, 800]
+    },
+    {
+      "uuid": "38e1cf5f-6a47-48e1-a81d-9ec6b6fb9f86",
+      "description": "one gate",
+      "property": "mergeGates",
+      "input": {
+        "gates": [[100, 200, 300]]
+      },
+      "expected": [100, 200, 300]
+    },
+    {
+      "uuid": "a8d6b5ba-241f-4345-8a5d-76644873cee7",
+      "description": "two gates",
+      "property": "mergeGates",
+      "input": {
+        "gates": [[10, 20], [15, 25]]
+      },
+      "expected": [10, 15, 20, 25]
+    },
+    {
+      "uuid": "3421abab-77ca-496f-b9bd-29ce278fc84a",
+      "description": "some gates had no visitors",
+      "property": "mergeGates",
+      "input": {
+        "gates": [[], [300], [], [100, 400]]
+      },
+      "expected": [100, 300, 400]
+    },
+    {
+      "uuid": "72465042-aecf-42f8-933f-17b946f6c977",
+      "description": "times that tie across gates",
+      "property": "mergeGates",
+      "input": {
+        "gates": [[600, 600], [600], [590, 600]]
+      },
+      "expected": [590, 600, 600, 600, 600]
+    },
+    {
+      "uuid": "3ea7796f-8079-4719-ac08-73e08900d0b9",
+      "description": "many gates with one visitor each",
+      "property": "mergeGates",
+      "input": {
+        "gates": [[5], [3], [9], [1], [7], [2], [8]]
+      },
+      "expected": [1, 2, 3, 5, 7, 8, 9]
+    },
+    {
+      "uuid": "f6873995-3ced-44a1-b454-1ed56cee0aae",
+      "description": "gates of very different lengths",
+      "property": "mergeGates",
+      "input": {
+        "gates": [[1, 2, 3, 4, 5, 6, 7, 8], [0], [4, 9]]
+      },
+      "expected": [0, 1, 2, 3, 4, 4, 5, 6, 7, 8, 9]
+    },
+    {
+      "uuid": "19f746ae-f59f-45e8-9855-9a170557dbbe",
+      "description": "the first and last minutes of the day",
+      "property": "mergeGates",
+      "input": {
+        "gates": [[1439], [0, 1439], [0]]
+      },
+      "expected": [0, 0, 1439, 1439]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "f5bfed84-27f8-4708-8d27-ce1927229c27",
+          "description": "no gates",
+          "property": "mergeGates",
+          "input": {
+            "gates": []
+          },
+          "expected": []
+        },
+        {
+          "uuid": "5d9aa4d8-4740-45cf-8e7b-3aee9ea60761",
+          "description": "every gate is empty",
+          "property": "mergeGates",
+          "input": {
+            "gates": [[], [], []]
+          },
+          "expected": []
+        }
+      ]
+    }
+  ]
+}

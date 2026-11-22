@@ -1,0 +1,82 @@
+{
+  "exercise": "backwards-playlist",
+  "cases": [
+    {
+      "uuid": "8df14487-1237-4b5c-868a-b84cf241130f",
+      "description": "turns the whole playlist around",
+      "property": "reversePlaylist",
+      "input": {
+        "songs": [3, 8, 1, 6, 4]
+      },
+      "expected": [4, 6, 1, 8, 3]
+    },
+    {
+      "uuid": "ec3b7a6f-e8bb-499a-ae8f-c320daa3e515",
+      "description": "two songs swap places",
+      "property": "reversePlaylist",
+      "input": {
+        "songs": [7, 2]
+      },
+      "expected": [2, 7]
+    },
+    {
+      "uuid": "ab3603a0-373f-4085-a256-c7a48f402bfc",
+      "description": "repeated songs keep their new places",
+      "property": "reversePlaylist",
+      "input": {
+        "songs": [5, 5, 9, 5]
+      },
+      "expected": [5, 9, 5, 5]
+    },
+    {
+      "uuid": "df3bf68d-bbc3-431a-ac86-c3ddb21b3ed5",
+      "description": "a playlist that already runs from high to low",
+      "property": "reversePlaylist",
+      "input": {
+        "songs": [9, 7, 5, 3]
+      },
+      "expected": [3, 5, 7, 9]
+    },
+    {
+      "uuid": "c88b9e28-ce92-4a4c-b2cd-8a04c49e650d",
+      "description": "a longer playlist",
+      "property": "reversePlaylist",
+      "input": {
+        "songs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      },
+      "expected": [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+    },
+    {
+      "uuid": "8010fba0-dfb8-4307-984a-144c96f84823",
+      "description": "handles the biggest song ids",
+      "property": "reversePlaylist",
+      "input": {
+        "songs": [1000000000, 1, 999999999]
+      },
+      "expected": [999999999, 1, 1000000000]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "a0ea312e-d562-4db6-8c63-4ace1acbe4cb",
+          "description": "an empty playlist",
+          "property": "reversePlaylist",
+          "input": {
+            "songs": []
+          },
+          "expected": []
+        },
+        {
+          "uuid": "0447879b-689e-4321-bbc9-7088a835d1b4",
+          "description": "one song",
+          "property": "reversePlaylist",
+          "input": {
+            "songs": [42]
+          },
+          "expected": [42]
+        }
+      ]
+    }
+  ]
+}

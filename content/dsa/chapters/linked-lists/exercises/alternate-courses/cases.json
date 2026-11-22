@@ -1,0 +1,91 @@
+{
+  "exercise": "alternate-courses",
+  "cases": [
+    {
+      "uuid": "2639613a-5ab2-450b-a6a3-e1fc11309131",
+      "description": "an even number of courses",
+      "property": "alternateCourses",
+      "input": {
+        "courses": [1, 2, 3, 4, 5, 6]
+      },
+      "expected": [1, 6, 2, 5, 3, 4]
+    },
+    {
+      "uuid": "ce6671f5-0266-4d9b-9978-8939791659bd",
+      "description": "an odd number of courses",
+      "property": "alternateCourses",
+      "input": {
+        "courses": [1, 2, 3, 4, 5]
+      },
+      "expected": [1, 5, 2, 4, 3]
+    },
+    {
+      "uuid": "cd9d0586-fadb-485e-ab2a-b7565cc114b4",
+      "description": "four courses",
+      "property": "alternateCourses",
+      "input": {
+        "courses": [1, 2, 3, 4]
+      },
+      "expected": [1, 4, 2, 3]
+    },
+    {
+      "uuid": "a2b69e1e-ba75-461c-b85c-1421f4e3a1ee",
+      "description": "three courses",
+      "property": "alternateCourses",
+      "input": {
+        "courses": [1, 2, 3]
+      },
+      "expected": [1, 3, 2]
+    },
+    {
+      "uuid": "e7450f03-bbeb-49ba-ad6a-14128cb1bef5",
+      "description": "the order comes from positions, not values",
+      "property": "alternateCourses",
+      "input": {
+        "courses": [40, 10, 30, 20]
+      },
+      "expected": [40, 20, 10, 30]
+    },
+    {
+      "uuid": "4142ea2c-1e3e-46fb-aa5e-4204cd36bd4c",
+      "description": "repeated course numbers",
+      "property": "alternateCourses",
+      "input": {
+        "courses": [3, 3, 5, 5, 9]
+      },
+      "expected": [3, 9, 3, 5, 5]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "1de060ec-4068-481a-85a3-818dc0f9245d",
+          "description": "no courses",
+          "property": "alternateCourses",
+          "input": {
+            "courses": []
+          },
+          "expected": []
+        },
+        {
+          "uuid": "f962e17c-4d83-4c6b-9cf0-89ac14998348",
+          "description": "one course",
+          "property": "alternateCourses",
+          "input": {
+            "courses": [7]
+          },
+          "expected": [7]
+        },
+        {
+          "uuid": "3f847dcd-9d7f-4e82-a601-957464df093b",
+          "description": "two courses stay as they are",
+          "property": "alternateCourses",
+          "input": {
+            "courses": [7, 8]
+          },
+          "expected": [7, 8]
+        }
+      ]
+    }
+  ]
+}

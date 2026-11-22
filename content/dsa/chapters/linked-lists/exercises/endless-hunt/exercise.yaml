@@ -1,0 +1,19 @@
+id: endless-hunt
+kind: coding
+title: A hunt that never ends
+difficulty: easy
+skills:
+  - detect-cycle
+sibling: loop-entry
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: huntLoops
+  params:
+    - name: clues
+      type: ListNode
+    - name: loopsTo
+      type: int
+      hidden: true
+  returns: boolean
