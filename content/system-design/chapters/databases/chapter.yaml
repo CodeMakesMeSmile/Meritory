@@ -1,0 +1,20 @@
+id: databases
+title: Databases
+order: 4
+skills:
+  - id: pick-a-store
+    name: Choose between relational, key-value, and document stores
+  - id: design-indexes
+    name: Design indexes and weigh what they cost on writes
+  - id: choose-isolation
+    name: Pick an isolation level and know the anomalies it allows
+  - id: scale-reads
+    name: Scale reads with replicas and handle replica lag
+  - id: partition-data
+    name: Partition data and pick a partition key
+  - id: spread-hot-keys
+    name: Find and spread hot keys and hot partitions
+  - id: store-time-series
+    name: Store time-series and append-heavy data
+  - id: choose-consistency
+    name: Choose strong, read-your-writes, or eventual consistency

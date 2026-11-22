@@ -1,0 +1,509 @@
+- id: which-store-fits
+  skill: pick-a-store
+  asks: when
+  type: matching
+  prompt: Match each kind of data in a platform that syncs records from many providers to the store that fits it best.
+  reworded: Where would you keep each of these pieces of data in a multi-provider sync platform?
+  matchHeading: Store
+  matchName: a store
+  pairs:
+    - item: Tenants, connections, and sync jobs, with a rule of one running sync per connection
+      match: A relational database
+    - item: Billions of records read and written only by a known key, at very high volume
+      match: A key-value store like DynamoDB
+    - item: Raw provider payloads kept for replay after a mapping bug
+      match: Object storage
+    - item: Nested records whose shape differs by provider and are read as a whole
+      match: A document store
+  extraMatches:
+    - An in-memory cache with no durable copy
+  lesson:
+    title: Fit the store to the access pattern
+    explanation: Relational stores give constraints, joins, and flexible queries. Key-value stores give steady latency at scale for access patterns you know up front. Document stores suit self-contained records of varying shape. Object storage is cheap for large blobs you rarely read.
+    source:
+      url: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-general-nosql-design.html
+      title: NoSQL design for DynamoDB
+- id: why-access-patterns-first
+  skill: pick-a-store
+  asks: why
+  type: pick-one
+  prompt: Why should you know your queries before designing a DynamoDB table, when a normalized relational schema can be designed first and queried later?
+  reworded: What makes up-front knowledge of access patterns essential for a key-value design but less so for a relational one?
+  options:
+    - text: A key-value store answers efficiently only the queries its keys and indexes were shaped for, while a relational planner can answer new queries over a normalized schema
+      correct: true
+      reason: Queries outside the key design become slow, costly scans, so the keys must be shaped around the questions.
+    - text: DynamoDB can't change a table after it's created
+      reason: You can add indexes and attributes. The point is that queries outside the key design are expensive.
+    - text: Relational databases are always faster
+      reason: Neither is always faster. Each is fast for different shapes of query.
+    - text: Key-value stores don't support indexes
+      reason: DynamoDB has secondary indexes, but you still design them around known queries.
+  lesson:
+    title: Design for the questions you'll ask
+    explanation: In a relational database you design for flexibility and let the planner work out each query. In DynamoDB you shape keys so the most common and important queries are fast and cheap, which means knowing them first.
+    source:
+      url: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-general-nosql-design.html
+      title: NoSQL design for DynamoDB
+- id: composite-index-order
+  skill: design-indexes
+  asks: what
+  type: pick-one
+  prompt: A records table has a B-tree index on (connection_id, updated_at, id). Which query can use it most efficiently?
+  reworded: Given an index on (connection_id, updated_at, id), which of these filters narrows the scan the most?
+  options:
+    - text: WHERE connection_id = $1 AND updated_at > $2 ORDER BY updated_at, id
+      correct: true
+      reason: Equality on the leading column plus a range on the next one reads one connection's slice of the index, already sorted.
+    - text: WHERE updated_at > $1 across all connections
+      reason: The first column has no condition, so the range on the second can't narrow the scan much.
+    - text: WHERE id = $1
+      reason: The id is the last column, so the index isn't sorted by it on its own.
+    - text: WHERE body LIKE '%invoice%'
+      reason: The body isn't in the index at all.
+  lesson:
+    title: Leading columns first
+    explanation: A composite B-tree is sorted by its first column, then its second within that, and so on. Equality on leading columns plus a range on the next column limits how much of the index is read.
+    source:
+      url: https://www.postgresql.org/docs/current/indexes-multicolumn.html
+      title: Multicolumn Indexes, PostgreSQL Documentation
+- id: why-indexes-cost-writes
+  skill: design-indexes
+  asks: why
+  type: prompt
+  prompt: Why can adding indexes slow down an ingestion table, and how do you decide which indexes to keep?
+  reworded: What does each extra index cost a table that takes thousands of upserts a second, and how do you choose which to keep?
+  points:
+    - Every index is kept in step with the table, so each insert, delete, and many updates also write to every index.
+    - Indexes take disk and memory that the table's hot data could use.
+    - In PostgreSQL, indexes can also prevent an update optimization called heap-only tuples.
+    - Keep indexes for queries you actually run, check with EXPLAIN that they're used, and drop the rest.
+  misconception: That indexes only make things faster.
+  lesson:
+    title: Reads get faster, writes pay
+    explanation: An index speeds up the queries that use it and taxes every write to the table. On a write-heavy table, that tax decides how many indexes you can afford.
+    source:
+      url: https://www.postgresql.org/docs/current/indexes-intro.html
+      title: Introduction to indexes, PostgreSQL Documentation
+- id: when-covering-index
+  skill: design-indexes
+  asks: when
+  type: pick-one
+  prompt: When does adding INCLUDE columns to a PostgreSQL index, to make it covering, pay off?
+  reworded: In what situation is a covering index with INCLUDE columns worth its extra size?
+  options:
+    - text: When a frequent query reads only a few narrow columns and the table changes slowly enough that most pages are marked all-visible
+      correct: true
+      reason: Then the query runs as an index-only scan and skips reading the table.
+    - text: When the query reads a large body column on a busy table
+      reason: Wide payload columns bloat the index, and frequent changes force table reads anyway.
+    - text: Whenever a table has more than three indexes
+      reason: The number of indexes doesn't matter. The query's columns and the table's churn do.
+    - text: When the included columns need to be searched by range
+      reason: Included columns are payload, not part of the search key.
+  lesson:
+    title: Covering only helps if the table can be skipped
+    explanation: An index-only scan needs every column the query uses in the index, and it still visits the table for pages not marked all-visible. Keep payload columns narrow.
+    source:
+      url: https://www.postgresql.org/docs/current/indexes-index-only-scans.html
+      title: Index-Only Scans and Covering Indexes, PostgreSQL Documentation
+- id: isolation-anomalies
+  skill: choose-isolation
+  asks: what
+  type: matching
+  prompt: Match each PostgreSQL isolation level to what it still allows.
+  reworded: In PostgreSQL, what can still go wrong at each of these isolation levels?
+  matchHeading: Still allowed
+  matchName: an anomaly
+  pairs:
+    - item: Read Committed, the default
+      match: Nonrepeatable reads and phantoms between statements
+    - item: Repeatable Read
+      match: Serialization anomalies like write skew
+    - item: Serializable
+      match: No anomalies, but transactions can fail and must be retried
+    - item: Read Uncommitted
+      match: The same as Read Committed, with no dirty reads
+  extraMatches:
+    - Dirty reads of uncommitted changes
+  lesson:
+    title: Stronger levels trade anomalies for retries
+    explanation: Read Committed gives each statement its own snapshot. Repeatable Read keeps one snapshot for the transaction and has no phantoms in PostgreSQL. Serializable prevents every anomaly by failing some transactions with SQLSTATE 40001.
+    source:
+      url: https://www.postgresql.org/docs/current/transaction-iso.html
+      title: Transaction Isolation, PostgreSQL Documentation
+- id: why-retry-serializable
+  skill: choose-isolation
+  asks: why
+  type: pick-one
+  prompt: Why must code that uses PostgreSQL's Serializable level be written to retry whole transactions?
+  reworded: What should an application expect from Serializable transactions in PostgreSQL, and how should it respond?
+  options:
+    - text: The database prevents anomalies by failing one of the conflicting transactions with SQLSTATE 40001, and only a full rerun can succeed
+      correct: true
+      reason: The failed transaction's reads may be stale, so the whole thing has to run again from the start.
+    - text: Serializable transactions time out after a few seconds
+      reason: There's no special timeout. They fail when a dangerous pattern of reads and writes is detected.
+    - text: Retrying only the last statement is enough
+      reason: The decision was based on earlier reads, so every statement must run again.
+    - text: Serializable locks every table it reads
+      reason: Its predicate locks don't block anyone. They only track dependencies.
+  lesson:
+    title: Serializable means "might fail, try again"
+    explanation: Serializable snapshot isolation lets transactions run without blocking and checks for conflicts. When one is found, a transaction fails with a serialization error, and the application reruns it.
+    source:
+      url: https://www.postgresql.org/docs/current/transaction-iso.html
+      title: Transaction Isolation, PostgreSQL Documentation
+- id: fix-lost-update
+  skill: choose-isolation
+  asks: what
+  type: pick-one
+  prompt: Two workers each read a sync job's attempts count, add one in code, and write it back, under Read Committed. Sometimes an attempt goes uncounted. What's the simplest fix?
+  reworded: A read, a change in memory, and a write back sometimes loses an increment. How do you stop that most simply?
+  options:
+    - text: Do it in one statement, like SET attempts = attempts + 1
+      correct: true
+      reason: The database applies each increment to the latest value, so none is lost.
+    - text: Add an index on attempts
+      reason: Indexes speed up finding rows. They don't stop two writers overwriting each other.
+    - text: Read the value from a replica
+      reason: That makes the stale read worse, not better.
+    - text: Retry the write if it takes too long
+      reason: The write succeeds. It just writes a value based on an old read.
+  lesson:
+    title: Let the database do the arithmetic
+    explanation: A read followed by a write in application code leaves a gap another writer can use. A single UPDATE that computes from the current value closes it. Locking with SELECT FOR UPDATE or checking a version column also works when the change is more complex.
+- id: why-write-skew
+  skill: choose-isolation
+  asks: why
+  type: prompt
+  prompt: Two workers each check that no sync is running for a connection, see none, and each insert one. Why doesn't Repeatable Read stop this, and how would you fix it?
+  reworded: Why can two transactions that each check a rule and then insert both succeed under snapshot isolation, and what prevents it?
+  points:
+    - Each transaction reads its own snapshot, where no sync is running yet.
+    - They insert different rows, so neither changes a row the other changed, and both commit.
+    - Serializable would detect the conflict and fail one of them, which must then retry.
+    - Simpler still, enforce the rule with a partial unique index on connection_id where status is running.
+  misconception: That Repeatable Read prevents every race between transactions.
+  lesson:
+    title: Make the rule a constraint
+    explanation: Write skew happens when transactions each decide based on data the other is about to change. When a rule can be written as a unique constraint, the database enforces it for every isolation level.
+    source:
+      url: https://www.postgresql.org/docs/current/indexes-partial.html
+      title: Partial Indexes, PostgreSQL Documentation
+- id: where-to-send-reads
+  skill: scale-reads
+  asks: when
+  type: matching
+  prompt: Match each read to where it should go, the primary or a read replica.
+  reworded: Which of these reads can tolerate replica lag, and which should go to the primary?
+  matchHeading: Send it to
+  matchName: a destination
+  pairs:
+    - item: A sync worker loads its checkpoint before fetching the next page
+      match: The primary
+    - item: A nightly report over last month's records
+      match: A read replica
+    - item: A customer reloads the page right after saving a setting
+      match: The primary, for a short time after their write
+    - item: A customer lists records, with docs saying data may be seconds behind
+      match: Any read replica
+  extraMatches:
+    - A synchronous standby that serves no reads
+  lesson:
+    title: Decide per read path
+    explanation: RDS read replicas are updated asynchronously, so they can be behind. Reads that act on fresh state, or that follow the reader's own write, belong on the primary. Reports and lists that tolerate a few seconds of lag can use replicas.
+    source:
+      url: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html
+      title: Working with DB instance read replicas
+- id: why-replicas-not-writes
+  skill: scale-reads
+  asks: why
+  type: pick-one
+  prompt: An ingestion database is overloaded by writes. Why won't adding read replicas help?
+  reworded: What stops read replicas from relieving a database that's struggling with its write load?
+  options:
+    - text: Every write still goes to the primary, and each replica has to apply all of them too
+      correct: true
+      reason: Replicas add read capacity only. Write load needs batching, partitioning, or a store that spreads writes.
+    - text: Replicas can't be in the same Region as the primary
+      reason: They can. Location isn't the issue.
+    - text: Replicas slow the primary's writes down by a fixed amount each
+      reason: With asynchronous replicas, the primary doesn't wait for them.
+    - text: Replicas only work for key-value stores
+      reason: Relational databases use read replicas widely.
+  lesson:
+    title: Replicas scale reads
+    explanation: Aurora replicas, for example, are dedicated to reads while the writer handles every write. To scale writes, reduce or batch them, or split the data so different nodes take different writes.
+    source:
+      url: https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Replication.html
+      title: Replication with Amazon Aurora
+- id: read-your-writes-fix
+  skill: scale-reads
+  asks: what
+  type: prompt
+  prompt: A customer saves a change, the page reloads, and the old value appears, then the new one a moment later. What's happening, and what are your options?
+  reworded: Why might a user briefly see their old data after saving, in a system that reads from replicas, and how do you fix it?
+  points:
+    - The write went to the primary, and the reload read from an asynchronous replica that hadn't applied it yet.
+    - Send that user's reads to the primary for a short time after they write.
+    - Or record the write's position in the change log and wait until the replica has applied it.
+    - Pin a session to one replica too, so repeated reads never go backwards in time.
+  lesson:
+    title: Read-your-writes needs routing
+    explanation: Replica lag is usually small, but users notice their own changes vanishing. Aurora replicas usually lag well under 100 milliseconds, more during heavy writes, and other replicas can lag far more.
+    source:
+      url: https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Replication.html
+      title: Replication with Amazon Aurora
+- id: pick-partition-key
+  skill: partition-data
+  asks: when
+  type: pick-one
+  prompt: A platform stores records from many customer connections to many providers. Which partition key fits best?
+  reworded: For records synced from many connections, which partition key spreads load and keeps the main queries on one partition?
+  options:
+    - text: connection_id
+      correct: true
+      reason: There are many connections, and both the sync worker and the customer list query filter by it.
+    - text: The provider's name
+      reason: A few hundred values, with the biggest providers far heavier than the rest.
+    - text: The record's created date
+      reason: Every write today lands in one partition.
+    - text: A random UUID per record
+      reason: Writes spread well, but every query by connection has to ask every partition.
+  lesson:
+    title: Many values, even traffic, in the main query
+    explanation: A good key has many distinct values, spreads traffic evenly, and appears in the most common queries so each one touches a single partition.
+    source:
+      url: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-partition-key-design.html
+      title: Best practices for designing and using partition keys effectively in DynamoDB
+- id: partition-schemes
+  skill: partition-data
+  asks: what
+  type: matching
+  prompt: Match each partitioning scheme to its main trade-off.
+  reworded: What do you gain and give up with each way of splitting data into partitions?
+  matchHeading: Trade-off
+  matchName: a trade-off
+  pairs:
+    - item: Range by month
+      match: Time-range scans are cheap, but new writes all hit the newest partition
+    - item: Hash of the key
+      match: Writes spread evenly, but a range query visits every partition
+    - item: List by region
+      match: Data lives in a known place, but regions can be very uneven
+  extraMatches:
+    - Every partition holds a full copy of the data
+  lesson:
+    title: Each scheme favors a different query
+    explanation: PostgreSQL's declarative partitioning supports range, list, and hash. Pick the scheme that matches how data is written and read, and watch for the hot spot each one creates.
+    source:
+      url: https://www.postgresql.org/docs/current/ddl-partitioning.html
+      title: Table Partitioning, PostgreSQL Documentation
+- id: why-mod-n-resharding
+  skill: partition-data
+  asks: why
+  type: pick-one
+  prompt: Why is going from 8 to 9 shards painful when keys are placed by hash(key) mod N?
+  reworded: What happens to key placement when the shard count changes under a hash-mod-N scheme?
+  options:
+    - text: Almost every key maps to a different shard, so most of the data has to move
+      correct: true
+      reason: Changing N changes the remainder for most keys. Consistent hashing or many small logical partitions moves only a small fraction.
+    - text: Hash functions can't handle odd numbers of shards
+      reason: Any shard count works. The trouble is that changing it reshuffles keys.
+    - text: Only the new shard's keys move
+      reason: That's the goal of consistent hashing. Plain mod N moves far more.
+    - text: The database has to be rebuilt from backups
+      reason: The data can move online, but almost all of it has to move.
+  lesson:
+    title: Plan for growth before you need it
+    explanation: With mod N, the shard count is baked into every key's placement. Consistent hashing, or a fixed large number of logical partitions mapped onto fewer servers, lets you add capacity by moving only some keys.
+- id: dynamodb-hot-item
+  skill: spread-hot-keys
+  asks: what
+  type: pick-one
+  prompt: One DynamoDB item, about 1 KB, receives 4,000 writes per second. Adaptive capacity has isolated it on its own partition. What happens?
+  reworded: Can DynamoDB's adaptive capacity let a single 1 KB item take 4,000 writes a second?
+  options:
+    - text: Writes beyond about 1,000 per second are throttled, because one partition can't exceed 1,000 write units per second
+      correct: true
+      reason: Adaptive capacity can give a hot item a partition of its own, but not more than the partition maximum.
+    - text: Adaptive capacity raises the limit as high as needed
+      reason: It rebalances within the partition maximum. It can't go past it.
+    - text: Burst capacity covers it indefinitely
+      reason: Burst capacity holds at most five minutes of unused throughput, for short spikes.
+    - text: DynamoDB splits the single item across partitions
+      reason: An item lives on one partition. Spreading it means changing the key design.
+  lesson:
+    title: One key has a ceiling
+    explanation: Each DynamoDB partition serves at most 3,000 read units and 1,000 write units per second. Past that, spread the key with write sharding, split counters, or a different data model.
+    source:
+      url: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/burst-adaptive-capacity.html
+      title: DynamoDB burst and adaptive capacity
+- id: why-write-sharding
+  skill: spread-hot-keys
+  asks: why
+  type: prompt
+  prompt: Why add a suffix from 1 to N to a hot partition key, and what does it cost on reads? How does a computed suffix differ from a random one?
+  reworded: What does write sharding with key suffixes buy you, what do readers pay for it, and why compute the suffix instead of picking it at random?
+  points:
+    - The suffix spreads one hot key's writes across N partition key values, so no single partition takes them all.
+    - Reading everything for the original key now means querying all N keys and merging the results.
+    - A random suffix spreads writes best, but you can't find one item without trying every suffix.
+    - A suffix computed from another attribute, like a hash of the record id, spreads nearly as well and lets you fetch one item directly.
+  lesson:
+    title: Spread writes, gather reads
+    explanation: Write sharding trades cheap, spread-out writes for more work on reads. Use it when writes are the bottleneck and readers can afford to fan out.
+    source:
+      url: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-partition-key-sharding.html
+      title: Using write sharding to distribute workloads evenly in your DynamoDB table
+- id: when-hot-row
+  skill: spread-hot-keys
+  asks: when
+  type: pick-one
+  prompt: Every ingested record also updates one row holding a tenant's total record count, and ingestion slows to a crawl during big backfills. What's the best change?
+  reworded: A single counter row updated on every write has become the bottleneck. How should you change the design?
+  options:
+    - text: Split the counter into several rows updated at random and sum them on read, or append counts and roll them up later
+      correct: true
+      reason: Spreading the updates removes the queue of lock waits on one row.
+    - text: Raise the isolation level to Serializable
+      reason: That adds retries on top of the same contention.
+    - text: Add an index on the count column
+      reason: Indexes add write work. They don't reduce contention on one row.
+    - text: Move the counter to a read replica
+      reason: Replicas don't accept writes.
+  lesson:
+    title: Hot rows queue writers
+    explanation: When every transaction updates the same row, each waits for the one before it. Split counters or append-and-aggregate turn one hot row into many cool ones.
+- id: why-drop-partitions
+  skill: store-time-series
+  asks: why
+  type: pick-one
+  prompt: Why partition an append-heavy events table by time in PostgreSQL, instead of deleting old rows with DELETE?
+  reworded: What does time-based partitioning give you when old events have to be removed on a schedule?
+  options:
+    - text: Dropping or detaching a whole old partition is far faster than a bulk DELETE and avoids the VACUUM work it leaves behind
+      correct: true
+      reason: Removing a partition is a quick table-level change, while a bulk delete touches every row.
+    - text: Partitioned tables never need indexes
+      reason: Partitions still use indexes. Pruning just skips partitions outside the query's range.
+    - text: DELETE isn't allowed on large tables
+      reason: It's allowed, but slow and costly at scale.
+    - text: Partitioning compresses old rows automatically
+      reason: It doesn't compress anything. It makes old data easy to drop or move.
+  lesson:
+    title: Retention by the partition
+    explanation: Range partitioning by day or month routes rows to their period, lets the planner skip irrelevant partitions, and turns retention into dropping whole partitions.
+    source:
+      url: https://www.postgresql.org/docs/current/ddl-partitioning.html
+      title: Table Partitioning, PostgreSQL Documentation
+- id: when-table-per-period
+  skill: store-time-series
+  asks: when
+  type: pick-one
+  prompt: You record a high volume of events in DynamoDB, mostly read while recent. Why is today's date alone a poor partition key, and what does DynamoDB suggest instead?
+  reworded: For high-volume time-series data in DynamoDB, what goes wrong with keying by date, and what design is recommended?
+  options:
+    - text: Every write lands on today's key, so use one table per period, with capacity on the current table and older tables scaled down, archived, or deleted
+      correct: true
+      reason: The current period gets the resources it needs, and older periods cost little.
+    - text: Dates can't be used as keys in DynamoDB
+      reason: They can. The problem is that one date takes every write at once.
+    - text: Put all events in one table keyed by a random UUID
+      reason: Writes spread, but reading a time range then means scanning the whole table.
+    - text: Use a strongly consistent read on every query
+      reason: Consistency doesn't fix a hot key.
+  lesson:
+    title: Time series is the exception to one table
+    explanation: DynamoDB usually favors few tables, but for time series it suggests a table per period. Old tables can move to the Standard-IA class, where storage is cheaper and throughput costs more.
+    source:
+      url: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-time-series.html
+      title: Best practices for handling time series data in DynamoDB
+- id: when-brin-index
+  skill: store-time-series
+  asks: when
+  type: pick-one
+  prompt: When is a BRIN index a good choice in PostgreSQL?
+  reworded: What kind of column suits a block range (BRIN) index?
+  options:
+    - text: When the column follows the table's physical order, like a timestamp on rows that are only appended
+      correct: true
+      reason: Each block range then covers a narrow span of values, so the small summary skips most of the table.
+    - text: When you need fast lookups of single random ids
+      reason: A B-tree is the right tool for that.
+    - text: When values are scattered randomly through the table
+      reason: Then every block range covers almost every value, and the summary rules nothing out.
+    - text: When the column holds JSON documents
+      reason: BRIN summaries suit ordered values, not documents.
+  lesson:
+    title: Tiny indexes for ordered data
+    explanation: BRIN stores a summary, like the lowest and highest value, for each range of table blocks. That's tiny compared with a B-tree, and it works well when values line up with insert order.
+    source:
+      url: https://www.postgresql.org/docs/current/indexes-types.html
+      title: Index Types, PostgreSQL Documentation
+- id: which-consistency-level
+  skill: choose-consistency
+  asks: when
+  type: matching
+  prompt: Match each read to the weakest consistency level that's still safe for it.
+  reworded: What's the cheapest consistency level each of these reads can get away with?
+  matchHeading: Consistency
+  matchName: a level
+  pairs:
+    - item: Check a tenant's plan limit before starting a backfill
+      match: Strong
+    - item: Show a customer the setting they just saved
+      match: Read-your-writes
+    - item: Dashboard counts that refresh every minute
+      match: Eventual
+    - item: A customer scrolling a feed that must never jump back in time
+      match: Monotonic reads
+  lesson:
+    title: Pay for consistency where it matters
+    explanation: Strong reads see every finished write but cost more and depend on the primary. Read-your-writes and monotonic reads fix what users notice. Eventual reads are cheapest and fine where a few seconds of lag is harmless.
+- id: dynamodb-read-consistency
+  skill: choose-consistency
+  asks: what
+  type: pick-one
+  prompt: Which DynamoDB read can never be strongly consistent?
+  reworded: In DynamoDB, where are reads always eventually consistent, even if you ask for ConsistentRead?
+  options:
+    - text: A query on a global secondary index
+      correct: true
+      reason: Reads from global secondary indexes and streams are always eventually consistent.
+    - text: A GetItem on the base table
+      reason: Setting ConsistentRead to true gives a strongly consistent read.
+    - text: A query on a local secondary index
+      reason: Local secondary indexes support strongly consistent reads.
+    - text: A query on the base table
+      reason: Query accepts ConsistentRead on tables.
+  lesson:
+    title: Eventual by default, strong by request
+    explanation: DynamoDB reads are eventually consistent unless you set ConsistentRead, and eventually consistent reads cost half as much. Global secondary indexes and streams don't offer strong reads, so a design that needs one can't rely on a GSI for it.
+    source:
+      url: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadConsistency.html
+      title: DynamoDB read consistency
+- id: why-upsert-unique-index
+  skill: design-indexes
+  asks: why
+  type: pick-one
+  prompt: Why does a records table synced from providers need a unique index on (connection_id, external_id)?
+  reworded: What does a unique index on the provider's record id, scoped to the connection, make possible?
+  options:
+    - text: It stops duplicate rows and gives INSERT ... ON CONFLICT DO UPDATE the key it needs for atomic upserts
+      correct: true
+      reason: ON CONFLICT DO UPDATE needs a unique index or constraint to detect the conflict, and then guarantees an insert or an update even under concurrency.
+    - text: It makes full table scans faster
+      reason: A unique index helps lookups by those columns, not scans of everything.
+    - text: It keeps records in insert order
+      reason: Indexes don't fix the table's physical order.
+    - text: It lets the provider's id be changed later
+      reason: The point is the opposite. It pins each provider record to one row.
+  lesson:
+    title: The unique key is the upsert key
+    explanation: With a unique index on the source id, a repeated or late record updates its row instead of adding a new one, and a WHERE clause on the update keeps the newer version.
+    source:
+      url: https://www.postgresql.org/docs/current/sql-insert.html
+      title: INSERT, PostgreSQL Documentation

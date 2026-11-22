@@ -8,6 +8,9 @@
   "card/case-time-plan": [
     "2e5f5ea21d0588bf54792cac10b27b9594f008a4c503f3bf27e6a615c88168c3"
   ],
+  "card/composite-index-order": [
+    "b65b0a192f529ce148eaedd53b479c80dbb12f0bf29b4fd37fbf4534c9d572ea"
+  ],
   "card/concurrent-idempotent-repeat": [
     "0ff0082815a0e21d51f55bdc9b1d5dd47752a9493bc496216588bee42be89dc8"
   ],
@@ -23,8 +26,17 @@
   "card/deep-dive-sources": [
     "bb41a0e97a407136950abc424234ac05e51659d07615b4b5c37f8893043d3207"
   ],
+  "card/dynamodb-hot-item": [
+    "545fd8f1dd03c0c7117e5a71054bd990f15fdb587acda54c26a5b7686eb3ce76"
+  ],
+  "card/dynamodb-read-consistency": [
+    "77f2d2fae3f40489dd044995f21aaab817cb734bd53104015654a7f36fc11871"
+  ],
   "card/exactly-once-in-practice": [
     "7fec0f6eaefd0953f9ff19b0e6a88ef89376510588dc52b6c3f9f646bfa48ff2"
+  ],
+  "card/fix-lost-update": [
+    "344c562ca58386027ce77f28cf86ccca1d67767315e05b22a5aae0b147d6a839"
   ],
   "card/health-states": [
     "69073cdabd8b55dec4d429007499332cca02e6af225263df5a80b0dd97837a12"
@@ -34,6 +46,9 @@
   ],
   "card/interview-step-order": [
     "6ee07670a0be872383e5eae5d7c7675386b675fd100e9f303f5d8191f29b8402"
+  ],
+  "card/isolation-anomalies": [
+    "a8b1268a2b3d424abcfb58b44e9f7400ca1c6e2bad5ae58faf28bf0159717902"
   ],
   "card/kafka-replay": [
     "f118b19d39b582ade0173d73cab3e2570b48be53716cd9669ee7181aa0f6ef1d"
@@ -53,11 +68,20 @@
   "card/outbox-steps": [
     "4e9c084453ea7c87b91b4eea6e748ad7f9ce7603d77d7ffba27129be3a25258d"
   ],
+  "card/partition-schemes": [
+    "558739b12feeb8b2744088c5f5094b5722850e49c3752c22b58fec7f7d808efc"
+  ],
   "card/per-day-to-per-second": [
     "795eb0ff53cba9186d498b7445664f59cf9812c0b3fad63d8b9ddd8a64cd6eb8"
   ],
+  "card/pick-partition-key": [
+    "5f6c087d781eea072f0999c314bf4323bce2dfbced8580133bc1364bdc9150c8"
+  ],
   "card/problem-details-members": [
     "80902447345285722a0be4f00eca5338b1cf481274b50f0d0dcbefb9b9d9b26c"
+  ],
+  "card/read-your-writes-fix": [
+    "b1f30fdfa842385c5bc563bd066b612200187fc59edbf8fdf4819ab1461b1557"
   ],
   "card/requirement-drives-design": [
     "35f91882e265d3851e39c3bd247487adaebe775883059222646ad60fb2d3ffd7"
@@ -119,8 +143,17 @@
   "card/when-big-tenant-arrives": [
     "3660be09ce1b9a81273dd0b7606af58254864c2b8ce78afbfc542c37e47eda45"
   ],
+  "card/when-brin-index": [
+    "0c03a93187fcd1ceeca109a3fb2f7f69c4daa360121e55f33c42668bfa1eb5f0"
+  ],
+  "card/when-covering-index": [
+    "dee787243dbde5c22ed2025fea88ca94493924cd4b2b7676a91adf7f71ca8867"
+  ],
   "card/when-disable-endpoint": [
     "22881527688fbd7490f17a5f3bc1e4d400937ba9540e8986fc445dde688af3bd"
+  ],
+  "card/when-hot-row": [
+    "560259e67c174a8393f46f9a8c3fbbac8731c734648e8ff49d4c8277176a1335"
   ],
   "card/when-lead-deep-dives": [
     "2ad1389710c0d3b4cd6777227143cf8e11d1090e1fa80326ddd5a300d4e2abb7"
@@ -143,6 +176,9 @@
   "card/when-skip-ordering": [
     "f10cf20c1a3876a5e41de792628ce34e371d5c4ef57014870f31040323c3491c"
   ],
+  "card/when-table-per-period": [
+    "442d4d3c94ab137d767d90ffc1e9c793d9be8f03a61d335bdcc558748a47d471"
+  ],
   "card/when-thin-payload": [
     "846dac031e8f4cae30400b9c64e599416fb9dcc89610072be635ab2e70ee9b42"
   ],
@@ -155,14 +191,26 @@
   "card/when-workflow-backfill": [
     "65b223a60b6d7376a334a7b075f7412a372f8d0c835b04738f3307f55c83cc59"
   ],
+  "card/where-to-send-reads": [
+    "e3e3b31a1de18e4eadd8c2e9b8af0fae09cd8cf561e55762f74732af88e11a14"
+  ],
+  "card/which-consistency-level": [
+    "1c561d3422ffb1a1af9ecba78ea1c7ccf7a84db1ecfbbb3c63823f7924ea3721"
+  ],
   "card/which-errors-to-retry": [
     "f7e09ae057e9a1c08d5942a5b12fff7ee6f7c732da5afd32d9e72c6ba61247d9"
   ],
   "card/which-server-auth": [
     "362b4fa0df3af18d3904273a20c7529d714703274b6c7885d5c5022bf6a9c81d"
   ],
+  "card/which-store-fits": [
+    "3b7e5d705c4bda208e47d2d99e153c8c152a34ef396d6557155f020c77e2e12e"
+  ],
   "card/which-workflow-tool": [
     "f7b21d8b41acb81227779a3afbe5a91c177d6767bcc2e4623b9d9f7f028d8b3c"
+  ],
+  "card/why-access-patterns-first": [
+    "41974f21ea65be07fabd604f00282ea226fd3508d07f514e9a2b85af039c4110"
   ],
   "card/why-api-before-boxes": [
     "b185a1ef84e94698ea3c677a08f57540d50f6f3f24fbb3c170c24d854e149f15"
@@ -194,6 +242,9 @@
   "card/why-dedupe-issues": [
     "991ef40943b13cb92418481f75f5a0dcbfc221a799bcc407c8f349769cd6c929"
   ],
+  "card/why-drop-partitions": [
+    "48535e7a4c527da2ef3e22e4d752551cd13b1664f1796d8a07d3d0e5463a8f98"
+  ],
   "card/why-few-features": [
     "58aea8cd01fd083fa7269fb4df20b08657938e04c358f78f2c28580440f3a423"
   ],
@@ -203,6 +254,9 @@
   "card/why-identity-from-token": [
     "433b057039064b0c2c376820ffe33fef2f40bc7cbd400b6e1e3b2e7712cdf933"
   ],
+  "card/why-indexes-cost-writes": [
+    "832ca08eb909b02dbd6b490bac8a14d556f51f30e9a6d0d1faa83b17c05dfd4c"
+  ],
   "card/why-jitter": [
     "fecae9444cdfbb287984d81566e87b30f128852501bf6506a9a6308cdc3bdfcb"
   ],
@@ -211,6 +265,9 @@
   ],
   "card/why-longer-dlq-retention": [
     "e7a5b80632ace2e476eef217ca6df70ada1ada38d924512f6bb6c48e85f0a025"
+  ],
+  "card/why-mod-n-resharding": [
+    "ae898f1298ebee4d8e7352229c24591ee7c3bec229b1fe4cc07e21ba539c6f64"
   ],
   "card/why-name-failure-modes": [
     "d3fd9ee525a40ac97f901438afcca730d2ad58529cf53a452ab090db6180f1dd"
@@ -245,6 +302,12 @@
   "card/why-replay-same-id": [
     "aaa9130d02418ffe4afd09c7642540487954d7d0acf972345c510d78bb3d3307"
   ],
+  "card/why-replicas-not-writes": [
+    "90e27f8038e41edff52921f9bcb5e7e0b0286d80e496e4019b42ac506580c764"
+  ],
+  "card/why-retry-serializable": [
+    "7c8f7935b1213769790cfd67d3039dd901454f4e89cd9f1e559e2b8b9e9fd4eb"
+  ],
   "card/why-say-hardest-part": [
     "5fec594001cefa640129d1674f62e657abbf3326e79ad9ea4d78ce9db1231ea1"
   ],
@@ -269,11 +332,23 @@
   "card/why-trailing-window": [
     "b2195840430383b3e63189902360b9004e5168c76fe784aa610f28606a9eade0"
   ],
+  "card/why-upsert-unique-index": [
+    "92183e04d4de6a272469594e97119ab248c699335384c4ee510b8ca767e2db0e"
+  ],
+  "card/why-write-sharding": [
+    "8361c34e9c252bbcddf622b1d9d43c55c94e80b979bfc0705e176270a73a2ece"
+  ],
+  "card/why-write-skew": [
+    "421ee6b2dcc905e380414abebaa46247e48eca6590f1c0b9a0b0d3793d5a255c"
+  ],
   "chapter/api-design": [
     "d8ed1518ba1404d751030aceaa7839b59d6102235230b8c31f72a5394ad083f2"
   ],
   "chapter/case-studies": [
     "7edafea066c50e7a2e4386f35b23ad791bd5f5d752947f2dde4a0169743fd307"
+  ],
+  "chapter/databases": [
+    "6812aebcbb22ad14dfa1a5d70632a17aee207f9ad19899305ba00330bd1a3c2d"
   ],
   "chapter/design-method": [
     "e7046426247c9d266a9a80cf354779f3275ae164e267b6df9ed51d52479049da"
