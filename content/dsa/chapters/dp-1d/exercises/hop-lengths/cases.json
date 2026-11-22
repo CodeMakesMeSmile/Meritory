@@ -1,0 +1,110 @@
+{
+  "exercise": "hop-lengths",
+  "cases": [
+    {
+      "uuid": "51df812b-e054-4d11-9134-6db10b2508ac",
+      "description": "counts the hop orders to the end",
+      "property": "hopWays",
+      "input": {
+        "distance": 5,
+        "hops": [1, 3]
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "0e045c12-2767-4b47-94e2-facdb48c9379",
+      "description": "one hop length that divides the distance",
+      "property": "hopWays",
+      "input": {
+        "distance": 4,
+        "hops": [2]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "1650c4c0-46b1-448c-8a9e-de963dd14b15",
+      "description": "one hop length that can't land on the end",
+      "property": "hopWays",
+      "input": {
+        "distance": 5,
+        "hops": [2]
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "a35bb4c1-21ac-4b2b-adba-1130328db252",
+      "description": "three hop lengths",
+      "property": "hopWays",
+      "input": {
+        "distance": 10,
+        "hops": [1, 2, 3]
+      },
+      "expected": 274
+    },
+    {
+      "uuid": "11d806fe-b592-49aa-9de8-5ba5dfcdced6",
+      "description": "hop lengths in any order",
+      "property": "hopWays",
+      "input": {
+        "distance": 20,
+        "hops": [5, 3, 2]
+      },
+      "expected": 448
+    },
+    {
+      "uuid": "cb2b822c-0daf-49d1-b97e-7efe18bbec4d",
+      "description": "a count past the modulus",
+      "property": "hopWays",
+      "input": {
+        "distance": 100,
+        "hops": [1, 2]
+      },
+      "expected": 782204094
+    },
+    {
+      "uuid": "d959c1f4-9474-4bf0-89f6-22bacd071fc6",
+      "description": "the longest distance",
+      "property": "hopWays",
+      "input": {
+        "distance": 10000,
+        "hops": [1, 2, 3, 5, 8]
+      },
+      "expected": 140716822
+    },
+    {
+      "uuid": "e84a9bac-012e-4e14-b78a-956bb3e9b464",
+      "description": "long hops only",
+      "property": "hopWays",
+      "input": {
+        "distance": 9000,
+        "hops": [997, 1000]
+      },
+      "expected": 1
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "ac0ac7cc-1cc2-40ce-8c25-0ef279cfca6f",
+          "description": "every hop is longer than the distance",
+          "property": "hopWays",
+          "input": {
+            "distance": 3,
+            "hops": [7]
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "eb679f82-6629-4f08-b201-60850194b34d",
+          "description": "one stone and one hop",
+          "property": "hopWays",
+          "input": {
+            "distance": 1,
+            "hops": [1]
+          },
+          "expected": 1
+        }
+      ]
+    }
+  ]
+}

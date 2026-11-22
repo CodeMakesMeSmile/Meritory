@@ -1,0 +1,20 @@
+id: dp-1d
+title: Dynamic programming in one dimension
+order: 16
+skills:
+  - id: spot-overlap
+    name: Spot the overlapping subproblems in a plain recursion
+  - id: memo-or-table
+    name: Write a solution top down with a memo or bottom up with a table
+  - id: state-and-recurrence
+    name: Say the state and the recurrence in words before writing code
+  - id: keep-last-few
+    name: Keep only the last few values when that's all the recurrence reads
+  - id: take-or-skip
+    name: Decide to take or skip each item, like choosing items that aren't next to each other
+  - id: make-change
+    name: Find the fewest coins for an amount, and count the ways to make it
+  - id: increasing-subsequence
+    name: Find the longest increasing subsequence, and in O(n log n) with a list of tails
+  - id: split-into-words
+    name: Split a string into dictionary words with a table over its prefixes

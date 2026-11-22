@@ -1,0 +1,17 @@
+id: shift-pay
+kind: coding
+title: The best paying shifts
+difficulty: easy
+skills:
+  - take-or-skip
+  - keep-last-few
+sibling: pond-lanterns
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: bestShiftPay
+  params:
+    - name: pay
+      type: int[]
+  returns: int

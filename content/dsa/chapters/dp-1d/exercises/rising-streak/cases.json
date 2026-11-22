@@ -1,0 +1,102 @@
+{
+  "exercise": "rising-streak",
+  "cases": [
+    {
+      "uuid": "e6e40691-6fcd-4fc7-b1a4-a1446d2b4588",
+      "description": "finds the longest rising pick",
+      "property": "longestRise",
+      "input": {
+        "heights": [5, 2, 8, 6, 3, 6, 9, 7]
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "a6fe8073-6ac8-4348-ab42-49a645436096",
+      "description": "heights that only rise",
+      "property": "longestRise",
+      "input": {
+        "heights": [1, 2, 3, 4, 5]
+      },
+      "expected": 5
+    },
+    {
+      "uuid": "990b41f5-13f3-4222-a37b-9bd6e90aef3d",
+      "description": "heights that only fall",
+      "property": "longestRise",
+      "input": {
+        "heights": [9, 7, 5]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "e4198b90-4c01-487e-ab6d-537a6f6154da",
+      "description": "equal heights don't count as rising",
+      "property": "longestRise",
+      "input": {
+        "heights": [3, 3, 3]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "0b86f138-562d-4746-ac9d-05456a562e55",
+      "description": "a repeat in the middle",
+      "property": "longestRise",
+      "input": {
+        "heights": [1, 3, 3, 5]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "b546c7b3-34bc-42c5-8acb-0a20595beab4",
+      "description": "the best rise ends early",
+      "property": "longestRise",
+      "input": {
+        "heights": [2, 4, 6, 1, 1]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "37218ad0-0b9b-47ee-832b-aecfb6d5e256",
+      "description": "heights below sea level",
+      "property": "longestRise",
+      "input": {
+        "heights": [-5, -2, -8, 0, -1, 3]
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "1ea1cef5-a0bb-4c1b-8c37-b010fc2e54fe",
+      "description": "sixteen heights",
+      "property": "longestRise",
+      "input": {
+        "heights": [
+          80, -25, -43, 100, -21, -8, -34, 7, -78, -11, 26, 8, 32, 64, -56, 44
+        ]
+      },
+      "expected": 7
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "d24fe772-cb7e-4b44-a46c-4cd5f14ef768",
+          "description": "one peak",
+          "property": "longestRise",
+          "input": {
+            "heights": [42]
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "f2df25a3-975f-4bb7-9efb-d9a1863955e4",
+          "description": "the highest and lowest heights",
+          "property": "longestRise",
+          "input": {
+            "heights": [10000, -10000, 0, 10000]
+          },
+          "expected": 3
+        }
+      ]
+    }
+  ]
+}

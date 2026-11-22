@@ -1,0 +1,85 @@
+{
+  "exercise": "tower-tolls",
+  "cases": [
+    {
+      "uuid": "7dc25bf0-54c3-44cf-8349-5562675063a6",
+      "description": "finds the cheapest climb",
+      "property": "cheapestClimb",
+      "input": {
+        "tolls": [8, 2, 9, 1, 5, 7]
+      },
+      "expected": 8
+    },
+    {
+      "uuid": "8d9e3d97-cd24-40a6-ac00-eebc6bdc2db4",
+      "description": "start on the second landing",
+      "property": "cheapestClimb",
+      "input": {
+        "tolls": [100, 1, 100, 1]
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "2df68e57-e3d4-4083-bac5-44c32543ae69",
+      "description": "every landing costs the same",
+      "property": "cheapestClimb",
+      "input": {
+        "tolls": [4, 4, 4, 4]
+      },
+      "expected": 8
+    },
+    {
+      "uuid": "eb011d1e-5235-49d5-8c04-1611a8b86fab",
+      "description": "one big toll worth stepping over",
+      "property": "cheapestClimb",
+      "input": {
+        "tolls": [1, 1, 999, 1, 1]
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "ad8c5112-07df-458b-83b7-bbc7448c1246",
+      "description": "twenty landings",
+      "property": "cheapestClimb",
+      "input": {
+        "tolls": [
+          14, 940, 860, 486, 715, 814, 125, 465, 852, 627, 80, 511, 670, 23,
+          991, 147, 724, 237, 941, 415
+        ]
+      },
+      "expected": 3979
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "78761760-de02-43d1-932e-868c371d5027",
+          "description": "two landings",
+          "property": "cheapestClimb",
+          "input": {
+            "tolls": [5, 3]
+          },
+          "expected": 3
+        },
+        {
+          "uuid": "aea92d20-454f-473b-bcf3-4718ff90ffd5",
+          "description": "free landings",
+          "property": "cheapestClimb",
+          "input": {
+            "tolls": [0, 0, 0]
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "9bf76942-6673-4e04-ae6a-fbd46f7c773a",
+          "description": "the highest tolls",
+          "property": "cheapestClimb",
+          "input": {
+            "tolls": [999, 999, 999]
+          },
+          "expected": 999
+        }
+      ]
+    }
+  ]
+}

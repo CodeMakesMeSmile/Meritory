@@ -1,0 +1,19 @@
+id: fewest-tokens
+kind: coding
+title: The fewest tokens for the fare
+difficulty: medium
+skills:
+  - make-change
+  - memo-or-table
+sibling: change-ways
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: fewestTokens
+  params:
+    - name: tokens
+      type: int[]
+    - name: fare
+      type: int
+  returns: int

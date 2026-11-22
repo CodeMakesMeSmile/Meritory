@@ -1,0 +1,19 @@
+id: swim-passes
+kind: coding
+title: The cheapest swim passes
+difficulty: medium
+skills:
+  - state-and-recurrence
+  - memo-or-table
+sibling: tower-tolls
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: cheapestSwims
+  params:
+    - name: days
+      type: int[]
+    - name: prices
+      type: int[]
+  returns: int

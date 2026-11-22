@@ -1,0 +1,20 @@
+id: hop-lengths
+kind: coding
+title: Jumps of set lengths
+difficulty: medium
+skills:
+  - spot-overlap
+  - memo-or-table
+  - state-and-recurrence
+sibling: stepping-stones
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: hopWays
+  params:
+    - name: distance
+      type: int
+    - name: hops
+      type: int[]
+  returns: int

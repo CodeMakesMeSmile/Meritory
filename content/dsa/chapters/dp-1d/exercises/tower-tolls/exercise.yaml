@@ -1,0 +1,17 @@
+id: tower-tolls
+kind: coding
+title: The cheapest way up the tower
+difficulty: easy
+skills:
+  - state-and-recurrence
+  - keep-last-few
+sibling: swim-passes
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: cheapestClimb
+  params:
+    - name: tolls
+      type: int[]
+  returns: int

@@ -1,0 +1,82 @@
+{
+  "exercise": "stepping-stones",
+  "cases": [
+    {
+      "uuid": "9e62455a-8e59-41c6-b4d2-592c4dab8970",
+      "description": "counts the ways to four stones",
+      "property": "stoneWays",
+      "input": {
+        "stones": 4
+      },
+      "expected": 5
+    },
+    {
+      "uuid": "1aea4de4-c0c1-43db-b042-33e79fee3a6c",
+      "description": "two stones",
+      "property": "stoneWays",
+      "input": {
+        "stones": 2
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "192c77cb-06b1-4062-84fc-1759a0deff3d",
+      "description": "three stones",
+      "property": "stoneWays",
+      "input": {
+        "stones": 3
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "c42ccae9-f4a7-429e-90e6-96ac4a150ef1",
+      "description": "ten stones",
+      "property": "stoneWays",
+      "input": {
+        "stones": 10
+      },
+      "expected": 89
+    },
+    {
+      "uuid": "55b6c977-f286-4e1a-8929-d89ed2cb14a2",
+      "description": "thirty stones",
+      "property": "stoneWays",
+      "input": {
+        "stones": 30
+      },
+      "expected": 1346269
+    },
+    {
+      "uuid": "f820c49b-04a3-4d0c-9161-5d731b6c6f42",
+      "description": "fifty stones need more than 32 bits",
+      "property": "stoneWays",
+      "input": {
+        "stones": 50
+      },
+      "expected": 20365011074
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "e440319f-6ba9-45b2-9487-e1ddfa36d586",
+          "description": "one stone",
+          "property": "stoneWays",
+          "input": {
+            "stones": 1
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "8db49217-85ee-4ec3-b992-07639fd189c2",
+          "description": "the longest row",
+          "property": "stoneWays",
+          "input": {
+            "stones": 75
+          },
+          "expected": 3416454622906707
+        }
+      ]
+    }
+  ]
+}

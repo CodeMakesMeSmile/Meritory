@@ -1,0 +1,110 @@
+{
+  "exercise": "lost-spaces",
+  "cases": [
+    {
+      "uuid": "c8b22df2-7294-4467-b993-a86cb11d657e",
+      "description": "splits the sign into words",
+      "property": "canSplit",
+      "input": {
+        "text": "teatimeisnow",
+        "words": ["tea", "time", "is", "now", "teat", "i", "me"]
+      },
+      "expected": true
+    },
+    {
+      "uuid": "a4b69215-9167-4b6f-9089-aab7d5d3b8bb",
+      "description": "a sign that can't be split",
+      "property": "canSplit",
+      "input": {
+        "text": "teatimeisnot",
+        "words": ["tea", "time", "is", "now"]
+      },
+      "expected": false
+    },
+    {
+      "uuid": "af87b48d-45a2-45d0-bd02-081ccde82ad0",
+      "description": "a word used many times",
+      "property": "canSplit",
+      "input": {
+        "text": "hahaha",
+        "words": ["ha"]
+      },
+      "expected": true
+    },
+    {
+      "uuid": "7c80a57a-0bb4-4187-95ce-ba914c6b56a7",
+      "description": "the longest first word is a dead end",
+      "property": "canSplit",
+      "input": {
+        "text": "sandalso",
+        "words": ["sand", "sandal", "also"]
+      },
+      "expected": true
+    },
+    {
+      "uuid": "042276a2-e846-4de9-bec2-07f144ecf875",
+      "description": "a word that only nearly fits",
+      "property": "canSplit",
+      "input": {
+        "text": "applepie",
+        "words": ["apple", "pi"]
+      },
+      "expected": false
+    },
+    {
+      "uuid": "ebc505a8-b386-4c59-911b-92ec79186927",
+      "description": "many ways that all fail at the end",
+      "property": "canSplit",
+      "input": {
+        "text": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab",
+        "words": ["a", "aa", "aaa", "aaaa"]
+      },
+      "expected": false
+    },
+    {
+      "uuid": "15b669e0-a6db-495b-8c2c-0e208f86b588",
+      "description": "words that overlap",
+      "property": "canSplit",
+      "input": {
+        "text": "sunflowerseed",
+        "words": ["sun", "flower", "sunflower", "flowers", "seed", "eed"]
+      },
+      "expected": true
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "4804795d-dd18-412a-85f7-29d17f2cba7e",
+          "description": "one letter that's a word",
+          "property": "canSplit",
+          "input": {
+            "text": "a",
+            "words": ["a"]
+          },
+          "expected": true
+        },
+        {
+          "uuid": "0cff7910-5eb3-419f-93cb-1b156a2f8f8d",
+          "description": "one letter that isn't",
+          "property": "canSplit",
+          "input": {
+            "text": "a",
+            "words": ["b"]
+          },
+          "expected": false
+        },
+        {
+          "uuid": "799996fc-ad19-4270-8bee-57e7acfcf194",
+          "description": "every word longer than the sign",
+          "property": "canSplit",
+          "input": {
+            "text": "go",
+            "words": ["goal", "gone"]
+          },
+          "expected": false
+        }
+      ]
+    }
+  ]
+}

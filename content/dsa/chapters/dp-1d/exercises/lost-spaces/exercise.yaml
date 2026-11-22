@@ -1,0 +1,19 @@
+id: lost-spaces
+kind: coding
+title: The sign with no spaces
+difficulty: medium
+skills:
+  - split-into-words
+  - memo-or-table
+sibling: space-readings
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: canSplit
+  params:
+    - name: text
+      type: string
+    - name: words
+      type: string[]
+  returns: boolean

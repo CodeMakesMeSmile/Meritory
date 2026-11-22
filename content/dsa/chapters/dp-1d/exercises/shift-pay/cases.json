@@ -1,0 +1,103 @@
+{
+  "exercise": "shift-pay",
+  "cases": [
+    {
+      "uuid": "acc88207-9de6-4204-a512-ff687a9676ac",
+      "description": "picks the best shifts",
+      "property": "bestShiftPay",
+      "input": {
+        "pay": [6, 2, 3, 9, 4]
+      },
+      "expected": 15
+    },
+    {
+      "uuid": "88a4a385-22f5-4f1b-a3e0-d49fcd8fb247",
+      "description": "skips two shifts in a row",
+      "property": "bestShiftPay",
+      "input": {
+        "pay": [5, 1, 1, 5]
+      },
+      "expected": 10
+    },
+    {
+      "uuid": "975508a9-bdd7-4c36-9da0-a91d2ddffbd7",
+      "description": "every other shift isn't always best",
+      "property": "bestShiftPay",
+      "input": {
+        "pay": [1, 9, 1, 1, 9, 1]
+      },
+      "expected": 18
+    },
+    {
+      "uuid": "acd0c00d-345b-4a5d-bd41-5f4597bb16ce",
+      "description": "every shift pays the same",
+      "property": "bestShiftPay",
+      "input": {
+        "pay": [4, 4, 4, 4, 4]
+      },
+      "expected": 12
+    },
+    {
+      "uuid": "d10a2aa6-b40a-4581-9455-ee18229f6006",
+      "description": "two shifts",
+      "property": "bestShiftPay",
+      "input": {
+        "pay": [3, 8]
+      },
+      "expected": 8
+    },
+    {
+      "uuid": "fd5aefca-1987-42d6-9e88-28e77c6437fe",
+      "description": "twenty shifts",
+      "property": "bestShiftPay",
+      "input": {
+        "pay": [
+          46, 60, 61, 36, 53, 29, 57, 0, 52, 84, 91, 33, 30, 81, 28, 1, 37, 38,
+          42, 85
+        ]
+      },
+      "expected": 565
+    },
+    {
+      "uuid": "120e4ca1-41fb-4117-bec9-5e72356ba279",
+      "description": "the highest pay",
+      "property": "bestShiftPay",
+      "input": {
+        "pay": [10000, 10000, 10000]
+      },
+      "expected": 20000
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "117f6a41-ef4e-4a19-af9b-5329978724d5",
+          "description": "no shifts",
+          "property": "bestShiftPay",
+          "input": {
+            "pay": []
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "a11145e9-6217-4b66-9d26-4f64a1fdc240",
+          "description": "one shift",
+          "property": "bestShiftPay",
+          "input": {
+            "pay": [7]
+          },
+          "expected": 7
+        },
+        {
+          "uuid": "f29c8305-ff88-4958-bb16-49d11af17f80",
+          "description": "shifts that pay nothing",
+          "property": "bestShiftPay",
+          "input": {
+            "pay": [0, 0, 0]
+          },
+          "expected": 0
+        }
+      ]
+    }
+  ]
+}

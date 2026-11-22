@@ -1,0 +1,17 @@
+id: pond-lanterns
+kind: coding
+title: Lanterns around the pond
+difficulty: medium
+skills:
+  - take-or-skip
+  - keep-last-few
+sibling: shift-pay
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: brightestRing
+  params:
+    - name: glow
+      type: int[]
+  returns: int

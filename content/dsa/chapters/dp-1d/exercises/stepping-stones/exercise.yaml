@@ -1,0 +1,18 @@
+id: stepping-stones
+kind: coding
+title: Ways across the stepping stones
+difficulty: easy
+skills:
+  - spot-overlap
+  - state-and-recurrence
+  - keep-last-few
+sibling: hop-lengths
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: stoneWays
+  params:
+    - name: stones
+      type: int
+  returns: long

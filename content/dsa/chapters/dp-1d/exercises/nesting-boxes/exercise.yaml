@@ -1,0 +1,16 @@
+id: nesting-boxes
+kind: coding
+title: Boxes that nest
+difficulty: hard
+skills:
+  - increasing-subsequence
+sibling: rising-streak
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: mostNested
+  params:
+    - name: boxes
+      type: int[][]
+  returns: int

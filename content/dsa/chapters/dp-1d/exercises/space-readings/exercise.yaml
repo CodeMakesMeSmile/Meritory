@@ -1,0 +1,19 @@
+id: space-readings
+kind: coding
+title: Every way to read the note
+difficulty: medium
+skills:
+  - split-into-words
+  - state-and-recurrence
+sibling: lost-spaces
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: splitCount
+  params:
+    - name: text
+      type: string
+    - name: words
+      type: string[]
+  returns: int

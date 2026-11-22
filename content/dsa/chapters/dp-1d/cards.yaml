@@ -1,0 +1,330 @@
+- id: why-plain-recursion-slow
+  skill: spot-overlap
+  asks: why
+  type: prompt
+  prompt: Counting the ways to hop to stone n as `ways(n - 1) + ways(n - 2)` is right, but plain recursion takes exponential time. Why?
+  reworded: The recursion for hops of one or two stones gives the right count, yet it's far too slow for n = 50. What makes it slow?
+  points:
+    - Each call makes two more calls, so the call tree roughly doubles at every level.
+    - The same questions, like `ways(n - 3)`, are asked on many different branches.
+    - There are only n + 1 different questions, so almost all of that work is repeated.
+  misconception: That a recursion is slow because recursion itself is slow.
+  lesson:
+    title: Same question, many branches
+    explanation: Plain recursion forgets every answer as soon as it returns it. Saving each one the first time turns millions of calls into one per question.
+- id: when-memo-helps
+  skill: spot-overlap
+  asks: when
+  type: matching
+  prompt: Match each task to whether saving answers to smaller questions would help.
+  reworded: For each of these tasks, does dynamic programming pay off?
+  matchHeading: Does DP help?
+  matchName: an answer
+  pairs:
+    - item: Count the ways to hop to stone 60
+      match: Yes, the same stones come up on many branches
+    - item: List every subset of 10 items
+      match: No, every answer has to be written out
+    - item: Find the most pay from shifts that aren't next to each other
+      match: Yes, each best value is reused
+  extraMatches:
+    - Only if the input is sorted
+  lesson:
+    title: Counts and best values, not lists
+    explanation: DP helps when many paths lead to the same smaller question. When the task is to list every answer, the output itself is exponential, so that's backtracking.
+- id: when-top-down-or-bottom-up
+  skill: memo-or-table
+  asks: when
+  type: pick-one
+  prompt: A Python answer needs `best(i)` for i up to 10,000, and each reads `best(i - 1)`. When is a bottom up table the better choice than a memo?
+  reworded: In Python, with states numbered up to 10,000 that each depend on the one before, why pick a table over a memo?
+  options:
+    - text: Here, because the memo's recursion would go 10,000 calls deep, past Python's default limit of about 1,000
+      correct: true
+      reason: The table fills the same answers in a loop, so it never goes deep.
+    - text: Never, a memo is always faster
+      reason: A memo does the same work plus the cost of every call, so it's usually a little slower.
+    - text: Only when the answer is a yes or no
+      reason: The kind of answer doesn't matter. The depth does.
+  lesson:
+    title: Depth decides
+    explanation: Top down and bottom up do the same work. When the chain of questions is long, the loop avoids running out of stack.
+- id: why-fill-order
+  skill: memo-or-table
+  asks: why
+  type: pick-one
+  prompt: When filling a DP table bottom up, why does the order of the loop matter?
+  reworded: What rule decides which entries of a DP table to fill first?
+  options:
+    - text: Every entry an entry reads must already be filled when the loop reaches it
+      correct: true
+      reason: Reading an entry that's still empty gives a wrong answer without any error.
+    - text: Filling left to right uses less memory
+      reason: The memory is the same in any order. The order matters for what's ready.
+    - text: The loop must always go from the end back to the start
+      reason: It depends on the recurrence. Most of the tables in this chapter fill from 0 up.
+  lesson:
+    title: Smaller questions first
+    explanation: If `table[i]` reads `table[i - 1]` and `table[i - 2]`, fill from 0 up. Follow the recurrence and the order follows.
+- id: memo-top-down-steps
+  skill: memo-or-table
+  asks: what
+  type: ordering
+  prompt: Put the steps a memoized recursive function takes in order.
+  reworded: In what order does a top down function with a memo answer one question?
+  steps:
+    - If it's a base case, return the answer directly.
+    - Look the arguments up in the memo, and return the saved answer if there is one.
+    - Work out the answer from the smaller questions.
+    - Save the answer in the memo under these arguments.
+    - Return the answer.
+  terms:
+    - term: Memo
+      definition: A map from a question's arguments to its answer, filled the first time each question is answered.
+  lesson:
+    title: Look up, work out, save
+    explanation: The lookup is what stops repeats. Saving before returning means every later call with the same arguments costs O(1).
+- id: why-state-in-words
+  skill: state-and-recurrence
+  asks: why
+  type: prompt
+  prompt: Why write the state and the recurrence in plain words before writing any DP code?
+  reworded: What does saying what one entry means, and how it's built, do for a DP answer before you code it?
+  points:
+    - The meaning of one entry decides the recurrence, the base cases, and which entry is the answer.
+    - Saying the choice at the last step in words makes the recurrence easy to check.
+    - Mixing up meanings, like the first i items and ending at item i, is the most common slip, and words catch it.
+  lesson:
+    title: Mean one thing by each entry
+    explanation: A sentence like "`best[i]` is the most pay from the first i shifts" settles every later detail. Code written without it tends to be off by one.
+- id: dp-plan-steps
+  skill: state-and-recurrence
+  asks: what
+  type: ordering
+  prompt: Put the steps for planning a one dimensional DP answer in order.
+  reworded: In what order do you work out a DP answer before you write the code?
+  steps:
+    - Say in one sentence what a single entry means.
+    - Say how an entry comes from smaller ones, naming the choice at the last step.
+    - Set the base cases the recurrence can't work out.
+    - Pick the fill order so every entry's inputs are ready.
+    - Say which entry, or combination of entries, is the answer.
+  terms:
+    - term: State
+      definition: What one entry of the table stands for.
+    - term: Recurrence
+      definition: The rule that builds an entry from smaller entries.
+  lesson:
+    title: State, recurrence, base, order, answer
+    explanation: Each step depends on the one before it. Once all five are written down, the code is a short loop.
+- id: when-answer-not-last
+  skill: state-and-recurrence
+  asks: when
+  type: pick-one
+  prompt: With `longest[i]` as the longest increasing subsequence that ends at position i, when is the last entry not the answer?
+  reworded: If each entry is the best subsequence ending exactly at that position, why might the final entry be the wrong thing to return?
+  options:
+    - text: Whenever the best subsequence ends before the last position, so the answer is the biggest entry anywhere
+      correct: true
+      reason: The state says "ends at i", and the best subsequence can end anywhere.
+    - text: Never, the last entry always holds the answer
+      reason: In `[1, 2, 3, 0]` the last entry is 1, but the answer is 3.
+    - text: Only when the list has repeated values
+      reason: Repeats don't matter here. Where the best run ends does.
+  lesson:
+    title: The state decides the answer
+    explanation: '"Ends at i" states need a max over every entry. "The first i items" states usually have the answer at the end.'
+- id: when-rolling-works
+  skill: keep-last-few
+  asks: when
+  type: matching
+  prompt: Match each recurrence to whether a few variables can replace the whole table.
+  reworded: For each of these, can you drop the table and keep only the last few values?
+  matchHeading: Drop the table?
+  matchName: an answer
+  pairs:
+    - item: "`ways[i] = ways[i - 1] + ways[i - 2]`"
+      match: Yes, two variables are enough
+    - item: "`best[i] = max(best[i - 1], best[i - 2] + pay[i - 1])`"
+      match: Yes, it only looks two back
+    - item: "`fewest[a] = 1 + min(fewest[a - c])` over every coin c"
+      match: No, it can look far back
+  extraMatches:
+    - Only in Python
+  lesson:
+    title: Fixed, short look back
+    explanation: When every entry reads a fixed, small number of entries just before it, keep those in variables. When it can read anywhere, keep the table.
+- id: why-rolling-order
+  skill: keep-last-few
+  asks: why
+  type: pick-one
+  prompt: "Keeping two variables, `before` and `last`, why work out `next = last + before` before changing either of them?"
+  reworded: When rolling two values forward, why must the new value be worked out before the old ones are overwritten?
+  options:
+    - text: The new value needs both old values, and overwriting one first loses it
+      correct: true
+      reason: Setting `before = last` first would make the next value read `last` twice.
+    - text: It makes the loop run fewer times
+      reason: The count is the same. Only the values change.
+    - text: Variables can only be read once
+      reason: They can be read any number of times. The trouble is reading one after it's changed.
+  lesson:
+    title: Work out, then shift
+    explanation: Compute the new value into a temporary, then move each old value back one place, then store the new one.
+- id: why-take-or-skip
+  skill: take-or-skip
+  asks: why
+  type: prompt
+  prompt: Choosing shifts that are never next to each other, why is `best[i]` the larger of `best[i - 1]` and `best[i - 2]` plus the pay of shift i - 1?
+  reworded: In the no two neighbours problem, where do the two options in the recurrence come from?
+  points:
+    - The last shift in the first i is either skipped or taken.
+    - If it's skipped, the best is whatever the first i - 1 shifts allow.
+    - If it's taken, the shift before it can't be, so the best is the first i - 2 shifts plus its pay.
+  misconception: That taking every other shift, starting with the first, is always best.
+  lesson:
+    title: One choice at the last item
+    explanation: Naming the choice at the last item splits every possible plan into two groups, and each group's best is a smaller question.
+- id: when-circle-twice
+  skill: take-or-skip
+  asks: when
+  type: pick-one
+  prompt: When the items sit in a circle, so the first and last are neighbours, why does solving the row twice work?
+  reworded: For a ring of stalls where the first and last touch, why take the better of two straight row answers?
+  options:
+    - text: Every valid choice leaves out the first item or the last, so one of the two rows always contains it
+      correct: true
+      reason: One row drops the last item and the other drops the first, and between them they cover every valid choice.
+    - text: Going around the circle twice counts every item
+      reason: Taking an item twice isn't allowed. The fix is to break the circle.
+    - text: The circle answer is always the row answer minus the smaller end
+      reason: Sometimes the best plan avoids both ends anyway, so nothing needs taking off.
+  lesson:
+    title: Break the circle two ways
+    explanation: The first and last can't both be taken, so leave one out each time. A circle of one item is a special case, since that item is its own neighbour on both sides.
+- id: why-greedy-fails-coins
+  skill: make-change
+  asks: why
+  type: pick-one
+  prompt: "With coins of 1, 3, and 4, why doesn't taking the biggest coin that fits find the fewest coins for 6?"
+  reworded: For an amount of 6 and coins worth 1, 3, and 4, what goes wrong with always using the largest coin that fits?
+  options:
+    - text: It makes 4, 1, and 1, three coins, when 3 and 3 makes it with two
+      correct: true
+      reason: The big coin left an awkward remainder. Only trying every last coin finds the best.
+    - text: It can't make 6 at all
+      reason: It does make 6, just not with the fewest coins.
+    - text: It finds the fewest coins, but slowly
+      reason: It's fast, but the answer is wrong.
+  lesson:
+    title: Try every last coin
+    explanation: "`fewest[a]` checks every coin as the last one, so it can't be fooled by a big coin that leaves a bad remainder."
+- id: when-loop-order-coins
+  skill: make-change
+  asks: when
+  type: matching
+  prompt: Match each loop order to what it counts when adding up the ways to make an amount.
+  reworded: For counting the ways to make an amount, what does each order of the two loops count?
+  matchHeading: It counts
+  matchName: a count
+  pairs:
+    - item: Coins in the outer loop, amounts in the inner loop
+      match: Sets of coins, each once
+    - item: Amounts in the outer loop, coins in the inner loop
+      match: Sequences, with 1 then 2 and 2 then 1 counted apart
+  extraMatches:
+    - Only the fewest coins
+  lesson:
+    title: The outer loop fixes an order
+    explanation: With coins outside, each set is built in one order of coins. With amounts outside, any coin can come last at every step, so order counts.
+- id: why-modulo-each-step
+  skill: make-change
+  asks: why
+  type: prompt
+  prompt: When a count must be returned modulo 1,000,000,007, why take the modulo after every addition and not just at the end?
+  reworded: Why reduce a big count by the modulus at each step, instead of once before returning it?
+  points:
+    - The true count can grow far past what 64 bits hold, so it overflows before the end.
+    - Taking the modulo at each step gives the same remainder at the end.
+    - Each value then stays below the modulus, so adding two of them fits easily in 64 bits.
+  lesson:
+    title: Keep every value small
+    explanation: Remainders add up the same way the full numbers do. Reducing as you go keeps the right answer without ever holding a huge number.
+- id: why-tails-smallest
+  skill: increasing-subsequence
+  asks: why
+  type: prompt
+  prompt: In the O(n log n) search for the longest increasing subsequence, why does `tails[k]` keep the smallest value that can end a subsequence of length k + 1?
+  reworded: Why replace a tail with a smaller value whenever you can, in the tails method for increasing subsequences?
+  points:
+    - A smaller end leaves more room for later values to extend the subsequence.
+    - Keeping the smallest tail for each length keeps `tails` sorted, so a binary search can find where each value goes.
+    - The length of `tails` is the longest length reached so far, even though `tails` isn't one real subsequence.
+  misconception: That `tails` holds the longest increasing subsequence itself.
+  lesson:
+    title: Small ends grow best
+    explanation: "In `[4, 1, 6, 2, 7, 9, 3, 8]`, after the 3, `tails` is 1, 2, 3, and 9. That's not a real subsequence, but its length, 4, is right."
+- id: lis-tails-steps
+  skill: increasing-subsequence
+  asks: what
+  type: ordering
+  prompt: Put the steps for handling one value in the tails method for the longest increasing subsequence in order.
+  reworded: In what order does the O(n log n) method process each value?
+  steps:
+    - Take the next value from the list.
+    - Binary search `tails` for the first entry that's at least as big.
+    - If there's no such entry, add the value to the end of `tails`.
+    - Otherwise, replace that entry with the value.
+    - After the last value, return the length of `tails`.
+  lesson:
+    title: Search, then extend or replace
+    explanation: Adding to the end makes a longer subsequence. Replacing makes an existing length end lower, which can only help later.
+- id: when-sort-height-down
+  skill: increasing-subsequence
+  asks: when
+  type: pick-one
+  prompt: To nest boxes by width and height, you sort by width going up. Why sort equal widths by height going down?
+  reworded: Before finding the longest increasing run of heights, why put boxes of the same width in falling order of height?
+  options:
+    - text: Equal widths can't nest, and falling heights stop two of them from rising together in the subsequence
+      correct: true
+      reason: A strictly increasing run can take at most one height from a falling group.
+    - text: It makes the sort faster
+      reason: The sort costs the same. It changes what the subsequence can pick.
+    - text: Boxes with taller heights must always go first
+      reason: Only within the same width. Across widths, width going up decides the order.
+  lesson:
+    title: Same width, one box at most
+    explanation: With heights rising within a width, two boxes of width 5 could both be picked, though neither fits in the other.
+- id: why-word-split-overlap
+  skill: split-into-words
+  asks: why
+  type: pick-one
+  prompt: Why is trying every first word with plain recursion slow for splitting a string into dictionary words?
+  reworded: A recursion that tries each word at the front, then splits the rest, can take exponential time. Why?
+  options:
+    - text: Different first words lead to the same leftover ending, which is split again each time
+      correct: true
+      reason: With a and aa as words, both a then a and aa leave the same ending to split.
+    - text: Checking a word in a set takes exponential time
+      reason: A set lookup is fast. The repeats are the problem.
+    - text: The dictionary might be empty
+      reason: That's a quick no, not a slow one.
+  lesson:
+    title: Same ending, many times
+    explanation: "Only n + 1 endings exist. A table `ok[i]` for each prefix answers each one once, for O(n × L) checks with words up to L letters."
+- id: word-split-steps
+  skill: split-into-words
+  asks: what
+  type: ordering
+  prompt: Put the steps for checking whether a string splits into dictionary words in order.
+  reworded: In what order does the bottom up table decide whether the whole string can be split?
+  steps:
+    - Put the dictionary words in a set.
+    - Mark `ok[0]` true, since the empty prefix needs no words.
+    - For each length i, look back at each j within the longest word's length.
+    - Mark `ok[i]` true if `ok[j]` is true and the letters from j to i are a word.
+    - Return `ok` at the full length.
+  lesson:
+    title: Prefixes, shortest first
+    explanation: Each prefix's answer only reads shorter prefixes, so one pass from left to right fills the table.
