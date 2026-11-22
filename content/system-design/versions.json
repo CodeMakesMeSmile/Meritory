@@ -38,6 +38,9 @@
   "card/cost-of-ordering": [
     "f6a277721e49174288371ec9442969910a8eaabf47d9d9e94eb95a57d6b0ba64"
   ],
+  "card/deadline-math": [
+    "6382f43a49d443f229e13059a5d470ded46c3d50d0a13fb551529063dc4cc74d"
+  ],
   "card/deadlock-fix": [
     "d203e607b137170f85af8a361005ecffe29c658ebc5f93b021bc8f07584087de"
   ],
@@ -46,6 +49,9 @@
   ],
   "card/deep-dive-sources": [
     "bb41a0e97a407136950abc424234ac05e51659d07615b4b5c37f8893043d3207"
+  ],
+  "card/dns-failover-steps": [
+    "fa7b2f9d17858e95a3150f9c712e2aa9ad1aefd81091c57dc1969197ce536a54"
   ],
   "card/dynamodb-condition-fails": [
     "d0d6e0380ad6f662d3409d511c75ea5fd6b976fc4731c2e94b954f0b05113df5"
@@ -71,6 +77,9 @@
   "card/fleet-quota-trade-offs": [
     "4cead2fe186177cad4c72c9968fea014ff5fece6cac9a4cd6f8d99dd24dfd8d6"
   ],
+  "card/handshake-round-trips": [
+    "f475160b6bd4b7b23987f703880ce7d04a9298689d1e53fd5147790cc935d248"
+  ],
   "card/hard-dependency-math": [
     "906c4b26a6488afa4222886d7ae1631ca8972b8aff65dbc2430dc212247ce3c9"
   ],
@@ -79,6 +88,9 @@
   ],
   "card/hot-cache-key-fixes": [
     "6b82634aaf3d738c454f603169a5ffdea50d9591aee7a576cb44ab3114c75375"
+  ],
+  "card/http-version-traits": [
+    "78f4b4e51d10a0ea58a2ccf4bccbf591632de7c84b1eae22f91b617b97803e23"
   ],
   "card/idempotency-key-flow": [
     "a5210ca38f83f613659539b26ec887a1decabcc89f7403ec2f75f8a9450f1432"
@@ -92,6 +104,9 @@
   "card/kafka-replay": [
     "f118b19d39b582ade0173d73cab3e2570b48be53716cd9669ee7181aa0f6ef1d"
   ],
+  "card/keepalive-502": [
+    "2ecbb62512df5e6e81b464ae02b2d13fe122a0078c98b9cfbae1c2aff4517962"
+  ],
   "card/lambda-partial-batch": [
     "3676333daa63697f2dd508a2b06b93e0b4915bc165061816da4e53b03150d46c"
   ],
@@ -101,14 +116,26 @@
   "card/lb-algorithm-fit": [
     "c0e7a7eae422918d262e8b3cd31f09f516277f14214742db04b8179ca23468e3"
   ],
+  "card/lb-layer-fit": [
+    "4154b1484198d7426f4ecbcf2dabe82876a4f875d255a93765947807247bf0d6"
+  ],
   "card/lease-pause-steps": [
     "aa94565b87c4875059c8b1c509e2f23ed4aa9982434b0934a6560b6883742045"
   ],
   "card/littles-law-pool": [
     "c37e7949a05866f80a54f9159c6b8e75af7d023b4a42f906f4b65de0c3fbbbed"
   ],
+  "card/long-lived-connection-costs": [
+    "bd57081190727e7507bc5a5c3c987ad3edee9433f10b77255a17c12a8e8246ea"
+  ],
   "card/mapping-bug-replay": [
     "7313728396ccfe6dca9f3206c49d0ec2df2ab73912130b21fa3058d34039e534"
+  ],
+  "card/nested-timeouts": [
+    "f3eae22b1986fa062d0a34f88958144d45624e9837fa87b74ec29b5b27588d50"
+  ],
+  "card/new-connection-math": [
+    "2a9d8355b2402e5c7f5d62ea63ee68aae375205132ac77e8e3043249928afc5e"
   ],
   "card/nines-downtime": [
     "3a51bdf34c2b9b4b88b3d616dc35b6167f26f119a1f9296e527aa356e18a8059"
@@ -137,14 +164,23 @@
   "card/pick-partition-key": [
     "5f6c087d781eea072f0999c314bf4323bce2dfbced8580133bc1364bdc9150c8"
   ],
+  "card/pool-exhaustion-steps": [
+    "7525529fd6991f143017fbd628464b08e03c6d8ef38f7ff5b3a12f9e3ae20c82"
+  ],
   "card/problem-details-members": [
     "80902447345285722a0be4f00eca5338b1cf481274b50f0d0dcbefb9b9d9b26c"
+  ],
+  "card/push-style-fit": [
+    "1a1649823788ebfc27454ac26e818fd141bfab5208e9583a6b1b16fb96997175"
   ],
   "card/race-fix-fit": [
     "837746b385a405793366bf4e1f512693e764277bdf3a384e06eed69b0e3a0daf"
   ],
   "card/read-your-writes-fix": [
     "b1f30fdfa842385c5bc563bd066b612200187fc59edbf8fdf4819ab1461b1557"
+  ],
+  "card/receive-hook-steps": [
+    "ff117fb37e25b33c391164705153e8fff29ea13ed8decc4b48a933437f2e8622"
   ],
   "card/requirement-drives-design": [
     "35f91882e265d3851e39c3bd247487adaebe775883059222646ad60fb2d3ffd7"
@@ -248,6 +284,9 @@
   "card/when-hot-row": [
     "560259e67c174a8393f46f9a8c3fbbac8731c734648e8ff49d4c8277176a1335"
   ],
+  "card/when-http3-helps": [
+    "5255b127729087f78034899f657674036ddc240bf570b5482aecb8b59d931217"
+  ],
   "card/when-lead-deep-dives": [
     "2ad1389710c0d3b4cd6777227143cf8e11d1090e1fa80326ddd5a300d4e2abb7"
   ],
@@ -262,6 +301,9 @@
   ],
   "card/when-optimistic": [
     "2bfdb6f08afcc7dd5f37f6b6cfed45b01a6884337e2a34b404aab35ee65377e8"
+  ],
+  "card/when-pool-hangs": [
+    "4db1353a8b535a2f5285756a5f71d87d6b5270c2de225780b33c1b71925bb380"
   ],
   "card/when-provider-429": [
     "35623ff071297ea825d436bd063f2774b8e4a26a06626fd19b6ca7ce894bb649"
@@ -287,6 +329,9 @@
   "card/when-save-checkpoint": [
     "d2c999f527c488b2e5360c14022a1dd42978c1bdfdd1f4aed206a457c9fe6565"
   ],
+  "card/when-short-ttl": [
+    "6da0a5400f4a9c7b671e864827d4af3262445455b79ae1df12e1efa4b3673ce7"
+  ],
   "card/when-simple-lock-enough": [
     "f5f4d0e34e1625627c3404b750c72c04f5b0d9585e87133414b2ddd304a1cec3"
   ],
@@ -308,6 +353,9 @@
   "card/when-to-estimate": [
     "406f35d354a76859ee718016b5bc06403e327a343738143b4819f0d7be2da8ad"
   ],
+  "card/when-unsigned-webhook": [
+    "cfd24a080e5bad304401f3de4e381aefda8ef7092e3741bb9ba13fa772161353"
+  ],
   "card/when-versioned-names": [
     "3cc63f5496ea41afe81d7d72885c8eda334c379923e96fb81f020c918158fab9"
   ],
@@ -319,6 +367,9 @@
   ],
   "card/when-workflow-backfill": [
     "65b223a60b6d7376a334a7b075f7412a372f8d0c835b04738f3307f55c83cc59"
+  ],
+  "card/when-zero-rtt": [
+    "f67afdd6ebc0bbc2357f50351b4a157237bd66f5e7af6585c80b4fcc2154d402"
   ],
   "card/where-node-work-runs": [
     "341aa60cf17bb6ca109e53fc330d4215f391b75dc0b3e459ae8a5c3626dda81c"
@@ -386,11 +437,17 @@
   "card/why-dead-letter-queue": [
     "669b50921aecbfec8a19cd5a7d1448faf670aa5766a07207dacb0ad429961f05"
   ],
+  "card/why-dedupe-in-consumer": [
+    "bb01a534ccbdc16d654bd4e9d0a1dd9a4d7f8c590fc1243d56185f9d843c355b"
+  ],
   "card/why-dedupe-issues": [
     "991ef40943b13cb92418481f75f5a0dcbfc221a799bcc407c8f349769cd6c929"
   ],
   "card/why-delete-not-set": [
     "d54db372af085dee32bad272d132d4ae9db51e5a2af6879385f644c897132d61"
+  ],
+  "card/why-dns-failover-slow": [
+    "db14c59fc8522a8bb6f63d81e1c1db9ec5cd242c05191575dc09b65b1334a98e"
   ],
   "card/why-drop-partitions": [
     "48535e7a4c527da2ef3e22e4d752551cd13b1664f1796d8a07d3d0e5463a8f98"
@@ -413,6 +470,9 @@
   "card/why-heartbeat-with-work": [
     "e03927543dd320547da89bf0da6f1ec4886a312d44d8f35cf5df285b5f6fedd1"
   ],
+  "card/why-http2-still-blocks": [
+    "d6197d37ba70dc4ab0fd6018727504e33b07ecb5a5fd39a0ef8e9eefe6997451"
+  ],
   "card/why-identity-from-token": [
     "433b057039064b0c2c376820ffe33fef2f40bc7cbd400b6e1e3b2e7712cdf933"
   ],
@@ -427,6 +487,9 @@
   ],
   "card/why-keep-ttl": [
     "e45823aabc66f5a89dd12e96182aebacfa8d2bc8f36165ebfb486a749ff5ce7f"
+  ],
+  "card/why-l4-uneven": [
+    "999168d7a4fecaf566359ae2dcb80d93f22af3cc48fe180d9d96417995da685b"
   ],
   "card/why-latency-climbs-near-full": [
     "59049b3ca486e2cebc96c33c1c58e7c87fd3296b362d41726ec5666d6fb5c83d"
@@ -485,6 +548,9 @@
   "card/why-poll-with-provider-webhooks": [
     "04e1b50aca24378e1dc643f7c15a271b9bcf04ba7c80c638779ffb1efcb71191"
   ],
+  "card/why-propagate-deadlines": [
+    "5eba116400027a1e0afd568b5cd8521780b4a7caa4c6bb0a272c86318fd8cf66"
+  ],
   "card/why-quantify-nfrs": [
     "27a60c469f64f5c423be6585cc411a7fd8d2b6426e032ebd9293ea26db711934"
   ],
@@ -506,6 +572,9 @@
   "card/why-retry-serializable": [
     "7c8f7935b1213769790cfd67d3039dd901454f4e89cd9f1e559e2b8b9e9fd4eb"
   ],
+  "card/why-reuse-connections": [
+    "bf920a6ef2f3811e77fdbce4f71b51d9f9bd6d86adbe6b3734984214a35a440b"
+  ],
   "card/why-say-hardest-part": [
     "5fec594001cefa640129d1674f62e657abbf3326e79ad9ea4d78ce9db1231ea1"
   ],
@@ -520,6 +589,9 @@
   ],
   "card/why-simple-first": [
     "341fc681211b75e08a9939951df2ed279b65b891d6e62687b65ed17067a9d9c4"
+  ],
+  "card/why-sse-resumes": [
+    "994e02c4da113d4b066efa81af33af23a67fe46c319c579702eaca216e181672"
   ],
   "card/why-stateless": [
     "b8f4b69779bfd7cb92f68bc2baa092634a94c6b3299233aa0cc1562e06118683"
@@ -574,6 +646,9 @@
   ],
   "chapter/design-method": [
     "e7046426247c9d266a9a80cf354779f3275ae164e267b6df9ed51d52479049da"
+  ],
+  "chapter/networking": [
+    "c3ff2d80fd989a807e1df04a35ff61a31c245c7cd8db38160893dbe9646503b5"
   ],
   "chapter/queues-and-async": [
     "a5b2c0c914a980811d9c266174cc90eacde0be1b466c4d97c8b95834852ff2c8"
