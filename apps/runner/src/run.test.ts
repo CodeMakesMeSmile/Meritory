@@ -136,6 +136,43 @@ const MISNAMED: Record<Language, string> = {
   typescript: "export function somethingElse() { return []; }",
   python: "class Solution:\n    def somethingElse(self):\n        return []\n",
 };
+// Values JSON can't carry as they are, each with how the miss reads
+const ODD: Record<Language, [string, string, RegExp][]> = {
+  typescript: [
+    [
+      "NaN",
+      "export function pricePair(): number[] { return [NaN, NaN]; }",
+      /but got \[null,null\]$/,
+    ],
+    [
+      "BigInt",
+      "export function pricePair(): number[] { return [1n, 2n] as unknown as number[]; }",
+      /but got 1,2$/,
+    ],
+    [
+      "a cyclic list",
+      "export function pricePair(): number[] { const a: unknown[] = []; a.push(a); return a as number[]; }",
+      /^Expected \[.*\] but got$/,
+    ],
+  ],
+  python: [
+    [
+      "NaN",
+      "class Solution:\n    def pricePair(self, prices, target):\n        return [float('nan')]\n",
+      /but got \[nan\]$/,
+    ],
+    [
+      "a set",
+      "class Solution:\n    def pricePair(self, prices, target):\n        return {1, 2}\n",
+      /but got \{1, 2\}$/,
+    ],
+    [
+      "a cyclic list",
+      "class Solution:\n    def pricePair(self, prices, target):\n        a = []\n        a.append(a)\n        return a\n",
+      /but got \[+\.\.\.\]+$/,
+    ],
+  ],
+};
 
 describe.each(["typescript", "python"] as const)(
   "%s answers that miss",
@@ -178,6 +215,16 @@ describe.each(["typescript", "python"] as const)(
       expect(result.status).toBe("error");
       expect(result.tests).toEqual([]);
       expect(result.message).toMatch(/SyntaxError/);
+    });
+
+    it.each(ODD[language])("fails %s and shows it", async (_, code, shown) => {
+      const result = await runCode(
+        request(pricePair(), language, code),
+        sandbox,
+      );
+      expect(result.status).toBe("fail");
+      expect(result.tests.every((t) => t.status === "fail")).toBe(true);
+      expect(result.tests[0]?.message).toMatch(shown);
     });
 
     it("can't pass by writing its own results", async () => {
