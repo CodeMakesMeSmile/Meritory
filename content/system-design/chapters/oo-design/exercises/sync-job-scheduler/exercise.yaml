@@ -1,0 +1,14 @@
+id: sync-job-scheduler
+kind: design
+title: Classes for a rate-limited sync job scheduler
+difficulty: medium
+skills:
+  - run-lld-round
+  - find-responsibilities
+  - inject-dependencies
+  - apply-patterns
+  - model-lifecycles
+  - type-failures
+  - design-for-change
+sibling: connection-alerts
+rubric: class-design

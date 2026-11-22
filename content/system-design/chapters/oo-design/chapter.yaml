@@ -1,0 +1,20 @@
+id: oo-design
+title: Object-oriented design
+order: 9
+skills:
+  - id: run-lld-round
+    name: Run a low-level design round from questions to extensions
+  - id: find-responsibilities
+    name: Find the entities and give each one a clear responsibility
+  - id: compose-behavior
+    name: Prefer composition over inheritance
+  - id: inject-dependencies
+    name: Program to interfaces and inject dependencies for testing
+  - id: apply-patterns
+    name: Use strategy, adapter, factory, and observer, and know when each is overkill
+  - id: model-lifecycles
+    name: Model a lifecycle with a state machine
+  - id: type-failures
+    name: Model failures as typed errors the caller can act on
+  - id: design-for-change
+    name: Design for the changes that are likely, and no others

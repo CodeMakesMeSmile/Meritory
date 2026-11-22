@@ -1,0 +1,509 @@
+- id: dns-failover-steps
+  skill: resolve-names
+  asks: what
+  type: ordering
+  prompt: The primary endpoint behind a DNS failover record goes down. Put what happens next in order, ending with the last clients reaching the backup.
+  reworded: In what order do things happen between a primary endpoint failing and every client using the backup address?
+  steps:
+    - Health checks start failing against the primary endpoint.
+    - After enough failures in a row, the record is marked unhealthy and DNS answers with the backup address.
+    - Resolvers that cached the old answer keep serving it until its TTL runs out.
+    - Clients that look the name up again get the backup address.
+    - Clients with old connections open, or that ignore the TTL, move last, or fail until they reconnect.
+  terms:
+    - term: Failure threshold
+      definition: How many health checks in a row must fail before the endpoint's status changes.
+  lesson:
+    title: Failover by DNS is a chain of delays
+    explanation: Detection takes several check intervals, caches hold the old answer for up to the TTL, and open connections never look the name up again. Each delay adds to the last.
+    source:
+      url: https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-failover-determining-health-of-endpoints.html
+      title: How Amazon Route 53 determines whether a health check is healthy
+- id: why-dns-failover-slow
+  skill: resolve-names
+  asks: why
+  type: prompt
+  prompt: Why does failing over by DNS usually take minutes rather than seconds, and where should fast failover happen instead?
+  reworded: What makes DNS-based failover slow, and what's a faster way to route around a failed server inside one region?
+  points:
+    - Health checks need several consecutive failures, like 3 checks 30 seconds apart, before the record changes.
+    - Resolvers keep the old answer until its TTL expires, so even a 60-second TTL adds up to a minute.
+    - Some clients and resolvers cache longer than the TTL says.
+    - Pooled and keep-alive connections keep using the old address until they close.
+    - Inside a region, put one stable name in front of a load balancer that routes around failed instances in seconds, and keep DNS for coarse moves like changing regions.
+  misconception: That setting a short TTL makes DNS failover instant.
+  lesson:
+    title: DNS changes travel at the speed of caches
+    explanation: Route 53 recommends a TTL of 60 seconds or less on records tied to health checks, so clients respond quickly. Even then, detection plus caching takes a minute or more, and clients that ignore the TTL take longer.
+    source:
+      url: https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-values-failover.html
+      title: Values specific for failover records, Amazon Route 53
+- id: when-short-ttl
+  skill: resolve-names
+  asks: when
+  type: pick-one
+  prompt: When is a short DNS TTL, like 60 seconds, worth the extra lookups it causes?
+  reworded: In which case should a record's TTL be kept short instead of long?
+  options:
+    - text: On a record that fails over by health check, or for a while around a planned change of address
+      correct: true
+      reason: A short TTL lets clients pick up the new answer quickly, which is the point of both.
+    - text: On every record, all the time, since shorter is always safer
+      reason: Long TTLs mean fewer lookups, lower latency, and a smaller DNS bill when the address rarely changes.
+    - text: On records whose address never changes
+      reason: Those are the records that benefit most from a long TTL.
+    - text: Never, because resolvers ignore TTLs anyway
+      reason: Most resolvers honor them. Some clients misbehave, which is a reason to plan for slow failover, not to ignore TTLs.
+  lesson:
+    title: Short TTLs buy speed of change
+    explanation: Route 53's guidance is to start a change to a record in use with a short TTL, like 300 seconds, raise it once the new settings are confirmed, and keep records tied to a health check at 60 seconds or less.
+    source:
+      url: https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-values-failover.html
+      title: Values specific for failover records, Amazon Route 53
+- id: handshake-round-trips
+  skill: count-round-trips
+  asks: what
+  type: matching
+  prompt: Match each way of opening a secure connection to the round trips it costs before the client can send its request.
+  reworded: How many round trips does each kind of connection setup take before the first request can go out?
+  matchHeading: Round trips
+  matchName: a number of round trips
+  pairs:
+    - item: TCP, then a full TLS 1.2 handshake
+      match: Three
+    - item: TCP, then a full TLS 1.3 handshake
+      match: Two
+    - item: A new QUIC connection
+      match: One
+    - item: A resumed QUIC connection sending its request as 0-RTT early data
+      match: Zero
+  extraMatches:
+    - Four
+  lesson:
+    title: Each handshake costs round trips
+    explanation: TCP takes one round trip. TLS 1.2 adds two, TLS 1.3 adds one, and QUIC folds the transport and TLS 1.3 handshakes into one. Early data rides along with the first flight, at the cost of replay protection.
+    source:
+      url: https://www.rfc-editor.org/rfc/rfc8446
+      title: RFC 8446, The Transport Layer Security (TLS) Protocol Version 1.3
+- id: new-connection-math
+  skill: count-round-trips
+  asks: what
+  type: pick-one
+  prompt: A worker is 150 ms round trip from a provider, and opens a new TCP and TLS 1.3 connection for every call. At the least, how long until the first byte of each response arrives?
+  reworded: With a 150 ms round trip, a fresh TCP connection, and a full TLS 1.3 handshake per call, what's the minimum time to the first response byte?
+  options:
+    - text: About 450 ms
+      correct: true
+      reason: One round trip for TCP, one for TLS 1.3, and one for the request and response.
+    - text: About 150 ms
+      reason: That's a request on a connection that's already open.
+    - text: About 300 ms
+      reason: That counts the handshakes but not the request itself.
+    - text: About 600 ms
+      reason: That would be TLS 1.2, which takes two round trips instead of one.
+  lesson:
+    title: Two thirds of the wait is setup
+    explanation: On a new connection, only one of the three round trips does useful work. Reusing a warm connection brings the call down to one round trip, and a DNS cache miss would add more on top.
+    source:
+      url: https://www.rfc-editor.org/rfc/rfc9293
+      title: RFC 9293, Transmission Control Protocol
+- id: when-zero-rtt
+  skill: count-round-trips
+  asks: when
+  type: pick-one
+  prompt: Your API could accept TLS 1.3 early data, 0-RTT. When is it reasonable to process a request that arrived that way?
+  reworded: Which request is safe to act on if it was sent as 0-RTT early data?
+  options:
+    - text: A GET that lists a connection's records
+      correct: true
+      reason: It's a safe method, so a replayed copy changes nothing.
+    - text: A POST that starts a sync
+      reason: RFC 8470 says clients must not send unsafe methods in early data, and a replay could start a second sync.
+    - text: A DELETE of a webhook endpoint
+      reason: DELETE isn't a safe method, so it doesn't belong in early data.
+    - text: Any request carrying an idempotency key
+      reason: RFC 8446 warns that replaying even idempotent requests thousands of times can be abused. Early data should be limited to safe methods.
+  lesson:
+    title: Early data can be replayed
+    explanation: RFC 8446 gives 0-RTT data no forward secrecy and no protection against replay across connections. Servers can refuse it, wait for the handshake to finish, or answer 425 Too Early so the client retries.
+    source:
+      url: https://www.rfc-editor.org/rfc/rfc8470
+      title: RFC 8470, Using Early Data in HTTP
+- id: why-reuse-connections
+  skill: reuse-connections
+  asks: why
+  type: prompt
+  prompt: Why should sync workers keep a pool of warm connections to each provider instead of opening a new connection per call?
+  reworded: What does a worker gain by reusing connections to a provider, and what goes wrong if it opens and closes one for every request?
+  points:
+    - Reuse skips the TCP and TLS handshakes, which can be two round trips per call to a distant provider.
+    - It saves the CPU cost of a TLS handshake on both sides.
+    - The side that closes a connection holds it in TIME-WAIT for twice the maximum segment lifetime, 4 minutes with RFC 9293's value, so churning connections can use up local ports.
+    - Fewer connections are kinder to providers that limit connections per client.
+    - Pooled connections still need a maximum lifetime, so DNS changes reach the worker.
+  lesson:
+    title: Handshakes and closed sockets both cost
+    explanation: HTTP/1.1 connections are persistent by default for a reason. A warm pool turns each call into one round trip and avoids piles of sockets waiting out TIME-WAIT.
+    source:
+      url: https://www.rfc-editor.org/rfc/rfc9293
+      title: RFC 9293, Transmission Control Protocol
+- id: pool-exhaustion-steps
+  skill: reuse-connections
+  asks: what
+  type: ordering
+  prompt: Workers share one connection pool for all providers. Put the steps of a pool exhaustion in order, starting with one provider slowing down.
+  reworded: In what order does a slow provider drain a shared connection pool and stall everything else?
+  steps:
+    - One provider's responses slow from 200 ms to 5 seconds.
+    - Each call to that provider holds its connection 25 times longer.
+    - The slow calls take up every connection in the shared pool.
+    - New calls, including ones to healthy providers, wait in the pool's queue.
+    - The service looks hung while its CPU sits idle, and callers start timing out.
+  terms:
+    - term: Pool exhaustion
+      definition: Every connection in a pool is in use, so new calls must wait for one to free up.
+  lesson:
+    title: Slow calls hold connections longer
+    explanation: By Little's law, connections in use equal calls per second multiplied by time per call. A slowdown multiplies the connections needed. Give each provider its own pool, time out both the request and the wait for a connection, and watch pool wait time.
+- id: when-pool-hangs
+  skill: reuse-connections
+  asks: why
+  type: pick-one
+  prompt: A Node service's requests hang during a provider slowdown, but its CPU is nearly idle and the event loop isn't blocked. Its HTTP agent has maxSockets set to 50. What's the most likely cause?
+  reworded: Why might requests stall in a Node service with a capped HTTP agent even though nothing is using the CPU?
+  options:
+    - text: All 50 sockets are busy with slow calls, so new requests wait in the agent's pending queue
+      correct: true
+      reason: Node queues requests once maxSockets are in use, and they wait until a socket frees up.
+    - text: The garbage collector is running constantly
+      reason: That would show up as CPU use.
+    - text: DNS lookups are failing
+      reason: Failed lookups return errors. They don't leave requests waiting with an idle CPU.
+    - text: The agent closed every connection because keepAlive is on
+      reason: Keep-alive keeps idle sockets open for reuse. It doesn't close busy ones.
+  lesson:
+    title: A full pool looks like a hang
+    explanation: Requests over the socket limit wait in the agent's queue, often with no timeout of their own. Time out the wait, give each provider its own agent, and size it from the provider's limits and latency.
+    source:
+      url: https://nodejs.org/api/http.html
+      title: HTTP, Node.js
+- id: keepalive-502
+  skill: reuse-connections
+  asks: why
+  type: pick-one
+  prompt: A Node API behind an Application Load Balancer returns a few 502 Bad Gateway errors every hour, always on quiet connections. Both use default settings. Why?
+  reworded: Why does a Node service with default keep-alive settings cause occasional 502s behind an ALB with its default idle timeout?
+  options:
+    - text: Node closes idle connections after 5 seconds and the ALB after 60, so the ALB sometimes sends a request on a connection Node just closed
+      correct: true
+      reason: AWS recommends an application idle timeout longer than the load balancer's. Raise server.keepAliveTimeout above 60 seconds.
+    - text: The ALB's health checks are failing
+      reason: Failed health checks remove a target. They don't cause scattered 502s on quiet connections.
+    - text: Node's request timeout is too long
+      reason: The problem is idle connections closing, not slow requests.
+    - text: Keep-alive should be turned off entirely
+      reason: That would fix the race by paying for a new connection on every request.
+  lesson:
+    title: The server side must outwait the client side
+    explanation: The ALB's idle timeout defaults to 60 seconds, and Node's server.keepAliveTimeout defaults to 5. The side that sends requests should always close idle connections first.
+    source:
+      url: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/edit-load-balancer-attributes.html
+      title: Edit attributes for your Application Load Balancer
+- id: http-version-traits
+  skill: compare-http-versions
+  asks: what
+  type: matching
+  prompt: Match each HTTP version to what it does with many requests at once.
+  reworded: How does each version of HTTP handle several requests to the same server?
+  matchHeading: Behavior
+  matchName: a behavior
+  pairs:
+    - item: HTTP/1.1
+      match: One response at a time per connection, so clients open several connections
+    - item: HTTP/2
+      match: Many streams on one TCP connection, where one lost packet stalls them all
+    - item: HTTP/3
+      match: Independent streams over QUIC, so a lost packet stalls only its own stream
+  extraMatches:
+    - Each request opens and closes its own connection
+  lesson:
+    title: Multiplexing moved down a layer
+    explanation: HTTP/2 multiplexed requests above TCP, which still delivers bytes in order. HTTP/3 moved streams into the transport, so loss on one stream doesn't block the others.
+    source:
+      url: https://www.rfc-editor.org/rfc/rfc9114
+      title: RFC 9114, HTTP/3
+- id: why-http2-still-blocks
+  skill: compare-http-versions
+  asks: why
+  type: pick-one
+  prompt: HTTP/2 multiplexes many requests on one connection. Why can a single lost packet still delay all of them?
+  reworded: What makes every HTTP/2 stream on a connection wait when one packet is lost?
+  options:
+    - text: TCP delivers bytes strictly in order, so everything after the missing packet waits for its retransmission
+      correct: true
+      reason: TCP doesn't know about streams, so data for other streams that already arrived can't be delivered yet.
+    - text: HTTP/2 answers requests in the order they were sent
+      reason: That's HTTP/1.1 pipelining. HTTP/2 interleaves responses on separate streams.
+    - text: HTTP/2 sends every stream's frames twice
+      reason: It doesn't. The delay comes from the transport below it.
+    - text: The server stops all streams to recompress the headers
+      reason: Header compression isn't the cause.
+  lesson:
+    title: TCP head-of-line blocking
+    explanation: RFC 9113 says plainly that TCP head-of-line blocking is not addressed by HTTP/2. QUIC fixes it by giving each stream its own delivery order.
+    source:
+      url: https://www.rfc-editor.org/rfc/rfc9113
+      title: RFC 9113, HTTP/2
+- id: when-http3-helps
+  skill: compare-http-versions
+  asks: when
+  type: pick-one
+  prompt: When does offering HTTP/3 help the most?
+  reworded: Which clients gain the most from HTTP/3 over HTTP/2?
+  options:
+    - text: Mobile clients on lossy networks that switch between Wi-Fi and cellular
+      correct: true
+      reason: QUIC keeps streams independent under loss, sets up in one round trip, and uses connection IDs so a connection survives an address change.
+    - text: Services calling each other inside one data center
+      reason: Loss is rare and round trips are tiny there, so a warm HTTP/1.1 or HTTP/2 pool already does well.
+    - text: Clients on networks that block UDP
+      reason: QUIC runs over UDP, so those clients fall back to HTTP/2 or HTTP/1.1 over TCP.
+    - text: Batch jobs that send one large request a day
+      reason: Setup time and stream blocking barely matter for one request.
+  lesson:
+    title: QUIC pays off on bad networks
+    explanation: RFC 9000 describes QUIC as giving streams, low-latency connection setup, and migration to a new network path. All three matter most for mobile clients on long or lossy paths.
+    source:
+      url: https://www.rfc-editor.org/rfc/rfc9000
+      title: RFC 9000, QUIC
+- id: lb-layer-fit
+  skill: choose-lb-layer
+  asks: when
+  type: matching
+  prompt: Match each need to the load balancer feature that meets it.
+  reworded: Which load balancer feature fits each of these needs?
+  matchHeading: Feature
+  matchName: a feature
+  pairs:
+    - item: Send /v1/exports to a separate fleet from the rest of the API
+      match: A layer 7 rule on the request path
+    - item: Customers want fixed IP addresses to allow through their firewall
+      match: A layer 4 load balancer with a static IP per zone
+    - item: Spread requests from one busy HTTP/2 client across many targets
+      match: Layer 7 balancing per request
+    - item: Carry a protocol that isn't HTTP
+      match: Layer 4 balancing per connection
+  extraMatches:
+    - A longer DNS TTL
+  lesson:
+    title: Connections or requests
+    explanation: A layer 4 balancer like NLB picks a target per connection and never reads HTTP. A layer 7 balancer like ALB reads each request, so it can route by path, host, or header and spread requests evenly.
+    source:
+      url: https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html
+      title: What is a Network Load Balancer?
+- id: why-l4-uneven
+  skill: choose-lb-layer
+  asks: why
+  type: pick-one
+  prompt: During a scale-out behind a Network Load Balancer, the new instances get almost no traffic while the old ones stay hot. Clients hold long-lived HTTP/2 connections. Why?
+  reworded: Why can adding targets behind a layer 4 load balancer fail to take load off the existing ones?
+  options:
+    - text: Each TCP connection stays on the target it was first given, so only new connections reach the new instances
+      correct: true
+      reason: A layer 4 balancer balances connections, and these clients rarely open new ones.
+    - text: The new instances failed their health checks
+      reason: Then they'd get no traffic at all, and the health check status would show it.
+    - text: HTTP/2 can't be load balanced
+      reason: It can. A layer 7 balancer spreads its requests, and a layer 4 balancer spreads its connections.
+    - text: The NLB uses least outstanding requests
+      reason: NLB picks targets with a flow hash per connection. Least outstanding requests is an ALB setting.
+  lesson:
+    title: Long connections pin load
+    explanation: NLB routes each TCP connection to a single target for the life of the connection. Balance per request at layer 7, or cap connection lifetime so clients reconnect and spread out.
+    source:
+      url: https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html
+      title: What is a Network Load Balancer?
+- id: nested-timeouts
+  skill: nest-timeouts
+  asks: why
+  type: pick-one
+  prompt: An API gateway times out requests after 10 seconds. The service behind it waits up to 30 seconds for a provider. What goes wrong when the provider slows down?
+  reworded: Why is it a problem when a service's timeout on a downstream call is longer than its caller's timeout?
+  options:
+    - text: The caller gives up at 10 seconds, but the service keeps working for up to 20 more on an answer nobody will read
+      correct: true
+      reason: Inner timeouts should be shorter than outer ones, so work stops when the caller stops waiting.
+    - text: The gateway waits the full 30 seconds too
+      reason: The gateway's own 10-second timeout still fires.
+    - text: Nothing, since the provider call eventually succeeds
+      reason: Its result is wasted, and the time and connections it held were taken from other requests.
+    - text: The provider sees the gateway's timeout and stops early
+      reason: The provider knows nothing about your gateway.
+  lesson:
+    title: Inner timeouts must be shorter
+    explanation: The Amazon Builders' Library notes the client will give up anyway, because it has its own timeouts. Work done past that point only adds load when the system can least afford it.
+    source:
+      url: https://builder.aws.com/content/3EumjoZascWd1oZiEgL8ORlv3qE/timeouts-retries-and-backoff-with-jitter
+      title: Timeouts, retries, and backoff with jitter, Amazon Builders' Library
+- id: deadline-math
+  skill: nest-timeouts
+  asks: what
+  type: pick-one
+  prompt: A request arrives with a 30-second deadline. The server spends 7 seconds before calling a backend. With deadline propagation, what deadline should that call carry?
+  reworded: Using deadline propagation, how much time does a backend call get if the request had 30 seconds and 7 are already used?
+  options:
+    - text: About 23 seconds, trimmed by a few hundred milliseconds for network transit
+      correct: true
+      reason: The call shares the request's absolute deadline, so it gets only the time that's left.
+    - text: A fresh 30 seconds
+      reason: Then the backend could keep working long after the original caller gave up.
+    - text: 7 seconds
+      reason: That's the time already spent, not the time remaining.
+    - text: No deadline, since the backend sets its own
+      reason: Without one, stuck work can hold resources indefinitely.
+  lesson:
+    title: Pass down the time that's left
+    explanation: The SRE book suggests setting a deadline high in the stack and passing the remainder to each call, checking it before every stage, and cancelling downstream work when the caller gives up.
+    source:
+      url: https://sre.google/sre-book/addressing-cascading-failures/
+      title: Addressing Cascading Failures, Site Reliability Engineering
+- id: why-propagate-deadlines
+  skill: nest-timeouts
+  asks: why
+  type: prompt
+  prompt: Why propagate one deadline through a request's calls instead of giving each hop its own fixed timeout, and which timeouts still work the other way?
+  reworded: What does deadline propagation fix that fixed per-hop timeouts don't, and which timer must be longer on the inner side?
+  points:
+    - Fixed timeouts at each hop drift out of step as code changes, so an inner hop can outlast its caller.
+    - A propagated deadline makes every call share the time actually left.
+    - Each stage checks the time left before starting work, and skips work that can't finish.
+    - Cancellation flows down with it, so nobody keeps working for a caller that left.
+    - Idle timeouts on keep-alive connections go the other way, with the server's longer than the client's.
+  lesson:
+    title: One clock for the whole request
+    explanation: Request timeouts shrink as you go deeper, and a propagated deadline keeps them shrinking even after code changes. Keep-alive idle timeouts grow toward the server instead.
+    source:
+      url: https://sre.google/sre-book/addressing-cascading-failures/
+      title: Addressing Cascading Failures, Site Reliability Engineering
+- id: push-style-fit
+  skill: push-to-clients
+  asks: when
+  type: matching
+  prompt: Match each client need to the way of pushing updates that fits it best.
+  reworded: Which push technique suits each of these clients?
+  matchHeading: Technique
+  matchName: a technique
+  pairs:
+    - item: A browser dashboard shows a sync's progress as it runs
+      match: Server-sent events
+    - item: A shared editor where both sides send small messages constantly
+      match: WebSockets
+    - item: Clients behind proxies that buffer streamed responses
+      match: Long polling
+    - item: A customer's backend should hear when a sync finishes
+      match: A webhook to the customer's endpoint
+  extraMatches:
+    - Polling every second
+  lesson:
+    title: Pick the lightest channel that fits
+    explanation: SSE streams one way and resumes on its own. WebSockets carry traffic both ways but leave reconnecting to you. Long polling is plain HTTP, so it survives proxies that break streams. Webhooks suit backends that can receive requests.
+    source:
+      url: https://www.rfc-editor.org/rfc/rfc6202
+      title: RFC 6202, Known Issues and Best Practices for the Use of Long Polling and Streaming in Bidirectional HTTP
+- id: why-sse-resumes
+  skill: push-to-clients
+  asks: why
+  type: pick-one
+  prompt: A dashboard's server-sent events connection drops for a few seconds. Why can it carry on without missing events, if the server set an id on each one?
+  reworded: How does an SSE client pick up where it left off after a dropped connection?
+  options:
+    - text: The browser reconnects on its own and sends the last event id in a Last-Event-ID header, so the server can resend what came after
+      correct: true
+      reason: Reconnection and resume are built into the standard. The server only has to keep recent events.
+    - text: The server buffers events in the browser while it's offline
+      reason: Nothing reaches the browser while it's disconnected. It catches up after reconnecting.
+    - text: SSE runs over WebSockets, which never drop
+      reason: SSE is one long HTTP response, and any connection can drop.
+    - text: The client polls a separate endpoint for missed events
+      reason: That's possible, but SSE builds resuming into the protocol.
+  lesson:
+    title: Resume is part of SSE
+    explanation: The HTML standard has the client wait the reconnection time and send Last-Event-ID when it reconnects. A 204 response tells it to stop reconnecting.
+    source:
+      url: https://html.spec.whatwg.org/multipage/server-sent-events.html
+      title: Server-sent events, HTML Standard
+- id: long-lived-connection-costs
+  skill: push-to-clients
+  asks: why
+  type: prompt
+  prompt: You plan to hold an SSE or WebSocket connection open for every dashboard user. What does that cost at scale, and how do you handle each cost?
+  reworded: What problems come with keeping thousands of long-lived connections open to your API servers?
+  points:
+    - Each connection holds memory and a socket, even when idle, so plan capacity by open connections.
+    - Load is balanced per connection, so new servers stay idle until clients reconnect.
+    - A deploy drops every connection at once, so clients must reconnect with jitter.
+    - Events happen on other machines, so a pub/sub channel has to carry them to the server holding each connection.
+    - Proxies drop quiet connections, so send a heartbeat, like an SSE comment line every 15 seconds or so.
+  lesson:
+    title: Open connections are state
+    explanation: A stateless request API scales by adding servers. Long-lived connections bring back state that deploys, balancing, and fan-out have to work around.
+    source:
+      url: https://html.spec.whatwg.org/multipage/server-sent-events.html
+      title: Server-sent events, HTML Standard
+- id: receive-hook-steps
+  skill: receive-webhooks
+  asks: what
+  type: ordering
+  prompt: Put the steps for handling a provider's webhook in order, from the request arriving to the data being fresh.
+  reworded: In what order should the platform process an incoming webhook from a provider?
+  steps:
+    - Find the provider's connector from the route and reject oversized bodies.
+    - Verify the signature over the raw body with that provider's scheme.
+    - Write the delivery to a durable inbox queue.
+    - Return a 2xx right away.
+    - In the consumer, skip the event if its id was already processed.
+    - Look up the connection from the provider's account id and trigger a sync for it.
+  lesson:
+    title: Verify, store, answer, then work
+    explanation: Only the checks and the durable write happen before the 2xx, so the sender never times out. Deduplicating and fetching current state happen afterwards, where retries are safe.
+    source:
+      url: https://github.com/standard-webhooks/standard-webhooks/blob/main/spec/standard-webhooks.md
+      title: Standard Webhooks specification
+- id: why-dedupe-in-consumer
+  skill: receive-webhooks
+  asks: why
+  type: pick-one
+  prompt: Why should a webhook receiver enqueue every verified delivery and leave deduplication to the consumer, instead of checking event ids before enqueueing?
+  reworded: What can go wrong if the receiver marks an event id as seen before it has safely queued the event?
+  options:
+    - text: If the receiver marks the id and then fails to enqueue, the sender's retry is dropped as a duplicate and the event is lost
+      correct: true
+      reason: The consumer can record the id in the same transaction as its work, so an event counts as seen only once it's handled.
+    - text: Checking ids in the receiver is too slow
+      reason: The check is cheap. The problem is the gap between marking and storing.
+    - text: Event ids change on every retry
+      reason: Senders keep the id the same across retries, which is what makes it a good idempotency key.
+    - text: The consumer can't see event ids
+      reason: The id travels with the stored delivery.
+  lesson:
+    title: Mark it seen only when it's done
+    explanation: Standard Webhooks keeps webhook-id the same across retries and suggests using it as an idempotency key. Use it where the work happens, in one transaction with the work.
+    source:
+      url: https://github.com/standard-webhooks/standard-webhooks/blob/main/spec/standard-webhooks.md
+      title: Standard Webhooks specification
+- id: when-unsigned-webhook
+  skill: receive-webhooks
+  asks: when
+  type: prompt
+  prompt: A provider sends webhooks with no signature, and sometimes out of order. When and how can you still use them?
+  reworded: How can the platform safely use webhooks from a provider that doesn't sign them and doesn't promise order?
+  points:
+    - Treat each webhook as a hint that a connection has changes, never as trusted data.
+    - Map it to a connection with your own records, not with a tenant named in the body.
+    - Trigger a sync that fetches current state from the provider's API with your stored credentials.
+    - Fetching current state makes order and stale payloads stop mattering.
+    - Rate limit the receiver per provider, and keep scheduled polling as the safety net.
+  misconception: That an unsigned webhook is useless.
+  lesson:
+    title: A hint you check yourself
+    explanation: Anyone can send a request to a public URL, so unsigned content can't be trusted. A forged hint costs only one extra sync, while the real data still comes through an authenticated call.

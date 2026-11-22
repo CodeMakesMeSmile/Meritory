@@ -11,11 +11,12 @@ import {
 
 /**
  * Minutes on the clock, set by the rubric an exercise is scored with. A
- * design review is a full interview round, and a story is one answer in a
- * behavioral round. Other rubrics have no rehearsal until they get a length.
+ * design review or a class design is a full interview round, and a story is
+ * one answer in a behavioral round. Other rubrics have no rehearsal until they get a length.
  */
 const MINUTES_BY_RUBRIC: ReadonlyMap<string, number> = new Map([
   ["design-review", 45],
+  ["class-design", 45],
   ["story-review", 5],
 ]);
 

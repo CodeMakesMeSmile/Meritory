@@ -1,0 +1,14 @@
+id: connection-alerts
+kind: design
+title: Classes for connection issues and alerts
+difficulty: medium
+skills:
+  - run-lld-round
+  - find-responsibilities
+  - compose-behavior
+  - inject-dependencies
+  - apply-patterns
+  - model-lifecycles
+  - design-for-change
+sibling: sync-job-scheduler
+rubric: class-design

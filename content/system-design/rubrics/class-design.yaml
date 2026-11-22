@@ -1,0 +1,54 @@
+id: class-design
+title: Class design review
+criteria:
+  - id: requirements
+    name: Requirements
+    scoredBy: self
+    levels:
+      - Starts writing classes without asking what the system must do.
+      - Asks a few questions but misses a core operation, or never settles a constraint like concurrency or persistence.
+      - Agrees on the core operations, the constraints that shape the classes, and what's out of scope.
+      - Does all of that and names the change most likely to come next, so the design can make room for it.
+  - id: responsibilities
+    name: Entities and responsibilities
+    scoredBy: self
+    levels:
+      - Puts everything in one large class, or makes classes that only hold data while the rules live elsewhere.
+      - Finds the main entities, but some classes mix unrelated jobs or share one rule between them.
+      - Gives each class one clear job, with its data and the rules that use that data in the same place.
+      - Does all of that, separates values, entities with a lifecycle, and services, and explains each split.
+  - id: interfaces
+    name: Interfaces and testability
+    scoredBy: self
+    levels:
+      - Calls concrete clients, the clock, and globals directly, so no class can be tested alone.
+      - Names some interfaces, but leaves hidden dependencies like the current time or a shared singleton.
+      - Puts outside dependencies behind small interfaces passed in through constructors, with the signatures written out.
+      - Does all of that, shapes each interface by what its caller needs, and shows how a test would use fakes.
+  - id: behavior
+    name: Flows and state
+    scoredBy: self
+    levels:
+      - Can't walk a use case through the classes.
+      - Walks the happy path but skips failures, or lets state change from anywhere.
+      - Walks a core flow end to end, including a failure, and keeps lifecycle rules in one place.
+      - Does all of that, refuses illegal transitions, and handles two callers changing the same object at once.
+  - id: extensibility
+    name: Extending the design
+    scoredBy: self
+    levels:
+      - Needs a rewrite to take the new requirement.
+      - Takes the new requirement by editing many classes or adding special cases.
+      - Takes it mostly by adding a class or a case in one place.
+      - Takes it with a small, local change, and explains which patterns earned their place and which would have been overkill.
+  - id: communication
+    name: Communication
+    scoredBy: self
+    levels:
+      - Works in silence, or talks past the interviewer's questions.
+      - Explains when asked, but loses the thread or runs out of time before the main flow works.
+      - Thinks aloud, checks in at each step, and keeps to time.
+      - Drives the session with a clear plan, invites questions, adapts to hints, and sums up the decisions at the end.
+pass:
+  total: 16
+  lowest: 2

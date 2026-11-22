@@ -1,0 +1,20 @@
+id: networking
+title: Networking
+order: 3
+skills:
+  - id: resolve-names
+    name: Explain DNS resolution and TTLs, and why failover by DNS is slow
+  - id: count-round-trips
+    name: Count the round trips in TCP and TLS handshakes
+  - id: reuse-connections
+    name: Reuse connections with keep-alive and size connection pools
+  - id: compare-http-versions
+    name: Compare HTTP/1.1, HTTP/2, and HTTP/3 over QUIC
+  - id: choose-lb-layer
+    name: Choose a layer 4 or a layer 7 load balancer
+  - id: nest-timeouts
+    name: Set a timeout at every hop and nest them
+  - id: push-to-clients
+    name: Choose long polling, server-sent events, or WebSockets
+  - id: receive-webhooks
+    name: Receive webhooks safely, quickly, and more than once

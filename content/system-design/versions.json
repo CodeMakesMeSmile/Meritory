@@ -2,6 +2,9 @@
   "card/alb-health-steps": [
     "1ddea4fbb2cbac616b890cba2294b1ebe0eea22783dd6840864d51f584d5e26b"
   ],
+  "card/apply-event-steps": [
+    "035946293a6615d69c2c879885e9fea502543c1d95ca25c38b2f43fcdade5826"
+  ],
   "card/backpressure-in-sync": [
     "7e793723b7c6020e59334e7f3dbf32da2578be6a278343e85e360ccdb3285817"
   ],
@@ -32,11 +35,17 @@
   "card/concurrent-idempotent-repeat": [
     "0ff0082815a0e21d51f55bdc9b1d5dd47752a9493bc496216588bee42be89dc8"
   ],
+  "card/connection-transitions": [
+    "e103466bafea9f1af4f63742358e5e5b297a1921f0e31986844c43bd0356f6de"
+  ],
   "card/connector-rollout-steps": [
     "f557c59dd6b933248093755abd7019955e5061a7730bfe0d933bc0695b32d806"
   ],
   "card/cost-of-ordering": [
     "f6a277721e49174288371ec9442969910a8eaabf47d9d9e94eb95a57d6b0ba64"
+  ],
+  "card/deadline-math": [
+    "6382f43a49d443f229e13059a5d470ded46c3d50d0a13fb551529063dc4cc74d"
   ],
   "card/deadlock-fix": [
     "d203e607b137170f85af8a361005ecffe29c658ebc5f93b021bc8f07584087de"
@@ -47,6 +56,9 @@
   "card/deep-dive-sources": [
     "bb41a0e97a407136950abc424234ac05e51659d07615b4b5c37f8893043d3207"
   ],
+  "card/dns-failover-steps": [
+    "fa7b2f9d17858e95a3150f9c712e2aa9ad1aefd81091c57dc1969197ce536a54"
+  ],
   "card/dynamodb-condition-fails": [
     "d0d6e0380ad6f662d3409d511c75ea5fd6b976fc4731c2e94b954f0b05113df5"
   ],
@@ -55,6 +67,12 @@
   ],
   "card/dynamodb-read-consistency": [
     "77f2d2fae3f40489dd044995f21aaab817cb734bd53104015654a7f36fc11871"
+  ],
+  "card/entity-kinds": [
+    "ec3e42896da58a9d97ea689ce8e0b570cb64c3cc937f74794a4a5ab784752493"
+  ],
+  "card/error-to-action": [
+    "affce15188605258170b22fab1667f206a996b0f0822716669bea915624b3863"
   ],
   "card/eviction-policy-fit": [
     "4b0496b239b1a6adc18f86bbc65539076ee4be04f967381f21eff28318ea5cd6"
@@ -65,11 +83,17 @@
   "card/fan-out-tail-math": [
     "bd04147402c4bd3ed6235ef562eb2c40b168846f08526f15d454e6ff026038d8"
   ],
+  "card/find-entities-steps": [
+    "5731a7d4a551b8f94617ef82d8a5d03a7f238f67ec2bf2161ada6399f60f4a22"
+  ],
   "card/fix-lost-update": [
     "344c562ca58386027ce77f28cf86ccca1d67767315e05b22a5aae0b147d6a839"
   ],
   "card/fleet-quota-trade-offs": [
     "4cead2fe186177cad4c72c9968fea014ff5fece6cac9a4cd6f8d99dd24dfd8d6"
+  ],
+  "card/handshake-round-trips": [
+    "f475160b6bd4b7b23987f703880ce7d04a9298689d1e53fd5147790cc935d248"
   ],
   "card/hard-dependency-math": [
     "906c4b26a6488afa4222886d7ae1631ca8972b8aff65dbc2430dc212247ce3c9"
@@ -80,8 +104,14 @@
   "card/hot-cache-key-fixes": [
     "6b82634aaf3d738c454f603169a5ffdea50d9591aee7a576cb44ab3114c75375"
   ],
+  "card/http-version-traits": [
+    "78f4b4e51d10a0ea58a2ccf4bccbf591632de7c84b1eae22f91b617b97803e23"
+  ],
   "card/idempotency-key-flow": [
     "a5210ca38f83f613659539b26ec887a1decabcc89f7403ec2f75f8a9450f1432"
+  ],
+  "card/inheritance-math": [
+    "7aa3d2ad6fcac8e9efbc4881c0db1e82e63f4c483d1392f9577ba68539706ca0"
   ],
   "card/interview-step-order": [
     "6ee07670a0be872383e5eae5d7c7675386b675fd100e9f303f5d8191f29b8402"
@@ -92,6 +122,9 @@
   "card/kafka-replay": [
     "f118b19d39b582ade0173d73cab3e2570b48be53716cd9669ee7181aa0f6ef1d"
   ],
+  "card/keepalive-502": [
+    "2ecbb62512df5e6e81b464ae02b2d13fe122a0078c98b9cfbae1c2aff4517962"
+  ],
   "card/lambda-partial-batch": [
     "3676333daa63697f2dd508a2b06b93e0b4915bc165061816da4e53b03150d46c"
   ],
@@ -101,14 +134,32 @@
   "card/lb-algorithm-fit": [
     "c0e7a7eae422918d262e8b3cd31f09f516277f14214742db04b8179ca23468e3"
   ],
+  "card/lb-layer-fit": [
+    "4154b1484198d7426f4ecbcf2dabe82876a4f875d255a93765947807247bf0d6"
+  ],
   "card/lease-pause-steps": [
     "aa94565b87c4875059c8b1c509e2f23ed4aa9982434b0934a6560b6883742045"
   ],
   "card/littles-law-pool": [
     "c37e7949a05866f80a54f9159c6b8e75af7d023b4a42f906f4b65de0c3fbbbed"
   ],
+  "card/lld-round-steps": [
+    "640df5847f4d15d4514831a25f590aa77e188a912feb3832582f320cd4d0830e"
+  ],
+  "card/long-lived-connection-costs": [
+    "bd57081190727e7507bc5a5c3c987ad3edee9433f10b77255a17c12a8e8246ea"
+  ],
   "card/mapping-bug-replay": [
     "7313728396ccfe6dca9f3206c49d0ec2df2ab73912130b21fa3058d34039e534"
+  ],
+  "card/nested-timeouts": [
+    "f3eae22b1986fa062d0a34f88958144d45624e9837fa87b74ec29b5b27588d50"
+  ],
+  "card/new-connection-math": [
+    "2a9d8355b2402e5c7f5d62ea63ee68aae375205132ac77e8e3043249928afc5e"
+  ],
+  "card/new-provider-change": [
+    "086d439f41fa0ab2e7b6c652eb23890a07d2a92e101305bcda593010fea8a50d"
   ],
   "card/nines-downtime": [
     "3a51bdf34c2b9b4b88b3d616dc35b6167f26f119a1f9296e527aa356e18a8059"
@@ -131,20 +182,32 @@
   "card/partition-schemes": [
     "558739b12feeb8b2744088c5f5094b5722850e49c3752c22b58fec7f7d808efc"
   ],
+  "card/pattern-fit": [
+    "3eee3736f82697975670baa1cea1ac9611ce3fb7fd20e4e457822edfe3efa4f0"
+  ],
   "card/per-day-to-per-second": [
     "795eb0ff53cba9186d498b7445664f59cf9812c0b3fad63d8b9ddd8a64cd6eb8"
   ],
   "card/pick-partition-key": [
     "5f6c087d781eea072f0999c314bf4323bce2dfbced8580133bc1364bdc9150c8"
   ],
+  "card/pool-exhaustion-steps": [
+    "7525529fd6991f143017fbd628464b08e03c6d8ef38f7ff5b3a12f9e3ae20c82"
+  ],
   "card/problem-details-members": [
     "80902447345285722a0be4f00eca5338b1cf481274b50f0d0dcbefb9b9d9b26c"
+  ],
+  "card/push-style-fit": [
+    "1a1649823788ebfc27454ac26e818fd141bfab5208e9583a6b1b16fb96997175"
   ],
   "card/race-fix-fit": [
     "837746b385a405793366bf4e1f512693e764277bdf3a384e06eed69b0e3a0daf"
   ],
   "card/read-your-writes-fix": [
     "b1f30fdfa842385c5bc563bd066b612200187fc59edbf8fdf4819ab1461b1557"
+  ],
+  "card/receive-hook-steps": [
+    "ff117fb37e25b33c391164705153e8fff29ea13ed8decc4b48a933437f2e8622"
   ],
   "card/requirement-drives-design": [
     "35f91882e265d3851e39c3bd247487adaebe775883059222646ad60fb2d3ffd7"
@@ -188,6 +251,9 @@
   "card/strongest-trade-off": [
     "2962855f3efd823fbc94383f15715404086a8ea2265e7ec749c17fbdb09fed68"
   ],
+  "card/structural-fakes": [
+    "c00d35dae7325cf05406e350e1c0675e0f975de362453962b06a78aa94bf9fda"
+  ],
   "card/sync-and-deletes": [
     "b6ea58945404c42b9611907ecf6436badcca80600cc3ab5f3fe7cd5230fe2b33"
   ],
@@ -224,6 +290,9 @@
   "card/when-ask-about-providers": [
     "845765e5e5d8428a1b44e63f2cbcf871a92bea9d65592d48c7239d636ba9cbd7"
   ],
+  "card/when-ask-first": [
+    "d029cb8033f3a1c85e1436863d4801f2b7b3221b13489380379d4eb05e25b5a9"
+  ],
   "card/when-behind-on-time": [
     "ffcdf48abde9360d7be3520c09e996b39600b7f52a9203bcf0297d6043d6b6d4"
   ],
@@ -248,6 +317,12 @@
   "card/when-hot-row": [
     "560259e67c174a8393f46f9a8c3fbbac8731c734648e8ff49d4c8277176a1335"
   ],
+  "card/when-http3-helps": [
+    "5255b127729087f78034899f657674036ddc240bf570b5482aecb8b59d931217"
+  ],
+  "card/when-inheritance-fits": [
+    "7bd6dafc468f45046539d93a11b20f836605547c53fd2e93dd8fcdfdbd3a1394"
+  ],
   "card/when-lead-deep-dives": [
     "2ad1389710c0d3b4cd6777227143cf8e11d1090e1fa80326ddd5a300d4e2abb7"
   ],
@@ -262,6 +337,9 @@
   ],
   "card/when-optimistic": [
     "2bfdb6f08afcc7dd5f37f6b6cfed45b01a6884337e2a34b404aab35ee65377e8"
+  ],
+  "card/when-pool-hangs": [
+    "4db1353a8b535a2f5285756a5f71d87d6b5270c2de225780b33c1b71925bb380"
   ],
   "card/when-provider-429": [
     "35623ff071297ea825d436bd063f2774b8e4a26a06626fd19b6ca7ce894bb649"
@@ -287,6 +365,9 @@
   "card/when-save-checkpoint": [
     "d2c999f527c488b2e5360c14022a1dd42978c1bdfdd1f4aed206a457c9fe6565"
   ],
+  "card/when-short-ttl": [
+    "6da0a5400f4a9c7b671e864827d4af3262445455b79ae1df12e1efa4b3673ce7"
+  ],
   "card/when-simple-lock-enough": [
     "f5f4d0e34e1625627c3404b750c72c04f5b0d9585e87133414b2ddd304a1cec3"
   ],
@@ -299,6 +380,9 @@
   "card/when-soft-hard-ttl": [
     "143dc976ab7d4e9242541ff81523b934c66902a39897bdea5f38233423619bc5"
   ],
+  "card/when-strategy-overkill": [
+    "e212372f997cd310877e6ccc79eeb5025fbcdc6ad0d47889aaacc2a2a32890cb"
+  ],
   "card/when-table-per-period": [
     "442d4d3c94ab137d767d90ffc1e9c793d9be8f03a61d335bdcc558748a47d471"
   ],
@@ -307,6 +391,9 @@
   ],
   "card/when-to-estimate": [
     "406f35d354a76859ee718016b5bc06403e327a343738143b4819f0d7be2da8ad"
+  ],
+  "card/when-unsigned-webhook": [
+    "cfd24a080e5bad304401f3de4e381aefda8ef7092e3741bb9ba13fa772161353"
   ],
   "card/when-versioned-names": [
     "3cc63f5496ea41afe81d7d72885c8eda334c379923e96fb81f020c918158fab9"
@@ -319,6 +406,12 @@
   ],
   "card/when-workflow-backfill": [
     "65b223a60b6d7376a334a7b075f7412a372f8d0c835b04738f3307f55c83cc59"
+  ],
+  "card/when-yagni": [
+    "57ff868063316a209d069bec3b0a73b94c1717cc52d40899d79726c44a17fdc4"
+  ],
+  "card/when-zero-rtt": [
+    "f67afdd6ebc0bbc2357f50351b4a157237bd66f5e7af6585c80b4fcc2154d402"
   ],
   "card/where-node-work-runs": [
     "341aa60cf17bb6ca109e53fc330d4215f391b75dc0b3e459ae8a5c3626dda81c"
@@ -368,11 +461,20 @@
   "card/why-bulkheads": [
     "2a8efea2f75f3f9d63ba5520fe9065edc684883e0ad8aa2fa2f61af7f0cbe757"
   ],
+  "card/why-capability-interface": [
+    "4f8fcf913eb9f7a5a476bcb570d6d4a20fa78b3656a5650b48d8f90a0f244bea"
+  ],
+  "card/why-classify-at-edge": [
+    "f7a08e415ba3cf06c0c7656c8e4cd01ce563b0e7ffd851274c33269e86a9553f"
+  ],
   "card/why-cold-cache-danger": [
     "1231102c2e77b3a4686c7f1a70a58021f1c3ea38dfbea83a4e09fed9355ace19"
   ],
   "card/why-connector-runtime-split": [
     "6ca0ee3a2ea11e72e606fbc75822d5f1b5265e682371a28fff8525a03298ffea"
+  ],
+  "card/why-constructor-injection": [
+    "ca8217347d12c5f8c9ba753619762daf3b2d84f4364a51d086f7de3831156eae"
   ],
   "card/why-consumers-capped": [
     "c38b2804bda3ca742acc2979422fd81c77f38b29d128a2de492c939a41aac04e"
@@ -386,11 +488,17 @@
   "card/why-dead-letter-queue": [
     "669b50921aecbfec8a19cd5a7d1448faf670aa5766a07207dacb0ad429961f05"
   ],
+  "card/why-dedupe-in-consumer": [
+    "bb01a534ccbdc16d654bd4e9d0a1dd9a4d7f8c590fc1243d56185f9d843c355b"
+  ],
   "card/why-dedupe-issues": [
     "991ef40943b13cb92418481f75f5a0dcbfc221a799bcc407c8f349769cd6c929"
   ],
   "card/why-delete-not-set": [
     "d54db372af085dee32bad272d132d4ae9db51e5a2af6879385f644c897132d61"
+  ],
+  "card/why-dns-failover-slow": [
+    "db14c59fc8522a8bb6f63d81e1c1db9ec5cd242c05191575dc09b65b1334a98e"
   ],
   "card/why-drop-partitions": [
     "48535e7a4c527da2ef3e22e4d752551cd13b1664f1796d8a07d3d0e5463a8f98"
@@ -401,11 +509,17 @@
   "card/why-early-refresh": [
     "e5568b5ec8bcfd1ad0be55b4a14ab9edd66b70080bffa6b2d8993e43c5bc4da3"
   ],
+  "card/why-extend-step": [
+    "c75f03e6cb8d6e2cba6dcd894b95bfcd409006169a3fc213ca526e977f977d7f"
+  ],
   "card/why-fencing-token": [
     "1552d8f6b6182cded5ec063950e03a2efcb731c48cb37eddf61ac17aa64a0b59"
   ],
   "card/why-few-features": [
     "58aea8cd01fd083fa7269fb4df20b08657938e04c358f78f2c28580440f3a423"
+  ],
+  "card/why-fragile-base": [
+    "d17834f92427d5f5134dcbd1257883ca5830efc0d7d910ec44b9d1df5728d17d"
   ],
   "card/why-handle-unknown-enums": [
     "3fa49cddff7a52a6d20db56d3d6d42a12de44b7bc7e7ddf1a652de069344f2c5"
@@ -413,11 +527,17 @@
   "card/why-heartbeat-with-work": [
     "e03927543dd320547da89bf0da6f1ec4886a312d44d8f35cf5df285b5f6fedd1"
   ],
+  "card/why-http2-still-blocks": [
+    "d6197d37ba70dc4ab0fd6018727504e33b07ecb5a5fd39a0ef8e9eefe6997451"
+  ],
   "card/why-identity-from-token": [
     "433b057039064b0c2c376820ffe33fef2f40bc7cbd400b6e1e3b2e7712cdf933"
   ],
   "card/why-indexes-cost-writes": [
     "832ca08eb909b02dbd6b490bac8a14d556f51f30e9a6d0d1faa83b17c05dfd4c"
+  ],
+  "card/why-inject-clock": [
+    "86f19281060cd01b1daa7ddfc709d953e5ef1ebd2d7715d36583e8592d8ae6b1"
   ],
   "card/why-jitter": [
     "fecae9444cdfbb287984d81566e87b30f128852501bf6506a9a6308cdc3bdfcb"
@@ -427,6 +547,9 @@
   ],
   "card/why-keep-ttl": [
     "e45823aabc66f5a89dd12e96182aebacfa8d2bc8f36165ebfb486a749ff5ce7f"
+  ],
+  "card/why-l4-uneven": [
+    "999168d7a4fecaf566359ae2dcb80d93f22af3cc48fe180d9d96417995da685b"
   ],
   "card/why-latency-climbs-near-full": [
     "59049b3ca486e2cebc96c33c1c58e7c87fd3296b362d41726ec5666d6fb5c83d"
@@ -458,11 +581,20 @@
   "card/why-negative-cache": [
     "0a621c65a79c86706267ca6e26e6e475da259d278172ee7d4494190ffe7c804e"
   ],
+  "card/why-never-check": [
+    "fd8514dde6ea8b025548da3fb5f2f86a3328e2cd32cd1d26ec42a16929479c17"
+  ],
   "card/why-not-hash-body-key": [
     "51f25b3343e6117e23da492a43a1b254b434b197e3b2a8a78508943d6529030d"
   ],
+  "card/why-observer-not-durable": [
+    "ec68e009047e08d09ba172080cdd20c13d55bc20ce6da3937283a3de906bff84"
+  ],
   "card/why-one-change-stream": [
     "cb621e28b88f48d58ac25ca8f1be7ebaeab398e134d8d09a995abf2a6357a1dc"
+  ],
+  "card/why-one-transition-function": [
+    "471a651b7881f943c9ec69c470b96d2af988c67577fa7f2e882ed399e41e40ad"
   ],
   "card/why-ordered-endpoints-cost": [
     "1c57fb70d481f87ddecdf3b59c6c572ca7d61e872e27809680a76015d0672436"
@@ -485,6 +617,9 @@
   "card/why-poll-with-provider-webhooks": [
     "04e1b50aca24378e1dc643f7c15a271b9bcf04ba7c80c638779ffb1efcb71191"
   ],
+  "card/why-propagate-deadlines": [
+    "5eba116400027a1e0afd568b5cd8521780b4a7caa4c6bb0a272c86318fd8cf66"
+  ],
   "card/why-quantify-nfrs": [
     "27a60c469f64f5c423be6585cc411a7fd8d2b6426e032ebd9293ea26db711934"
   ],
@@ -506,6 +641,9 @@
   "card/why-retry-serializable": [
     "7c8f7935b1213769790cfd67d3039dd901454f4e89cd9f1e559e2b8b9e9fd4eb"
   ],
+  "card/why-reuse-connections": [
+    "bf920a6ef2f3811e77fdbce4f71b51d9f9bd6d86adbe6b3734984214a35a440b"
+  ],
   "card/why-say-hardest-part": [
     "5fec594001cefa640129d1674f62e657abbf3326e79ad9ea4d78ce9db1231ea1"
   ],
@@ -520,6 +658,12 @@
   ],
   "card/why-simple-first": [
     "341fc681211b75e08a9939951df2ed279b65b891d6e62687b65ed17067a9d9c4"
+  ],
+  "card/why-split-sync-manager": [
+    "08a7353a125bbec0435c0f42b2adb2f66c77e95df651fed870f495602d3ab889"
+  ],
+  "card/why-sse-resumes": [
+    "994e02c4da113d4b066efa81af33af23a67fe46c319c579702eaca216e181672"
   ],
   "card/why-stateless": [
     "b8f4b69779bfd7cb92f68bc2baa092634a94c6b3299233aa0cc1562e06118683"
@@ -575,11 +719,23 @@
   "chapter/design-method": [
     "e7046426247c9d266a9a80cf354779f3275ae164e267b6df9ed51d52479049da"
   ],
+  "chapter/networking": [
+    "c3ff2d80fd989a807e1df04a35ff61a31c245c7cd8db38160893dbe9646503b5"
+  ],
+  "chapter/oo-design": [
+    "f38f8a7b9c64955047350cccd51f802cd7f8d8cdd5b15faf20993a93e8c15482"
+  ],
   "chapter/queues-and-async": [
     "a5b2c0c914a980811d9c266174cc90eacde0be1b466c4d97c8b95834852ff2c8"
   ],
   "chapter/trade-offs": [
     "90e2e852a273fdd27403eb55189979d498e0c55fab8006cdbc8f9c7e8973d07b"
+  ],
+  "exercise/connection-alerts": [
+    "b9e5e94a38dc3cafea8fbcfbe19b3408d67d4f4a9627329a3cd29f772582d45b"
+  ],
+  "exercise/sync-job-scheduler": [
+    "b70e0f2b8ac61fe53b25c13834ce9e4d3d2bb5c2147729eda9e5d295be7b999a"
   ],
   "exercise/unified-data-api": [
     "f4c521125276007cba40920b65571ae4d38290c10726b8c3ba65c473104e527c",
@@ -587,6 +743,9 @@
   ],
   "exercise/webhook-delivery-service": [
     "ad5f712454d6ed4329003b010ec0688a3f9be8824bb617f3d35bac7d29a49863"
+  ],
+  "rubric/class-design": [
+    "8691c9b159a1de306a7eeee85d4dfb5d9e639a797abc3b9bef46ac7d79f41404"
   ],
   "rubric/design-review": [
     "e2969c7c8714d2b36cff6ef672620c7cf00099ad8b3fa2c203d30a707ba8b8c6"
