@@ -1,0 +1,20 @@
+id: price-band-total
+kind: coding
+title: Prices in a band
+difficulty: easy
+skills:
+  - bst-rules
+sibling: valid-catalogue
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: bandTotal
+  params:
+    - name: prices
+      type: TreeNode
+    - name: low
+      type: int
+    - name: high
+      type: int
+  returns: int

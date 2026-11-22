@@ -1,0 +1,16 @@
+id: lookout-count
+kind: coding
+title: Stations with a view
+difficulty: medium
+skills:
+  - state-down
+sibling: coin-route
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: countLookouts
+  params:
+    - name: stations
+      type: TreeNode
+  returns: int

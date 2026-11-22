@@ -9,6 +9,9 @@
   "card/bracket-failures": [
     "a8b385d44b70259e0794d46df8c482ee13610834d5b6a086cba4c1404ab2447b"
   ],
+  "card/bst-bounds-steps": [
+    "0fc9adace02b9679ca4966290938839bfad65c3e09ee7fd25dc14c5ac69b554a"
+  ],
   "card/compact-steps": [
     "e3f65e42adafb56a0bee2499c81823fddb4919f0ad8f05ecf638576cca414dcc"
   ],
@@ -40,6 +43,12 @@
   "card/last-copy-steps": [
     "c163870ec606809bfae7f8dd82dd7fd75761c5a983d88ecd4f7e7a7bed5abda9"
   ],
+  "card/lca-plain-steps": [
+    "5132357a8f4be9b8e68bc51e50acaa085dd7238b7ac40372a5001d563b7abfe4"
+  ],
+  "card/level-order-steps": [
+    "67883b541fdc292cbd0ec621fd0a75d4a0025f29f54f7bf3d0f8dc1959d89566"
+  ],
   "card/merge-lists-steps": [
     "2e34bc36f30cdea3cc4ffe4b8d2457165ff0a9fc7da7888bf9f650601ced3128"
   ],
@@ -55,6 +64,9 @@
   "card/monotonic-stack-steps": [
     "c4125eabb1ea591cec65ad48a6aaf776dd61092bc2a9f3f81d66d37569fcc4ff"
   ],
+  "card/orders-of-a-tree": [
+    "5d1b566ec9b8103210bab04485bcc77634aec9493e929eb4d450010b6ea9450e"
+  ],
   "card/pair-search-steps": [
     "69ca8dd4ca45400b30b95a6ba399fd28d8c3dbe538afe2bedf321c4960a4a9bb"
   ],
@@ -66,6 +78,9 @@
   ],
   "card/proof-before-moving": [
     "1e6704f5060013b301850d7b0a5e6e4e0336ef34f0a3a8b79b7dac8cccfe70db"
+  ],
+  "card/rebuild-steps": [
+    "27bce07cbd1ea3ac4dbf7226efcaea04769d99dcfa9a6af1ab346df294efd121"
   ],
   "card/reorder-steps": [
     "2458f3a91332a6bb41ca0e45614a6125e0553b3f1eb5731d4c08bebf5c377745"
@@ -100,6 +115,12 @@
   "card/when-avoid-slicing": [
     "aa88864256baf8282909fdee4eb18c5636224e6602909e928bcb7a9637090ab2"
   ],
+  "card/when-balance-check": [
+    "4d76a68a10db57d4025224367356cc152d24d2fa86651c2da48bb91da4d59e19"
+  ],
+  "card/when-bst-or-plain": [
+    "22696ee6137fbafb6e2f774bc29d7647896d526ae07bac86e791bd6d19a7dfcf"
+  ],
   "card/when-copy-to-array": [
     "8d12a0c298d6639e095a5ebcba2b094e3e29fac19373adbd80f083d86212d221"
   ],
@@ -124,6 +145,9 @@
   "card/when-dummy-head": [
     "ca9196cb07f0c1ff41aa19edda46d3468031a959bf677bf6a9114b85593af693"
   ],
+  "card/when-each-order": [
+    "40c67cab73fa1612865334b747eb1931b402521e709d067eac52c02b9add23a5"
+  ],
   "card/when-ends-need-sorting": [
     "3f6ed074a3f88818c8de29a68c0f372272cccf822d8ee231c911fa42ea062716"
   ],
@@ -132,6 +156,9 @@
   ],
   "card/when-grid-method": [
     "66a210633086000cfa57098a555cfb0c3a1121d33258f0bc7bea9f53b84da0d5"
+  ],
+  "card/when-is-a-leaf": [
+    "dc0827c240deb3fcce5d7d52757b4324adba9817390870f5e4aee63b3379a005"
   ],
   "card/when-longest-or-shortest": [
     "e24ea82c48ca7ed63eccbd66f8aeb34f4545b03988caf21aee0f6ac702282a5c"
@@ -142,6 +169,9 @@
   ],
   "card/when-mark-seen": [
     "5d592727d4a6989e88db9d6101a62b5b79d8afa8f64baa66a6cec025f7cb53d5"
+  ],
+  "card/when-markers": [
+    "d335f23c1ba92ccbfb149860577d6958c939dfd75e2f71f7a28fd12edd709a23"
   ],
   "card/when-merge-walk": [
     "f059df356c042a3c96f5cabf945260c0145c9b9754a837488b4927819c8e2517"
@@ -164,17 +194,26 @@
   "card/when-pop-direction": [
     "036cc8b239c56925c1c7e80773f64a8445cf0c5deed6ef327d148de9a17637c4"
   ],
+  "card/when-prune-on-total": [
+    "b7e62190b25df17b8922010744977a6340139dc824e1fc693081de2c3ca8ece6"
+  ],
   "card/when-queue-or-stack": [
     "c5a70674b8f712152e5fd0bc7584ba1be5f30ae05ac662c40ae6d9cce582abc3"
   ],
   "card/when-reverse-ends": [
     "9e368da785d34841b5ae75dfde5ad0023ffdec09d1d412b08a38232cfeec782a"
   ],
+  "card/when-right-view": [
+    "cf61b8385748e82bbbc9ab356c19bb04ef18219354f9e055373d64af13568a49"
+  ],
   "card/when-rotation-breaks": [
     "55fa1bf7ac19cbf855f605e096043b48a036830fb3d47c98960d926576e66e4f"
   ],
   "card/when-search-ends": [
     "9bd9f90f210ef17f831110c3b827bc865a822d765a5f6af0c0a7adda678a678e"
+  ],
+  "card/when-sentinel-fails": [
+    "bf46a80394ca4a490470543ed1e1be00241260e427cbdb3564432f029f403093"
   ],
   "card/when-set-of-answers": [
     "20a08a1f3cc0cb30fbe49ccd825fd7bb529b61a1af95d86d4e4c43f6dc28d535"
@@ -212,6 +251,12 @@
   "card/why-attach-the-rest": [
     "30cb09b4c31e631f7cb94765979abce50468a55a707f66adf9d5640cc5eb9d37"
   ],
+  "card/why-bounds-not-children": [
+    "e87efa83fd2dface2bdbda910efc317d4cb2d205fb5d7107d40827afb0f6d52a"
+  ],
+  "card/why-bst-lca-walk": [
+    "b9d6b6c514478948d0757bb0e9850af82e7fb2868d4d7b747e7321fbc9b110ec"
+  ],
   "card/why-check-before-adding": [
     "45f84bb63408807d4835728e647fc9ff54b5d7c9c38859a4f26b36ddac7d5f7c"
   ],
@@ -224,6 +269,9 @@
   "card/why-compare-with-last": [
     "96064546f1280b6b9eec26cb1b6cae508cf7436dc195a90a36ba05c499af6868"
   ],
+  "card/why-count-level-size": [
+    "7c66f44910d51bd2f18eb628ad5f98102b3230a4dec61aabe32779703d9ad754"
+  ],
   "card/why-count-not-sort": [
     "bfb7e70f6ea8ff3a1409070d278617ecfbd30b6d86153e641d45da67d2d9edd0"
   ],
@@ -232,6 +280,9 @@
   ],
   "card/why-delete-empty-counts": [
     "3c88367fd223aa687ace4242cbf21fa0d5624c2adb8b551037a4c0f20c503162"
+  ],
+  "card/why-diameter-variable": [
+    "ec5630331485788c63e4c5b11ecab39488350ec84205030cffcd5c5334bef0fb"
   ],
   "card/why-dummy-head": [
     "2228f0ca6b5161435d976a400d32a0ab4d333dc64d0efc70094d22639666d181"
@@ -299,11 +350,17 @@
   "card/why-not-lo-equals-mid": [
     "e58245d9aee07f7f54ec14e4c49fc37bf7fe211feae0f0e337d5427bdb6b7cdc"
   ],
+  "card/why-pass-sum-down": [
+    "b8aa8ae48e817e0954f2e79a17ee6410f5fdcd2633e3f3f848fc72d67c1043d0"
+  ],
   "card/why-pointers-meet": [
     "1990a6e923abde68d7601d526c309f752ecd0ef9fb42c928b648067fcc1066cf"
   ],
   "card/why-pop-smaller": [
     "61080b3db7f7acb54f507e4a179c073ce475474741b1565556b739cefc47cf6f"
+  ],
+  "card/why-postorder-for-height": [
+    "06067bd6e6561b7a73ec0b27e7a7cf3413a86895b2bd6201a467a1071c74da52"
   ],
   "card/why-queue-for-fewest": [
     "c7105c3dfcf9fe9a9a2dd2e366eef0993ceff88942d7d53a51a4ad1fa5a819f4"
@@ -316,6 +373,9 @@
   ],
   "card/why-record-inside-loop": [
     "b5d31f550f9ff6a8eb8bf34738f42452641880eb92285088ae1f9c385e6e65f0"
+  ],
+  "card/why-recursion-depth": [
+    "a9f3edf084abc047a3f07c7558e41bcd457112a6d156094e64da3f62f79add0f"
   ],
   "card/why-restart-from-head": [
     "0903c46827107b595563e19837c66533e348d466899c36b2f69e5b3992e9f8d8"
@@ -365,6 +425,9 @@
   "card/why-two-searches": [
     "6296b8cbcb059a4ce056dcf7a2532abada936c312c75eb3ccfe1292a87938fc9"
   ],
+  "card/why-two-traversals": [
+    "b4743761d6c049710877c08b5695900540757edf358a79126b888c3fae1a0030"
+  ],
   "card/why-worst-case-linear": [
     "48efccd12d48138fa59bc0950657f1b3c529b7172bc3c052a5f24968fa883b8f"
   ],
@@ -391,6 +454,9 @@
   ],
   "chapter/stacks-and-queues": [
     "8b055551a81c17cf507eaa61eb736de41a510539c9493079bab5e0ce9cecaaf8"
+  ],
+  "chapter/trees": [
+    "9d8232f3acbcbd77a5e67374db6377945affa21ee8fd1108d3145352ecce39e6"
   ],
   "chapter/two-pointers": [
     "337609a8176950dfb103c35500ab602d38c7b724d0d1bf7e2405d80c371fe391"
@@ -425,6 +491,9 @@
   "exercise/brackets-close": [
     "5df6f3dddca2c0d588bd19cf891f3e9d551df118141f36f924241d62e1c9dec4"
   ],
+  "exercise/call-rounds": [
+    "72825837a51dbe90911fca6abf8ee5c398f339ef8f75eadcbcad369090a5f6f0"
+  ],
   "exercise/cancel-from-end": [
     "01070061341b588fb0049a3d8f21da867bbcc6a40f23a41c8fcb4c3e3b71146a"
   ],
@@ -434,11 +503,20 @@
   "exercise/catalogue-lookup": [
     "a6449d5956b3fc7216ef9e0fe7592e0743bd522f577c9e0fda9b5c6938b9062a"
   ],
+  "exercise/coin-route": [
+    "355d163872d13cfeb86cbab1409f5dc55642e4ed8de61bcd58975c683a6424e6"
+  ],
+  "exercise/common-lead": [
+    "0da7e03938e8df3ca4d9e56b85721806141b8b61787a5abc15db5cc358118289"
+  ],
   "exercise/count-in-range": [
     "7ace6133136d2b0c6cb3cbfd3d7d11d8b2fe731adbe5c20d1c8a228d1ff1c6ce"
   ],
   "exercise/crate-stack": [
     "dcd72a305e719ef3e8cc0a954dbe37ab8e83d63e9ca1af773782cf13ab61df3e"
+  ],
+  "exercise/east-view": [
+    "d5cb1f9b2125da923c3e76c7de1daab83d4f787e8272d14c0fdd166642c5e17d"
   ],
   "exercise/endless-hunt": [
     "3b7562577d46796ce618a23f26955d6272ed2381ff7977ef1c5f40c8f8d56cf9"
@@ -500,8 +578,17 @@
   "exercise/longest-run": [
     "ce1ee751f62ad32b05e194b84d34015ba2d2ea440c51907ce6363af0d57a8ee2"
   ],
+  "exercise/longest-trail": [
+    "026ad8598f422e6f29b7d6ae189ef2f14d8dd662804eda1dee2ea40c4b5ec261"
+  ],
+  "exercise/lookout-count": [
+    "2faf7b280138888f6ecd77f50666c76ac722530ff9dda7647d736a23d435031d"
+  ],
   "exercise/loop-entry": [
     "121807930db0f9d1daf7dd1930e4f31eef059b59bc97d321c2e2ba61d922ed67"
+  ],
+  "exercise/meeting-hub": [
+    "08ba4180043978d9149e93c0c295d89466f8b0c7e29d9f440e47b6c8584f6e38"
   ],
   "exercise/merge-all-gates": [
     "93e791e8db2f843eaa27fa502ef3f2c450c5929531a0ceb619590c62fd26f253"
@@ -533,11 +620,17 @@
   "exercise/odds-then-evens": [
     "af166f06ef1718b1ab0592b5c925b074e98a769c361be6a1b5a2e3af961f33db"
   ],
+  "exercise/pack-the-tree": [
+    "3892d996a18c3d5ec0b2120e2d4e0369f26df4246baa229f5ba6702c96d3c9dd"
+  ],
   "exercise/pairs-with-gap": [
     "c55a98a08e37e110da6c8421fe3238e60feabaac1e7843e341a62d5edeb60d94"
   ],
   "exercise/postfix-total": [
     "4702160dfe181998aa9d92897415cd9f3d6f326ac766f772a420f28eab63b18f"
+  ],
+  "exercise/price-band-total": [
+    "6b81818f8db5f77a576cf2ad8ced0b7a5255e8706b1e7f93b4cf39044e73cdf4"
   ],
   "exercise/price-pair": [
     "666d99be8437b1b1b48b64528684edaa4062b6964349b9b2d6e7c5be294d2791"
@@ -562,6 +655,12 @@
   ],
   "exercise/readings-once": [
     "1859538497e1c626578eaaa68dc2fe9b201a3dd282749f233f45e094042b5ca6"
+  ],
+  "exercise/rebuild-from-orders": [
+    "e71856c8f8a2abbb7ef670840980ce56923005ba6a2067880cd0249b52c420da"
+  ],
+  "exercise/richest-route": [
+    "0d39ccd393b31bc88e2702e3bb936587d21c56747a45dc9d6435e6d7723df880"
   ],
   "exercise/rotated-playlist": [
     "c1747b8295aef655e39f56ddcd1a07cac9134db391f9b57f4cc9edcdffdab9fa"
@@ -601,6 +700,9 @@
   ],
   "exercise/ticket-queue": [
     "5aa22cff60b09242dcc0434fa567b370b32ffe404196b16deb199340d580f13f"
+  ],
+  "exercise/valid-catalogue": [
+    "9ca20da70bf73c5773f139d5686f0568225c2d7d01e1829bcd0d67f4fc05c6d0"
   ],
   "exercise/warm-stretches": [
     "372222f71285f595fea460d685342054dfaaac63401e98bab62893d70cfb32a9"

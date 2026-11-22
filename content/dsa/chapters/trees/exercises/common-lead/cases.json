@@ -1,0 +1,109 @@
+{
+  "exercise": "common-lead",
+  "cases": [
+    {
+      "uuid": "745a6822-8fb5-47d2-b43e-313920d9f9a4",
+      "description": "two people under the same lead",
+      "property": "commonLead",
+      "input": {
+        "team": [1, 2, 3, 4, 5, 6, 7],
+        "a": 4,
+        "b": 5
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "e8640f86-a8b0-47b9-87e0-a48320affa4b",
+      "description": "two people on opposite sides",
+      "property": "commonLead",
+      "input": {
+        "team": [1, 2, 3, 4, 5, 6, 7],
+        "a": 4,
+        "b": 7
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "63575fe8-4531-4739-8649-9a511a7e25d3",
+      "description": "numbers in no particular order",
+      "property": "commonLead",
+      "input": {
+        "team": [6, 9, 2, null, 4, 8, 1, 3, null, null, 5],
+        "a": 8,
+        "b": 1
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "aee3260d-3163-4726-a61c-5201488760b0",
+      "description": "one person leads the other",
+      "property": "commonLead",
+      "input": {
+        "team": [6, 9, 2, null, 4, 8, 1, 3, null, null, 5],
+        "a": 2,
+        "b": 5
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "bf9fdfcc-f48d-471e-9b17-fecdda6b06ce",
+      "description": "the lead is the top of the tree",
+      "property": "commonLead",
+      "input": {
+        "team": [6, 9, 2, null, 4, 8, 1, 3, null, null, 5],
+        "a": 9,
+        "b": 1
+      },
+      "expected": 6
+    },
+    {
+      "uuid": "d478e211-c7ae-4f2e-941b-0862fa1bde36",
+      "description": "the same person twice",
+      "property": "commonLead",
+      "input": {
+        "team": [6, 9, 2, null, 4, 8, 1, 3, null, null, 5],
+        "a": 8,
+        "b": 8
+      },
+      "expected": 8
+    },
+    {
+      "uuid": "00b83fb7-fc83-4fe2-b5b3-44e8e1fc4cb3",
+      "description": "deep on one side",
+      "property": "commonLead",
+      "input": {
+        "team": [1, 2, null, 3, null, 4, 5],
+        "a": 4,
+        "b": 5
+      },
+      "expected": 3
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "715e01ca-6f63-4ec4-9b87-cd022adc2261",
+          "description": "one person",
+          "property": "commonLead",
+          "input": {
+            "team": [1],
+            "a": 1,
+            "b": 1
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "c7b2386e-ebca-4b96-9b1c-41d6120a1fe0",
+          "description": "the top and their only report",
+          "property": "commonLead",
+          "input": {
+            "team": [1, null, 2],
+            "a": 2,
+            "b": 1
+          },
+          "expected": 1
+        }
+      ]
+    }
+  ]
+}

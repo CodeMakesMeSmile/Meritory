@@ -1,0 +1,110 @@
+{
+  "exercise": "coin-route",
+  "cases": [
+    {
+      "uuid": "8e455164-304d-49d1-9427-c64c841a9291",
+      "description": "a route to a dead end matches",
+      "property": "coinRoute",
+      "input": {
+        "rooms": [5, 3, 8, 2, null, 4, 1],
+        "target": 10
+      },
+      "expected": true
+    },
+    {
+      "uuid": "d6ba8b0e-0032-4c37-bb60-97f65d1f3224",
+      "description": "the total matches before a dead end",
+      "property": "coinRoute",
+      "input": {
+        "rooms": [5, 3, 8, 2, null, 4, 1],
+        "target": 8
+      },
+      "expected": false
+    },
+    {
+      "uuid": "0d9fcd3a-bc1f-4ce8-bc21-20b9137e803e",
+      "description": "no route matches",
+      "property": "coinRoute",
+      "input": {
+        "rooms": [5, 3, 8, 2, null, 4, 1],
+        "target": 15
+      },
+      "expected": false
+    },
+    {
+      "uuid": "2250cd2f-aa08-4789-a646-2b9e98c859ec",
+      "description": "tolls bring the total back down",
+      "property": "coinRoute",
+      "input": {
+        "rooms": [1, -2, 3, null, null, -4, 5],
+        "target": 0
+      },
+      "expected": true
+    },
+    {
+      "uuid": "09980e52-1e44-458d-b2f6-5b2cea1f0ff4",
+      "description": "a room with one way on is not a dead end",
+      "property": "coinRoute",
+      "input": {
+        "rooms": [2, 3],
+        "target": 2
+      },
+      "expected": false
+    },
+    {
+      "uuid": "be1621a4-60ef-4504-81e6-cc6657aaea86",
+      "description": "rooms with nothing in them",
+      "property": "coinRoute",
+      "input": {
+        "rooms": [0, 0, 0],
+        "target": 0
+      },
+      "expected": true
+    },
+    {
+      "uuid": "274569a3-7ada-4486-b88c-93d06db70a82",
+      "description": "a long single passage",
+      "property": "coinRoute",
+      "input": {
+        "rooms": [1, null, 2, null, 3, null, 4],
+        "target": 10
+      },
+      "expected": true
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "b9c39a71-cbc2-4683-a565-8fdd690df089",
+          "description": "an empty map",
+          "property": "coinRoute",
+          "input": {
+            "rooms": [],
+            "target": 0
+          },
+          "expected": false
+        },
+        {
+          "uuid": "a959b332-c93a-4d10-be3a-e167160f1572",
+          "description": "one room that matches",
+          "property": "coinRoute",
+          "input": {
+            "rooms": [4],
+            "target": 4
+          },
+          "expected": true
+        },
+        {
+          "uuid": "fa126dd5-959d-40a7-9195-f97a8a4801aa",
+          "description": "one room that doesn't match",
+          "property": "coinRoute",
+          "input": {
+            "rooms": [4],
+            "target": 0
+          },
+          "expected": false
+        }
+      ]
+    }
+  ]
+}

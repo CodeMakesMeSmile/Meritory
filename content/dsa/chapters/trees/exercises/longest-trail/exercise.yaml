@@ -1,0 +1,16 @@
+id: longest-trail
+kind: coding
+title: The longest walk in the park
+difficulty: medium
+skills:
+  - values-up
+sibling: richest-route
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: longestTrail
+  params:
+    - name: trails
+      type: TreeNode
+  returns: int

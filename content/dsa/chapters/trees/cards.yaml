@@ -1,0 +1,340 @@
+- id: when-each-order
+  skill: dfs-orders
+  asks: when
+  type: matching
+  prompt: Match each task to the depth-first order that fits it.
+  reworded: Which depth-first order suits each of these tree tasks?
+  matchHeading: Order
+  matchName: an order
+  pairs:
+    - item: List a binary search tree's values from smallest to largest
+      match: Inorder
+    - item: Work out the total size of every folder from the sizes inside it
+      match: Postorder
+    - item: Write a tree out so it can be copied, parents first
+      match: Preorder
+  extraMatches:
+    - Level order
+  lesson:
+    title: When the node is visited
+    explanation: Preorder visits a node before its children, inorder between them, and postorder after them. Pick the one where the node's work has what it needs.
+- id: orders-of-a-tree
+  skill: dfs-orders
+  asks: what
+  type: pick-one
+  prompt: "The tree `[2, 1, 3]` has 2 at the root, 1 on its left, and 3 on its right. What's its postorder?"
+  reworded: "For a root of 2 with a left child of 1 and a right child of 3, in what order does a postorder walk visit the nodes?"
+  options:
+    - text: "1, 3, 2"
+      correct: true
+      reason: Postorder visits both children before the node, left first.
+    - text: "2, 1, 3"
+      reason: That's preorder, with the node first.
+    - text: "1, 2, 3"
+      reason: That's inorder, with the node between its children.
+  lesson:
+    title: Children first, then the node
+    explanation: The "post" in postorder means the node comes after its children. Left before right in all three orders.
+- id: why-recursion-depth
+  skill: dfs-orders
+  asks: why
+  type: prompt
+  prompt: A recursive walk of a tree uses O(h) memory, where h is the height. Why does that matter for a tree shaped like one long chain?
+  reworded: When can a recursive tree walk run out of stack, and why?
+  points:
+    - Each level of the tree adds one call to the stack.
+    - A chain of n nodes has height n, so the walk is n calls deep.
+    - Python stops at about 1,000 nested calls by default, so a deep chain needs an explicit stack.
+  misconception: That a tree walk always uses O(log n) memory.
+  lesson:
+    title: Height, not size, sets the depth
+    explanation: A balanced tree of a million nodes is only about 20 levels deep. A chain of a few thousand nodes is too deep for plain recursion in Python.
+- id: why-postorder-for-height
+  skill: values-up
+  asks: why
+  type: prompt
+  prompt: Why is a tree's height worked out in postorder?
+  reworded: What makes postorder the natural order for computing the height of every subtree?
+  points:
+    - A node's height is one more than the taller of its children's heights.
+    - So a node needs both children's answers before it can give its own.
+    - Postorder handles both children first, then the node.
+  lesson:
+    title: Ask the children first
+    explanation: Returning values up means each call waits for its children's results. That's postorder by nature, even when you don't think of it as an order.
+- id: why-diameter-variable
+  skill: values-up
+  asks: why
+  type: pick-one
+  prompt: When finding a tree's longest path, why does each call return its height but record `left + right` in a separate variable?
+  reworded: In the diameter search, why isn't the path that bends at a node the value returned to its parent?
+  options:
+    - text: A parent can only extend a path down one side, but the best path may bend at a node lower down
+      correct: true
+      reason: The bend through both sides is a finished candidate. Only the taller side can be joined to anything above.
+    - text: Returning `left + right` would make the search O(n²)
+      reason: It's still one visit per node. It just gives the wrong answer.
+    - text: The variable is only there to save memory
+      reason: It holds the best bend seen anywhere, which the return value can't carry.
+  lesson:
+    title: Return one side, record both
+    explanation: The longest path might not touch the root. Recording every bend as a candidate catches it, while returning the height keeps the parents' work right.
+- id: when-balance-check
+  skill: values-up
+  asks: when
+  type: pick-one
+  prompt: When does checking balance by calling `height` from every node cost O(n²)?
+  reworded: Calling a separate height function at each node to check balance can be slow. On what shape of tree is it slowest?
+  options:
+    - text: When the tree is a long chain, so each height call walks most of the tree again
+      correct: true
+      reason: The node at depth d is the root of a chain of about n - d nodes, and those walks add up to O(n²).
+    - text: When the tree is perfectly balanced
+      reason: Then it's O(n log n), since each node is inside about log n subtrees.
+    - text: Only when the tree is empty
+      reason: An empty tree needs no work.
+  lesson:
+    title: Return the height and the verdict together
+    explanation: One postorder pass that returns the height, or -1 once anything below is out of balance, checks the whole tree in O(n).
+- id: why-pass-sum-down
+  skill: state-down
+  asks: why
+  type: prompt
+  prompt: To check for a root to leaf path with a given total, why pass the running sum down as an argument?
+  reworded: What does passing the total so far into each recursive call give you, compared with one shared variable?
+  points:
+    - The total so far depends only on the path from the root, which the parent knows.
+    - Each call gets its own copy, so leaving a branch needs no undoing.
+    - At a leaf, the copy it holds is exactly that path's total.
+  misconception: That the sum must be added up again from the root at each leaf.
+  lesson:
+    title: The path's story travels down
+    explanation: Values that depend on what's above a node go down as arguments. Values that depend on what's below go up as return values.
+- id: when-is-a-leaf
+  skill: state-down
+  asks: when
+  type: pick-one
+  prompt: "In the tree `[5, 3]`, 5 is the root and 3 is its left child. Is there a root to leaf path with a total of 5?"
+  reworded: "A root holding 5 has one child, a 3 on its left. Does some path from the root to a leaf add up to 5?"
+  options:
+    - text: No, because 5 has a child, so it isn't a leaf
+      correct: true
+      reason: The only leaf is 3, and the only root to leaf path adds up to 8.
+    - text: Yes, the root alone adds up to 5
+      reason: The root only ends a path when it has no children at all.
+    - text: Yes, because the right child is missing
+      reason: One missing child isn't enough. A leaf has no children on either side.
+  lesson:
+    title: A leaf has no children at all
+    explanation: Check `!node.left && !node.right` before comparing totals. A node with one child is the middle of a path, not its end.
+- id: when-prune-on-total
+  skill: state-down
+  asks: when
+  type: matching
+  prompt: Match each situation to whether you can stop going down once the running total passes the target.
+  reworded: For each of these, is it safe to give up on a branch when the total so far is already bigger than the target?
+  matchHeading: Stop early
+  matchName: an answer
+  pairs:
+    - item: Every value is positive
+      match: Yes, the total can only grow
+    - item: Values can be negative
+      match: No, a later value can bring it back down
+    - item: Values can be zero but never negative
+      match: Yes, the total can never shrink
+  extraMatches:
+    - Only at the root
+  lesson:
+    title: Only when totals never shrink
+    explanation: Stopping early is safe when nothing below can lower the total. With negative values, a branch that looks too big can still end on the target.
+- id: why-count-level-size
+  skill: level-order
+  asks: why
+  type: pick-one
+  prompt: In a level by level walk, why note how many nodes are in the queue before taking any out?
+  reworded: What does reading the queue's size at the start of each level do in a breadth-first walk of a tree?
+  options:
+    - text: It's exactly the number of nodes on this level, so the children added during the loop wait for the next one
+      correct: true
+      reason: At that moment the queue holds one whole level and nothing else.
+    - text: It stops the queue from growing past n
+      reason: The queue never holds more than n nodes either way.
+    - text: It makes the walk go right to left
+      reason: The order inside a level comes from adding left children before right ones.
+  lesson:
+    title: One level at a time
+    explanation: Without the count, children join the same loop as their parents and the levels run together.
+- id: level-order-steps
+  skill: level-order
+  asks: what
+  type: ordering
+  prompt: Put the steps for listing a tree's values level by level in order.
+  reworded: In what order does a queue based walk build the list of levels?
+  steps:
+    - Put the root in the queue, if there is one.
+    - Note how many nodes the queue holds now.
+    - Take out that many nodes, recording each value.
+    - Add each taken node's left child, then its right child, when they exist.
+    - Save the recorded values as one level, and repeat while the queue isn't empty.
+  lesson:
+    title: Count, take, add
+    explanation: Each pass of the outer loop is one level. The queue keeps the levels in order because a level's children all go in behind it.
+- id: when-right-view
+  skill: level-order
+  asks: when
+  type: pick-one
+  prompt: "Looking at the tree `[1, 2, 3, 4]` from the right, which values can you see?"
+  reworded: "The root 1 has children 2 and 3, and 2 has a left child 4. Seen from the right side, which values show?"
+  options:
+    - text: "1, 3, and 4"
+      correct: true
+      reason: The view is the last node of each level, and 4 is the only node on the third level.
+    - text: "1 and 3"
+      reason: That's just the right edge. 4 sticks out below 3, so it shows too.
+    - text: "1, 2, and 4"
+      reason: 3 is to the right of 2 on the second level, so it hides 2.
+  lesson:
+    title: The last node of each level
+    explanation: Walk level by level and keep the last value of each one. Following right children alone misses deep left branches.
+- id: why-bounds-not-children
+  skill: bst-rules
+  asks: why
+  type: prompt
+  prompt: Why isn't it enough to check that each node in a binary search tree is bigger than its left child and smaller than its right child?
+  reworded: What can a check that only compares each node with its children miss in a binary search tree?
+  points:
+    - The rule covers whole subtrees, not just children.
+    - A value deep in a left subtree can be bigger than an ancestor higher up, while every parent and child pair still looks fine.
+    - Passing down a lower and an upper bound checks each node against every ancestor at once.
+  misconception: That a BST is valid when every node is in order with its children.
+  lesson:
+    title: Every ancestor sets a limit
+    explanation: "In `[8, 4, 12, null, 9]`, 9 is a fine right child of 4, but it's in the left subtree of 8. Bounds catch it, since 9 must be below 8."
+- id: bst-bounds-steps
+  skill: bst-rules
+  asks: what
+  type: ordering
+  prompt: Put the steps for checking one node of a binary search tree with bounds in order.
+  reworded: In what order does the bounds check handle each node of a binary search tree?
+  steps:
+    - If the node is missing, that branch is fine.
+    - Check the node's value is above the lower bound and below the upper bound.
+    - Check the left subtree with the node's value as its new upper bound.
+    - Check the right subtree with the node's value as its new lower bound.
+  lesson:
+    title: Narrow the range on the way down
+    explanation: Each step down tightens one side of the allowed range. A node that falls outside its range breaks the rule somewhere above it.
+- id: when-sentinel-fails
+  skill: bst-rules
+  asks: when
+  type: pick-one
+  prompt: When does starting the bounds at the smallest and largest 32-bit numbers give the wrong answer?
+  reworded: Using the 32-bit limits as the first bounds in a BST check can go wrong. In what case?
+  options:
+    - text: When a node holds exactly the smallest or largest 32-bit number
+      correct: true
+      reason: The strict check says the value isn't inside the bounds, so a valid tree is called invalid.
+    - text: When the tree is empty
+      reason: An empty tree returns true before any bound is read.
+    - text: When values repeat
+      reason: Repeats break the rule either way, so the check is right to fail them.
+  lesson:
+    title: Use no bound, not a big number
+    explanation: Use null for "no bound yet", or a wider type like a 64-bit number. Then every 32-bit value fits inside the starting range.
+- id: why-bst-lca-walk
+  skill: lowest-ancestor
+  asks: why
+  type: prompt
+  prompt: To find the lowest common ancestor of two values in a binary search tree, why can you stop at the first node whose value lies between them?
+  reworded: Walking down a binary search tree toward two values, why is the first node that falls between them the answer?
+  points:
+    - While both values are smaller than the node, they're both in its left subtree, and likewise on the right.
+    - At the first node where they're not on the same side, their paths from the root split.
+    - That node, or one of the values itself, is the deepest node above both.
+  lesson:
+    title: Follow them until they part
+    explanation: The BST rule tells you which way both values lie. The node where they'd go different ways is where their paths split, so it's the lowest common ancestor.
+- id: lca-plain-steps
+  skill: lowest-ancestor
+  asks: what
+  type: ordering
+  prompt: Put the steps the recursive lowest common ancestor search takes at one node of a plain binary tree in order.
+  reworded: In what order does the recursive search for the lowest common ancestor handle a node in a tree with no ordering rule?
+  steps:
+    - If the node is missing or holds one of the two values, return it.
+    - Search the left subtree.
+    - Search the right subtree.
+    - If both sides found something, return this node.
+    - Otherwise return whichever side found something, or null.
+  lesson:
+    title: Found on both sides means here
+    explanation: Each call reports the target or ancestor it found below. The first node that hears back from both sides is where the two paths split.
+- id: when-bst-or-plain
+  skill: lowest-ancestor
+  asks: when
+  type: matching
+  prompt: Match each kind of tree to how long the lowest common ancestor search takes.
+  reworded: How much work does finding the lowest common ancestor take in each of these trees?
+  matchHeading: Time
+  matchName: a time
+  pairs:
+    - item: A balanced binary search tree
+      match: O(log n), one walk down
+    - item: A binary search tree that's one long chain
+      match: O(n), one walk down a long path
+    - item: A plain binary tree
+      match: O(n), since any node might be a target
+  extraMatches:
+    - O(1)
+  lesson:
+    title: Order lets you skip
+    explanation: In a BST the values tell you which way to go, so the work is the height. With no order, the search may have to look at every node.
+- id: why-two-traversals
+  skill: build-and-serialize
+  asks: why
+  type: pick-one
+  prompt: Why can't preorder alone rebuild a binary tree, when preorder and inorder together can?
+  reworded: What does inorder add that lets you rebuild a tree from its preorder?
+  options:
+    - text: Preorder doesn't say which values are on the left of a node and which are on the right, and inorder does
+      correct: true
+      reason: In inorder, everything before the root is its left subtree and everything after is its right.
+    - text: Preorder lists the values in the wrong order to read
+      reason: Its first value is the root, which is exactly what you need. It's missing the split.
+    - text: Inorder gives the tree's height
+      reason: Neither order gives the height directly.
+  lesson:
+    title: Preorder finds roots, inorder finds sides
+    explanation: "A root of 1 with a left child of 2, and a root of 1 with a right child of 2, both have the preorder 1, 2. Their inorders, 2, 1 and 1, 2, tell them apart."
+- id: rebuild-steps
+  skill: build-and-serialize
+  asks: what
+  type: ordering
+  prompt: Put the steps for rebuilding a tree from its preorder and inorder in order.
+  reworded: In what order do you rebuild a binary tree from its preorder and inorder lists?
+  steps:
+    - Take the next value in preorder as the root of this subtree.
+    - Find that value's position in inorder.
+    - Build the left subtree from the inorder values before it.
+    - Build the right subtree from the inorder values after it.
+  terms:
+    - term: Preorder
+      definition: Each node, then its left subtree, then its right subtree.
+    - term: Inorder
+      definition: The left subtree, then the node, then the right subtree.
+  lesson:
+    title: Root, split, recurse
+    explanation: Building the left side first matches the preorder list, which lists the whole left subtree before the right. A map from value to inorder position keeps it O(n).
+- id: when-markers
+  skill: build-and-serialize
+  asks: when
+  type: prompt
+  prompt: When writing a tree out as a single preorder list, why add a marker like `#` for each missing child?
+  reworded: What do the markers for missing children do in a preorder list that's meant to be read back into a tree?
+  points:
+    - Without markers, one preorder list fits many different trees.
+    - Each marker says a branch ends there, so the reader knows when to stop going left and start on the right.
+    - With them, reading the list back in the same preorder rebuilds exactly one tree.
+  lesson:
+    title: Mark where branches end
+    explanation: "`1,2,#,#,#` and `1,#,2,#,#` are different trees with the same values in preorder. The markers are what tell them apart."

@@ -1,0 +1,82 @@
+{
+  "exercise": "east-view",
+  "cases": [
+    {
+      "uuid": "b77c6cbf-37c4-486f-a6b5-d598cf678b66",
+      "description": "a deep left branch shows below the right one",
+      "property": "seenFromEast",
+      "input": {
+        "lanterns": [1, 2, 3, 4, 5, null, 6, 7]
+      },
+      "expected": [1, 3, 6, 7]
+    },
+    {
+      "uuid": "dd69b07d-8886-4228-ba76-10e864c57ecb",
+      "description": "a full tree of three levels",
+      "property": "seenFromEast",
+      "input": {
+        "lanterns": [1, 2, 3, 4, 5, 6, 7]
+      },
+      "expected": [1, 3, 7]
+    },
+    {
+      "uuid": "ad7780fc-4abf-4f20-9bb0-810a62544de9",
+      "description": "every lantern hangs to the left",
+      "property": "seenFromEast",
+      "input": {
+        "lanterns": [3, 2, null, 1]
+      },
+      "expected": [3, 2, 1]
+    },
+    {
+      "uuid": "4b34a324-012e-4916-8e49-a18f7c2442bb",
+      "description": "every lantern hangs to the right",
+      "property": "seenFromEast",
+      "input": {
+        "lanterns": [3, null, 2, null, 1]
+      },
+      "expected": [3, 2, 1]
+    },
+    {
+      "uuid": "b7359f11-3d11-4ce0-b3fb-1ec86ecb1383",
+      "description": "the right side is longer",
+      "property": "seenFromEast",
+      "input": {
+        "lanterns": [1, 2, 3, null, null, 4, null, 5]
+      },
+      "expected": [1, 3, 4, 5]
+    },
+    {
+      "uuid": "b9ee5389-5324-45e9-aa17-69b3d55c543e",
+      "description": "repeated numbers",
+      "property": "seenFromEast",
+      "input": {
+        "lanterns": [8, 8, 8, 8]
+      },
+      "expected": [8, 8, 8]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "755e632b-b880-4c74-9026-eb2921da2e5b",
+          "description": "no lanterns",
+          "property": "seenFromEast",
+          "input": {
+            "lanterns": []
+          },
+          "expected": []
+        },
+        {
+          "uuid": "96709533-c1b1-4acd-b815-020d05f5ae5d",
+          "description": "one lantern",
+          "property": "seenFromEast",
+          "input": {
+            "lanterns": [9]
+          },
+          "expected": [9]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+id: pack-the-tree
+kind: coding
+title: A story on one line
+difficulty: easy
+skills:
+  - dfs-orders
+  - build-and-serialize
+sibling: rebuild-from-orders
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: packTree
+  params:
+    - name: story
+      type: TreeNode
+  returns: string

@@ -1,0 +1,16 @@
+id: call-rounds
+kind: coding
+title: Phone tree rounds
+difficulty: easy
+skills:
+  - level-order
+sibling: east-view
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: callRounds
+  params:
+    - name: tree
+      type: TreeNode
+  returns: int[][]
