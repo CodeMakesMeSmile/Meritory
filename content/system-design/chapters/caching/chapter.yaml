@@ -1,0 +1,20 @@
+id: caching
+title: Caching
+order: 5
+skills:
+  - id: place-caches
+    name: Choose where a cache sits, from the client to the database buffer
+  - id: pick-cache-pattern
+    name: Pick cache-aside, read-through, write-through, or write-behind
+  - id: expire-and-invalidate
+    name: Set TTLs and invalidate cached data
+  - id: choose-eviction
+    name: Choose an eviction policy like LRU or LFU
+  - id: prevent-stampedes
+    name: Prevent stampedes with coalescing, early refresh, and locks
+  - id: handle-hot-cache-keys
+    name: Handle hot keys in a cache
+  - id: cache-negatives
+    name: Cache misses and errors safely
+  - id: decide-to-cache
+    name: Weigh what stale data costs and know when not to cache

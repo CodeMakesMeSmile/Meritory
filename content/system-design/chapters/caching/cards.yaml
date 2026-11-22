@@ -1,0 +1,502 @@
+- id: cache-layer-fit
+  skill: place-caches
+  asks: when
+  type: matching
+  prompt: Match each need to the cache layer that fits it best.
+  reworded: Where would you cache each of these to get the most benefit for the least trouble?
+  matchHeading: Layer
+  matchName: a layer
+  pairs:
+    - item: Static assets and a public provider catalog for users around the world
+      match: A CDN
+    - item: A small config map read on every request, fine if a few seconds stale
+      match: An in-process cache on each host
+    - item: Connection objects read by every API host and invalidated when they change
+      match: A shared cache like Redis
+    - item: A slow query whose working set nearly fits in the database's memory
+      match: A larger database buffer
+    - item: A customer's app repeating the same GET for a response that rarely changes
+      match: The client's HTTP cache
+  extraMatches:
+    - A write-behind buffer
+  lesson:
+    title: Each layer has its own owner and staleness
+    explanation: Closer layers are faster but harder to purge. In-process caches are fastest but differ per host. Shared caches give one copy for the fleet. The database buffer is automatic and never stale, and the PostgreSQL docs suggest starting shared_buffers at 25% of memory on a dedicated server.
+    source:
+      url: https://www.postgresql.org/docs/current/runtime-config-resource.html
+      title: Resource Consumption, PostgreSQL Documentation
+- id: why-local-vs-shared
+  skill: place-caches
+  asks: why
+  type: prompt
+  prompt: What do you gain and give up with an in-process cache on each host compared with a shared cache like Redis?
+  reworded: Compare a per-host memory cache with a shared cache cluster. What are the trade-offs of each?
+  points:
+    - In-process is fastest, with no network hop and nothing new to operate.
+    - Each host has its own copy, so hosts can return different versions of the same data.
+    - Downstream load grows with the number of hosts, and a deploy starts every host cold.
+    - A shared cache holds one copy for the fleet and survives deploys, but adds a network hop, a cluster to run, and failure handling for when it's down.
+  lesson:
+    title: Speed per host or one copy for all
+    explanation: Local caches are a cheap first step that gets worse as the fleet grows. Shared caches fix coherence and cold starts but become a dependency with its own availability.
+    source:
+      url: https://builder.aws.com/content/3K9TeXp6strMiJ4vhakpRD7BQWO/caching-challenges-and-strategies
+      title: Caching challenges and strategies
+- id: when-s-maxage
+  skill: place-caches
+  asks: when
+  type: pick-one
+  prompt: You want CloudFront to keep a public response for an hour but browsers to check again after one minute. Which header does that?
+  reworded: How do you give a CDN and browsers different cache lifetimes for the same response?
+  options:
+    - text: "Cache-Control: max-age=60, s-maxage=3600"
+      correct: true
+      reason: Browsers use max-age, and shared caches like CloudFront use s-maxage when it's present.
+    - text: "Cache-Control: max-age=3600"
+      reason: Browsers would also keep it for an hour.
+    - text: "Cache-Control: no-store"
+      reason: That asks every cache not to store the response at all.
+    - text: An Expires header one hour out
+      reason: Browsers would also keep it until that time, and max-age is preferred over Expires.
+  lesson:
+    title: Two lifetimes, one header
+    explanation: max-age sets how long browsers keep a response. s-maxage overrides it for shared caches, within the CDN's minimum and maximum TTL. Without a cache policy, CloudFront's default TTL is 24 hours.
+    source:
+      url: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Expiration.html
+      title: Manage how long content stays in the cache (expiration)
+- id: cache-aside-steps
+  skill: pick-cache-pattern
+  asks: what
+  type: ordering
+  prompt: Put the steps of a cache-aside read in order.
+  reworded: In what order does an application handle a read with lazy loading?
+  steps:
+    - Ask the cache for the key.
+    - On a hit, return the cached value.
+    - On a miss, read the value from the database.
+    - Store it in the cache with a TTL.
+    - Return the value to the caller.
+  terms:
+    - term: Cache-aside
+      definition: The application checks the cache and loads it from the source on a miss. Also called lazy loading.
+  lesson:
+    title: The application owns the cache
+    explanation: Only requested data gets cached, and a lost cache node just means more misses. Each miss costs three trips, and without a TTL or invalidation, values go stale.
+    source:
+      url: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Strategies.html
+      title: Caching strategies for Memcached, Amazon ElastiCache
+- id: which-cache-pattern
+  skill: pick-cache-pattern
+  asks: when
+  type: matching
+  prompt: Match each situation to the caching pattern that fits it best.
+  reworded: Which way of loading and updating a cache suits each of these?
+  matchHeading: Pattern
+  matchName: a pattern
+  pairs:
+    - item: Most data is never read, and the app should keep working if the cache dies
+      match: Cache-aside
+    - item: Recently changed records must be fresh in the cache right after each write
+      match: Write-through
+    - item: Page view counters where losing a few seconds of counts is acceptable
+      match: Write-behind
+    - item: Application code should never see the cache, only a data access layer
+      match: Read-through
+  extraMatches:
+    - No cache at all
+  lesson:
+    title: Who loads the cache, and when
+    explanation: Cache-aside loads on demand from the app. Read-through does the same from inside the cache layer. Write-through updates the cache on every write. Write-behind writes the cache first and the database later, trading durability for fast writes.
+    source:
+      url: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Strategies.html
+      title: Caching strategies for Memcached, Amazon ElastiCache
+- id: why-write-behind-risk
+  skill: pick-cache-pattern
+  asks: why
+  type: pick-one
+  prompt: Why is write-behind caching a poor fit for a connection's state in a sync platform?
+  reworded: What makes write-back caching risky for data that is a record of truth?
+  options:
+    - text: Writes sit in the cache before reaching the database, so a cache failure loses changes that callers were told succeeded
+      correct: true
+      reason: The database is the durable copy, and it lags behind until the flush.
+    - text: Write-behind makes every read slower
+      reason: Reads from the cache are fast. The risk is on writes.
+    - text: Write-behind can't batch writes
+      reason: Batching and collapsing repeated writes is its main benefit.
+    - text: Write-behind needs the database to be in the same process
+      reason: It works with any database. The gap before the flush is the problem.
+  lesson:
+    title: Fast writes, fragile durability
+    explanation: Write-behind suits data where losing a few seconds is harmless, like counters. For state other systems act on, write to the database first and treat the cache as a copy.
+- id: why-delete-not-set
+  skill: expire-and-invalidate
+  asks: why
+  type: pick-one
+  prompt: After updating a record in the database, why delete its cache key instead of writing the new value into the cache?
+  reworded: When invalidating on write, what's the advantage of removing the cached entry over overwriting it?
+  options:
+    - text: Two writers setting the cache can finish out of order and leave the older value, while a delete just sends the next read to the source
+      correct: true
+      reason: The next reader loads whatever the database holds now, which is the latest committed value.
+    - text: Deleting is always faster than setting
+      reason: Speed is similar. The point is avoiding out-of-order writes to the cache.
+    - text: Caches can't overwrite existing keys
+      reason: They can. Overwriting is what creates the race.
+    - text: Deleting also updates the database
+      reason: The database was already updated. The delete only clears the stale copy.
+  lesson:
+    title: Invalidate, then let reads reload
+    explanation: Commit to the database, then delete the key. A small race remains when a slow reader stores an old value after the delete, which is one reason to keep a TTL as well.
+- id: why-keep-ttl
+  skill: expire-and-invalidate
+  asks: why
+  type: prompt
+  prompt: You invalidate cache keys on every write. Why keep a TTL on them anyway, and how do you choose its length?
+  reworded: If writes already delete cached entries, what is a TTL still protecting against, and what should decide how long it is?
+  points:
+    - An invalidation can fail, like a crash between the database commit and the cache delete.
+    - A slow reader can store an old value just after the delete, and the TTL limits how long it lasts.
+    - Choose the length from how stale callers can tolerate and how often the source changes.
+    - Add jitter, so keys written together don't all expire together.
+  lesson:
+    title: The TTL bounds every mistake
+    explanation: Invalidation keeps data fresh most of the time, and the TTL caps how wrong it can be when invalidation misses. Base TTLs on measured hit rates and staleness, and revisit them.
+    source:
+      url: https://builder.aws.com/content/3K9TeXp6strMiJ4vhakpRD7BQWO/caching-challenges-and-strategies
+      title: Caching challenges and strategies
+- id: when-soft-hard-ttl
+  skill: expire-and-invalidate
+  asks: when
+  type: pick-one
+  prompt: When does a soft and hard TTL pair help, compared with a single TTL?
+  reworded: What situation does serving a cached value past its soft TTL, up to a hard TTL, handle well?
+  options:
+    - text: When the source is failing, so the client keeps serving the last good value until the hard TTL instead of failing too
+      correct: true
+      reason: After the soft TTL the client tries to refresh, and if that fails it falls back to the cached value.
+    - text: When the data must never be even slightly stale
+      reason: Serving past the soft TTL is a deliberate choice to accept staleness.
+    - text: When the cache is out of memory
+      reason: That's an eviction problem, not an expiry one.
+    - text: When every request is unique
+      reason: Then nothing is cached long enough for TTLs to matter.
+  lesson:
+    title: Stale beats down
+    explanation: A soft TTL triggers a refresh, and a hard TTL sets the limit on staleness. CDNs offer the same idea with stale-while-revalidate and stale-if-error.
+    source:
+      url: https://builder.aws.com/content/3K9TeXp6strMiJ4vhakpRD7BQWO/caching-challenges-and-strategies
+      title: Caching challenges and strategies
+- id: when-versioned-names
+  skill: expire-and-invalidate
+  asks: when
+  type: pick-one
+  prompt: A web app's JavaScript bundle is cached by browsers and a CDN. How do you let it be cached for a long time and still ship updates right away?
+  reworded: What lets static assets carry a very long max-age without users getting stuck on an old version?
+  options:
+    - text: Put a content hash or version in the file name, so each release uses new URLs
+      correct: true
+      reason: Old URLs can stay cached forever because nothing points at them anymore.
+    - text: Set max-age to zero on every asset
+      reason: That works but throws away the benefit of caching.
+    - text: Purge every browser cache on deploy
+      reason: Servers can't purge browser caches.
+    - text: Use the same file name and a shorter TTL on deploy day
+      reason: Users who fetched it the day before still have the old copy.
+  lesson:
+    title: A new name instead of an invalidation
+    explanation: Versioned keys and URLs turn a change into a new entry. The same trick works for cache keys, like adding a version number to a connection's key.
+- id: eviction-policy-fit
+  skill: choose-eviction
+  asks: when
+  type: matching
+  prompt: Match each access pattern to the Redis eviction policy that fits it.
+  reworded: Which maxmemory-policy suits each of these ways keys are read?
+  matchHeading: Policy
+  matchName: a policy
+  pairs:
+    - item: A small subset of keys gets most reads, and you have no reason to prefer anything else
+      match: allkeys-lru
+    - item: Steady favorites should survive a nightly job that reads many keys once
+      match: allkeys-lfu
+    - item: Every key is read about equally, in a repeating cycle
+      match: allkeys-random
+    - item: The app marks good eviction candidates by giving them short TTLs
+      match: volatile-ttl
+  extraMatches:
+    - noeviction
+  lesson:
+    title: Match the policy to the pattern
+    explanation: The Redis docs call allkeys-lru a good default when some keys are far more popular. LFU keeps frequent keys through scans, random suits even access, and volatile-ttl lets the app choose by expiry.
+    source:
+      url: https://redis.io/docs/latest/develop/reference/eviction/
+      title: Key eviction, Redis
+- id: why-scan-hurts-lru
+  skill: choose-eviction
+  asks: why
+  type: pick-one
+  prompt: A nightly export reads millions of keys once through the cache, and hit rates crash the next morning. Why, and which policy resists it better?
+  reworded: Why can a one-time pass over many keys empty an LRU cache of its useful data, and what policy helps?
+  options:
+    - text: Under LRU every key the export touched becomes recently used and pushes out the hot set, while LFU keeps keys read often over time
+      correct: true
+      reason: One read doesn't make a key frequent, so LFU evicts the export's keys first.
+    - text: The export deletes keys as it reads them
+      reason: Reading doesn't delete. Eviction does, when memory fills.
+    - text: LRU evicts keys at random
+      reason: It evicts the least recently used keys, which after the scan are the hot ones.
+    - text: TTLs reset during the export
+      reason: Reads don't reset TTLs. Recency is what the scan changes.
+  lesson:
+    title: Recency is easy to fake, frequency isn't
+    explanation: Redis LFU keeps a small probabilistic counter per key that decays over time, every minute by default, so steady favorites stay and old favorites eventually fade.
+    source:
+      url: https://redis.io/docs/latest/develop/reference/eviction/
+      title: Key eviction, Redis
+- id: noeviction-when-full
+  skill: choose-eviction
+  asks: what
+  type: pick-one
+  prompt: A Redis instance uses the noeviction policy and reaches maxmemory. What happens?
+  reworded: What does Redis do under noeviction once memory is full?
+  options:
+    - text: Commands that would add data fail with an error, while reads keep working
+      correct: true
+      reason: noeviction never drops keys, so the only option is to refuse new data.
+    - text: It evicts the least recently used keys
+      reason: That's allkeys-lru.
+    - text: It writes the extra data to disk
+      reason: Eviction policies don't spill to disk.
+    - text: It stops accepting connections
+      reason: Reads and other commands that don't add data still work.
+  lesson:
+    title: Full means errors
+    explanation: noeviction suits data you must not lose, not a cache. For a cache, pick an eviction policy, and if one instance must also hold data you have to keep, consider running two instances.
+    source:
+      url: https://redis.io/docs/latest/develop/reference/eviction/
+      title: Key eviction, Redis
+- id: stampede-math
+  skill: prevent-stampedes
+  asks: what
+  type: pick-one
+  prompt: A cached item is read 10 times a second and takes 3 seconds to rebuild. When it expires, with no protection, how many requests rebuild it?
+  reworded: With 10 reads a second and a 3-second rebuild, how big is the stampede when the key expires?
+  options:
+    - text: About 30
+      correct: true
+      reason: Every read during the 3-second rebuild misses and starts its own rebuild.
+    - text: "1"
+      reason: That's what coalescing or a lock gives you, not the default.
+    - text: "10"
+      reason: That counts only one second of reads. The rebuild takes three.
+    - text: "3"
+      reason: That's the rebuild time, not the number of requests.
+  lesson:
+    title: Stampedes grow with rebuild time
+    explanation: The number of rebuilds is the read rate times the rebuild time. Worse, the rebuilds compete for the same database, which slows each one and lets more requests join.
+    source:
+      url: https://www.vldb.org/pvldb/vol8/p886-vattani.pdf
+      title: Optimal Probabilistic Cache Stampede Prevention
+- id: stampede-tool-fit
+  skill: prevent-stampedes
+  asks: when
+  type: matching
+  prompt: Match each situation to the stampede protection that fits it best.
+  reworded: Which way of preventing a cache stampede suits each of these cases?
+  matchHeading: Protection
+  matchName: a protection
+  pairs:
+    - item: Many requests on one host miss the same key at the same moment
+      match: Request coalescing in the process
+    - item: Hundreds of hosts would all rebuild the same expensive value
+      match: A lock in the shared cache, with others serving stale
+    - item: A popular key expires on a schedule and rebuilds take seconds
+      match: Early refresh with jitter
+    - item: A handful of known hot keys, like the provider catalog
+      match: A background job that refreshes them
+  extraMatches:
+    - A longer database timeout
+  lesson:
+    title: Make one request do the work
+    explanation: Coalescing joins callers within a process. A lock does the same across hosts. Early refresh spreads rebuilds before expiry. Background refresh keeps known hot keys from ever expiring under load.
+    source:
+      url: https://builder.aws.com/content/3K9TeXp6strMiJ4vhakpRD7BQWO/caching-challenges-and-strategies
+      title: Caching challenges and strategies
+- id: why-lock-token
+  skill: prevent-stampedes
+  asks: why
+  type: pick-one
+  prompt: A rebuild lock is taken with SET key token NX PX 5000. Why store a random token and release the lock only if the stored value still matches it?
+  reworded: In a simple Redis lock, what goes wrong if a client releases it with a plain DEL?
+  options:
+    - text: A slow client whose lock already expired would otherwise delete a lock another client has since taken
+      correct: true
+      reason: Checking the token first makes sure each client only releases its own lock.
+    - text: The token makes SET faster
+      reason: The token is about ownership, not speed.
+    - text: NX needs a random value to work
+      reason: NX only checks that the key doesn't exist. The value can be anything.
+    - text: Without a token the lock never expires
+      reason: PX sets the expiry whatever the value is.
+  lesson:
+    title: Release only what you own
+    explanation: The Redis docs describe this pattern and release the lock with a script that deletes the key only if it holds the caller's token. For stampedes an occasional double rebuild is harmless, while locks that guard correctness need stronger designs.
+    source:
+      url: https://redis.io/docs/latest/commands/set/
+      title: SET, Redis
+- id: why-early-refresh
+  skill: prevent-stampedes
+  asks: why
+  type: prompt
+  prompt: How does probabilistic early refresh, like XFetch, prevent stampedes, and what does it depend on?
+  reworded: Explain how refreshing a cached value randomly before it expires stops a crowd of rebuilds.
+  points:
+    - Each read decides independently, at random, whether to refresh before the value expires.
+    - The chance grows as expiry gets closer and as the rebuild takes longer.
+    - Usually one request refreshes early while the rest keep reading the cached value, so the key never goes empty.
+    - A tuning value, beta, defaults to 1 and can be raised to refresh earlier.
+  misconception: That adding jitter to the TTL alone stops a stampede on one popular key.
+  lesson:
+    title: Refresh before anyone misses
+    explanation: XFetch refreshes when now minus rebuild time times beta times the log of a random number reaches the expiry. Because the log is negative, each read looks a random distance into the future, scaled by how slow the rebuild is.
+    source:
+      url: https://www.vldb.org/pvldb/vol8/p886-vattani.pdf
+      title: Optimal Probabilistic Cache Stampede Prevention
+- id: hot-cache-key-fixes
+  skill: handle-hot-cache-keys
+  asks: when
+  type: prompt
+  prompt: One cache key, the provider catalog, gets hundreds of thousands of reads a second and maxes out its shard while the others sit idle. What can you do?
+  reworded: A single very popular key is overloading one node of a sharded cache. How do you spread the load?
+  points:
+    - Put a short in-process cache in front, with a TTL of a few seconds, so each host reads the key once per interval.
+    - Store several copies under suffixed keys that land on different shards, have readers pick one at random, and have writers update or delete all of them.
+    - Add read replicas for the shard so reads spread across more nodes.
+    - Track per-key traffic so hot keys are found before they cause an incident.
+  lesson:
+    title: Spread one key over many places
+    explanation: In a sharded cache each key lives on one shard. Local copies and suffixed copies spread its reads, the same idea as write sharding in a database.
+- id: why-local-hot-key
+  skill: handle-hot-cache-keys
+  asks: why
+  type: pick-one
+  prompt: Why does a two-second in-process cache in front of Redis help so much with one very hot key?
+  reworded: What does a very short per-host cache do for a key that every request reads?
+  options:
+    - text: Each host reads the key from Redis about once every two seconds, however many requests it serves, and staleness is capped at two seconds
+      correct: true
+      reason: The hot shard's load drops from every request in the fleet to about one read per host every two seconds.
+    - text: It makes Redis store the key on every shard
+      reason: The local cache lives in each host, not in Redis.
+    - text: It removes the need for a TTL in Redis
+      reason: Redis still needs its own expiry or invalidation.
+    - text: It guarantees every host sees the same value
+      reason: Hosts can differ for up to the local TTL.
+  lesson:
+    title: A tiny TTL goes a long way
+    explanation: For a hot key, even a few seconds of local caching cuts shared cache traffic by orders of magnitude, at the cost of hosts being briefly out of step.
+- id: why-negative-cache
+  skill: cache-negatives
+  asks: why
+  type: pick-one
+  prompt: Why cache "not found" results and errors from a dependency?
+  reworded: What goes wrong if a service caches only successful lookups?
+  options:
+    - text: Requests for missing or failing things would hit the source every time, which can turn a small fault into an outage
+      correct: true
+      reason: With nothing cached, every caller retries the failing or missing resource directly.
+    - text: Errors are cheaper to store than values
+      reason: Size isn't the point. Protecting the source is.
+    - text: It lets you skip error handling in callers
+      reason: Callers still get the error. It just comes from the cache.
+    - text: Missing records always come back later
+      reason: Some never exist. That's why lookups for them keep missing.
+  lesson:
+    title: Cache the absence too
+    explanation: When a dependency fails or a resource doesn't exist, cache that result with its own, shorter TTL. Services that cached nothing during errors have kept hammering failing resources and made outages worse.
+    source:
+      url: https://builder.aws.com/content/3K9TeXp6strMiJ4vhakpRD7BQWO/caching-challenges-and-strategies
+      title: Caching challenges and strategies
+- id: when-negative-ttl
+  skill: cache-negatives
+  asks: when
+  type: pick-one
+  prompt: Your API caches "record not found" for a record id. A provider sync creates that record a second later. What should happen?
+  reworded: How do you keep a cached "not found" from hiding a record that was just created?
+  options:
+    - text: Give negative entries a short TTL, and delete the negative entry when the record is created
+      correct: true
+      reason: The short TTL limits the damage, and the delete on create removes it right away.
+    - text: Cache "not found" for 24 hours to protect the database
+      reason: The new record would look missing for a day.
+    - text: Never cache "not found" for anything
+      reason: Then lookups for missing ids all go to the database.
+    - text: Let the customer retry until it appears
+      reason: That pushes your cache's staleness onto the customer.
+  lesson:
+    title: Short and invalidated
+    explanation: Negative entries are more likely to become wrong, since the thing can be created at any time. Keep their TTL short and clear them on create. CloudFront has the same idea for error responses, with a configurable time it keeps them.
+    source:
+      url: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Expiration.html
+      title: Manage how long content stays in the cache (expiration)
+- id: when-not-to-cache
+  skill: decide-to-cache
+  asks: when
+  type: pick-one
+  prompt: In which of these situations is adding a cache the weakest idea?
+  reworded: Which case gets the least benefit from a cache?
+  options:
+    - text: Every request asks for a different combination of filters, and the database query is already fast with headroom
+      correct: true
+      reason: The hit rate would be near zero, and the source doesn't need protecting.
+    - text: The same provider catalog is read on every page load
+      reason: High reuse and slow change make it a good cache candidate.
+    - text: A rate-limited provider endpoint returns data that changes hourly
+      reason: Caching protects the rate limit and the data tolerates staleness.
+    - text: Connection objects are read thousands of times per write
+      reason: Many reads per write is where caching pays off.
+  lesson:
+    title: Caches need reuse
+    explanation: A cache helps when the same data is read many times, the source is slow, costly, or limited, and callers tolerate some staleness. Unique requests, fast sources, write-heavy data, and data that must be exact are better served without one.
+    source:
+      url: https://builder.aws.com/content/3K9TeXp6strMiJ4vhakpRD7BQWO/caching-challenges-and-strategies
+      title: Caching challenges and strategies
+- id: why-cold-cache-danger
+  skill: decide-to-cache
+  asks: why
+  type: prompt
+  prompt: Why can a cache that works well for a year end up causing an outage, and how do you guard against it?
+  reworded: How can a healthy cache hide a capacity problem, and what keeps it from becoming one?
+  points:
+    - Over time the database or dependency gets sized for only the traffic that misses.
+    - If the cache empties after a failure, a flush, or a cold start, the full load lands on a source that can no longer take it.
+    - Both the dependency and your service can go down together.
+    - Keep the source able to survive without the cache, or cap and shed the fallback load, and load test with the cache turned off.
+  lesson:
+    title: The cache becomes a dependency
+    explanation: A cache that absorbs most traffic hides how much capacity the source really needs. Treat it as part of the system's availability, and plan for running without it.
+    source:
+      url: https://builder.aws.com/content/3K9TeXp6strMiJ4vhakpRD7BQWO/caching-challenges-and-strategies
+      title: Caching challenges and strategies
+- id: stale-cost-fit
+  skill: decide-to-cache
+  asks: when
+  type: matching
+  prompt: Match each kind of data to how it should be cached, given what staleness would cost.
+  reworded: Given the cost of serving each of these stale, how should it be cached?
+  matchHeading: Approach
+  matchName: an approach
+  pairs:
+    - item: API key revocations
+      match: Read from the source, or a very short TTL plus invalidation
+    - item: Sync checkpoints and idempotency keys
+      match: Don't cache, read the source of truth
+    - item: A connection's health status shown to customers
+      match: A short TTL plus invalidation on change
+    - item: The provider catalog and logos
+      match: A long TTL or versioned keys
+  extraMatches:
+    - Write-behind with no TTL
+  lesson:
+    title: Ask what wrong costs
+    explanation: Stale permissions grant access someone lost. Stale checkpoints repeat or skip work. Stale health status misleads customers. A stale catalog is a small delay. Set each TTL from that cost.
