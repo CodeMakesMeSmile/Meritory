@@ -1,0 +1,100 @@
+{
+  "exercise": "prime-lockers",
+  "cases": [
+    {
+      "uuid": "db14e539-60d9-4b7f-a012-522680a8ab33",
+      "description": "ten lockers",
+      "property": "primeLockers",
+      "input": {
+        "lockers": 10
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "a357559b-2787-4bf4-b079-0138a8d8054c",
+      "description": "a hundred lockers",
+      "property": "primeLockers",
+      "input": {
+        "lockers": 100
+      },
+      "expected": 25
+    },
+    {
+      "uuid": "363e953c-a905-4177-a3a3-5513dd6d7387",
+      "description": "the last locker is prime",
+      "property": "primeLockers",
+      "input": {
+        "lockers": 97
+      },
+      "expected": 25
+    },
+    {
+      "uuid": "6954b9f3-e4ee-4bfd-aa5f-4e6758547e8d",
+      "description": "ten thousand lockers",
+      "property": "primeLockers",
+      "input": {
+        "lockers": 10000
+      },
+      "expected": 1229
+    },
+    {
+      "uuid": "c226af6e-dc36-4c28-b6a0-4b986aeb5c5a",
+      "description": "a million lockers",
+      "property": "primeLockers",
+      "input": {
+        "lockers": 1000000
+      },
+      "expected": 78498
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "3c677e67-4936-4b25-beb8-54620e346402",
+          "description": "no lockers",
+          "property": "primeLockers",
+          "input": {
+            "lockers": 0
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "f9a978d3-7a9a-4eb6-b9d9-a0d706f11884",
+          "description": "locker 1 isn't prime",
+          "property": "primeLockers",
+          "input": {
+            "lockers": 1
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "fc003592-1392-406a-8672-906add34d6a9",
+          "description": "locker 2 is the first prime",
+          "property": "primeLockers",
+          "input": {
+            "lockers": 2
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "6f2cff50-bb78-4c37-b59e-d676a278100f",
+          "description": "a square of a prime is crossed off",
+          "property": "primeLockers",
+          "input": {
+            "lockers": 49
+          },
+          "expected": 15
+        },
+        {
+          "uuid": "f38094d9-4d7d-498b-bf8d-0a79ed0f5772",
+          "description": "the largest school",
+          "property": "primeLockers",
+          "input": {
+            "lockers": 5000000
+          },
+          "expected": 348513
+        }
+      ]
+    }
+  ]
+}

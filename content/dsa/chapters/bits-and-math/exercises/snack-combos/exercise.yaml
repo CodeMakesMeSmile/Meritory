@@ -1,0 +1,19 @@
+id: snack-combos
+kind: coding
+title: Snacks that spend the voucher
+difficulty: medium
+skills:
+  - subset-masks
+  - bit-operators
+sibling: fewest-volunteers
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: snackCombos
+  params:
+    - name: prices
+      type: int[]
+    - name: budget
+      type: int
+  returns: int

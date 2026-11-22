@@ -1,0 +1,20 @@
+id: bits-and-math
+title: Bits and math
+order: 18
+skills:
+  - id: twos-complement
+    name: Read binary, and explain how two's complement stores negative numbers
+  - id: bit-operators
+    name: Use AND, OR, XOR, and shifts, and know how each language treats them
+  - id: xor-odd-one-out
+    name: Find the value without a partner with XOR
+  - id: count-set-bits
+    name: Count the set bits, and clear the lowest one with n & (n - 1)
+  - id: subset-masks
+    name: List every subset of a small set with a bitmask
+  - id: gcd-euclid
+    name: Find the greatest common divisor with Euclid's algorithm, and the least common multiple from it
+  - id: power-mod
+    name: Raise a number to a huge power under a modulo without overflow
+  - id: prime-sieve
+    name: Find the primes up to n with a sieve, and in a window far from zero

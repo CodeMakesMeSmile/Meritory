@@ -1,0 +1,17 @@
+id: lost-sock
+kind: coding
+title: The sock without a partner
+difficulty: easy
+skills:
+  - xor-odd-one-out
+  - bit-operators
+sibling: missing-ticket
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: loneSock
+  params:
+    - name: socks
+      type: int[]
+  returns: int

@@ -1,0 +1,110 @@
+{
+  "exercise": "square-tiles",
+  "cases": [
+    {
+      "uuid": "b3546b13-b608-4272-966c-a5746342d71e",
+      "description": "finds the biggest tile for a 12 by 18 floor",
+      "property": "largestTile",
+      "input": {
+        "width": 12,
+        "length": 18
+      },
+      "expected": 6
+    },
+    {
+      "uuid": "754ed2c6-0a19-4c03-88c8-d2135567da1e",
+      "description": "sides with no common factor need unit tiles",
+      "property": "largestTile",
+      "input": {
+        "width": 7,
+        "length": 9
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "c5a87fba-f0af-4dee-a61b-76fd9b7544f5",
+      "description": "one side divides the other",
+      "property": "largestTile",
+      "input": {
+        "width": 5,
+        "length": 35
+      },
+      "expected": 5
+    },
+    {
+      "uuid": "aa3e1e23-f2ff-4900-934d-8edfb8662007",
+      "description": "a square floor takes one tile",
+      "property": "largestTile",
+      "input": {
+        "width": 64,
+        "length": 64
+      },
+      "expected": 64
+    },
+    {
+      "uuid": "327f33ff-94bc-48bb-97c6-9eb154403a81",
+      "description": "a long thin hall",
+      "property": "largestTile",
+      "input": {
+        "width": 270,
+        "length": 192
+      },
+      "expected": 6
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "d077e019-5dfa-49f4-bceb-dfa61573185b",
+          "description": "a floor one unit wide",
+          "property": "largestTile",
+          "input": {
+            "width": 1,
+            "length": 1000
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "3b805b11-5052-4e91-b800-ba7c1528afc7",
+          "description": "the order of the sides doesn't matter",
+          "property": "largestTile",
+          "input": {
+            "width": 1000,
+            "length": 40
+          },
+          "expected": 40
+        },
+        {
+          "uuid": "00e03ca9-66fa-40de-a4d9-0272e9c76d43",
+          "description": "the largest 32-bit sides",
+          "property": "largestTile",
+          "input": {
+            "width": 2147483647,
+            "length": 2147483647
+          },
+          "expected": 2147483647
+        },
+        {
+          "uuid": "b2b1f92f-53d2-4936-914b-b015a5346c06",
+          "description": "large sides with a large common factor",
+          "property": "largestTile",
+          "input": {
+            "width": 2000000000,
+            "length": 1500000000
+          },
+          "expected": 500000000
+        },
+        {
+          "uuid": "42526b02-daa0-4f94-9a1e-bfa35c62bdf1",
+          "description": "neighbouring large numbers share only 1",
+          "property": "largestTile",
+          "input": {
+            "width": 2147483646,
+            "length": 2147483647
+          },
+          "expected": 1
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "exercise": "signal-mismatch",
+  "cases": [
+    {
+      "uuid": "51e8eb8d-4115-4f50-973a-45b02f908464",
+      "description": "counts the bits that differ",
+      "property": "mismatchedBits",
+      "input": {
+        "first": 1,
+        "second": 4
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "f82ed5df-9481-4e3c-b22c-b74f1e1af280",
+      "description": "matching readings differ nowhere",
+      "property": "mismatchedBits",
+      "input": {
+        "first": 12345,
+        "second": 12345
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "b00597bf-cccc-49e6-8f88-b8052b9af30b",
+      "description": "readings one bit apart",
+      "property": "mismatchedBits",
+      "input": {
+        "first": 8,
+        "second": 9
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "26757242-9631-4ffc-b63e-fc6e093acc4b",
+      "description": "a larger pair of readings",
+      "property": "mismatchedBits",
+      "input": {
+        "first": 1000000007,
+        "second": 998244353
+      },
+      "expected": 9
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "3ccc2eb8-ce77-49e8-ac20-cd96c5f9f127",
+          "description": "every bit differs between -1 and 0",
+          "property": "mismatchedBits",
+          "input": {
+            "first": -1,
+            "second": 0
+          },
+          "expected": 32
+        },
+        {
+          "uuid": "fbbc50b5-8143-4a98-9a55-87e2a22cac57",
+          "description": "a negative and a positive reading",
+          "property": "mismatchedBits",
+          "input": {
+            "first": -8,
+            "second": 7
+          },
+          "expected": 32
+        },
+        {
+          "uuid": "fab780d5-7d92-455f-a421-14a3a1d7d3b2",
+          "description": "only the sign bit differs",
+          "property": "mismatchedBits",
+          "input": {
+            "first": -2147483648,
+            "second": 0
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "84b604dc-e5cf-41ba-9ce3-760957e5dfc0",
+          "description": "the smallest and largest 32-bit ints",
+          "property": "mismatchedBits",
+          "input": {
+            "first": -2147483648,
+            "second": 2147483647
+          },
+          "expected": 32
+        },
+        {
+          "uuid": "2c4ea79c-e89e-4be7-9718-05afb49a4cf4",
+          "description": "two negative readings",
+          "property": "mismatchedBits",
+          "input": {
+            "first": -5,
+            "second": -6
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "0cee6f5c-03ae-4794-a6cb-3c1a743bd382",
+          "description": "both readings are 0",
+          "property": "mismatchedBits",
+          "input": {
+            "first": 0,
+            "second": 0
+          },
+          "expected": 0
+        }
+      ]
+    }
+  ]
+}

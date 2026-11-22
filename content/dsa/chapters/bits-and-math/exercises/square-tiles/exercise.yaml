@@ -1,0 +1,18 @@
+id: square-tiles
+kind: coding
+title: Biggest square tile
+difficulty: easy
+skills:
+  - gcd-euclid
+sibling: bus-meetup
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: largestTile
+  params:
+    - name: width
+      type: int
+    - name: length
+      type: int
+  returns: int

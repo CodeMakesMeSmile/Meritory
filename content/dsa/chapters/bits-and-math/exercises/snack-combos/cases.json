@@ -1,0 +1,114 @@
+{
+  "exercise": "snack-combos",
+  "cases": [
+    {
+      "uuid": "bb770c73-d839-4021-9c9e-7d78ba0b0415",
+      "description": "counts the groups that spend the voucher exactly",
+      "property": "snackCombos",
+      "input": {
+        "prices": [2, 3, 5, 1],
+        "budget": 6
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "66abaf35-faa7-4c24-bb94-2176094f8d70",
+      "description": "snacks with the same price make different groups",
+      "property": "snackCombos",
+      "input": {
+        "prices": [2, 2, 2],
+        "budget": 4
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "61bbce3b-1a37-410e-a925-3d4a796e1c5f",
+      "description": "every snack is needed",
+      "property": "snackCombos",
+      "input": {
+        "prices": [1, 2, 4, 8],
+        "budget": 15
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "bf75856b-8562-48d7-b618-2f62b4e7d7b7",
+      "description": "no group adds up",
+      "property": "snackCombos",
+      "input": {
+        "prices": [5, 10, 20],
+        "budget": 3
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "7b244948-1556-49a0-b5c4-04faf0cf588b",
+      "description": "fifteen snacks",
+      "property": "snackCombos",
+      "input": {
+        "prices": [18, 25, 2, 31, 23, 9, 37, 9, 5, 30, 13, 35, 13, 12, 13],
+        "budget": 100
+      },
+      "expected": 212
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "f9838845-4f21-49d0-8e31-a09b62d8c401",
+          "description": "no snacks at all",
+          "property": "snackCombos",
+          "input": {
+            "prices": [],
+            "budget": 5
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "e05459d3-ba42-4137-b336-dfc73b2a2c98",
+          "description": "one snack that matches",
+          "property": "snackCombos",
+          "input": {
+            "prices": [7],
+            "budget": 7
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "4f54f316-f5c7-4771-a7d7-4d84fefa375c",
+          "description": "one snack that doesn't match",
+          "property": "snackCombos",
+          "input": {
+            "prices": [7],
+            "budget": 6
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "59ec1a29-e571-418d-897b-c811176fcb80",
+          "description": "fifteen snacks of one coin each",
+          "property": "snackCombos",
+          "input": {
+            "prices": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            "budget": 7
+          },
+          "expected": 6435
+        },
+        {
+          "uuid": "6fcaa472-c6e2-4465-8eba-09ca6d6bd1a9",
+          "description": "the dearest snacks and the largest voucher",
+          "property": "snackCombos",
+          "input": {
+            "prices": [
+              1000000, 1000000, 1000000, 1000000, 1000000, 1000000, 1000000,
+              1000000, 1000000, 1000000, 1000000, 1000000, 1000000, 1000000,
+              1000000
+            ],
+            "budget": 15000000
+          },
+          "expected": 1
+        }
+      ]
+    }
+  ]
+}

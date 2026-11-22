@@ -1,0 +1,17 @@
+id: missing-ticket
+kind: coding
+title: The missing raffle ticket
+difficulty: easy
+skills:
+  - xor-odd-one-out
+  - bit-operators
+sibling: lost-sock
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: missingTicket
+  params:
+    - name: tickets
+      type: int[]
+  returns: int

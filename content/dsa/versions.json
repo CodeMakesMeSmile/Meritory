@@ -15,6 +15,9 @@
   "card/backtrack-template-steps": [
     "e4301966d07f09a1fd621e98405744200c3c67319621db36a386364df4df9c98"
   ],
+  "card/bit-operator-results": [
+    "21dc442b9893a6d7179e51db8039418f47f956cf4475902e8af67119dac7c6d8"
+  ],
   "card/bracket-failures": [
     "a8b385d44b70259e0794d46df8c482ee13610834d5b6a086cba4c1404ab2447b"
   ],
@@ -26,6 +29,9 @@
   ],
   "card/circuit-steps": [
     "d42e4dc43d88268cd4af9be5deead9fea28b14e3e1b2c3480cb0c07ae042cb9b"
+  ],
+  "card/clear-lowest-bit-steps": [
+    "78212fd698051f4f51f5e1edb3cda7a7e6536d6c0ca042e3f9bf873cfabef3e4"
   ],
   "card/coding-round-steps": [
     "a5bfc82ed9ff49577f3319569f86cbbd54e95f5d9bae13d8b95fc7309f7eda12"
@@ -59,6 +65,9 @@
   ],
   "card/ends-search-steps": [
     "7adf57ceffa29b2c15fed3e8dadf732d1297528850d9ac3ab42cf446d8c662ca"
+  ],
+  "card/euclid-steps": [
+    "cb7bf4ec2c34d5de286c390bf79a82e2810d059af0fd4b1e471afeef0024c44b"
   ],
   "card/exchange-steps": [
     "e12ad78cdecbe1726fff2bc2c1dc14ca4367c70b5adc258e48310907a349709e"
@@ -151,6 +160,9 @@
   "card/loop-shape-costs": [
     "06bfe8da4adee25720c9e1fd37f97863ddb301e9605a9d3caa2007fcf909663e"
   ],
+  "card/mask-subset-steps": [
+    "8805d0c9dcba197a25f85de3b990b05c8a5b7a3621562ca95163461b3c9a5477"
+  ],
   "card/median-add-steps": [
     "12b0052fd21d289bbd186a96177dd0772585caede4aa2051d3d21ced623a30fb"
   ],
@@ -178,11 +190,17 @@
   "card/monotonic-stack-steps": [
     "c4125eabb1ea591cec65ad48a6aaf776dd61092bc2a9f3f81d66d37569fcc4ff"
   ],
+  "card/negate-twos-complement": [
+    "6049668630f93b59e3469d0154fe0334f421cbe4d20cc66659be82b38140049a"
+  ],
   "card/negative-cycle-steps": [
     "ed74013233d8f14045fbe045ea5bb208a84f1d0404e46e585fda4a6fd3c25e68"
   ],
   "card/orders-of-a-tree": [
     "5d1b566ec9b8103210bab04485bcc77634aec9493e929eb4d450010b6ea9450e"
+  ],
+  "card/overflow-by-language": [
+    "d6f86ae953b29a4d523cfcdd11dc78706c03cf09419a17fdc5e31782cb6c85bd"
   ],
   "card/pair-search-steps": [
     "69ca8dd4ca45400b30b95a6ba399fd28d8c3dbe538afe2bedf321c4960a4a9bb"
@@ -192,6 +210,9 @@
   ],
   "card/postfix-steps": [
     "195dc5a4622d3464c6e7ee60d62a02862bb383eda9fd125fcb613775995eb705"
+  ],
+  "card/power-by-squaring-steps": [
+    "9566778bbb9c10f0c36582da2c7bbab4626eb5e3ac709de680789164ef1d16d9"
   ],
   "card/prefix-count-steps": [
     "0c6c6bd5aa04ca47c845d10c43fee594c88f5d98b6170ca4d369ed775e0b3a03"
@@ -298,8 +319,14 @@
   "card/when-bst-or-plain": [
     "22696ee6137fbafb6e2f774bc29d7647896d526ae07bac86e791bd6d19a7dfcf"
   ],
+  "card/when-builtin-bitcount": [
+    "91e27099eb198105bec1a6aee4a08bd4b5684550da102271fccd0c81ed84f8a1"
+  ],
   "card/when-capacity-too-big": [
     "df9f9a5474e6484e23e21b75d32d0241c898496ab50817982aba14cf6785a8ee"
+  ],
+  "card/when-cast-first": [
+    "89564fbbe483df745e2378cc6cf8f88d6ab46e9345dd3b9c2363e7c7cb6e03af"
   ],
   "card/when-circle-twice": [
     "6b6b43000a194e0f0c9705add13d9601eaa300a9eca08f4a4cabd729f63bb7ef"
@@ -330,6 +357,9 @@
   ],
   "card/when-dfs-path-wrong": [
     "cc17e4d908d6deee258b92183c3b7c02ecf408e7b95e5e21999055ad5c8472cc"
+  ],
+  "card/when-divide-first": [
+    "22daa79998b145c86be734dcbc0d3fabf405237cc78529ac0bf79147b35c0232"
   ],
   "card/when-division-rounds": [
     "fb8f833b9ba724f2f3020bf5d7754c51620008e732e38a4616333c33f0b32d68"
@@ -415,6 +445,9 @@
   ],
   "card/when-markers": [
     "d335f23c1ba92ccbfb149860577d6958c939dfd75e2f71f7a28fd12edd709a23"
+  ],
+  "card/when-masks-fit": [
+    "30a2069ce29a504245384be7a80296653c99e176119f4824394153c6abe72ea7"
   ],
   "card/when-median-is-mean": [
     "1b06be3806f5550a77a4bfbb7e45d8a0005a388e9549465d40611fb9fcaa7db0"
@@ -506,6 +539,9 @@
   "card/when-set-or-pointers": [
     "dcc1c09c3533a47a8c78058a2688cc0412ecce3faccc87496ba3f752aed1034d"
   ],
+  "card/when-sieve-or-trial": [
+    "927f5f09e034492afbc92fac10605177f7f093edc7a91cf171df09872e6a900f"
+  ],
   "card/when-signal-never-arrives": [
     "0636625611e751c2060ab2b6d037da278b0d14c6c81285979d648c4e4fb5e10f"
   ],
@@ -587,6 +623,9 @@
   "card/when-union-find": [
     "a674ed063127443f9d17cbdd9b7ea08260b87633f8a0a5209e7cb665461f8b7e"
   ],
+  "card/when-unsigned-shift": [
+    "bdbf8daa4b4db745a64a8c56d0c8276dcf1a65f40d870508195e68a939e31586"
+  ],
   "card/when-which-structure": [
     "c646d08beae06e58ae3bd99c6089ce3c5fe3de11619699fba12b818784e694ca"
   ],
@@ -595,6 +634,9 @@
   ],
   "card/when-window-fits": [
     "eae91cbe9c5aae2ae304717f9a41bdb3527d61b3ea50cab1f0c383ee2e895fa3"
+  ],
+  "card/when-xor-not-set": [
+    "5dabc275e3e18f26c85e3457de46adc705d29b8056df384db074e2d712e0ed07"
   ],
   "card/when-zero-one": [
     "b83362372d42e1edb290a1986736a89e1cef0897108e9ef4e5b364a694f0beea"
@@ -628,6 +670,9 @@
   ],
   "card/why-biggest-coin-fails": [
     "a469ce798927a0ab3343ada4556da7367f3355f56d57e811c9960640297147a9"
+  ],
+  "card/why-bigint-product": [
+    "47aa165eb1fc25d4b0bef23b6b09d3f5b2fc52bc496f9a36ffe05987c55ef371"
   ],
   "card/why-bounds-not-children": [
     "e87efa83fd2dface2bdbda910efc317d4cb2d205fb5d7107d40827afb0f6d52a"
@@ -725,6 +770,9 @@
   "card/why-ends-first": [
     "6819ad51123b536d65da4c1f5ff8d5de2fcc5eecf0f7a301bddf923a08fd70a0"
   ],
+  "card/why-euclid-works": [
+    "e65401b662bf1ef8fbec178307208ff49886d8de609c656bdd30324c0e31c71a"
+  ],
   "card/why-exactly-not-direct": [
     "eb2e6326033a265ee5b6fa8a824fc3fe83f97e6044cbff809e050b3044ecb6af"
   ],
@@ -779,6 +827,9 @@
   "card/why-insert-front-slow": [
     "57f18cd94a733ae538f9d0bd9d8b0a1cb38d7675be897553bc91b020bb3ae591"
   ],
+  "card/why-js-shift-negative": [
+    "c70d727f17801bb9a02493c032f93de5cc8d586d823c4927efe7cbe187f415e4"
+  ],
   "card/why-kahn-leaves-cycles": [
     "42859dd09aa9adf8aca0b21e7b93f0a978511fa58e40e5e5f90ca935134c533e"
   ],
@@ -803,6 +854,9 @@
   "card/why-mark-seen-graph": [
     "b2016c9defa54ab47050fdcaf43483ff7928b359d5e4a5db8675a07b4694f538"
   ],
+  "card/why-mask-combine": [
+    "c285fe2db2997793f5b8ac805dca785a2c3f7ea5b535e42c2979605e64392bcf"
+  ],
   "card/why-max-keeps-dijkstra": [
     "9364db0aa2d08356286a294a2fc00bc4d135a16d2405992fa24e86193a3e6a96"
   ],
@@ -814,6 +868,9 @@
   ],
   "card/why-min-heap-for-largest": [
     "7f23bee12f66dc7445d76a080a983b060929ea55ce5a2c71779b960a45950680"
+  ],
+  "card/why-min-int-negate": [
+    "239c493d0eecdfbfcff6906c7e529cf927d1a943df5751b250f2dea671fe9685"
   ],
   "card/why-min-per-entry": [
     "e7613b01bc0a923fefcb39b5569b1a5c27f3afa2d0ffc3f80badfa5692ed9a57"
@@ -835,6 +892,9 @@
   ],
   "card/why-move-shorter-post": [
     "55366fa2e1c9a51be5c97461bee5950b7677acacdbc8ffc366f0addf6c1b2839"
+  ],
+  "card/why-n-and-n-minus-one": [
+    "b0e8c5381abbb8c91926ad971aa54be6ab3322fc3fff98fe625c717fc03cb1cc"
   ],
   "card/why-n-minus-one-rounds": [
     "7c0d1cf93570a5e82559df2f6028344ba0297c73cc24ecdf4f6f1dee8d70dda6"
@@ -883,6 +943,9 @@
   ],
   "card/why-prim-pushes-weight": [
     "2a2a80c27d84612b9815645c99d0d27e7f517928e15862e1fecc84f7e9756708"
+  ],
+  "card/why-python-mask": [
+    "2d65b952608fe608f592ae0f5bcaab20c65a6c2a20aaa105fef60dc6985e702f"
   ],
   "card/why-queue-for-fewest": [
     "c7105c3dfcf9fe9a9a2dd2e366eef0993ceff88942d7d53a51a4ad1fa5a819f4"
@@ -937,6 +1000,9 @@
   ],
   "card/why-settle-lower-side": [
     "3324c5ee9262ace678ccc6e3e947f47638464094c85bd5dd3df580a1ec03710f"
+  ],
+  "card/why-sieve-from-square": [
+    "9fde1243be66110c967ef8538ff2f164e875e57126e3811e9dcd929f61636d68"
   ],
   "card/why-skip-past-failure": [
     "222a5ecf2a9b750a66469177d755d8a88688bceaf11378ea4d3f02ee6acca8b6"
@@ -1037,6 +1103,9 @@
   "card/why-two-traversals": [
     "b4743761d6c049710877c08b5695900540757edf358a79126b888c3fae1a0030"
   ],
+  "card/why-twos-complement": [
+    "c9ca942574be7c773bdde93b1e6c062a624a537712415797a5c25f4b73b45252"
+  ],
   "card/why-undo-after-explore": [
     "13c74d159be8027717012b2fd1e4fa94bc656d0dab621527d30a7d013da13960"
   ],
@@ -1057,6 +1126,12 @@
   ],
   "card/why-write-never-passes-read": [
     "611aba8fe0dc1bad002c661b476382a3b74f4c6994844b2e413dcd020e559221"
+  ],
+  "card/why-xor-finds-lone": [
+    "864de1cfb62f9c2ef56864b86f97c9ab72393b68524cdd6403306cf4c1726ef8"
+  ],
+  "card/why-xor-missing": [
+    "b002d7764e19a014b0a91ddfa6422234039266ee03185afb6a6c3d4514579301"
   ],
   "card/why-zero-edges-front": [
     "70fb411214b70347b3baadb20e057a2d03454b302f0a91376bf84dfae45c5ded"
@@ -1081,6 +1156,9 @@
   ],
   "chapter/binary-search": [
     "918c1d6709d362d5ac8f030df5726887f757c15105e79f4a61df1ce1229fdd84"
+  ],
+  "chapter/bits-and-math": [
+    "24a4097cfe0f01f811d8bf896f5faaccc67c80ef74bd0677bd7afe296bc978b1"
   ],
   "chapter/dp-1d": [
     "3772ab444136d5c821d900de04e1d49b4051f8188418af834530fa3383b3b48b"
@@ -1187,6 +1265,12 @@
   "exercise/brackets-close": [
     "5df6f3dddca2c0d588bd19cf891f3e9d551df118141f36f924241d62e1c9dec4"
   ],
+  "exercise/bus-meetup": [
+    "8eb4dbc16e3bb573ba65f444dc754b4369c44e64a90fbaaaeaa405ff38737ae0"
+  ],
+  "exercise/calculator-tail": [
+    "3d7bcfc91d2b5acd36cfcd9db6dad776c43f0f14786f040d9ff1407a9361d8fe"
+  ],
   "exercise/call-rounds": [
     "72825837a51dbe90911fca6abf8ee5c398f339ef8f75eadcbcad369090a5f6f0"
   ],
@@ -1234,6 +1318,9 @@
   ],
   "exercise/cutoff-board": [
     "0781d3b8da075849015b96bbb47398dccce0da59d580e78e5fa7b6cdd16c3c59"
+  ],
+  "exercise/dial-turns": [
+    "0c3bf0e83f92b6f8247d35c3d2b23f635aced198e0fb4e954e5a2514efba0991"
   ],
   "exercise/doubling-savings": [
     "278fd0786f8350919ecca136669fbfe481284d3fb27e7ef79f2ce1445dba39b0"
@@ -1285,6 +1372,9 @@
   ],
   "exercise/fewest-tokens": [
     "f262b53d37633911c172e5b3fbfe2bf62f45ba6e34bf2155a4ae53aec20e4594"
+  ],
+  "exercise/fewest-volunteers": [
+    "a3ac40cc7e4328914d4acb8f9cd7d0ead284e1086e348ac39cb8ff80a7dd5486"
   ],
   "exercise/fill-the-break": [
     "921897d0484707bd798031cd4a81fb742a377874d813a928d00498db37617a6f"
@@ -1343,6 +1433,9 @@
   "exercise/kth-quickest": [
     "3ec0d2a99acf064adfd7874c2ea7d092660988b9eeb57818e6e947799c0a43d0"
   ],
+  "exercise/lamp-counts": [
+    "0d459f6acba8918702e0c5b2ee22c961efbb9a43addf816894bd7a08184a9285"
+  ],
   "exercise/largest-poster": [
     "f01825e8aa0056e36d49209a26824cae0143aaf8084518c1188ef4ecaf51ccfc"
   ],
@@ -1375,6 +1468,9 @@
   ],
   "exercise/loop-trail": [
     "51d5dde59c2785719420203a59aae4ba769247f72dc177d2cbb8b0ae7b937b10"
+  ],
+  "exercise/lost-sock": [
+    "ddb40128f7beddd5923b6b5fc54f76ffad65a50a32e201ec4a3718e22f606771"
   ],
   "exercise/lost-spaces": [
     "edebeb45d89867c7b3122b6ce5e905d94927230d36811025fe06a869d8115ec0"
@@ -1420,6 +1516,9 @@
   ],
   "exercise/mirror-pieces": [
     "50d5376eba30e52014e8e4241512a6b88b750ebbbac75efea9755f760f3ab1bc"
+  ],
+  "exercise/missing-ticket": [
+    "c0cb84c6c51f283277e67acc52694e0cd51c6957c24bcef6007e9c348ea653ec"
   ],
   "exercise/most-aboard": [
     "7bda516263e1b2175ec860eaad5de0420f3e633aeca01a0d0d423bc63e2c8223"
@@ -1513,6 +1612,12 @@
   ],
   "exercise/price-span": [
     "a86e37476cdbb88ea4c3412c400e908d0237b990b747e324354a4a1798257c04"
+  ],
+  "exercise/prime-houses": [
+    "866f8d77d461903177ee448e33208c1cfc7321a5a7f90655dbba01d9503e4031"
+  ],
+  "exercise/prime-lockers": [
+    "2800f87f60d105128a33cf03280bce2ae894b52c46c1c8bd947ccc0d99f05900"
   ],
   "exercise/print-rounds": [
     "18a622da679b28f28f325e1087fe0d8c8adcaf9885b924f9353bbd9033e1ffe1"
@@ -1616,6 +1721,9 @@
   "exercise/sign-repaint": [
     "5862bd2d04084ad0a8c3addfc25477edc998d0142800cbc969a62370543b7bbc"
   ],
+  "exercise/signal-mismatch": [
+    "c3dd4ad93284ace6136bc9d02c16baebb6916742a2ff6a34f1b940c68b360ada"
+  ],
   "exercise/slowest-pace": [
     "bc7d6e173acf9a97581788edd166f7b76d6b42fa0b61822daeb430e6e4e8f535"
   ],
@@ -1624,6 +1732,9 @@
   ],
   "exercise/smallest-window": [
     "5eed9fd14da1054048c0d051917efbfb099d35915320e3e31a762ca54dae08c9"
+  ],
+  "exercise/snack-combos": [
+    "afeba614fc551193f6e9525ae8fb2e80e62266223d6cf41c5185746a72bed7e8"
   ],
   "exercise/snow-drifts": [
     "d634a3eea89032bd2021a1c6168dec9e7c469b9ccf8ef7fb8a0b11786cd2cb21"
@@ -1636,6 +1747,9 @@
   ],
   "exercise/spare-cable": [
     "d243fe3b73c20dd272119015a114799d1dac727a80285981c92dd968da8a7e6c"
+  ],
+  "exercise/square-tiles": [
+    "e7c206c183b8966b21909724ac5ed828d2d79cd0e85a4392ab1ff0cb447ba70e"
   ],
   "exercise/stack-machine": [
     "d658ffe360a4418a946c14dfc00940dfcea1b550b88f5412196518dcf7d98296"

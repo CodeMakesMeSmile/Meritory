@@ -1,0 +1,19 @@
+id: signal-mismatch
+kind: coding
+title: Bits that disagree
+difficulty: easy
+skills:
+  - count-set-bits
+  - twos-complement
+sibling: lamp-counts
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: mismatchedBits
+  params:
+    - name: first
+      type: int
+    - name: second
+      type: int
+  returns: int

@@ -1,0 +1,94 @@
+{
+  "exercise": "bus-meetup",
+  "cases": [
+    {
+      "uuid": "31ca3fb1-3838-43b2-9a5c-e3e27bde3478",
+      "description": "routes of 4, 6, and 10 minutes",
+      "property": "busMeetup",
+      "input": {
+        "gaps": [4, 6, 10]
+      },
+      "expected": 60
+    },
+    {
+      "uuid": "5baad4ca-da57-4459-8f6d-52b10c95c1a2",
+      "description": "routes with no common factor",
+      "property": "busMeetup",
+      "input": {
+        "gaps": [3, 5, 7]
+      },
+      "expected": 105
+    },
+    {
+      "uuid": "a534b975-f85f-48a2-ad94-3cf06d7c6d1a",
+      "description": "one route's gap divides another's",
+      "property": "busMeetup",
+      "input": {
+        "gaps": [6, 3, 2]
+      },
+      "expected": 6
+    },
+    {
+      "uuid": "92732c9f-68b4-43cf-9cd3-89c6181025a6",
+      "description": "the same gap on every route",
+      "property": "busMeetup",
+      "input": {
+        "gaps": [15, 15, 15]
+      },
+      "expected": 15
+    },
+    {
+      "uuid": "d61ea310-e1c6-4061-84d8-dfe9b83f1caf",
+      "description": "the answer passes the largest 32-bit int",
+      "property": "busMeetup",
+      "input": {
+        "gaps": [999983, 999979]
+      },
+      "expected": 999962000357
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "fec845aa-b784-4f5e-8a02-03d2c80be27a",
+          "description": "a single route",
+          "property": "busMeetup",
+          "input": {
+            "gaps": [12]
+          },
+          "expected": 12
+        },
+        {
+          "uuid": "bf3b8b10-3ece-4dce-b646-b4a73ec3d4e3",
+          "description": "a route that leaves every minute",
+          "property": "busMeetup",
+          "input": {
+            "gaps": [1, 1]
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "18f8dff3-b335-48aa-8328-f4c839d4c107",
+          "description": "the answer is close to 2 to the 53rd",
+          "property": "busMeetup",
+          "input": {
+            "gaps": [999983, 999979, 9007]
+          },
+          "expected": 9006657737215499
+        },
+        {
+          "uuid": "fe16853a-4f0e-4dcd-ac2d-bdc7043eadb6",
+          "description": "many routes with small gaps",
+          "property": "busMeetup",
+          "input": {
+            "gaps": [
+              1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+              20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30
+            ]
+          },
+          "expected": 2329089562800
+        }
+      ]
+    }
+  ]
+}

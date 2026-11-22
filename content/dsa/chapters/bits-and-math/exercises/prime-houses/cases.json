@@ -1,0 +1,120 @@
+{
+  "exercise": "prime-houses",
+  "cases": [
+    {
+      "uuid": "11daab3f-a867-4426-a552-19983b8b70d4",
+      "description": "houses 10 to 30",
+      "property": "primeHouses",
+      "input": {
+        "low": 10,
+        "high": 30
+      },
+      "expected": 6
+    },
+    {
+      "uuid": "42fde7e9-8a33-4791-8544-890978c9bcf9",
+      "description": "a window that starts at 1",
+      "property": "primeHouses",
+      "input": {
+        "low": 1,
+        "high": 100
+      },
+      "expected": 25
+    },
+    {
+      "uuid": "524daf08-3d82-4b97-9b1f-8c227a6392ba",
+      "description": "a window around ten million",
+      "property": "primeHouses",
+      "input": {
+        "low": 10000000,
+        "high": 10001000
+      },
+      "expected": 61
+    },
+    {
+      "uuid": "0871263f-2b16-429d-86d3-9e30647fce4c",
+      "description": "the last stretch of the road",
+      "property": "primeHouses",
+      "input": {
+        "low": 999999900000,
+        "high": 1000000000000
+      },
+      "expected": 3613
+    },
+    {
+      "uuid": "e11f447c-d5ef-464e-811b-ba7dde273a48",
+      "description": "a window of a million near the end",
+      "property": "primeHouses",
+      "input": {
+        "low": 999999000000,
+        "high": 1000000000000
+      },
+      "expected": 36400
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "c714f672-93ba-4efc-9de1-3ae7e10445d0",
+          "description": "a single house that's prime",
+          "property": "primeHouses",
+          "input": {
+            "low": 13,
+            "high": 13
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "208f83c8-1600-4aaf-aff3-9c05c66f8a08",
+          "description": "a single house that isn't",
+          "property": "primeHouses",
+          "input": {
+            "low": 1,
+            "high": 1
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "186f3fda-7b6c-4b15-9fc2-d620af397740",
+          "description": "houses 1 and 2",
+          "property": "primeHouses",
+          "input": {
+            "low": 1,
+            "high": 2
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "edcb73bd-078f-4600-b381-d8750658d9ee",
+          "description": "a square of a prime in the window",
+          "property": "primeHouses",
+          "input": {
+            "low": 120,
+            "high": 121
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "0bd0689b-9ed4-4b6e-b80d-2b9aa399efea",
+          "description": "a single prime house far along the road",
+          "property": "primeHouses",
+          "input": {
+            "low": 999999999989,
+            "high": 999999999989
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "6aa484f8-895a-4a73-9385-e08b3db76aa9",
+          "description": "the square of a large prime",
+          "property": "primeHouses",
+          "input": {
+            "low": 999966000289,
+            "high": 999966000289
+          },
+          "expected": 0
+        }
+      ]
+    }
+  ]
+}

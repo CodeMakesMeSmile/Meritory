@@ -1,0 +1,432 @@
+- id: negate-twos-complement
+  skill: twos-complement
+  asks: what
+  type: ordering
+  prompt: Put the steps for writing -5 as a 32-bit two's complement number in order.
+  reworded: In what order do you turn 5 into the bit pattern for -5?
+  steps:
+    - Write 5 in binary, padded to 32 bits.
+    - Flip every bit.
+    - Add 1 to the result.
+  terms:
+    - term: Two's complement
+      definition: The usual way to store signed integers, where the top bit is worth minus 2 to the power 31 in a 32-bit number.
+  lesson:
+    title: Flip, then add one
+    explanation: 5 is `0...0101`. Flipping gives `1...1010`, and adding 1 gives `1...1011`, which is -5. The same two steps turn -5 back into 5.
+- id: why-twos-complement
+  skill: twos-complement
+  asks: why
+  type: prompt
+  prompt: Why is -1 stored as 32 ones in two's complement, and why do computers use this scheme at all?
+  reworded: What makes all 32 bits set mean -1, and what's the advantage of storing negative numbers this way?
+  points:
+    - The top bit is worth -2³¹, and the other 31 bits add up to 2³¹ - 1, so all 32 together make -1.
+    - Adding 1 to -1 carries all the way out of the top and leaves 0, as it should.
+    - Addition works the same for negative and positive numbers, so the hardware needs no special case.
+  misconception: That a negative number is the positive one with only the top bit switched on.
+  lesson:
+    title: The top bit counts as negative
+    explanation: In two's complement, the highest bit has a negative weight. That makes ordinary binary addition give the right answer for any mix of signs.
+- id: why-min-int-negate
+  skill: twos-complement
+  asks: why
+  type: pick-one
+  prompt: In Java, why is `-Integer.MIN_VALUE` equal to `Integer.MIN_VALUE`?
+  reworded: Why does negating the smallest Java int give back the same number?
+  options:
+    - text: The range is -2³¹ to 2³¹ - 1, so +2³¹ doesn't fit and the result wraps around
+      correct: true
+      reason: There's one more negative value than positive, and Java's int arithmetic wraps silently.
+    - text: Java treats the smallest int as a special value like infinity
+      reason: It's an ordinary int. The wrap comes from the range, not a special rule.
+    - text: Negation only flips the sign bit, which is already set
+      reason: Negation flips every bit and adds 1, and here that overflows.
+  misconception: That every int has a negative partner.
+  lesson:
+    title: One more negative than positive
+    explanation: A 32-bit int runs from -2,147,483,648 to 2,147,483,647. Negating the smallest value overflows, and the Java language spec says integer operators don't signal overflow in any way.
+    fix: Widen to `long` first when a value could be the smallest int, as in `-(long) x`.
+    source:
+      url: https://docs.oracle.com/javase/specs/jls/se21/html/jls-4.html#jls-4.2.2
+      title: Integer Operations, The Java Language Specification, Java SE 21
+- id: bit-operator-results
+  skill: bit-operators
+  asks: what
+  type: matching
+  prompt: Match each expression to its value, with 12 as `1100` and 10 as `1010`.
+  reworded: What does each of these bitwise expressions on 12 and 10 come to?
+  matchHeading: Value
+  matchName: a value
+  pairs:
+    - item: 12 & 10
+      match: "8"
+    - item: 12 | 10
+      match: "14"
+    - item: 12 ^ 10
+      match: "6"
+    - item: 12 << 1
+      match: "24"
+  extraMatches:
+    - "2"
+    - "22"
+  lesson:
+    title: One bit at a time
+    explanation: AND keeps bits set in both, OR keeps bits set in either, XOR keeps bits that differ, and a left shift by 1 doubles.
+- id: why-js-shift-negative
+  skill: bit-operators
+  asks: why
+  type: pick-one
+  prompt: In TypeScript, why is `1 << 31` negative?
+  reworded: What makes shifting 1 left by 31 places give -2,147,483,648 in JavaScript?
+  options:
+    - text: Bitwise operators work on signed 32-bit integers, and bit 31 is the sign bit
+      correct: true
+      reason: The operands become 32-bit two's complement numbers, and so does the result.
+    - text: JavaScript numbers are 64-bit floats, so the shift loses precision
+      reason: The float isn't involved. The operator converts to a 32-bit integer before shifting.
+    - text: Shifting by more than 30 is an error that returns a negative code
+      reason: Shifts up to 31 are fine. The result is just read as signed.
+  lesson:
+    title: Bitwise means 32-bit
+    explanation: JavaScript converts both operands of a bitwise operator to 32-bit integers, dropping any higher bits. The result is signed, so setting bit 31 makes it negative. Use `x >>> 0` to read it as unsigned.
+    source:
+      url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_AND
+      title: Bitwise AND (&), MDN
+- id: when-unsigned-shift
+  skill: bit-operators
+  asks: when
+  type: pick-one
+  prompt: When should you use `>>>` instead of `>>` in Java or TypeScript?
+  reworded: In what situation does the unsigned right shift give the right answer where the ordinary one doesn't?
+  options:
+    - text: When the value may be negative and you want zeros shifted in from the left
+      correct: true
+      reason: "`>>` copies the sign bit in, so a negative number stays negative and a loop waiting for 0 never ends."
+    - text: When the value is positive and you want it halved
+      reason: For a positive value both shifts give the same result.
+    - text: When you want to shift by more than 32 places
+      reason: The shift count is taken modulo 32 for both, so neither shifts past 31.
+  lesson:
+    title: Sign-filling versus zero-filling
+    explanation: "`>>` keeps the sign by copying the top bit in from the left. `>>>` shifts in zeros, so the result is never negative. MDN gives `-9 >>> 2` as 1,073,741,821, where `-9 >> 2` is -3."
+    source:
+      url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Unsigned_right_shift
+      title: Unsigned right shift (>>>), MDN
+- id: why-python-mask
+  skill: bit-operators
+  asks: why
+  type: prompt
+  prompt: Why do Python bit tricks on negative numbers often need `& 0xFFFFFFFF`?
+  reworded: What's different about Python's integers that makes 32-bit bit tricks need a mask?
+  points:
+    - Python integers have unlimited precision, so there's no 32-bit limit.
+    - Bitwise operators act as if there were infinitely many sign bits, so -1 is ones forever.
+    - A loop that shifts until the number is 0 never ends on a negative number.
+    - Masking with `0xFFFFFFFF` keeps only the low 32 bits, as a non-negative number.
+  misconception: That Python's -1 is 32 ones, like in Java.
+  lesson:
+    title: No fixed width in Python
+    explanation: Python's docs say bitwise results are worked out as though in two's complement with an infinite number of sign bits. To copy a 32-bit language, mask to 32 bits first.
+    source:
+      url: https://docs.python.org/3/library/stdtypes.html#bitwise-operations-on-integer-types
+      title: Bitwise Operations on Integer Types, Python documentation
+- id: why-xor-finds-lone
+  skill: xor-odd-one-out
+  asks: why
+  type: prompt
+  prompt: When every value in a list appears twice except one, why does XORing them all together leave the one without a partner?
+  reworded: How does XOR pick out the single unpaired value from a list of pairs?
+  points:
+    - "`x ^ x` is 0, so each pair cancels."
+    - "`x ^ 0` is x, so the lone value survives."
+    - XOR's order doesn't matter, so the pairs don't have to sit next to each other.
+    - It takes O(n) time and O(1) space.
+  lesson:
+    title: Pairs cancel
+    explanation: XOR is like a light switch for each bit. Every value flips its bits twice, back to where they started, except the lone value, which flips them once.
+- id: when-xor-not-set
+  skill: xor-odd-one-out
+  asks: when
+  type: pick-one
+  prompt: When is XOR a better way to find the unpaired value than a set of values seen?
+  reworded: In what case should you choose XOR over a hash set for finding the value that appears once?
+  options:
+    - text: When every other value appears exactly twice and you need O(1) extra space
+      correct: true
+      reason: XOR uses one variable, where a set grows with the list.
+    - text: When values can appear three times
+      reason: Three copies XOR to the value itself, so it no longer cancels. Count with a map instead.
+    - text: When you need to know where the value was in the list
+      reason: XOR gives the value, not its position.
+  lesson:
+    title: XOR needs exact pairs
+    explanation: XOR only cancels values that appear an even number of times. When that's guaranteed, it beats a set on memory.
+- id: why-xor-missing
+  skill: xor-odd-one-out
+  asks: why
+  type: pick-one
+  prompt: To find the one number missing from 0 to n, why XOR the indices with the values instead of subtracting the sum of the values from the sum of 0 to n?
+  reworded: What makes XOR safer than a sum for finding the missing number?
+  options:
+    - text: The sum can overflow a 32-bit int for large n, and XOR never leaves 32 bits
+      correct: true
+      reason: XOR of 32-bit values is always a 32-bit value, so nothing overflows.
+    - text: XOR is the only way to get O(n) time
+      reason: The sum is O(n) too. The difference is overflow.
+    - text: The sum gives the wrong answer when the missing number is 0
+      reason: The sum handles 0 fine. The danger is the size of the total.
+  lesson:
+    title: XOR can't overflow
+    explanation: Every number from 0 to n appears once as an index and once as a value, except the missing one. XOR cancels the pairs like a sum would, but without a growing total.
+- id: clear-lowest-bit-steps
+  skill: count-set-bits
+  asks: what
+  type: ordering
+  prompt: Put the steps of counting set bits with n & (n - 1) in order.
+  reworded: In what order does the loop that clears one set bit at a time run?
+  steps:
+    - Start the count at 0.
+    - Stop if n is 0.
+    - Replace n with n & (n - 1).
+    - Add 1 to the count and go back to the check.
+  lesson:
+    title: One step per set bit
+    explanation: Each pass clears exactly one set bit, so the loop runs as many times as there are ones, not 32 times.
+- id: why-n-and-n-minus-one
+  skill: count-set-bits
+  asks: why
+  type: prompt
+  prompt: Why does `n & (n - 1)` clear exactly the lowest set bit of n?
+  reworded: What does subtracting 1 do to n's bits that makes ANDing with it remove the lowest 1?
+  points:
+    - Subtracting 1 turns the lowest 1 into a 0 and every 0 below it into a 1.
+    - Bits above the lowest 1 don't change.
+    - ANDing keeps the bits above and wipes the lowest 1 and everything below it.
+  lesson:
+    title: Borrowing from the lowest 1
+    explanation: Take 12, which is `1100`. 11 is `1011`. ANDing them gives `1000`, which is 8, with the lowest 1 gone.
+- id: when-builtin-bitcount
+  skill: count-set-bits
+  asks: when
+  type: matching
+  prompt: Match each language to its built-in way of counting set bits.
+  reworded: How do you count the ones in a number's bits in each of these languages?
+  matchHeading: Built-in
+  matchName: a built-in
+  pairs:
+    - item: Java
+      match: Integer.bitCount
+    - item: Python 3.10 and later
+      match: int.bit_count
+    - item: TypeScript
+      match: None, so loop with n & (n - 1)
+  extraMatches:
+    - Math.popcount
+  lesson:
+    title: Know the built-in, and the loop behind it
+    explanation: Java's `Integer.bitCount` counts the ones in an int's two's complement form. Python's `bit_count` counts the ones in the absolute value, so mask a negative number to 32 bits first. Interviewers often want the loop anyway.
+    source:
+      url: https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html#bitCount(int)
+      title: Integer (Java SE 21 and JDK 21)
+- id: mask-subset-steps
+  skill: subset-masks
+  asks: what
+  type: ordering
+  prompt: Put the steps for visiting every subset of n items with a bitmask in order.
+  reworded: In what order do you walk through all subsets using whole numbers as masks?
+  steps:
+    - Loop mask from 0 up to 2ⁿ - 1.
+    - For each item i, check whether bit i of mask is set.
+    - Include item i in this subset when it is.
+    - Use the subset, then move to the next mask.
+  lesson:
+    title: Every number is a subset
+    explanation: The numbers 0 to 2ⁿ - 1 cover every pattern of n bits exactly once, and each pattern is one choice of items.
+- id: when-masks-fit
+  skill: subset-masks
+  asks: when
+  type: pick-one
+  prompt: When is looping over every bitmask a good way to search subsets?
+  reworded: For what size of input does trying all 2ⁿ masks make sense?
+  options:
+    - text: When n is about 20 or fewer
+      correct: true
+      reason: 2²⁰ is about a million, and each mask takes O(n) to read, which fits easily.
+    - text: When n is about 1,000
+      reason: 2¹⁰⁰⁰ is far beyond anything a computer can count through.
+    - text: Whenever the items are numbers
+      reason: The kind of item doesn't matter. The count of items does.
+  lesson:
+    title: Masks are for small sets
+    explanation: The search doubles with each item. Small limits in a question, like 15 or 20 items, are a strong hint that every subset is the intended search.
+- id: why-mask-combine
+  skill: subset-masks
+  asks: why
+  type: prompt
+  prompt: Why are bitmasks handy when you need to combine or compare sets, like the skills a group of people covers?
+  reworded: What makes a set stored as bits quick to merge and test?
+  points:
+    - "`a | b` is the union of two sets in one operation."
+    - "`a & b` is what two sets share."
+    - "`(have & need) === need` checks whether one set covers another."
+    - A mask is one number, so it's cheap to store and compare.
+  lesson:
+    title: Set operations become single operators
+    explanation: With up to 32 items, a set fits in one int, and union, intersection, and cover checks each take one step instead of a loop.
+- id: euclid-steps
+  skill: gcd-euclid
+  asks: what
+  type: ordering
+  prompt: Put the steps of Euclid's algorithm in order.
+  reworded: In what order does Euclid's algorithm find the greatest common divisor of a and b?
+  steps:
+    - If b is 0, the answer is a.
+    - Otherwise, work out a % b.
+    - Replace a with b and b with a % b.
+    - Go back to the check on b.
+  lesson:
+    title: Swap in the remainder
+    explanation: For 48 and 18, the pairs go 48 and 18, 18 and 12, 12 and 6, then 6 and 0, so the gcd is 6.
+- id: why-euclid-works
+  skill: gcd-euclid
+  asks: why
+  type: prompt
+  prompt: Why does the gcd of a and b equal the gcd of b and a % b?
+  reworded: What fact lets Euclid's algorithm replace a with the remainder a % b?
+  points:
+    - "`a % b` is a minus some multiple of b."
+    - Any number that divides both a and b also divides that remainder.
+    - Any number that divides b and the remainder also divides a.
+    - So both pairs have exactly the same common divisors, and the same greatest one.
+  lesson:
+    title: Same divisors, smaller numbers
+    explanation: Replacing a with a % b keeps every common divisor and makes the numbers smaller. The numbers at least halve every two steps, so it takes O(log min(a, b)) steps.
+- id: when-divide-first
+  skill: gcd-euclid
+  asks: when
+  type: pick-one
+  prompt: When working out the least common multiple, why write `a / gcd(a, b) * b` instead of `a * b / gcd(a, b)`?
+  reworded: What's the danger in multiplying before dividing when you compute a least common multiple?
+  options:
+    - text: The product a times b can overflow even when the answer fits
+      correct: true
+      reason: Dividing first keeps every step no bigger than the final answer.
+    - text: Division before multiplication is faster
+      reason: Both orders take the same steps. The difference is the size of the numbers in between.
+    - text: The other order gives a fraction
+      reason: gcd(a, b) divides a exactly, so both orders give a whole number when nothing overflows.
+  lesson:
+    title: Keep the middle step small
+    explanation: The answer can fit in 64 bits while a times b doesn't, and in TypeScript a product past 2⁵³ - 1 loses digits. Dividing first never produces anything bigger than the answer.
+- id: power-by-squaring-steps
+  skill: power-mod
+  asks: what
+  type: ordering
+  prompt: Put the steps of one pass of fast power with a modulo in order.
+  reworded: For each bit of the exponent, what does fast modular power do, and in what order?
+  steps:
+    - Check whether the lowest bit of the exponent is 1.
+    - If it is, multiply the result by the current square, modulo m.
+    - Square the current square, modulo m.
+    - Halve the exponent, dropping the remainder.
+  lesson:
+    title: One multiply per bit
+    explanation: The square runs through base, base², base⁴, and so on. Each one is used when the matching bit of the exponent is set, so a 50-bit exponent takes about 50 passes.
+- id: why-bigint-product
+  skill: power-mod
+  asks: why
+  type: prompt
+  prompt: Why does a TypeScript fast power modulo 1,000,000,007 need BigInt for its multiplications?
+  reworded: What goes wrong in TypeScript if you multiply two numbers below 1,000,000,007 as ordinary numbers?
+  points:
+    - The product can be close to 10¹⁸, far above 2⁵³ - 1.
+    - Numbers past 2⁵³ - 1 can't all be stored exactly, so the last digits are lost.
+    - The modulo of a rounded product is wrong, with no error to warn you.
+    - BigInt keeps every digit, and the result converts back once it's below the modulo.
+  misconception: That an overflow in TypeScript would throw an error or show Infinity.
+  lesson:
+    title: 2⁵³ is the edge
+    explanation: MDN describes the largest safe integer as 2⁵³ - 1, the limit for representing integers exactly and comparing them correctly. A product of two 30-bit numbers passes it.
+    fix: Multiply as BigInt, take the modulo, and call `Number` on the final answer.
+    source:
+      url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER
+      title: Number.MAX_SAFE_INTEGER, MDN
+- id: overflow-by-language
+  skill: power-mod
+  asks: what
+  type: matching
+  prompt: Match each language to what happens when an integer gets too big.
+  reworded: What does each language do with an integer result past its limit?
+  matchHeading: Behaviour
+  matchName: a behaviour
+  pairs:
+    - item: Java int
+      match: Wraps around silently
+    - item: C signed int
+      match: Undefined behaviour
+    - item: Python int
+      match: Grows as needed
+    - item: TypeScript number
+      match: Loses digits past 2⁵³ - 1
+  extraMatches:
+    - Throws an error
+  lesson:
+    title: Four answers to one question
+    explanation: Java's integer operators don't signal overflow, C leaves signed overflow undefined, Python's integers have unlimited precision, and TypeScript numbers are floats with 53 bits of exact integers.
+    source:
+      url: https://en.cppreference.com/w/c/language/operator_arithmetic#Overflows
+      title: Arithmetic operators, cppreference
+- id: when-cast-first
+  skill: power-mod
+  asks: when
+  type: pick-one
+  prompt: In Java, with `int a` and `int b` both near a billion, which line gives the right product?
+  reworded: Where does the cast to long have to go to multiply two large ints safely in Java?
+  options:
+    - text: "`long p = (long) a * b;`"
+      correct: true
+      reason: The cast happens first, so the multiply is done in 64 bits.
+    - text: "`long p = (long) (a * b);`"
+      reason: The multiply is done in 32 bits and overflows, then the wrong answer is widened.
+    - text: "`long p = a * b;`"
+      reason: The int product overflows before it's stored in the long.
+  lesson:
+    title: Widen before you multiply
+    explanation: Java picks the type of a multiply from its operands. When neither is a `long`, the multiply is done in 32 bits, whatever you store the answer in. The Java spec's own example multiplies 1,000,000 by itself as an int and prints -727,379,968.
+    source:
+      url: https://docs.oracle.com/javase/specs/jls/se21/html/jls-4.html#jls-4.2.2
+      title: Integer Operations, The Java Language Specification, Java SE 21
+- id: why-sieve-from-square
+  skill: prime-sieve
+  asks: why
+  type: prompt
+  prompt: In the sieve of Eratosthenes, why does crossing off the multiples of p start at p², and why can the outer loop stop once p² passes n?
+  reworded: What makes it safe to skip multiples of p below p², and to stop sieving after the square root of n?
+  points:
+    - A multiple of p below p² is p times something smaller than p.
+    - That smaller number has a prime factor below p, so the multiple was already crossed off.
+    - Once p² passes n, every multiple of p up to n has been crossed off by a smaller prime, so nothing new gets marked.
+  lesson:
+    title: Smaller primes got there first
+    explanation: Every composite number up to n has a prime factor no bigger than the square root of n, so sieving with those primes is enough.
+- id: when-sieve-or-trial
+  skill: prime-sieve
+  asks: when
+  type: matching
+  prompt: Match each task to the approach that fits it best.
+  reworded: Which way of finding primes suits each of these tasks?
+  matchHeading: Approach
+  matchName: an approach
+  pairs:
+    - item: Is one number near a billion prime?
+      match: Trial division up to its square root
+    - item: Every prime up to five million
+      match: A sieve of Eratosthenes
+    - item: The primes between a trillion and a trillion and a million
+      match: A segmented sieve
+  extraMatches:
+    - Trial division of every number up to n
+  lesson:
+    title: Pick by how many numbers you need
+    explanation: One number needs about the square root of its value in steps. Many numbers from 2 up need a sieve. A window far from zero needs the primes up to its square root, then a sieve of the window alone.
