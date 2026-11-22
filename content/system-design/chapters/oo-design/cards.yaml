@@ -1,0 +1,450 @@
+- id: lld-round-steps
+  skill: run-lld-round
+  asks: what
+  type: ordering
+  prompt: Put the parts of a 45-minute low-level design round in order.
+  reworded: In what order should you work through a class design interview?
+  steps:
+    - Clarify the operations, the constraints, and what's out of scope.
+    - List the entities and decide which are classes, values, or fields.
+    - Write the key interfaces and method signatures.
+    - Walk one use case through the objects, including a failure.
+    - Absorb the interviewer's new requirement with a small change.
+  terms:
+    - term: Low-level design
+      definition: Designing the classes, interfaces, and interactions inside one component, often with code.
+  lesson:
+    title: Signatures before bodies
+    explanation: Questions shape the classes, signatures show the design decisions, and a walked flow proves they work together. The extension at the end tests whether the design was built to change.
+- id: when-ask-first
+  skill: run-lld-round
+  asks: when
+  type: pick-one
+  prompt: The interviewer says "design the classes for a job scheduler." When should you start writing classes?
+  reworded: What should happen before the first class goes on the board in a low-level design round?
+  options:
+    - text: After a few minutes of questions about the operations, concurrency, persistence, and what's out of scope
+      correct: true
+      reason: Those answers change the classes. A scheduler for one process with in-memory jobs looks nothing like one shared by many workers.
+    - text: Right away, since the prompt is clear enough
+      reason: The word scheduler hides big choices, like whether jobs survive a restart or two workers can take the same job.
+    - text: After drawing a full class diagram of every possible feature
+      reason: That spends the round on features nobody asked for.
+    - text: Only once the interviewer gives you the full list of requirements
+      reason: Interviewers expect you to ask. Waiting looks like you don't know what matters.
+  lesson:
+    title: Questions first, briefly
+    explanation: Five minutes of focused questions is usually enough. Ask about operations, concurrency, persistence, and scope, then say which change you expect next.
+- id: why-extend-step
+  skill: run-lld-round
+  asks: why
+  type: prompt
+  prompt: Why do interviewers add a new requirement near the end of a low-level design round, and what should a good answer to it sound like?
+  reworded: What is the interviewer testing with a late requirement, and how should you respond to it?
+  points:
+    - It tests whether the design has clear seams, which is hard to judge any other way in 45 minutes.
+    - Say where the change lands before writing code, like "a new strategy and one factory case."
+    - A good change adds a class or a case in one place, without editing the runner or every connector.
+    - Name what stays untouched, which shows the boundaries held.
+    - If the change is awkward, say what you'd restructure, which beats forcing it in.
+  lesson:
+    title: The design is judged by its next change
+    explanation: Any design handles the requirements it was drawn for. The late requirement shows whether responsibilities were split along the lines that actually change.
+- id: entity-kinds
+  skill: find-responsibilities
+  asks: what
+  type: matching
+  prompt: Match each part of the connector design to the kind of object it is.
+  reworded: In the connector example, what kind of object is each of these?
+  matchHeading: Kind
+  matchName: a kind
+  pairs:
+    - item: Checkpoint
+      match: A value, compared by its fields and never changed
+    - item: Connection
+      match: An entity, with an identity that lasts through its lifecycle
+    - item: SyncRunner
+      match: A service, which coordinates other objects and holds little state
+    - item: Connector
+      match: An interface for what varies per provider
+  extraMatches:
+    - A manager that owns every rule
+  lesson:
+    title: Values, entities, and services
+    explanation: Values are immutable and compared by content. Entities keep their identity as their state changes. Services coordinate. Interfaces mark where behavior varies.
+- id: why-split-sync-manager
+  skill: find-responsibilities
+  asks: why
+  type: pick-one
+  prompt: A SyncManager class authenticates, fetches pages, maps records, writes them, and sends alerts. Why split it up?
+  reworded: What's wrong with one class that handles auth, fetching, mapping, storage, and alerting for a sync?
+  options:
+    - text: Each of those jobs changes for a different reason and needs different tests, so one class changes and breaks for all of them
+      correct: true
+      reason: One reason to change per class keeps each change small and each test focused.
+    - text: Large classes run slower
+      reason: Size doesn't affect speed. It affects how hard the code is to change and test.
+    - text: TypeScript limits how many methods a class can have
+      reason: It doesn't. This is about design, not the language.
+    - text: Classes should never call other classes
+      reason: Objects working together is the point. Each should just have one job.
+  lesson:
+    title: One sentence without "and"
+    explanation: If you can't describe a class in one sentence without "and," it probably has several responsibilities. Names like Manager and Helper are a common sign.
+- id: find-entities-steps
+  skill: find-responsibilities
+  asks: what
+  type: ordering
+  prompt: Put the steps for finding classes from a written requirement in order.
+  reworded: In what order do you turn a problem statement into a set of classes?
+  steps:
+    - Underline the nouns and verbs in the requirements.
+    - Drop nouns that are only attributes, and merge synonyms.
+    - Sort the rest into values, entities, and services.
+    - Give each verb to the object that holds the data it needs.
+    - Walk one use case to check that every step has an owner.
+  lesson:
+    title: Behavior goes where the data is
+    explanation: Putting a rule on the object that holds its data, often called tell, don't ask, keeps other classes from reading fields and deciding for it.
+- id: inheritance-math
+  skill: compose-behavior
+  asks: what
+  type: pick-one
+  prompt: Connectors vary in 3 auth styles, 4 paging styles, and 2 transports. With one subclass per combination, how many leaf classes do you need, and how many parts with composition?
+  reworded: How many classes does an inheritance tree need for 3 auth styles, 4 paging styles, and 2 transports, compared with composing separate parts?
+  options:
+    - text: 24 subclasses, compared with 9 parts
+      correct: true
+      reason: Inheritance multiplies, 3 times 4 times 2. Composition adds, 3 plus 4 plus 2.
+    - text: 9 subclasses, compared with 24 parts
+      reason: That's backwards. Composition is the one that adds.
+    - text: 12 subclasses, compared with 7 parts
+      reason: That leaves out the transports.
+    - text: The same number either way
+      reason: Only when there's a single dimension of variation.
+  lesson:
+    title: Inheritance multiplies, composition adds
+    explanation: Each independent way connectors vary multiplies a class tree. Built from parts, each new style is one more small class.
+- id: when-inheritance-fits
+  skill: compose-behavior
+  asks: when
+  type: pick-one
+  prompt: When is inheritance a reasonable choice in a TypeScript design?
+  reworded: In which case does extending a class make more sense than composing parts?
+  options:
+    - text: A shallow "is a" relationship with shared meaning, like a few error types that extend Error
+      correct: true
+      reason: One level, a real shared meaning, and a platform that expects it. That's where inheritance stays simple.
+    - text: Whenever two classes share a few lines of code
+      reason: Shared code can live in a helper or a composed part without tying the classes together.
+    - text: To mix auth styles and paging styles in one connector
+      reason: Independent variations multiply into many subclasses. Compose them instead.
+    - text: For a base class that 300 connectors extend
+      reason: That base becomes fragile, since any change to it can break any connector.
+  lesson:
+    title: Keep inheritance shallow and meaningful
+    explanation: Inheritance couples a child to its parent's internals. It's fine when the hierarchy is one level deep and the "is a" is real.
+- id: why-fragile-base
+  skill: compose-behavior
+  asks: why
+  type: prompt
+  prompt: Why does a base class shared by hundreds of connectors become risky over time?
+  reworded: What goes wrong with a deep connector hierarchy as the number of providers grows?
+  points:
+    - Any change to the base can change behavior in every subclass at once.
+    - Subclasses rely on internals, like which method calls which, so the base can't be refactored safely.
+    - Protected members become a contract that's hard to change.
+    - New combinations of behavior need new subclasses, so the tree keeps growing.
+    - Composed parts are tested once and swapped independently instead.
+  lesson:
+    title: The fragile base class
+    explanation: Inheritance shares code by sharing internals. With many subclasses, that sharing turns every base change into a change to all of them.
+- id: why-inject-clock
+  skill: inject-dependencies
+  asks: why
+  type: pick-one
+  prompt: A test checks that a connector refreshes its token 5 minutes before expiry. The code calls Date.now() directly, so the test has to wait or is flaky. What's the best fix?
+  reworded: How do you make time-dependent logic, like refreshing a token before it expires, easy to test?
+  options:
+    - text: Inject a Clock interface, and pass a fake clock the test can set
+      correct: true
+      reason: The time becomes an input, so the test controls it and runs instantly.
+    - text: Make the test sleep for 5 minutes
+      reason: Slow, and still flaky around the boundary.
+    - text: Mock the global Date object in every test
+      reason: It works, but it hides the dependency and leaks between tests.
+    - text: Skip testing the refresh logic
+      reason: Token refresh is exactly the kind of logic that breaks quietly.
+  lesson:
+    title: Hidden dependencies hurt tests
+    explanation: The clock, randomness, singletons, and environment variables read deep in the code are all dependencies. Passing them in makes them visible and controllable.
+- id: structural-fakes
+  skill: inject-dependencies
+  asks: what
+  type: pick-one
+  prompt: In a TypeScript test, can a plain object literal stand in for a RateLimiter interface, without a class that says it implements RateLimiter?
+  reworded: Does a TypeScript object need an implements clause to be used where an interface is expected?
+  options:
+    - text: Yes, because TypeScript's types are structural, so any object with matching members fits
+      correct: true
+      reason: Compatibility comes from members, not from declared names. An implements clause is only a check.
+    - text: No, only a class with an implements clause fits
+      reason: That's how nominal languages like Java work. TypeScript is structural.
+    - text: Only if it's cast with as any
+      reason: No cast is needed when the members match.
+    - text: Only for interfaces with a single method
+      reason: Any number of members works, as long as they match.
+  lesson:
+    title: Structural typing makes fakes cheap
+    explanation: The TypeScript handbook explains that type compatibility is based on structural subtyping, relating types by their members. A fake is often just an object with the right methods.
+    source:
+      url: https://www.typescriptlang.org/docs/handbook/type-compatibility.html
+      title: Type Compatibility, TypeScript Handbook
+- id: why-constructor-injection
+  skill: inject-dependencies
+  asks: why
+  type: prompt
+  prompt: Why pass a service's dependencies through its constructor, and where should the real implementations be created?
+  reworded: What do you gain from constructor injection, and where does the wiring of real dependencies belong?
+  points:
+    - The constructor lists everything the class needs, so nothing is hidden.
+    - Tests pass fakes, so they run without a network, Redis, or a real clock.
+    - The class depends on small interfaces shaped by its needs, not on concrete clients.
+    - Real implementations are built once, in a composition root like the main file.
+    - No framework is needed, and values and pure functions don't need interfaces at all.
+  lesson:
+    title: Ask for what you need
+    explanation: Fowler's article that named dependency injection recommends constructor injection unless it runs into specific problems. It keeps dependencies visible and swappable.
+    source:
+      url: https://martinfowler.com/articles/injection.html
+      title: Inversion of Control Containers and the Dependency Injection pattern, Martin Fowler
+- id: pattern-fit
+  skill: apply-patterns
+  asks: when
+  type: matching
+  prompt: Match each situation in the connector design to the pattern that fits it.
+  reworded: Which design pattern suits each of these connector problems?
+  matchHeading: Pattern
+  matchName: a pattern
+  pairs:
+    - item: Each provider signs in differently, chosen per connector
+      match: Strategy
+    - item: A provider ships an SDK whose methods don't match your Connector interface
+      match: Adapter
+    - item: Build the right connector from a provider's config record
+      match: Factory
+    - item: Health, metrics, and billing all react when a sync finishes
+      match: Observer
+  extraMatches:
+    - Singleton
+  lesson:
+    title: Name a pattern when it explains the design
+    explanation: Strategy swaps an algorithm, adapter makes a foreign interface fit, factory centralizes construction, and observer lets listeners react without the sender knowing them.
+- id: when-strategy-overkill
+  skill: apply-patterns
+  asks: when
+  type: pick-one
+  prompt: When is introducing a Strategy interface overkill?
+  reworded: In which situation should you skip the Strategy pattern?
+  options:
+    - text: When there's only one algorithm and no second one in sight, or a plain function parameter would do
+      correct: true
+      reason: An interface with one implementation adds a layer without adding choice. In TypeScript, a function type is often the lighter strategy.
+    - text: When providers sign in in several different ways
+      reason: That's exactly where strategy earns its place.
+    - text: When the algorithm needs to be tested on its own
+      reason: Testability is an argument for a separate piece, not against it.
+    - text: Whenever the code is written in TypeScript
+      reason: The pattern works fine in TypeScript, often as a function type.
+  lesson:
+    title: Patterns cost indirection
+    explanation: Every interface is one more hop for a reader. Add one when there are real alternatives or a test needs the seam, and say so.
+- id: why-observer-not-durable
+  skill: apply-patterns
+  asks: why
+  type: pick-one
+  prompt: A sync runner saves its result, then notifies an in-process listener that queues the customer's webhook. The process crashes between the two. Why is the webhook lost, and what fixes it?
+  reworded: What goes wrong when an in-process observer is responsible for an event that must not be missed?
+  options:
+    - text: The listener only runs in memory after the save, so a crash skips it. Write the event to an outbox in the same transaction instead
+      correct: true
+      reason: The outbox makes the event part of the saved state, so a relay delivers it even after a crash.
+    - text: Observers always run before the save
+      reason: The order isn't the issue. Memory doesn't survive a crash.
+    - text: The listener should retry forever
+      reason: It never ran, so there's nothing to retry.
+    - text: Use more listeners
+      reason: They'd all be lost in the same crash.
+  lesson:
+    title: In-process events vanish with the process
+    explanation: Observer decouples code, but not failure. When missing an event matters, the Queues and async work chapter's transactional outbox makes it durable.
+- id: connection-transitions
+  skill: model-lifecycles
+  asks: what
+  type: matching
+  prompt: Match each state and event to the connection's next state.
+  reworded: Given a connection's state and what just happened, what state does it move to?
+  matchHeading: Next state
+  matchName: a next state
+  pairs:
+    - item: Pending, and the end user finishes signing in
+      match: Active
+    - item: Active, and a sync times out
+      match: Failing
+    - item: Failing, and the provider rejects the credentials
+      match: Disconnected
+    - item: Disconnected, and a late sync result arrives
+      match: Refused as an invalid transition
+  extraMatches:
+    - Pending
+  lesson:
+    title: Every move is in the table
+    explanation: Temporary errors move an active connection to failing, a rejected credential disconnects it, and moves not in the table are refused instead of quietly reviving a connection.
+- id: why-one-transition-function
+  skill: model-lifecycles
+  asks: why
+  type: prompt
+  prompt: Why put every state change for a connection in one transition function, instead of setting its status wherever it's needed?
+  reworded: What do you gain by routing all of a connection's status changes through one function?
+  points:
+    - All the rules are in one place, so nobody has to search the codebase to learn them.
+    - Moves not in the table throw, so a bug can't revive a disconnected connection quietly.
+    - Each state carries only its own data, like a failure count only while failing.
+    - The function is pure, so each row of the table is a one-line test.
+    - Side effects, like a status-changed webhook, follow the saved change instead of being scattered.
+  lesson:
+    title: A lifecycle is a state machine either way
+    explanation: Writing the machine down makes its rules visible and enforceable. Leaving it implicit spreads the rules across every place that sets a status.
+- id: why-never-check
+  skill: model-lifecycles
+  asks: why
+  type: pick-one
+  prompt: Why end a switch over a discriminated union of states with a default branch that assigns the state to a variable of type never?
+  reworded: What does assigning the leftover value to never in a switch's default branch do for you?
+  options:
+    - text: If someone adds a new state to the union, the assignment fails to compile until the switch handles it
+      correct: true
+      reason: Once every member is handled, only never is left. A new, unhandled member isn't assignable to never.
+    - text: It makes the switch run faster
+      reason: It's a compile-time check with no runtime cost to speak of.
+    - text: It catches invalid events at run time
+      reason: Invalid transitions are a separate check. This one is about completeness of the code.
+    - text: TypeScript requires it in every switch
+      reason: It's optional, which is why it's worth adding on purpose.
+  lesson:
+    title: Let the compiler find every switch
+    explanation: The TypeScript handbook calls this exhaustiveness checking. Adding a paused state then gives a compile error at every switch that forgot it.
+    source:
+      url: https://www.typescriptlang.org/docs/handbook/2/narrowing.html
+      title: Narrowing, TypeScript Handbook
+- id: apply-event-steps
+  skill: model-lifecycles
+  asks: what
+  type: ordering
+  prompt: Two workers may report results for the same connection at once. Put the steps for applying an event to a stored connection safely in order.
+  reworded: In what order should code load, change, and save a connection's state when other workers may change it too?
+  steps:
+    - Read the connection's state and its version number.
+    - Compute the next state with the pure transition function.
+    - Save it only where the version still matches, adding one to the version.
+    - If no row was updated, re-read and apply the event again.
+    - After the save, publish a status change through the outbox if the status moved.
+  lesson:
+    title: Pure rules, guarded writes
+    explanation: The transition function decides, and a conditional write makes sure it decided from the latest state. Side effects come only after the change is saved.
+- id: error-to-action
+  skill: type-failures
+  asks: what
+  type: matching
+  prompt: Match each connector error type to what the runtime should do with it.
+  reworded: How should the shared runtime handle each kind of connector error?
+  matchHeading: Action
+  matchName: an action
+  pairs:
+    - item: AuthRejected
+      match: Stop, don't retry, and mark the connection disconnected
+    - item: RateLimited
+      match: Wait for the retry-after time if given, then retry
+    - item: ProviderUnavailable
+      match: Retry with backoff and jitter, then mark failing if retries run out
+    - item: UnexpectedShape
+      match: Keep the raw page and open a data issue for the mapping's owner
+  extraMatches:
+    - Delete the connection
+  lesson:
+    title: A few types, one decision each
+    explanation: Each type carries what the runtime needs, like whether to retry and how long to wait, so every provider's failures are handled the same way.
+- id: why-classify-at-edge
+  skill: type-failures
+  asks: why
+  type: pick-one
+  prompt: Why should each connector translate its provider's failures into a few shared error types, instead of throwing whatever the provider returned?
+  reworded: What's the benefit of connectors mapping provider errors to shared types at the edge?
+  options:
+    - text: The runtime then decides retries and states once for every provider, without knowing any provider's quirks
+      correct: true
+      reason: Provider knowledge stays in the connector, and handling stays in one shared place.
+    - text: Shared types make errors smaller
+      reason: Size isn't the point. Meaning is.
+    - text: Providers require it
+      reason: Providers don't know about your types. This is for your runtime.
+    - text: So errors never need to be logged
+      reason: You still log them, with the raw details attached.
+  lesson:
+    title: Translate at the boundary
+    explanation: A provider may signal an expired credential with a 401, a SOAP fault, or a 200 with an error inside. The connector knows which. The runtime should only see AuthRejected.
+- id: new-provider-change
+  skill: design-for-change
+  asks: what
+  type: pick-one
+  prompt: A new provider uses OAuth and cursor paging, both already supported. In a well-built connector design, what should adding it take?
+  reworded: What's the smallest set of changes for adding a provider whose auth and paging styles already exist?
+  options:
+    - text: A config record, its mappings, and tests against recorded responses
+      correct: true
+      reason: The common change should be adding code and data, with nothing shared edited.
+    - text: A new subclass of the base connector and changes to the runner
+      reason: That's the class tree composition avoids, and the runner shouldn't know providers.
+    - text: A new branch in the runner for this provider's name
+      reason: Provider names in shared code mean every provider edits the runtime.
+    - text: A new service of its own
+      reason: That throws away the shared retries, limits, and health the runtime provides.
+  lesson:
+    title: Make the common change cheap
+    explanation: New providers arrive every week, so they should touch only their own configuration and mapping. Rarer changes, like a new paging style, can touch a strategy and a factory case.
+- id: when-yagni
+  skill: design-for-change
+  asks: when
+  type: pick-one
+  prompt: Midway through the round, you're tempted to add a plugin loader so third parties could ship their own connectors someday. Nobody has asked for it. What should you do?
+  reworded: How should you treat a future feature nobody has asked for during a class design?
+  options:
+    - text: Leave it out, and mention where it would plug in if it were ever needed
+      correct: true
+      reason: Naming the extension point shows foresight without paying for a guess.
+    - text: Build it, since flexibility is always worth it
+      reason: Unused flexibility costs time now and complexity in every later change.
+    - text: Build it, but only half
+      reason: That pays most of the cost and gives none of the benefit.
+    - text: Ask the interviewer to remove the requirement
+      reason: There's no requirement to remove. It's a guess.
+  lesson:
+    title: You aren't gonna need it
+    explanation: Fowler lists four costs of a feature built on a guess, the costs of building it, of delay, of carrying it, and of repairing it. He adds that keeping code easy to change, like refactoring and tests, isn't what YAGNI warns against.
+    source:
+      url: https://martinfowler.com/bliki/Yagni.html
+      title: Yagni, Martin Fowler
+- id: why-capability-interface
+  skill: design-for-change
+  asks: why
+  type: prompt
+  prompt: Only some providers send webhooks. Why give connectors a separate WebhookCapable interface, instead of adding verifyWebhook to Connector and having most connectors throw "not supported"?
+  reworded: Why model an optional ability as its own small interface rather than a method that most implementations reject?
+  points:
+    - Most connectors would carry a method they can't honor, and callers would learn that only at run time.
+    - A separate interface makes support visible, and the registry can record it when connectors load.
+    - The core Connector interface stays small and stable for all providers.
+    - Adding webhook support to a provider means implementing one more interface, with no change to the others.
+  lesson:
+    title: Small interfaces for optional abilities
+    explanation: Clients shouldn't depend on methods they don't use. Splitting an optional ability into its own interface keeps the common contract honest and the check at load time instead of at run time.
