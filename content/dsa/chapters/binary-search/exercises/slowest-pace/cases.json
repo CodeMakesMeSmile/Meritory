@@ -1,0 +1,120 @@
+{
+  "exercise": "slowest-pace",
+  "cases": [
+    {
+      "uuid": "0dcda429-e248-49c1-9c1f-8fc83a56a9c5",
+      "description": "finds the slowest pace that fits",
+      "property": "slowestPace",
+      "input": {
+        "chapters": [12, 30, 7, 18],
+        "hours": 7
+      },
+      "expected": 12
+    },
+    {
+      "uuid": "cefabcf7-7da7-41fe-a620-2659567f017b",
+      "description": "one hour per chapter needs the longest chapter's pace",
+      "property": "slowestPace",
+      "input": {
+        "chapters": [5, 9, 3],
+        "hours": 3
+      },
+      "expected": 9
+    },
+    {
+      "uuid": "3cffc094-6dd9-4f62-a2ce-9d5039d12f65",
+      "description": "plenty of time means a pace of 1",
+      "property": "slowestPace",
+      "input": {
+        "chapters": [5, 9, 3],
+        "hours": 17
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "d0bf208d-ab98-429a-bda8-083aa5a00844",
+      "description": "one hour short of a pace of 1",
+      "property": "slowestPace",
+      "input": {
+        "chapters": [5, 9, 3],
+        "hours": 16
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "f3d1510c-4202-4e82-9896-4247b752ddc7",
+      "description": "one long chapter",
+      "property": "slowestPace",
+      "input": {
+        "chapters": [100],
+        "hours": 7
+      },
+      "expected": 15
+    },
+    {
+      "uuid": "a6ce46f3-db4d-4f1f-a49b-cab72924896e",
+      "description": "every chapter the same length",
+      "property": "slowestPace",
+      "input": {
+        "chapters": [8, 8, 8, 8],
+        "hours": 8
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "3dc2e831-983b-4a5b-9af3-3f2673b31473",
+      "description": "a pace that divides every chapter evenly",
+      "property": "slowestPace",
+      "input": {
+        "chapters": [6, 12, 18],
+        "hours": 6
+      },
+      "expected": 6
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "4bd04d33-ae33-4310-b9d7-5722786679b2",
+          "description": "one chapter of one page",
+          "property": "slowestPace",
+          "input": {
+            "chapters": [1],
+            "hours": 1
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "5094ec8f-fe1f-458a-baed-88a40cebe785",
+          "description": "handles the longest chapters",
+          "property": "slowestPace",
+          "input": {
+            "chapters": [1000000000, 1000000000],
+            "hours": 2
+          },
+          "expected": 1000000000
+        },
+        {
+          "uuid": "7fe386d5-ab89-48b5-9852-fb02f04bd006",
+          "description": "many hours for one long chapter",
+          "property": "slowestPace",
+          "input": {
+            "chapters": [1000000000],
+            "hours": 1000000000
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "2f1a3cf9-7774-4ea9-831f-7205f1d45620",
+          "description": "slow paces need more hours than 32 bits hold",
+          "property": "slowestPace",
+          "input": {
+            "chapters": [1000000000, 1000000000, 1000000000],
+            "hours": 1000000000
+          },
+          "expected": 4
+        }
+      ]
+    }
+  ]
+}

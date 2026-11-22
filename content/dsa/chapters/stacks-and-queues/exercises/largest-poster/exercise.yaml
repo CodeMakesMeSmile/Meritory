@@ -1,0 +1,16 @@
+id: largest-poster
+kind: coding
+title: Biggest poster on the fence
+difficulty: hard
+skills:
+  - bar-reach
+sibling: price-span
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: largestPoster
+  params:
+    - name: boards
+      type: int[]
+  returns: int

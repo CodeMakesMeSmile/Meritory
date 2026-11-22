@@ -1,0 +1,17 @@
+id: fullest-shelf
+kind: coding
+title: The fullest shelf
+difficulty: easy
+skills:
+  - sorted-grid
+  - half-open-invariant
+sibling: catalogue-lookup
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: fullestShelf
+  params:
+    - name: shelves
+      type: int[][]
+  returns: int

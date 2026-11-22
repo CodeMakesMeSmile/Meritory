@@ -1,7 +1,13 @@
 {
+  "card/answer-space-bounds": [
+    "2b96a4f56bf8d173d1e9b826d661429fe9dfafe28a4b90a5aadb2e23a8eb9ae2"
+  ],
   "card/array-operation-costs": [
     "4360c2cf4660f48da5f8bf3d2432736e2e7bb381416bb4e597a26f8cb7957c8b",
     "b75aa214068f5fa2de8413d4e68b045aa70ee307252e821bf2d5fdd46bb137b4"
+  ],
+  "card/bracket-failures": [
+    "a8b385d44b70259e0794d46df8c482ee13610834d5b6a086cba4c1404ab2447b"
   ],
   "card/compact-steps": [
     "e3f65e42adafb56a0bee2499c81823fddb4919f0ad8f05ecf638576cca414dcc"
@@ -22,20 +28,38 @@
   "card/grow-shrink-steps": [
     "14c43d1ba6cd9c61ea19578b27efa377be83d75d2454120c73373ddba7665ba4"
   ],
+  "card/half-open-promise": [
+    "6d294aeaaccd78b5a1e7062774a347ed026c383f27385cc77e70946d8bf35703"
+  ],
   "card/hash-lookup-steps": [
     "368d18e6b0a4d86ad7e7721468c94a0d499a6b01cd5dcf7a521a5735f88382fc"
+  ],
+  "card/last-copy-steps": [
+    "c163870ec606809bfae7f8dd82dd7fd75761c5a983d88ecd4f7e7a7bed5abda9"
   ],
   "card/merge-steps": [
     "dfcaccd661ff5ce9ad9d0f701aeb34e46d4886bb76a3d7cf11f553775b035ce5"
   ],
+  "card/midpoint-overflow": [
+    "9a60e433d4a9ecfa317e70b7dec0c877412d31f02b09ac21296b89364ccb950f"
+  ],
+  "card/monotonic-stack-steps": [
+    "c4125eabb1ea591cec65ad48a6aaf776dd61092bc2a9f3f81d66d37569fcc4ff"
+  ],
   "card/pair-search-steps": [
     "69ca8dd4ca45400b30b95a6ba399fd28d8c3dbe538afe2bedf321c4960a4a9bb"
+  ],
+  "card/postfix-steps": [
+    "195dc5a4622d3464c6e7ee60d62a02862bb383eda9fd125fcb613775995eb705"
   ],
   "card/prefix-count-steps": [
     "0c6c6bd5aa04ca47c845d10c43fee594c88f5d98b6170ca4d369ed775e0b3a03"
   ],
   "card/proof-before-moving": [
     "1e6704f5060013b301850d7b0a5e6e4e0336ef34f0a3a8b79b7dac8cccfe70db"
+  ],
+  "card/rotated-search-steps": [
+    "ae2d62475b766e5984354faa5a44034ed43c1d87be768a3188b90def8a60787f"
   ],
   "card/shortest-window-steps": [
     "6b5b152da4111ddf38565183bec0533fb34f3c10f6dc189e6ff9880305cb3da3"
@@ -49,6 +73,12 @@
   "card/two-pass-steps": [
     "e40c09dd05ce91902a1021a7326438b78ee600894c0fbf056850c8f8d543616a"
   ],
+  "card/two-stack-queue-steps": [
+    "bb2ba81f3bfed4012b280d0b92e09aa6c943ccbcda8ba7fd5c4ef62a1fae419c"
+  ],
+  "card/when-answer-space": [
+    "b119b1782bf79b13e4b45a1268127494a8a2ee363d5bb3f57a9a009f79c0cada"
+  ],
   "card/when-at-most-trick": [
     "281b5d7b90d314bfeb6ea516cac821a8c25932878403a0bccebe21f7d223fb49"
   ],
@@ -61,11 +91,23 @@
   "card/when-count-array-window": [
     "561a8569b2720024ddad54c5e2a04e87c1939fa7d10f94aa5f8ca8bfc6458baf"
   ],
+  "card/when-count-is-difference": [
+    "5926bb63d5d6e818e81b658639334d76bab9574b61dea0adb12fd73ddd134a63"
+  ],
+  "card/when-counting-fails": [
+    "2dd0fd830054bf31c9ecafc840e2a40d23897b4aec1ecc1d9e5f19bc3f0adff4"
+  ],
   "card/when-deque-over-heap": [
     "ef8851c166921a6614387095780c210de24dd5c35aa986e12cc86ffeac43c824"
   ],
+  "card/when-division-rounds": [
+    "fb8f833b9ba724f2f3020bf5d7754c51620008e732e38a4616333c33f0b32d68"
+  ],
   "card/when-ends-need-sorting": [
     "3f6ed074a3f88818c8de29a68c0f372272cccf822d8ee231c911fa42ea062716"
+  ],
+  "card/when-grid-method": [
+    "66a210633086000cfa57098a555cfb0c3a1121d33258f0bc7bea9f53b84da0d5"
   ],
   "card/when-longest-or-shortest": [
     "e24ea82c48ca7ed63eccbd66f8aeb34f4545b03988caf21aee0f6ac702282a5c"
@@ -74,14 +116,32 @@
     "041a42140e8ba497ed268711803849a4e9686a08734137910cc9618b242090ea",
     "ae77c37b221e4e10deade57eb1789710f89c4a928ffbd0972b07cad748599595"
   ],
+  "card/when-mark-seen": [
+    "5d592727d4a6989e88db9d6101a62b5b79d8afa8f64baa66a6cec025f7cb53d5"
+  ],
   "card/when-merge-walk": [
     "f059df356c042a3c96f5cabf945260c0145c9b9754a837488b4927819c8e2517"
+  ],
+  "card/when-min-changes": [
+    "0fb99cd6985701961efe10aec0c6f9d4fed0e8c664d39765006dd81dfd5c8cca"
   ],
   "card/when-not-remove-one-by-one": [
     "dbefc7c1d84f98fca682a5b3e8c40df863a0489f62a26ee8f5ec13edc0e4e8fd"
   ],
   "card/when-not-sliding-window": [
     "81283a81d5fcf5cc3aa284636d1b734f172630605bf530493231353df0508755"
+  ],
+  "card/when-pop-direction": [
+    "036cc8b239c56925c1c7e80773f64a8445cf0c5deed6ef327d148de9a17637c4"
+  ],
+  "card/when-queue-or-stack": [
+    "c5a70674b8f712152e5fd0bc7584ba1be5f30ae05ac662c40ae6d9cce582abc3"
+  ],
+  "card/when-rotation-breaks": [
+    "55fa1bf7ac19cbf855f605e096043b48a036830fb3d47c98960d926576e66e4f"
+  ],
+  "card/when-search-ends": [
+    "9bd9f90f210ef17f831110c3b827bc865a822d765a5f6af0c0a7adda678a678e"
   ],
   "card/when-set-of-answers": [
     "20a08a1f3cc0cb30fbe49ccd825fd7bb529b61a1af95d86d4e4c43f6dc28d535"
@@ -92,8 +152,17 @@
   "card/when-sort-for-runs": [
     "0f2aee169a13b007847c651ab93a4d5bd86606c34a4c705bf8e1967191d9296a"
   ],
+  "card/when-store-extra": [
+    "37b50472459b5c6ab88b1c7db568428a1006041b5251449d772a8c46993d645e"
+  ],
   "card/when-swapping-breaks-order": [
     "c9b83d5f7482d7400a8edaa2b4c00c8d635108309bc48d76bba7583fbaa3621f"
+  ],
+  "card/when-target-in-first-run": [
+    "addbc9ea83b2c76aec414f33cd5f481252a3bd2badaa203ba6f3990b32108bed"
+  ],
+  "card/when-two-stacks": [
+    "58f9636dfa63e121ceb74ed6f73ee4e87499d5d89288a220f945a7221d0787eb"
   ],
   "card/when-window-fits": [
     "eae91cbe9c5aae2ae304717f9a41bdb3527d61b3ea50cab1f0c383ee2e895fa3"
@@ -101,8 +170,20 @@
   "card/why-add-window-length": [
     "d9b728d76c984bf78dd4294fc548b9798e02ac448b05a1293d88c19c88523c2c"
   ],
+  "card/why-amortized": [
+    "ab977fdf656b722aac74b189d583e146037596f726635e5a08ee8b9604b60348"
+  ],
   "card/why-check-before-adding": [
     "45f84bb63408807d4835728e647fc9ff54b5d7c9c38859a4f26b36ddac7d5f7c"
+  ],
+  "card/why-check-greedy": [
+    "d2c31ca19381a62f579838d1bfa90d1120028cd8b2ecc2aca4140a80bb9215d7"
+  ],
+  "card/why-check-must-stay-true": [
+    "dbc08287af4ee38a87e5f0bfe7c4a507a47167091aaf1f9f26313709a4174c6d"
+  ],
+  "card/why-compare-with-last": [
+    "96064546f1280b6b9eec26cb1b6cae508cf7436dc195a90a36ba05c499af6868"
   ],
   "card/why-count-not-sort": [
     "bfb7e70f6ea8ff3a1409070d278617ecfbd30b6d86153e641d45da67d2d9edd0"
@@ -112,6 +193,12 @@
   ],
   "card/why-exactly-not-direct": [
     "eb2e6326033a265ee5b6fa8a824fc3fe83f97e6044cbff809e050b3044ecb6af"
+  ],
+  "card/why-find-pivot-first": [
+    "169a838f34ec00fd7f68dbb6bc372fe966b2edd3b592127f8289f563503f7a62"
+  ],
+  "card/why-flatten-grid": [
+    "8b2b37137a281afa48e2e84e95ccd1e27d212079e72257465de9e6c73f380c81"
   ],
   "card/why-group-key-rules": [
     "75fdc6c45baa1ea8d4288b4bc46bf11ddb2f307ae63ced67c7e8cb17cf63fd27"
@@ -125,17 +212,29 @@
   "card/why-left-never-back": [
     "de4a7757f93cee0dd4e48a17cf208d9ee5afedb3edd0927962498a7f4fb6819e"
   ],
+  "card/why-lo-less-than-hi": [
+    "243b7c8f4742cc1ae62cf18efc1de3a2df7ea2685e6b5ed198912bfb55c2c4a4"
+  ],
   "card/why-merge-linear": [
     "8f492a5b6d9794ff69df646d4a4c3c28a59faf4eb194f80f039d384079a02a98"
   ],
   "card/why-mid-stays-after-swap": [
     "27584cda4f1b07725b47086aaee73c4d25a9d7d66b26974897fe70e9bb68b84b"
   ],
+  "card/why-min-per-entry": [
+    "e7613b01bc0a923fefcb39b5569b1a5c27f3afa2d0ffc3f80badfa5692ed9a57"
+  ],
   "card/why-missing-count": [
     "35311fc600a4e0afd62168888166509344d69fc10ab3b49925782992d062bfdc"
   ],
+  "card/why-monotonic-linear": [
+    "583be589e52d1f72321111ddb48681675f3ce2993afa73b0b60235f7372d280a"
+  ],
   "card/why-move-left-when-small": [
     "ad425eb8158049ef3e6f8ba755f7dfe9daf8dddaf3db6b3734b81f54c9dea287"
+  ],
+  "card/why-move-only-when-empty": [
+    "2131077fc3ab1bdb8210d27a4d31ce7334712c0b2933271e78cdefb9a6241519"
   ],
   "card/why-move-shorter-post": [
     "55366fa2e1c9a51be5c97461bee5950b7677acacdbc8ffc366f0addf6c1b2839"
@@ -146,8 +245,14 @@
   "card/why-not-divide": [
     "701e6cc1bff98e3d90b4f1cfe4222e250e1da32842e255cfa6486dbe0a5f66d8"
   ],
+  "card/why-not-lo-equals-mid": [
+    "e58245d9aee07f7f54ec14e4c49fc37bf7fe211feae0f0e337d5427bdb6b7cdc"
+  ],
   "card/why-pop-smaller": [
     "61080b3db7f7acb54f507e4a179c073ce475474741b1565556b739cefc47cf6f"
+  ],
+  "card/why-queue-for-fewest": [
+    "c7105c3dfcf9fe9a9a2dd2e366eef0993ceff88942d7d53a51a4ad1fa5a819f4"
   ],
   "card/why-quickselect-linear": [
     "777417a5c46b2c267ba0165dd2bb0410c7c7459697d9a1ee4e0f0fcc2004372c"
@@ -157,6 +262,9 @@
   ],
   "card/why-record-inside-loop": [
     "b5d31f550f9ff6a8eb8bf34738f42452641880eb92285088ae1f9c385e6e65f0"
+  ],
+  "card/why-right-pops-first": [
+    "1ee1d11ba6b5fac3140fd62e7658d2f0dee565b9e9aa4f58f5ea5461a965b223"
   ],
   "card/why-seed-zero": [
     "355d6212c70dc2e824c827048afd5de9f49327e5bd2a03ba259e119b9122e849"
@@ -173,8 +281,17 @@
   "card/why-sort-needs-compare": [
     "dfd957210028e0c5a6998ff2ea608655142568afb6357ea5073ae2553f38e712"
   ],
+  "card/why-stack-for-brackets": [
+    "0bed5baaf054ac0d47f2c03ad2d055e76d32dcfec1172d51fa4c4df99e1793c0"
+  ],
+  "card/why-stack-holds-positions": [
+    "635f27edc63e9b7802cf1630ce93786031513e78da063db279f7c179a2db1685"
+  ],
   "card/why-start-of-run": [
     "2c0ed90e16629d71d08af846c00f2076b227bdcf8dbafa79fabb16f35e0e0886"
+  ],
+  "card/why-start-top-right": [
+    "ab7d0453181dcf760ea33b961f0d66a55e677e4258c30a3ab7f3b3a88ff3008e"
   ],
   "card/why-store-positions": [
     "2c5c8e34c127b4764074519ad2c029e865427cb36671f9a57302925820d49d3b"
@@ -185,11 +302,17 @@
   "card/why-table-grows": [
     "d0a0baed15ec7cb67addcd977c3c5d1aaea1c76a90d4d0b15ea8dcda16f5759f"
   ],
+  "card/why-two-searches": [
+    "6296b8cbcb059a4ce056dcf7a2532abada936c312c75eb3ccfe1292a87938fc9"
+  ],
   "card/why-worst-case-linear": [
     "48efccd12d48138fa59bc0950657f1b3c529b7172bc3c052a5f24968fa883b8f"
   ],
   "card/why-write-never-passes-read": [
     "611aba8fe0dc1bad002c661b476382a3b74f4c6994844b2e413dcd020e559221"
+  ],
+  "card/why-zero-past-end": [
+    "496a27e1b27f918ac0a43a85c5c1df62add3b5e3ef375e628d014d9d3d4494a9"
   ],
   "card/window-tracking-numbers": [
     "1480c3e452028bb034b694ec5d9cf17e3fc46fb0495b9bdf5ba32a38ddfb9312"
@@ -197,8 +320,14 @@
   "chapter/arrays-and-hashing": [
     "7279e5a2ae1ae974ff737e0fd4ab732eae5dc61d6495006491b878cacd341620"
   ],
+  "chapter/binary-search": [
+    "918c1d6709d362d5ac8f030df5726887f757c15105e79f4a61df1ce1229fdd84"
+  ],
   "chapter/sliding-window": [
     "64d9d30b2f947614c9517dd8ca0bffd400f3c1d3df8e76ac4d86d989faea5fe3"
+  ],
+  "chapter/stacks-and-queues": [
+    "8b055551a81c17cf507eaa61eb736de41a510539c9493079bab5e0ce9cecaaf8"
   ],
   "chapter/two-pointers": [
     "337609a8176950dfb103c35500ab602d38c7b724d0d1bf7e2405d80c371fe391"
@@ -218,8 +347,26 @@
   "exercise/biggest-banner": [
     "10febc525b906f4f4964611248d111d980d843b795016de72bcb2d5ade2ca122"
   ],
+  "exercise/biggest-tile-square": [
+    "2503a270f0f934c6109b765b02bff1812419df933a1ef27b32a76ee456d6cb2d"
+  ],
+  "exercise/booking-range": [
+    "ba67ad5b1ac5a7166bb4cb9e4f0b3e6c8b094b3f748bbc8f33780d4760edd6ff"
+  ],
+  "exercise/brackets-close": [
+    "5df6f3dddca2c0d588bd19cf891f3e9d551df118141f36f924241d62e1c9dec4"
+  ],
   "exercise/cancelled-to-back": [
     "67369d746bf3f9db863960b382fe43428f01064e02ff72332798742c97c561ce"
+  ],
+  "exercise/catalogue-lookup": [
+    "a6449d5956b3fc7216ef9e0fe7592e0743bd522f577c9e0fda9b5c6938b9062a"
+  ],
+  "exercise/count-in-range": [
+    "7ace6133136d2b0c6cb3cbfd3d7d11d8b2fe731adbe5c20d1c8a228d1ff1c6ce"
+  ],
+  "exercise/crate-stack": [
+    "dcd72a305e719ef3e8cc0a954dbe37ab8e83d63e9ca1af773782cf13ab61df3e"
   ],
   "exercise/enough-tiles": [
     "a2f9e4e59451fa6b0b8fb0593601d9abd71840f33c6934750b3a70e1e59cad8b"
@@ -236,11 +383,20 @@
   "exercise/fewest-days": [
     "75a60cd1c0b3d55932313135376fe445b5d7a98c64f5cde17b81a8169f1a54be"
   ],
+  "exercise/fewest-hops": [
+    "3877bd8e49f99b875f1d82286d06f063b74d683ef249e7fe4757cab552e4274a"
+  ],
   "exercise/fill-the-break": [
     "921897d0484707bd798031cd4a81fb742a377874d813a928d00498db37617a6f"
   ],
+  "exercise/first-broken-build": [
+    "8ed599cc5483d2e63de065ffc643cd9ed352cda3988c8f27eaf9aebb642e2c07"
+  ],
   "exercise/free-on-both": [
     "e8479fde9ed3072c8aa5db908574381f8e66b2a0c0aa623a831a0c4c4bdf6d4f"
+  ],
+  "exercise/fullest-shelf": [
+    "8a58b7b2fc0a96cbd89c11c6f4b1813d48f7f9c7974f99c43c95fd1d08a100a8"
   ],
   "exercise/gifts-under-budget": [
     "db8b9f6b142f19d314c02034ed9e57b6f267fa6bc2fb68dc940b14f92d6aec25"
@@ -248,8 +404,14 @@
   "exercise/hidden-rearrangements": [
     "a32bbfcf431d7578fead4fca7560836986c9ffa763edbbe17ef8ac79ac9cc5a7"
   ],
+  "exercise/kth-lowest-height": [
+    "586006e38573113a2e2864b2993d436ab77da0d82e332329fc2ad867572a50e9"
+  ],
   "exercise/kth-quickest": [
     "3ec0d2a99acf064adfd7874c2ea7d092660988b9eeb57818e6e947799c0a43d0"
+  ],
+  "exercise/largest-poster": [
+    "f01825e8aa0056e36d49209a26824cae0143aaf8084518c1188ef4ecaf51ccfc"
   ],
   "exercise/letter-groups": [
     "7cb51e5edd4e6471fe13a9b20a5c93826317e7d071a53f7907d10149d0291ff6"
@@ -260,6 +422,12 @@
   "exercise/merge-timetables": [
     "758cb91aa1c8c26abfa156e8c1cdccd8089a1c5775528f87c896e1972f403d0a"
   ],
+  "exercise/next-busier-day": [
+    "2a56efbec2717636d0dbfa8eab564bd8e5067f570fef2ed9c6d10a8fc441f1a2"
+  ],
+  "exercise/next-cheaper-fuel": [
+    "3c653c78567572ecb917ffb9dd5fe311959d09737dee2d8737e6773f65d738a3"
+  ],
   "exercise/no-repeat-dinners": [
     "bb9ab1863c9fdca1e43a8cc9e8079abc917c3516123770f7e10dabb91bd3b532"
   ],
@@ -269,8 +437,17 @@
   "exercise/pairs-with-gap": [
     "c55a98a08e37e110da6c8421fe3238e60feabaac1e7843e341a62d5edeb60d94"
   ],
+  "exercise/postfix-total": [
+    "4702160dfe181998aa9d92897415cd9f3d6f326ac766f772a420f28eab63b18f"
+  ],
   "exercise/price-pair": [
     "666d99be8437b1b1b48b64528684edaa4062b6964349b9b2d6e7c5be294d2791"
+  ],
+  "exercise/price-span": [
+    "a86e37476cdbb88ea4c3412c400e908d0237b990b747e324354a4a1798257c04"
+  ],
+  "exercise/print-rounds": [
+    "18a622da679b28f28f325e1087fe0d8c8adcaf9885b924f9353bbd9033e1ffe1"
   ],
   "exercise/product-of-others": [
     "02eb84dcf89f10d67d2ece04ff6dac683957856ed94ef2d3acd3df30beb19964"
@@ -287,14 +464,29 @@
   "exercise/readings-once": [
     "1859538497e1c626578eaaa68dc2fe9b201a3dd282749f233f45e094042b5ca6"
   ],
+  "exercise/rotated-playlist": [
+    "c1747b8295aef655e39f56ddcd1a07cac9134db391f9b57f4cc9edcdffdab9fa"
+  ],
   "exercise/same-letters": [
     "e998b9dc62400e1e9c84b0ed64ee8b38519caa0a2adbef661944be8567736dc2"
+  ],
+  "exercise/shelf-slot": [
+    "27b4ff07e6c4e77dd853274f40c086ef4073f946fa0c5635f50b1ab6d46ed4fd"
   ],
   "exercise/shift-groups": [
     "3f3f5f2514848d0fa320e7c7fc973e8e57166b9cf676fdfd1dac42ae75f0f946"
   ],
+  "exercise/slowest-pace": [
+    "bc7d6e173acf9a97581788edd166f7b76d6b42fa0b61822daeb430e6e4e8f535"
+  ],
+  "exercise/smallest-van": [
+    "70e640346a55e9a385980c9e3bbfa0fd83bc0514fc1e76f6a54b4f1e015e70d0"
+  ],
   "exercise/smallest-window": [
     "5eed9fd14da1054048c0d051917efbfb099d35915320e3e31a762ca54dae08c9"
+  ],
+  "exercise/stack-machine": [
+    "d658ffe360a4418a946c14dfc00940dfcea1b550b88f5412196518dcf7d98296"
   ],
   "exercise/steady-stretch": [
     "178329e71bc3140466091223340c7e862aeb51cb66b89e29421699463a3b1a0d"
@@ -302,11 +494,20 @@
   "exercise/stretches-with-total": [
     "891cbcf6180bc86d9398cf4b9bac8eef9cff3de710a341781d18a6056e31eec9"
   ],
+  "exercise/tags-nest": [
+    "c34c5a59572666bed0a27f4666a51701fa4d70324e61d52cd77d1111346ccba1"
+  ],
   "exercise/three-parcel-sizes": [
     "81936e609276338018fa35d48f87bd8a08879bcd9b961a974b3e180e83378738"
   ],
+  "exercise/ticket-queue": [
+    "5aa22cff60b09242dcc0434fa567b370b32ffe404196b16deb199340d580f13f"
+  ],
   "exercise/warm-stretches": [
     "372222f71285f595fea460d685342054dfaaac63401e98bab62893d70cfb32a9"
+  ],
+  "exercise/where-the-log-starts": [
+    "9dbf22f2852aaa8728fa082d0343527f7cfe2377e6c586646987c13023260cea"
   ],
   "exercise/window-highs": [
     "f1b6d1a62c330e9b84c639835053feee2bd1c3397bcc1fe9b7ef2046f25927f8"

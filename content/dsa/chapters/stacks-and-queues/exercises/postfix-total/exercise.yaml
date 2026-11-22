@@ -1,0 +1,16 @@
+id: postfix-total
+kind: coding
+title: Postfix calculator
+difficulty: medium
+skills:
+  - evaluate-postfix
+sibling: stack-machine
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: postfixTotal
+  params:
+    - name: tokens
+      type: string[]
+  returns: int

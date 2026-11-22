@@ -1,0 +1,22 @@
+#include <stdlib.h>
+
+int largestPoster(int* boards, int boardsSize) {
+    int best = 0;
+    // Positions of boards whose heights rise from bottom to top
+    int* rising = malloc(sizeof(int) * (boardsSize + 1));
+    int top = 0;
+    for (int i = 0; i <= boardsSize; i++) {
+        // A height of 0 past the end pops every board still waiting
+        int height = i < boardsSize ? boards[i] : 0;
+        while (top > 0 && boards[rising[top - 1]] >= height) {
+            int board = rising[--top];
+            // The board now under it is the nearest shorter one on the left
+            int left = top > 0 ? rising[top - 1] : -1;
+            int area = boards[board] * (i - left - 1);
+            if (area > best) best = area;
+        }
+        rising[top++] = i;
+    }
+    free(rising);
+    return best;
+}

@@ -1,0 +1,16 @@
+id: next-cheaper-fuel
+kind: coding
+title: Next cheaper fill-up
+difficulty: easy
+skills:
+  - next-greater
+sibling: next-busier-day
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: nextCheaper
+  params:
+    - name: prices
+      type: int[]
+  returns: int[]

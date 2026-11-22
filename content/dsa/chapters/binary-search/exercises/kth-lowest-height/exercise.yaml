@@ -1,0 +1,19 @@
+id: kth-lowest-height
+kind: coding
+title: The k-th lowest point on the hill
+difficulty: hard
+skills:
+  - answer-space
+  - sorted-grid
+sibling: biggest-tile-square
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: kthLowest
+  params:
+    - name: heights
+      type: int[][]
+    - name: k
+      type: int
+  returns: int

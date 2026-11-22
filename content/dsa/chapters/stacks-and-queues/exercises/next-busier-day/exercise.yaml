@@ -1,0 +1,16 @@
+id: next-busier-day
+kind: coding
+title: Days until a busier day
+difficulty: medium
+skills:
+  - next-greater
+sibling: next-cheaper-fuel
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: daysUntilBusier
+  params:
+    - name: visitors
+      type: int[]
+  returns: int[]

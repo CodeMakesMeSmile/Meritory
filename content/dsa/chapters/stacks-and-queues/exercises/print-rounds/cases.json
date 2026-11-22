@@ -1,0 +1,110 @@
+{
+  "exercise": "print-rounds",
+  "cases": [
+    {
+      "uuid": "c3f6a604-c391-4377-8992-c6c61b2367c1",
+      "description": "jobs finish in turns",
+      "property": "finishOrder",
+      "input": {
+        "pages": [5, 2, 7],
+        "k": 3
+      },
+      "expected": [1, 0, 2]
+    },
+    {
+      "uuid": "be24502b-1cea-4ef0-90e1-50b5f76de8fb",
+      "description": "every job fits in one turn",
+      "property": "finishOrder",
+      "input": {
+        "pages": [1, 2, 3],
+        "k": 3
+      },
+      "expected": [0, 1, 2]
+    },
+    {
+      "uuid": "0dfbdbd9-a0b5-44dd-8aa6-f90059a4efc6",
+      "description": "one page per turn",
+      "property": "finishOrder",
+      "input": {
+        "pages": [3, 1, 2],
+        "k": 1
+      },
+      "expected": [1, 2, 0]
+    },
+    {
+      "uuid": "858cc1c5-0fc3-4901-86dc-5e2085d7550e",
+      "description": "jobs that finish in the same round keep their order",
+      "property": "finishOrder",
+      "input": {
+        "pages": [4, 4, 1, 4],
+        "k": 2
+      },
+      "expected": [2, 0, 1, 3]
+    },
+    {
+      "uuid": "c00ea042-0598-40b7-8f0f-df67c92c2008",
+      "description": "a long job finishes last",
+      "property": "finishOrder",
+      "input": {
+        "pages": [10, 1, 1],
+        "k": 2
+      },
+      "expected": [1, 2, 0]
+    },
+    {
+      "uuid": "92dc0799-1d6b-4fa0-9824-6d908d550c8b",
+      "description": "a job of exactly k pages finishes in one turn",
+      "property": "finishOrder",
+      "input": {
+        "pages": [3, 6],
+        "k": 3
+      },
+      "expected": [0, 1]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "03f716c9-3670-4b9d-87b3-4d7b609e8b3f",
+          "description": "no jobs",
+          "property": "finishOrder",
+          "input": {
+            "pages": [],
+            "k": 5
+          },
+          "expected": []
+        },
+        {
+          "uuid": "c0a998d5-ec41-4e4d-9a32-5b097e11e7ca",
+          "description": "one job",
+          "property": "finishOrder",
+          "input": {
+            "pages": [7],
+            "k": 2
+          },
+          "expected": [0]
+        },
+        {
+          "uuid": "7270a823-a792-49ef-8579-102833acf5fe",
+          "description": "k is bigger than every job",
+          "property": "finishOrder",
+          "input": {
+            "pages": [5, 9, 1],
+            "k": 1000
+          },
+          "expected": [0, 1, 2]
+        },
+        {
+          "uuid": "c232c4ea-e60a-44e2-99c7-184fc709c590",
+          "description": "handles the longest jobs",
+          "property": "finishOrder",
+          "input": {
+            "pages": [1000, 1],
+            "k": 1
+          },
+          "expected": [1, 0]
+        }
+      ]
+    }
+  ]
+}

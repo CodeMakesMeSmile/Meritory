@@ -1,0 +1,17 @@
+id: biggest-tile-square
+kind: coding
+title: The biggest square of tiles
+difficulty: easy
+skills:
+  - answer-space
+  - off-by-one
+sibling: kth-lowest-height
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: biggestSquare
+  params:
+    - name: tiles
+      type: int
+  returns: int

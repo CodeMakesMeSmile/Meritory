@@ -1,0 +1,19 @@
+id: shelf-slot
+kind: coding
+title: Where the book goes
+difficulty: easy
+skills:
+  - half-open-invariant
+  - off-by-one
+sibling: first-broken-build
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: shelfSlot
+  params:
+    - name: ids
+      type: int[]
+    - name: newId
+      type: int
+  returns: int

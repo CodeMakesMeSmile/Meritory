@@ -1,0 +1,16 @@
+id: brackets-close
+kind: coding
+title: Brackets that close
+difficulty: easy
+skills:
+  - match-pairs
+sibling: tags-nest
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: bracketsClose
+  params:
+    - name: text
+      type: string
+  returns: boolean

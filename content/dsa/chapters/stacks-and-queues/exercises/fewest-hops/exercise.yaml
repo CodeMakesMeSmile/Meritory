@@ -1,0 +1,16 @@
+id: fewest-hops
+kind: coding
+title: Fewest hops across the pond
+difficulty: medium
+skills:
+  - queue-order
+sibling: print-rounds
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: fewestHops
+  params:
+    - name: stones
+      type: int[]
+  returns: int

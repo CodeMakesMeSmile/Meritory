@@ -1,0 +1,16 @@
+id: where-the-log-starts
+kind: coding
+title: Where the log starts
+difficulty: medium
+skills:
+  - rotated-minimum
+sibling: rotated-playlist
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: oldestEntry
+  params:
+    - name: totals
+      type: int[]
+  returns: int

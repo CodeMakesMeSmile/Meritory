@@ -1,0 +1,162 @@
+{
+  "exercise": "ticket-queue",
+  "cases": [
+    {
+      "uuid": "67f67982-a258-44c2-b34c-b74506cb5217",
+      "description": "serves the oldest ticket and counts the rest",
+      "property": "TicketQueue",
+      "input": {
+        "calls": [
+          "TicketQueue",
+          "join",
+          "join",
+          "join",
+          "serve",
+          "join",
+          "front",
+          "size"
+        ],
+        "args": [[], [11], [12], [13], [], [14], [], []]
+      },
+      "expected": [null, null, null, null, 11, null, 12, 3]
+    },
+    {
+      "uuid": "9b6f7978-2fcc-43ad-b907-d43c65979377",
+      "description": "serves tickets in the order they joined",
+      "property": "TicketQueue",
+      "input": {
+        "calls": [
+          "TicketQueue",
+          "join",
+          "join",
+          "join",
+          "serve",
+          "serve",
+          "serve"
+        ],
+        "args": [[], [1], [2], [3], [], [], []]
+      },
+      "expected": [null, null, null, null, 1, 2, 3]
+    },
+    {
+      "uuid": "a5d2d681-4b02-4833-a2f1-808a255f8f7f",
+      "description": "new tickets wait behind older ones",
+      "property": "TicketQueue",
+      "input": {
+        "calls": [
+          "TicketQueue",
+          "join",
+          "join",
+          "serve",
+          "join",
+          "join",
+          "serve",
+          "serve",
+          "serve"
+        ],
+        "args": [[], [1], [2], [], [3], [4], [], [], []]
+      },
+      "expected": [null, null, null, 1, null, null, 2, 3, 4]
+    },
+    {
+      "uuid": "790e104e-11e4-480f-84cc-72b112341f8c",
+      "description": "front doesn't remove the ticket",
+      "property": "TicketQueue",
+      "input": {
+        "calls": [
+          "TicketQueue",
+          "join",
+          "front",
+          "front",
+          "size",
+          "serve",
+          "size"
+        ],
+        "args": [[], [5], [], [], [], [], []]
+      },
+      "expected": [null, null, 5, 5, 1, 5, 0]
+    },
+    {
+      "uuid": "7634324b-3236-4913-8cb7-b53961679942",
+      "description": "the line empties and fills again",
+      "property": "TicketQueue",
+      "input": {
+        "calls": [
+          "TicketQueue",
+          "join",
+          "serve",
+          "join",
+          "join",
+          "front",
+          "serve",
+          "serve"
+        ],
+        "args": [[], [7], [], [8], [9], [], [], []]
+      },
+      "expected": [null, null, 7, null, null, 8, 8, 9]
+    },
+    {
+      "uuid": "498cae34-6707-4f41-8a31-d1a26afb6aa5",
+      "description": "size counts every waiting ticket",
+      "property": "TicketQueue",
+      "input": {
+        "calls": [
+          "TicketQueue",
+          "join",
+          "join",
+          "join",
+          "serve",
+          "join",
+          "size"
+        ],
+        "args": [[], [1], [2], [3], [], [4], []]
+      },
+      "expected": [null, null, null, null, 1, null, 3]
+    },
+    {
+      "uuid": "05b113f7-0964-4bd5-9e0e-4eb62efb1af9",
+      "description": "the same ticket number twice",
+      "property": "TicketQueue",
+      "input": {
+        "calls": ["TicketQueue", "join", "join", "serve", "serve"],
+        "args": [[], [6], [6], [], []]
+      },
+      "expected": [null, null, null, 6, 6]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "db3e66e4-5e46-4e9b-b4f1-76c2ab32f00c",
+          "description": "a new line is empty",
+          "property": "TicketQueue",
+          "input": {
+            "calls": ["TicketQueue", "size"],
+            "args": [[], []]
+          },
+          "expected": [null, 0]
+        },
+        {
+          "uuid": "7443b8c0-9f87-477a-8893-509b5670e2b9",
+          "description": "one ticket",
+          "property": "TicketQueue",
+          "input": {
+            "calls": ["TicketQueue", "join", "front", "serve", "size"],
+            "args": [[], [42], [], [], []]
+          },
+          "expected": [null, null, 42, 42, 0]
+        },
+        {
+          "uuid": "7c7e98d5-28c2-4e9c-a147-cf1a49a0edc7",
+          "description": "handles the largest tickets",
+          "property": "TicketQueue",
+          "input": {
+            "calls": ["TicketQueue", "join", "join", "serve", "serve"],
+            "args": [[], [1000000000], [1], [], []]
+          },
+          "expected": [null, null, null, 1000000000, 1]
+        }
+      ]
+    }
+  ]
+}

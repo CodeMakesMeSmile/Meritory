@@ -1,0 +1,118 @@
+{
+  "exercise": "brackets-close",
+  "cases": [
+    {
+      "uuid": "307d680e-2892-4b1d-b994-9da91867f2f0",
+      "description": "every bracket closes with its partner",
+      "property": "bracketsClose",
+      "input": {
+        "text": "sum(a[1], {b})"
+      },
+      "expected": true
+    },
+    {
+      "uuid": "74d881e3-c2f5-4325-b264-a25c833f39b5",
+      "description": "a bracket closes the wrong kind",
+      "property": "bracketsClose",
+      "input": {
+        "text": "max(a[1)]"
+      },
+      "expected": false
+    },
+    {
+      "uuid": "750ee83c-1c12-4dfd-a8f5-9975373d4681",
+      "description": "brackets nested inside each other",
+      "property": "bracketsClose",
+      "input": {
+        "text": "{[()()]}"
+      },
+      "expected": true
+    },
+    {
+      "uuid": "f783c658-4991-4de8-8237-810d605d5ee9",
+      "description": "brackets side by side",
+      "property": "bracketsClose",
+      "input": {
+        "text": "()[]{}"
+      },
+      "expected": true
+    },
+    {
+      "uuid": "1a70e445-8965-41b8-9738-af6ebd8477b0",
+      "description": "brackets that cross",
+      "property": "bracketsClose",
+      "input": {
+        "text": "([)]"
+      },
+      "expected": false
+    },
+    {
+      "uuid": "6af736df-20cf-4bbd-b2d8-027c5d477f3d",
+      "description": "a bracket left open",
+      "property": "bracketsClose",
+      "input": {
+        "text": "(()"
+      },
+      "expected": false
+    },
+    {
+      "uuid": "8d601d4c-01c9-4b50-babc-3699e479c48d",
+      "description": "a closing bracket with nothing open",
+      "property": "bracketsClose",
+      "input": {
+        "text": "())"
+      },
+      "expected": false
+    },
+    {
+      "uuid": "b0c86a9f-97ab-445c-a3e6-8b78d6c5c080",
+      "description": "closes before it opens",
+      "property": "bracketsClose",
+      "input": {
+        "text": ")("
+      },
+      "expected": false
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "ab4cbee7-6a1d-4d7b-9288-42a8ee765063",
+          "description": "an empty formula",
+          "property": "bracketsClose",
+          "input": {
+            "text": ""
+          },
+          "expected": true
+        },
+        {
+          "uuid": "f3dc0484-6bb0-4105-a027-5a767906aa4a",
+          "description": "no brackets at all",
+          "property": "bracketsClose",
+          "input": {
+            "text": "a + b * 2"
+          },
+          "expected": true
+        },
+        {
+          "uuid": "d164f2e5-31d0-4d59-ac59-fef378a9f479",
+          "description": "one opening bracket",
+          "property": "bracketsClose",
+          "input": {
+            "text": "["
+          },
+          "expected": false
+        },
+        {
+          "uuid": "c815aecc-d3b6-4ab9-ba50-bc17f4feae3a",
+          "description": "one closing bracket",
+          "property": "bracketsClose",
+          "input": {
+            "text": "}"
+          },
+          "expected": false
+        }
+      ]
+    }
+  ]
+}

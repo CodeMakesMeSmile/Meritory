@@ -1,0 +1,109 @@
+{
+  "exercise": "stack-machine",
+  "cases": [
+    {
+      "uuid": "d1719191-51c4-4b32-ab7a-74687e2fe73a",
+      "description": "runs a short program",
+      "property": "runProgram",
+      "input": {
+        "steps": ["4", "dup", "mul", "10", "swap", "sub"]
+      },
+      "expected": [-6]
+    },
+    {
+      "uuid": "31390215-ae17-4039-9352-4f3db0d6b561",
+      "description": "numbers stay on the stack in order",
+      "property": "runProgram",
+      "input": {
+        "steps": ["1", "2", "3"]
+      },
+      "expected": [1, 2, 3]
+    },
+    {
+      "uuid": "33e06e97-47df-4744-b9f0-da5570a5b450",
+      "description": "sub takes the top from the value under it",
+      "property": "runProgram",
+      "input": {
+        "steps": ["9", "4", "sub"]
+      },
+      "expected": [5]
+    },
+    {
+      "uuid": "596708eb-1eaa-4055-8f11-db4aed8ac35f",
+      "description": "swap changes which side is which",
+      "property": "runProgram",
+      "input": {
+        "steps": ["9", "4", "swap", "sub"]
+      },
+      "expected": [-5]
+    },
+    {
+      "uuid": "f2d624aa-21aa-4e45-b91d-1b1c21b7f357",
+      "description": "dup then add doubles a value",
+      "property": "runProgram",
+      "input": {
+        "steps": ["7", "dup", "add"]
+      },
+      "expected": [14]
+    },
+    {
+      "uuid": "bac778bd-8d4e-4010-89be-ea5242b6eda0",
+      "description": "drop throws away the top",
+      "property": "runProgram",
+      "input": {
+        "steps": ["1", "2", "drop", "3"]
+      },
+      "expected": [1, 3]
+    },
+    {
+      "uuid": "8406f344-825c-409e-8e2b-aba19a028a97",
+      "description": "only the top two values combine",
+      "property": "runProgram",
+      "input": {
+        "steps": ["2", "3", "4", "mul"]
+      },
+      "expected": [2, 12]
+    },
+    {
+      "uuid": "a18d2e95-dac5-43af-aa23-2867377f713d",
+      "description": "negative numbers are pushed",
+      "property": "runProgram",
+      "input": {
+        "steps": ["-3", "-4", "mul", "-2", "add"]
+      },
+      "expected": [10]
+    },
+    {
+      "uuid": "1ea80ca8-158e-4ab7-9038-e2b98a430828",
+      "description": "a program that empties the stack",
+      "property": "runProgram",
+      "input": {
+        "steps": ["5", "drop"]
+      },
+      "expected": []
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "9c0d21bc-6c6f-4c1b-bd65-5df5218c9afa",
+          "description": "no steps",
+          "property": "runProgram",
+          "input": {
+            "steps": []
+          },
+          "expected": []
+        },
+        {
+          "uuid": "0c76f774-98e7-4a5e-b8cb-e5b3f9f7f881",
+          "description": "handles the 32-bit limits",
+          "property": "runProgram",
+          "input": {
+            "steps": ["2147483647", "dup", "sub", "-2147483648", "add"]
+          },
+          "expected": [-2147483648]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+id: stacks-and-queues
+title: Stacks and queues
+order: 5
+skills:
+  - id: match-pairs
+    name: Match opening and closing pairs with a stack
+  - id: next-greater
+    name: Find the next greater or smaller value with a monotonic stack
+  - id: bar-reach
+    name: Find how far each value reaches with a monotonic stack
+  - id: evaluate-postfix
+    name: Evaluate a postfix expression with a stack of values
+  - id: min-stack
+    name: Keep the minimum beside each entry of a stack
+  - id: queue-from-stacks
+    name: Build a queue from two stacks
+  - id: fast-calls
+    name: Design a class whose calls stay O(1), or O(1) on average
+  - id: queue-order
+    name: Process items in first in, first out order with a queue

@@ -1,0 +1,17 @@
+id: first-broken-build
+kind: coding
+title: The first broken build
+difficulty: easy
+skills:
+  - half-open-invariant
+  - off-by-one
+sibling: shelf-slot
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: firstFailing
+  params:
+    - name: builds
+      type: boolean[]
+  returns: int

@@ -1,0 +1,118 @@
+{
+  "exercise": "fewest-hops",
+  "cases": [
+    {
+      "uuid": "395f4252-b620-4baf-a8a0-fe0ad78e29ce",
+      "description": "a hop back opens the way forward",
+      "property": "fewestHops",
+      "input": {
+        "stones": [2, 4, 1, 1, 3, 2]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "16b0e0b5-4b79-42b7-a145-1c8fe42e3a9b",
+      "description": "one hop straight to the end",
+      "property": "fewestHops",
+      "input": {
+        "stones": [3, 0, 0, 1]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "3cc7c6b9-9fcf-4689-b742-4cf16a3c0414",
+      "description": "hops of one all the way",
+      "property": "fewestHops",
+      "input": {
+        "stones": [1, 1, 1, 1]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "9b1d4803-2a4b-41bb-b908-49ae3e6626f9",
+      "description": "a long hop skips the slow way",
+      "property": "fewestHops",
+      "input": {
+        "stones": [1, 4, 1, 1, 1, 1]
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "ecf0dc12-0acc-49da-adb1-a490ac91f1a3",
+      "description": "a dead end in the way",
+      "property": "fewestHops",
+      "input": {
+        "stones": [1, 0, 1]
+      },
+      "expected": -1
+    },
+    {
+      "uuid": "324eb496-6281-48e3-85c7-a06ea694c913",
+      "description": "every hop from the start leaves the row",
+      "property": "fewestHops",
+      "input": {
+        "stones": [5, 1, 1]
+      },
+      "expected": -1
+    },
+    {
+      "uuid": "747de470-fcd5-40a9-a85b-70f73bf2c636",
+      "description": "the frog can move but never arrive",
+      "property": "fewestHops",
+      "input": {
+        "stones": [2, 0, 2, 0]
+      },
+      "expected": -1
+    },
+    {
+      "uuid": "d8e3fd45-0faa-40aa-964b-9dea140b7c1d",
+      "description": "several ways, and the fewest wins",
+      "property": "fewestHops",
+      "input": {
+        "stones": [1, 1, 3, 1, 1, 1]
+      },
+      "expected": 3
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "00a1e4ae-20e3-47d8-88ca-98056770236c",
+          "description": "one stone needs no hops",
+          "property": "fewestHops",
+          "input": {
+            "stones": [0]
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "267754ff-a434-48c1-85f0-fcd7c76523d3",
+          "description": "two stones",
+          "property": "fewestHops",
+          "input": {
+            "stones": [1, 0]
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "03ff5ab3-06af-48b8-95f6-57ddfec1e1c7",
+          "description": "the first stone is a dead end",
+          "property": "fewestHops",
+          "input": {
+            "stones": [0, 1]
+          },
+          "expected": -1
+        },
+        {
+          "uuid": "cd33e2a4-40a9-4a85-823e-db8ba8a4745b",
+          "description": "a huge hop leaves the row",
+          "property": "fewestHops",
+          "input": {
+            "stones": [1, 100000, 1]
+          },
+          "expected": -1
+        }
+      ]
+    }
+  ]
+}

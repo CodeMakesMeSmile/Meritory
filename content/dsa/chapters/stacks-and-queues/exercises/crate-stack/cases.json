@@ -1,0 +1,156 @@
+{
+  "exercise": "crate-stack",
+  "cases": [
+    {
+      "uuid": "7e1c2443-6f7c-460d-a563-a6b74d7e9fb7",
+      "description": "the lightest crate leaves and an older one takes over",
+      "property": "CrateStack",
+      "input": {
+        "calls": [
+          "CrateStack",
+          "push",
+          "push",
+          "push",
+          "lightest",
+          "pop",
+          "pop",
+          "lightest"
+        ],
+        "args": [[], [8], [3], [5], [], [], [], []]
+      },
+      "expected": [null, null, null, null, 3, 5, 3, 8]
+    },
+    {
+      "uuid": "e1fea831-cb92-4930-beee-9abe7e28ede5",
+      "description": "the first crate stays the lightest",
+      "property": "CrateStack",
+      "input": {
+        "calls": ["CrateStack", "push", "push", "push", "lightest", "top"],
+        "args": [[], [2], [6], [9], [], []]
+      },
+      "expected": [null, null, null, null, 2, 9]
+    },
+    {
+      "uuid": "1e54001e-24d3-4362-a402-d17575837926",
+      "description": "a lighter crate arrives, then leaves",
+      "property": "CrateStack",
+      "input": {
+        "calls": [
+          "CrateStack",
+          "push",
+          "lightest",
+          "push",
+          "lightest",
+          "pop",
+          "lightest"
+        ],
+        "args": [[], [7], [], [4], [], [], []]
+      },
+      "expected": [null, null, 7, null, 4, 4, 7]
+    },
+    {
+      "uuid": "a8a36f44-6a16-4dc2-b8f9-c1cfe99d6506",
+      "description": "two crates share the lightest weight",
+      "property": "CrateStack",
+      "input": {
+        "calls": [
+          "CrateStack",
+          "push",
+          "push",
+          "push",
+          "pop",
+          "lightest",
+          "pop",
+          "lightest"
+        ],
+        "args": [[], [5], [9], [5], [], [], [], []]
+      },
+      "expected": [null, null, null, null, 5, 5, 9, 5]
+    },
+    {
+      "uuid": "26907ec2-83e9-4320-a4e0-adb95215a9e0",
+      "description": "top reads without removing",
+      "property": "CrateStack",
+      "input": {
+        "calls": ["CrateStack", "push", "top", "top", "pop"],
+        "args": [[], [3], [], [], []]
+      },
+      "expected": [null, null, 3, 3, 3]
+    },
+    {
+      "uuid": "625c8446-903c-4935-ac7a-ca2a1b4c7790",
+      "description": "the stack empties and fills again",
+      "property": "CrateStack",
+      "input": {
+        "calls": ["CrateStack", "push", "pop", "push", "lightest", "top"],
+        "args": [[], [10], [], [20], [], []]
+      },
+      "expected": [null, null, 10, null, 20, 20]
+    },
+    {
+      "uuid": "0e8daa92-870c-4445-883b-74de58acb873",
+      "description": "crates that get lighter",
+      "property": "CrateStack",
+      "input": {
+        "calls": [
+          "CrateStack",
+          "push",
+          "push",
+          "push",
+          "push",
+          "lightest",
+          "pop",
+          "lightest",
+          "pop",
+          "lightest"
+        ],
+        "args": [[], [9], [7], [5], [3], [], [], [], [], []]
+      },
+      "expected": [null, null, null, null, null, 3, 3, 5, 5, 7]
+    },
+    {
+      "uuid": "2ebcf71f-f2f7-4467-99d1-2584f7dfe3dd",
+      "description": "crates that get heavier",
+      "property": "CrateStack",
+      "input": {
+        "calls": [
+          "CrateStack",
+          "push",
+          "push",
+          "push",
+          "lightest",
+          "pop",
+          "pop",
+          "lightest"
+        ],
+        "args": [[], [1], [2], [3], [], [], [], []]
+      },
+      "expected": [null, null, null, null, 1, 3, 2, 1]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "c24813ba-0db7-417a-9c27-b988c55591cd",
+          "description": "one crate",
+          "property": "CrateStack",
+          "input": {
+            "calls": ["CrateStack", "push", "lightest", "top", "pop"],
+            "args": [[], [1], [], [], []]
+          },
+          "expected": [null, null, 1, 1, 1]
+        },
+        {
+          "uuid": "561cdc7e-8711-4251-9f99-f8b3c72c9082",
+          "description": "handles the heaviest crates",
+          "property": "CrateStack",
+          "input": {
+            "calls": ["CrateStack", "push", "push", "pop", "lightest"],
+            "args": [[], [1000000000], [1], [], []]
+          },
+          "expected": [null, null, null, 1, 1000000000]
+        }
+      ]
+    }
+  ]
+}

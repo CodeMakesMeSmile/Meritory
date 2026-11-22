@@ -1,0 +1,130 @@
+{
+  "exercise": "catalogue-lookup",
+  "cases": [
+    {
+      "uuid": "1ff6d401-2bb2-4262-abf4-eca6343d3021",
+      "description": "finds a number in the table",
+      "property": "inCatalogue",
+      "input": {
+        "grid": [[2, 5, 9], [14, 20, 23], [31, 40, 48]],
+        "target": 20
+      },
+      "expected": true
+    },
+    {
+      "uuid": "ea5a8a4b-5f90-4614-95bd-2ac34aab47b4",
+      "description": "a number between two others",
+      "property": "inCatalogue",
+      "input": {
+        "grid": [[2, 5, 9], [14, 20, 23], [31, 40, 48]],
+        "target": 21
+      },
+      "expected": false
+    },
+    {
+      "uuid": "5cacb789-5166-42cb-9e6f-dae538737c52",
+      "description": "the first number",
+      "property": "inCatalogue",
+      "input": {
+        "grid": [[2, 5, 9], [14, 20, 23], [31, 40, 48]],
+        "target": 2
+      },
+      "expected": true
+    },
+    {
+      "uuid": "19721acf-960a-4df0-8386-61eae8a3ef5e",
+      "description": "the last number",
+      "property": "inCatalogue",
+      "input": {
+        "grid": [[2, 5, 9], [14, 20, 23], [31, 40, 48]],
+        "target": 48
+      },
+      "expected": true
+    },
+    {
+      "uuid": "eddaaed1-44cf-4f58-83bb-4c3571b76cf3",
+      "description": "the first number of a row",
+      "property": "inCatalogue",
+      "input": {
+        "grid": [[2, 5, 9], [14, 20, 23], [31, 40, 48]],
+        "target": 14
+      },
+      "expected": true
+    },
+    {
+      "uuid": "fdd966df-2ba6-426d-9fe3-0953820c0fd2",
+      "description": "the last number of a row",
+      "property": "inCatalogue",
+      "input": {
+        "grid": [[2, 5, 9], [14, 20, 23], [31, 40, 48]],
+        "target": 23
+      },
+      "expected": true
+    },
+    {
+      "uuid": "49c05fc1-be5a-4e93-98ce-0c62b9fb9b72",
+      "description": "smaller than every number",
+      "property": "inCatalogue",
+      "input": {
+        "grid": [[2, 5, 9], [14, 20, 23], [31, 40, 48]],
+        "target": 1
+      },
+      "expected": false
+    },
+    {
+      "uuid": "d9e5328f-c9af-4448-9448-a09d40558575",
+      "description": "bigger than every number",
+      "property": "inCatalogue",
+      "input": {
+        "grid": [[2, 5, 9], [14, 20, 23], [31, 40, 48]],
+        "target": 50
+      },
+      "expected": false
+    },
+    {
+      "uuid": "6de39ca7-d9e6-4253-92a4-47ae38a641d0",
+      "description": "a single row",
+      "property": "inCatalogue",
+      "input": {
+        "grid": [[1, 3, 5, 7]],
+        "target": 5
+      },
+      "expected": true
+    },
+    {
+      "uuid": "21d3ae00-362f-495e-bfe1-feb3262a2362",
+      "description": "a single column",
+      "property": "inCatalogue",
+      "input": {
+        "grid": [[1], [3], [5]],
+        "target": 4
+      },
+      "expected": false
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "f40a06d9-8d33-49c8-98ef-3700888aeb06",
+          "description": "one number",
+          "property": "inCatalogue",
+          "input": {
+            "grid": [[7]],
+            "target": 7
+          },
+          "expected": true
+        },
+        {
+          "uuid": "817cc908-c35c-4eed-968c-3231618f1518",
+          "description": "handles the extreme numbers",
+          "property": "inCatalogue",
+          "input": {
+            "grid": [[-1000000000, 0], [5, 1000000000]],
+            "target": -1000000000
+          },
+          "expected": true
+        }
+      ]
+    }
+  ]
+}
