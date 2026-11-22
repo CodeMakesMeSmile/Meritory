@@ -24,7 +24,15 @@ type Errors = Partial<Record<Field, string>>;
 /** Where an expired, used, or cancelled link ends up */
 export const EXPIRED_URL = "/reset-password?error=INVALID_TOKEN";
 
-export function ResetPasswordForm({ token }: { token: string }) {
+export function ResetPasswordForm({
+  token,
+  finishing = false,
+}: {
+  token: string;
+  /** The link finishes a sign-up, so this is their first password */
+  finishing?: boolean;
+}) {
+  const word = finishing ? "" : "new ";
   const router = useRouter();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -117,7 +125,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
         ref={inputs.password}
         id="password"
         type={shown.password ? "text" : "password"}
-        label="New password"
+        label={finishing ? "Password" : "New password"}
         helper="At least 16 characters. A few unrelated words works well."
         error={errors.password}
         autoComplete="new-password"
@@ -126,7 +134,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
         trailing={
           <ShowButton
             shown={shown.password}
-            what="new password"
+            what={`${word}password`}
             onToggle={() =>
               setShown((now) => ({ ...now, password: !now.password }))
             }
@@ -143,7 +151,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
         ref={inputs.confirm}
         id="confirm"
         type={shown.confirm ? "text" : "password"}
-        label="Confirm new password"
+        label={`Confirm ${word}password`}
         error={errors.confirm}
         autoComplete="new-password"
         value={confirm}

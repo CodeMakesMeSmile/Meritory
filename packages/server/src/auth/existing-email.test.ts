@@ -192,10 +192,11 @@ describe.skipIf(!url)("signing up with an email that has an account", () => {
     const opened = await auth.handler(
       new Request(resetLink, { redirect: "manual" }),
     );
-    const token = new URL(
-      opened.headers.get("location") ?? "",
-      ORIGIN,
-    ).searchParams.get("token");
+    const landing = new URL(opened.headers.get("location") ?? "", ORIGIN);
+    // The page asks for a first password, not a new one
+    expect(landing.pathname).toBe("/reset-password");
+    expect(landing.searchParams.get("finish")).toBe("1");
+    const token = landing.searchParams.get("token");
     const reset = await auth.handler(
       new Request(`${ORIGIN}/api/v1/auth/reset-password`, {
         method: "POST",
@@ -207,6 +208,11 @@ describe.skipIf(!url)("signing up with an email that has an account", () => {
 
     expect((await signIn(email, first)).status).toBe(401);
     expect((await signIn(email, chosen)).status).toBe(200);
+    // No password was changed, so nothing says one was
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    expect(mailTo(email).map((mail) => mail.subject)).not.toContain(
+      "Your Meritory password was changed",
+    );
   });
 
   it("finishes the sign-up when the owner resends the confirm link", async () => {
