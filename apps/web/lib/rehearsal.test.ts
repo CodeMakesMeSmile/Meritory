@@ -48,8 +48,9 @@ const T0 = Date.UTC(2026, 10, 20, 15, 0, 0);
 const MINUTE = 60_000;
 
 describe("rehearsalMinutes", () => {
-  it("gives a design case 45 minutes and a story 5", () => {
+  it("gives a design case or class design 45 minutes and a story 5", () => {
     expect(rehearsalMinutes("design-review")).toBe(45);
+    expect(rehearsalMinutes("class-design")).toBe(45);
     expect(rehearsalMinutes("story-review")).toBe(5);
   });
 
