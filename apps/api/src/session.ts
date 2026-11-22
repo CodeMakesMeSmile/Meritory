@@ -167,10 +167,11 @@ export async function registerSignedInRoutes(
       },
       async (request) => {
         const { user } = request.current as CurrentSession;
-        return {
-          ...user,
-          signInMethods: await deps.signInMethods.list(user.id),
-        };
+        const [signInMethods, timeZone] = await Promise.all([
+          deps.signInMethods.list(user.id),
+          deps.recall.timeZone(user.id),
+        ]);
+        return { ...user, signInMethods, timeZone };
       },
     );
 

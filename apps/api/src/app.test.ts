@@ -30,11 +30,16 @@ const ANNA = {
   email: "anna@example.com",
 };
 
-// These tests never reach recall, which has its own tests against Postgres
+const TIME_ZONE = "America/Toronto";
+
+// Only /me reads recall here, which has its own tests against Postgres
 const NO_RECALL = new Proxy({} as RecallStore, {
-  get: () => () => {
-    throw new Error("Recall isn't used in these tests");
-  },
+  get: (_target, name) =>
+    name === "timeZone"
+      ? async () => TIME_ZONE
+      : () => {
+          throw new Error("Recall isn't used in these tests");
+        },
 });
 
 const HERE = "11111111-1111-4111-8111-111111111111";
@@ -239,6 +244,7 @@ describe("signed-in routes", () => {
     expect(res.json()).toEqual({
       ...ANNA,
       signInMethods: SIGN_IN_METHODS,
+      timeZone: TIME_ZONE,
     });
   });
 
@@ -268,6 +274,7 @@ describe("signed-in routes", () => {
       "name",
       "email",
       "signInMethods",
+      "timeZone",
     ]);
   });
 

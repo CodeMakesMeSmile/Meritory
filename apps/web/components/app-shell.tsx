@@ -35,13 +35,13 @@ export function AppShell({
   children,
 }: {
   page: Page;
-  user: { id: string; name: string };
+  user: { name: string; timeZone: string };
   children: ReactNode;
 }) {
   return (
     <div className="flex min-h-screen flex-col md:flex-row">
       <KeepSession />
-      <TimeZoneSync userId={user.id} />
+      <TimeZoneSync timeZone={user.timeZone} />
       <nav
         aria-label="Main"
         className="flex flex-wrap items-center gap-x-2 gap-y-3 bg-rail px-4 py-3 md:sticky md:top-0 md:h-screen md:w-59 md:shrink-0 md:flex-col md:flex-nowrap md:items-stretch md:gap-6 md:p-6"

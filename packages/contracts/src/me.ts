@@ -35,6 +35,8 @@ export const MeResponse = Type.Object(
     name: Type.String(),
     email: Type.String({ format: "email" }),
     signInMethods: SignInMethods,
+    /** The zone each recall day starts in, UTC until a browser sends one */
+    timeZone: Type.String(),
   },
   { $id: "MeResponse" },
 );
@@ -43,5 +45,5 @@ export type MeResponse = Static<typeof MeResponse>;
 export const ProviderParams = Type.Object({ provider: ProviderId });
 export type ProviderParams = Static<typeof ProviderParams>;
 
-/** The signed-in user, before their sign-in methods are looked up */
-export type SignedInUser = Omit<MeResponse, "signInMethods">;
+/** The signed-in user, before their sign-in methods and settings are looked up */
+export type SignedInUser = Omit<MeResponse, "signInMethods" | "timeZone">;
