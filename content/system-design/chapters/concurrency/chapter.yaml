@@ -1,0 +1,20 @@
+id: concurrency
+title: Concurrency and coordination
+order: 7
+skills:
+  - id: use-the-event-loop
+    name: Explain processes, threads, and what blocks the Node event loop
+  - id: spot-races
+    name: Spot check-then-act races and lost updates across services
+  - id: weigh-locks
+    name: Use locks and weigh what they cost
+  - id: update-optimistically
+    name: Update optimistically with version numbers and conditional writes
+  - id: fence-distributed-locks
+    name: Use distributed locks with leases and fencing tokens
+  - id: elect-leaders
+    name: Elect a leader with a lease, and know when to avoid one
+  - id: size-worker-pools
+    name: Size worker pools to a dependency's limits
+  - id: share-token-buckets
+    name: Rate limit across many workers with a shared token bucket

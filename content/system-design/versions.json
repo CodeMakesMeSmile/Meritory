@@ -23,6 +23,9 @@
   "card/case-time-plan": [
     "2e5f5ea21d0588bf54792cac10b27b9594f008a4c503f3bf27e6a615c88168c3"
   ],
+  "card/check-then-act-steps": [
+    "3ccbb5a4e1d3632f08fcb533538e4a25d1d2e1dac94f5f73d241e1a40266c5e0"
+  ],
   "card/composite-index-order": [
     "b65b0a192f529ce148eaedd53b479c80dbb12f0bf29b4fd37fbf4534c9d572ea"
   ],
@@ -35,11 +38,17 @@
   "card/cost-of-ordering": [
     "f6a277721e49174288371ec9442969910a8eaabf47d9d9e94eb95a57d6b0ba64"
   ],
+  "card/deadlock-fix": [
+    "d203e607b137170f85af8a361005ecffe29c658ebc5f93b021bc8f07584087de"
+  ],
   "card/deep-dive-pattern": [
     "93b407081a303af145e8aa938e06c78b192fda9da4f99f7de45e9a8e976a6cb2"
   ],
   "card/deep-dive-sources": [
     "bb41a0e97a407136950abc424234ac05e51659d07615b4b5c37f8893043d3207"
+  ],
+  "card/dynamodb-condition-fails": [
+    "d0d6e0380ad6f662d3409d511c75ea5fd6b976fc4731c2e94b954f0b05113df5"
   ],
   "card/dynamodb-hot-item": [
     "545fd8f1dd03c0c7117e5a71054bd990f15fdb587acda54c26a5b7686eb3ce76"
@@ -58,6 +67,9 @@
   ],
   "card/fix-lost-update": [
     "344c562ca58386027ce77f28cf86ccca1d67767315e05b22a5aae0b147d6a839"
+  ],
+  "card/fleet-quota-trade-offs": [
+    "4cead2fe186177cad4c72c9968fea014ff5fece6cac9a4cd6f8d99dd24dfd8d6"
   ],
   "card/hard-dependency-math": [
     "906c4b26a6488afa4222886d7ae1631ca8972b8aff65dbc2430dc212247ce3c9"
@@ -88,6 +100,12 @@
   ],
   "card/lb-algorithm-fit": [
     "c0e7a7eae422918d262e8b3cd31f09f516277f14214742db04b8179ca23468e3"
+  ],
+  "card/lease-pause-steps": [
+    "aa94565b87c4875059c8b1c509e2f23ed4aa9982434b0934a6560b6883742045"
+  ],
+  "card/littles-law-pool": [
+    "c37e7949a05866f80a54f9159c6b8e75af7d023b4a42f906f4b65de0c3fbbbed"
   ],
   "card/mapping-bug-replay": [
     "7313728396ccfe6dca9f3206c49d0ec2df2ab73912130b21fa3058d34039e534"
@@ -121,6 +139,9 @@
   ],
   "card/problem-details-members": [
     "80902447345285722a0be4f00eca5338b1cf481274b50f0d0dcbefb9b9d9b26c"
+  ],
+  "card/race-fix-fit": [
+    "837746b385a405793366bf4e1f512693e764277bdf3a384e06eed69b0e3a0daf"
   ],
   "card/read-your-writes-fix": [
     "b1f30fdfa842385c5bc563bd066b612200187fc59edbf8fdf4819ab1461b1557"
@@ -179,6 +200,9 @@
   "card/token-bucket-behavior": [
     "d348e84836cb01a69ceb0179382967141718cbd7b216c4551d52663a5d60933d"
   ],
+  "card/version-check-steps": [
+    "2a5915b93d5c42d6ab5075b1991207ee4e73ad5d4fd89144efab5c0acd32283c"
+  ],
   "card/visibility-timeout-expiry": [
     "e43e3fa595ef19d5163d3df9b35a9490ba587ebcfebdbfc0a456d0ba0626c640"
   ],
@@ -209,6 +233,9 @@
   "card/when-brin-index": [
     "0c03a93187fcd1ceeca109a3fb2f7f69c4daa360121e55f33c42668bfa1eb5f0"
   ],
+  "card/when-bucket-and-pool": [
+    "c0f340797d3b4dc45e74459440c494e7b1f9526b50acd7d9918a7097905c6549"
+  ],
   "card/when-covering-index": [
     "dee787243dbde5c22ed2025fea88ca94493924cd4b2b7676a91adf7f71ca8867"
   ],
@@ -227,8 +254,14 @@
   "card/when-negative-ttl": [
     "ee72db72a44a2721bb85749e2f23f7e68f550eacfcb0505aba28df9cab620e8a"
   ],
+  "card/when-not-hold-lock": [
+    "943fcaaaec9a7e7e4454279c58226d8cabdf983ee3b37d76fa29f33f9ce9e78a"
+  ],
   "card/when-not-to-cache": [
     "09aa1c991883bc96e47c4056fb90d6dbb8ea652154c8e4355722377f774f9805"
+  ],
+  "card/when-optimistic": [
+    "2bfdb6f08afcc7dd5f37f6b6cfed45b01a6884337e2a34b404aab35ee65377e8"
   ],
   "card/when-provider-429": [
     "35623ff071297ea825d436bd063f2774b8e4a26a06626fd19b6ca7ce894bb649"
@@ -254,6 +287,12 @@
   "card/when-save-checkpoint": [
     "d2c999f527c488b2e5360c14022a1dd42978c1bdfdd1f4aed206a457c9fe6565"
   ],
+  "card/when-simple-lock-enough": [
+    "f5f4d0e34e1625627c3404b750c72c04f5b0d9585e87133414b2ddd304a1cec3"
+  ],
+  "card/when-skip-leader": [
+    "3237a040b3c4e61b91963ec29a2e9c599be01f42962e5be5f7d08ec71e2c3213"
+  ],
   "card/when-skip-ordering": [
     "f10cf20c1a3876a5e41de792628ce34e371d5c4ef57014870f31040323c3491c"
   ],
@@ -275,8 +314,14 @@
   "card/when-which-delivery-style": [
     "033c703bc9445cbcf43962b5e26c993a9aaf6938a0ac1e237978f1ea2fabd5c0"
   ],
+  "card/when-worker-threads": [
+    "985d82de3e73fdb9920fdca98125188833c734b23655ce8dc366489eb37c1891"
+  ],
   "card/when-workflow-backfill": [
     "65b223a60b6d7376a334a7b075f7412a372f8d0c835b04738f3307f55c83cc59"
+  ],
+  "card/where-node-work-runs": [
+    "341aa60cf17bb6ca109e53fc330d4215f391b75dc0b3e459ae8a5c3626dda81c"
   ],
   "card/where-to-send-reads": [
     "e3e3b31a1de18e4eadd8c2e9b8af0fae09cd8cf561e55762f74732af88e11a14"
@@ -305,14 +350,23 @@
   "card/why-api-before-boxes": [
     "b185a1ef84e94698ea3c677a08f57540d50f6f3f24fbb3c170c24d854e149f15"
   ],
+  "card/why-atomic-bucket": [
+    "f8c80039a5aa431173622c1c5809de36b941bd4ebbe56ac171ce8816a2580fa7"
+  ],
   "card/why-atomic-idempotency": [
     "79df012460706ea7b9d829a151baf61d0a2a0e7db4bd37af2a9f811f99a801bb"
+  ],
+  "card/why-await-races": [
+    "a6ab86791b57360be377bbd714a2c399d0053876d7e18b4df5416093041e1536"
   ],
   "card/why-backfill-lane": [
     "35097c6ea988894b2d7f42b06c27efc1286a2ac6e9fe9c42dc66047a91c59141"
   ],
   "card/why-branch-on-type": [
     "53ffc058ad4cf012f95a5539f3c64854cadcb3e8379de4371d44d10a70267f44"
+  ],
+  "card/why-bulkheads": [
+    "2a8efea2f75f3f9d63ba5520fe9065edc684883e0ad8aa2fa2f61af7f0cbe757"
   ],
   "card/why-cold-cache-danger": [
     "1231102c2e77b3a4686c7f1a70a58021f1c3ea38dfbea83a4e09fed9355ace19"
@@ -347,11 +401,17 @@
   "card/why-early-refresh": [
     "e5568b5ec8bcfd1ad0be55b4a14ab9edd66b70080bffa6b2d8993e43c5bc4da3"
   ],
+  "card/why-fencing-token": [
+    "1552d8f6b6182cded5ec063950e03a2efcb731c48cb37eddf61ac17aa64a0b59"
+  ],
   "card/why-few-features": [
     "58aea8cd01fd083fa7269fb4df20b08657938e04c358f78f2c28580440f3a423"
   ],
   "card/why-handle-unknown-enums": [
     "3fa49cddff7a52a6d20db56d3d6d42a12de44b7bc7e7ddf1a652de069344f2c5"
+  ],
+  "card/why-heartbeat-with-work": [
+    "e03927543dd320547da89bf0da6f1ec4886a312d44d8f35cf5df285b5f6fedd1"
   ],
   "card/why-identity-from-token": [
     "433b057039064b0c2c376820ffe33fef2f40bc7cbd400b6e1e3b2e7712cdf933"
@@ -382,6 +442,9 @@
   ],
   "card/why-lock-token": [
     "92abf929f6924d1457c3b723a17209ea8384b363a8a4b663f874746cd2e28986"
+  ],
+  "card/why-locks-cost": [
+    "655919d26aa53c2fae9212bda626be4ce4a4c31c6eba4960bf111ae979cb686c"
   ],
   "card/why-longer-dlq-retention": [
     "e7a5b80632ace2e476eef217ca6df70ada1ada38d924512f6bb6c48e85f0a025"
@@ -431,6 +494,9 @@
   "card/why-redundancy-correlated": [
     "37f7bada3bddab84ab587cd6314ca1f4382d304aef66e61c0e0942e3802136d0"
   ],
+  "card/why-refresh-token-race": [
+    "4df948cbef6757ac37f52634def1eadefe07f5d965a8ff68d475728b49493f9f"
+  ],
   "card/why-replay-same-id": [
     "aaa9130d02418ffe4afd09c7642540487954d7d0acf972345c510d78bb3d3307"
   ],
@@ -467,11 +533,17 @@
   "card/why-tenant-in-every-key": [
     "5fdd4e9353858cd2678b991c40c336407be2845670c0d7e28293033e50847078"
   ],
+  "card/why-threadpool-stalls": [
+    "a63742def8accf0a9dac7bb5494655bc3b3130df28e16b9f6f3a3066880b69e3"
+  ],
   "card/why-timeouts": [
     "af8874274379b794da2bacf25beb39012b954744c01685736ce98c39caf0c660"
   ],
   "card/why-trailing-window": [
     "b2195840430383b3e63189902360b9004e5168c76fe784aa610f28606a9eade0"
+  ],
+  "card/why-two-leaders": [
+    "72ae3ac78ee52aa2ebc52c8ea5ec481289d8d9a867d2dfd7e79625b97ccf7f8f"
   ],
   "card/why-upsert-unique-index": [
     "92183e04d4de6a272469594e97119ab248c699335384c4ee510b8ca767e2db0e"
@@ -493,6 +565,9 @@
   ],
   "chapter/case-studies": [
     "7edafea066c50e7a2e4386f35b23ad791bd5f5d752947f2dde4a0169743fd307"
+  ],
+  "chapter/concurrency": [
+    "04bf874cb3261f9432cc4aa0939005e0591714eb988d24bdc8e6f55f40e696bd"
   ],
   "chapter/databases": [
     "6812aebcbb22ad14dfa1a5d70632a17aee207f9ad19899305ba00330bd1a3c2d"
