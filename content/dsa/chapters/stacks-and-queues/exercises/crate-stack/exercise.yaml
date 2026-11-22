@@ -1,0 +1,29 @@
+id: crate-stack
+kind: coding
+title: A crate stack that knows its lightest
+difficulty: medium
+skills:
+  - min-stack
+  - fast-calls
+sibling: ticket-queue
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  class: CrateStack
+  params: []
+  methods:
+    - name: push
+      params:
+        - name: weight
+          type: int
+      returns: void
+    - name: pop
+      params: []
+      returns: int
+    - name: top
+      params: []
+      returns: int
+    - name: lightest
+      params: []
+      returns: int

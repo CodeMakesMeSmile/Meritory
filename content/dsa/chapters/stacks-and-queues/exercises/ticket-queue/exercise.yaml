@@ -1,0 +1,29 @@
+id: ticket-queue
+kind: coding
+title: A ticket line from two stacks
+difficulty: easy
+skills:
+  - queue-from-stacks
+  - fast-calls
+sibling: crate-stack
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  class: TicketQueue
+  params: []
+  methods:
+    - name: join
+      params:
+        - name: ticket
+          type: int
+      returns: void
+    - name: serve
+      params: []
+      returns: int
+    - name: front
+      params: []
+      returns: int
+    - name: size
+      params: []
+      returns: int

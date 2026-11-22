@@ -1,0 +1,100 @@
+{
+  "exercise": "next-cheaper-fuel",
+  "cases": [
+    {
+      "uuid": "25fe608f-e774-45ea-adda-40d47db2b0a0",
+      "description": "finds the next cheaper price for each day",
+      "property": "nextCheaper",
+      "input": {
+        "prices": [150, 162, 148, 155, 140]
+      },
+      "expected": [148, 148, 140, 140, -1]
+    },
+    {
+      "uuid": "287fe7e5-187e-47f0-83c0-5ad12e3c56fb",
+      "description": "prices that only rise never get cheaper",
+      "property": "nextCheaper",
+      "input": {
+        "prices": [100, 110, 120]
+      },
+      "expected": [-1, -1, -1]
+    },
+    {
+      "uuid": "23ca6b95-c0f6-4fc7-ab0c-67d69353bfe0",
+      "description": "prices that only fall",
+      "property": "nextCheaper",
+      "input": {
+        "prices": [9, 7, 5, 3]
+      },
+      "expected": [7, 5, 3, -1]
+    },
+    {
+      "uuid": "cafa1b31-2d80-4a96-82df-558d9c33a493",
+      "description": "the same price again isn't cheaper",
+      "property": "nextCheaper",
+      "input": {
+        "prices": [5, 5, 5]
+      },
+      "expected": [-1, -1, -1]
+    },
+    {
+      "uuid": "b2b7f12d-6780-4a46-89e2-b5af0953e406",
+      "description": "a cheaper day far ahead",
+      "property": "nextCheaper",
+      "input": {
+        "prices": [10, 20, 30, 40, 5]
+      },
+      "expected": [5, 5, 5, 5, -1]
+    },
+    {
+      "uuid": "bbf7fdb2-4194-4348-aa5f-f109a30449ff",
+      "description": "dips and rises",
+      "property": "nextCheaper",
+      "input": {
+        "prices": [3, 1, 4, 1, 5, 9, 2, 6]
+      },
+      "expected": [1, -1, 1, -1, 2, 2, -1, -1]
+    },
+    {
+      "uuid": "2aa5136f-bcac-4968-8e54-4da7c5496404",
+      "description": "two days, the second cheaper",
+      "property": "nextCheaper",
+      "input": {
+        "prices": [8, 3]
+      },
+      "expected": [3, -1]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "67876e22-60fd-432b-b429-4ea1c994f97e",
+          "description": "no days",
+          "property": "nextCheaper",
+          "input": {
+            "prices": []
+          },
+          "expected": []
+        },
+        {
+          "uuid": "53a282f3-acfa-4519-a58b-166cb5547019",
+          "description": "one day",
+          "property": "nextCheaper",
+          "input": {
+            "prices": [42]
+          },
+          "expected": [-1]
+        },
+        {
+          "uuid": "d4d62b70-8ad4-48c3-b491-fc8e4bfd553c",
+          "description": "handles the highest and lowest prices",
+          "property": "nextCheaper",
+          "input": {
+            "prices": [1000000000, 1, 1000000000]
+          },
+          "expected": [1, -1, -1]
+        }
+      ]
+    }
+  ]
+}

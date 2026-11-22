@@ -1,0 +1,100 @@
+{
+  "exercise": "price-span",
+  "cases": [
+    {
+      "uuid": "ed9f6a40-a7e0-49a1-bbe1-231e92720e7f",
+      "description": "finds each day's span",
+      "property": "priceSpans",
+      "input": {
+        "prices": [30, 25, 28, 28, 35, 20]
+      },
+      "expected": [1, 1, 2, 3, 5, 1]
+    },
+    {
+      "uuid": "60cd37a3-4bf5-4859-ae6f-9214862447e0",
+      "description": "rising prices reach back to the start",
+      "property": "priceSpans",
+      "input": {
+        "prices": [1, 2, 3, 4]
+      },
+      "expected": [1, 2, 3, 4]
+    },
+    {
+      "uuid": "135e428c-f483-41a9-b0cb-6fa2b8257487",
+      "description": "falling prices",
+      "property": "priceSpans",
+      "input": {
+        "prices": [4, 3, 2, 1]
+      },
+      "expected": [1, 1, 1, 1]
+    },
+    {
+      "uuid": "5590c41f-c0fc-49e8-85c9-7bbab20cce56",
+      "description": "a tie counts as no higher",
+      "property": "priceSpans",
+      "input": {
+        "prices": [5, 5, 5]
+      },
+      "expected": [1, 2, 3]
+    },
+    {
+      "uuid": "099e9aad-1186-4fd6-835f-c62049386410",
+      "description": "a high day ends later spans",
+      "property": "priceSpans",
+      "input": {
+        "prices": [10, 4, 5, 90, 6, 7]
+      },
+      "expected": [1, 1, 2, 4, 1, 2]
+    },
+    {
+      "uuid": "036eac8f-eda8-4852-ad7f-6910a0e808ac",
+      "description": "spans reach past days already popped",
+      "property": "priceSpans",
+      "input": {
+        "prices": [7, 2, 3, 1, 4, 8]
+      },
+      "expected": [1, 1, 2, 1, 4, 6]
+    },
+    {
+      "uuid": "a5404411-fe41-4d44-81fc-1f1730331146",
+      "description": "a dip after a peak",
+      "property": "priceSpans",
+      "input": {
+        "prices": [3, 8, 2, 8]
+      },
+      "expected": [1, 2, 1, 4]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "38e95250-f088-4479-88aa-72e785b18a15",
+          "description": "no days",
+          "property": "priceSpans",
+          "input": {
+            "prices": []
+          },
+          "expected": []
+        },
+        {
+          "uuid": "ec485dde-5a60-4da2-9291-642ae7898a63",
+          "description": "one day",
+          "property": "priceSpans",
+          "input": {
+            "prices": [9]
+          },
+          "expected": [1]
+        },
+        {
+          "uuid": "295124d7-8155-4cfc-8fc3-4fa1c314e15c",
+          "description": "handles the highest prices",
+          "property": "priceSpans",
+          "input": {
+            "prices": [1000000, 1, 1000000]
+          },
+          "expected": [1, 1, 3]
+        }
+      ]
+    }
+  ]
+}

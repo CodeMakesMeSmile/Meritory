@@ -1,0 +1,16 @@
+id: stack-machine
+kind: coding
+title: A tiny stack machine
+difficulty: medium
+skills:
+  - evaluate-postfix
+sibling: postfix-total
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: runProgram
+  params:
+    - name: steps
+      type: string[]
+  returns: int[]

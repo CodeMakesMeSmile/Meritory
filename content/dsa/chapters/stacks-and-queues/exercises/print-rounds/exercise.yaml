@@ -1,0 +1,18 @@
+id: print-rounds
+kind: coding
+title: Print jobs taking turns
+difficulty: easy
+skills:
+  - queue-order
+sibling: fewest-hops
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: finishOrder
+  params:
+    - name: pages
+      type: int[]
+    - name: k
+      type: int
+  returns: int[]

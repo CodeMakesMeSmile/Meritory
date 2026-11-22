@@ -1,0 +1,118 @@
+{
+  "exercise": "postfix-total",
+  "cases": [
+    {
+      "uuid": "818ceccb-1b3d-4692-9f95-16bc6a357503",
+      "description": "works out a short expression",
+      "property": "postfixTotal",
+      "input": {
+        "tokens": ["6", "2", "3", "+", "*"]
+      },
+      "expected": 30
+    },
+    {
+      "uuid": "72945f5c-6291-4b33-bc81-7ec0463cbc1b",
+      "description": "subtracts the second value from the first",
+      "property": "postfixTotal",
+      "input": {
+        "tokens": ["8", "2", "-"]
+      },
+      "expected": 6
+    },
+    {
+      "uuid": "1c4e143f-808f-4faa-a350-4c2db064aca8",
+      "description": "divides the first value by the second",
+      "property": "postfixTotal",
+      "input": {
+        "tokens": ["20", "4", "/"]
+      },
+      "expected": 5
+    },
+    {
+      "uuid": "5b4097fa-1660-4490-b13b-e53c8eb2754d",
+      "description": "division cuts toward zero",
+      "property": "postfixTotal",
+      "input": {
+        "tokens": ["7", "2", "/"]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "e0fc9456-ec6b-4dd6-a220-4cb9edece1f6",
+      "description": "a negative result cuts toward zero",
+      "property": "postfixTotal",
+      "input": {
+        "tokens": ["-7", "2", "/"]
+      },
+      "expected": -3
+    },
+    {
+      "uuid": "3a265f5b-db99-462a-b502-5e4eb3b81b46",
+      "description": "dividing by a negative number",
+      "property": "postfixTotal",
+      "input": {
+        "tokens": ["9", "-2", "/"]
+      },
+      "expected": -4
+    },
+    {
+      "uuid": "84ca622e-fdda-4e45-9e8d-a1ee966569ef",
+      "description": "negative numbers are values, not operators",
+      "property": "postfixTotal",
+      "input": {
+        "tokens": ["-4", "-3", "*"]
+      },
+      "expected": 12
+    },
+    {
+      "uuid": "a0ecd339-2b28-4761-887d-e0d30277dc61",
+      "description": "a longer chain",
+      "property": "postfixTotal",
+      "input": {
+        "tokens": ["5", "1", "2", "+", "4", "*", "+", "3", "-"]
+      },
+      "expected": 14
+    },
+    {
+      "uuid": "bcb1d6a6-b940-4682-9a61-84367423283e",
+      "description": "operators that wait for later values",
+      "property": "postfixTotal",
+      "input": {
+        "tokens": ["2", "3", "4", "5", "*", "+", "-"]
+      },
+      "expected": -21
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "e733f6aa-2b73-4ef8-8c1f-ee91a6f73d13",
+          "description": "one number",
+          "property": "postfixTotal",
+          "input": {
+            "tokens": ["42"]
+          },
+          "expected": 42
+        },
+        {
+          "uuid": "a2c235c2-640d-41f4-ac13-ad7ba5c0010f",
+          "description": "a result of zero",
+          "property": "postfixTotal",
+          "input": {
+            "tokens": ["3", "3", "-"]
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "56746b5f-cb48-47aa-b932-f56fccc45025",
+          "description": "handles the largest 32-bit result",
+          "property": "postfixTotal",
+          "input": {
+            "tokens": ["1000000000", "2", "*", "147483647", "+"]
+          },
+          "expected": 2147483647
+        }
+      ]
+    }
+  ]
+}

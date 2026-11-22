@@ -1,0 +1,109 @@
+{
+  "exercise": "next-busier-day",
+  "cases": [
+    {
+      "uuid": "302fddb2-ef3b-496a-ad98-fe594b4254bd",
+      "description": "finds the wait for each day",
+      "property": "daysUntilBusier",
+      "input": {
+        "visitors": [120, 90, 95, 130, 80, 100]
+      },
+      "expected": [3, 1, 1, 0, 1, 0]
+    },
+    {
+      "uuid": "c5e7adb1-95e7-4cb1-8299-b09d25161886",
+      "description": "busier every day",
+      "property": "daysUntilBusier",
+      "input": {
+        "visitors": [1, 2, 3, 4]
+      },
+      "expected": [1, 1, 1, 0]
+    },
+    {
+      "uuid": "03d98759-aa1f-4f6f-8585-e0fc22093ab0",
+      "description": "quieter every day",
+      "property": "daysUntilBusier",
+      "input": {
+        "visitors": [4, 3, 2, 1]
+      },
+      "expected": [0, 0, 0, 0]
+    },
+    {
+      "uuid": "be3b858d-887c-41bb-bd02-36c6938876cd",
+      "description": "a tie isn't busier",
+      "property": "daysUntilBusier",
+      "input": {
+        "visitors": [50, 50, 60]
+      },
+      "expected": [2, 1, 0]
+    },
+    {
+      "uuid": "5a7dbba8-2498-4bce-ade5-545e04670047",
+      "description": "one big day at the end",
+      "property": "daysUntilBusier",
+      "input": {
+        "visitors": [5, 3, 4, 2, 1, 10]
+      },
+      "expected": [5, 1, 3, 2, 1, 0]
+    },
+    {
+      "uuid": "866f0070-24d2-4a32-9865-5ae690e79955",
+      "description": "busy and quiet days take turns",
+      "property": "daysUntilBusier",
+      "input": {
+        "visitors": [10, 1, 10, 1, 10]
+      },
+      "expected": [0, 1, 0, 1, 0]
+    },
+    {
+      "uuid": "a8b2545c-f447-412d-b1f7-2475d190f57c",
+      "description": "a wait that skips many days",
+      "property": "daysUntilBusier",
+      "input": {
+        "visitors": [70, 60, 50, 40, 80]
+      },
+      "expected": [4, 3, 2, 1, 0]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "e592e0f0-5ee6-4f0a-acb9-fed4748d3a14",
+          "description": "no days",
+          "property": "daysUntilBusier",
+          "input": {
+            "visitors": []
+          },
+          "expected": []
+        },
+        {
+          "uuid": "4d165706-0a64-49f5-ae7b-168e88ecbc52",
+          "description": "one day",
+          "property": "daysUntilBusier",
+          "input": {
+            "visitors": [7]
+          },
+          "expected": [0]
+        },
+        {
+          "uuid": "67c88019-2e81-48ad-879d-518178362353",
+          "description": "every day the same",
+          "property": "daysUntilBusier",
+          "input": {
+            "visitors": [0, 0, 0]
+          },
+          "expected": [0, 0, 0]
+        },
+        {
+          "uuid": "df943a15-2f3e-4c09-85a8-7e244b6ed4f8",
+          "description": "handles the largest counts",
+          "property": "daysUntilBusier",
+          "input": {
+            "visitors": [999999, 1000000, 0]
+          },
+          "expected": [1, 0, 0]
+        }
+      ]
+    }
+  ]
+}

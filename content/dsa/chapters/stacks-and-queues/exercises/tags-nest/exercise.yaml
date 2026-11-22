@@ -1,0 +1,16 @@
+id: tags-nest
+kind: coding
+title: Tags that nest
+difficulty: medium
+skills:
+  - match-pairs
+sibling: brackets-close
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: firstBadTag
+  params:
+    - name: tags
+      type: string[]
+  returns: int

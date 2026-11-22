@@ -1,0 +1,345 @@
+- id: why-stack-for-brackets
+  skill: match-pairs
+  asks: why
+  type: prompt
+  prompt: Why is a stack the right tool for checking that brackets match?
+  reworded: What makes a stack fit the job of matching opening and closing brackets?
+  points:
+    - Brackets must close in the reverse order they opened.
+    - The most recently opened bracket is the first one that has to close.
+    - A stack hands back the item added most recently, so its top is always the bracket that must close next.
+  misconception: That counting opens and closes is enough.
+  lesson:
+    title: Last opened, first closed
+    explanation: Nesting means the newest open bracket closes first. A stack's top is the newest item, so each closing bracket only ever needs to look at the top.
+- id: bracket-failures
+  skill: match-pairs
+  asks: what
+  type: matching
+  prompt: Match each text to the reason its brackets don't match.
+  reworded: For each of these texts, what makes the brackets fail?
+  matchHeading: Reason
+  matchName: a reason
+  pairs:
+    - item: "`(]`"
+      match: The closing bracket doesn't match the top of the stack
+    - item: "`)(`"
+      match: A bracket closes when nothing is open
+    - item: "`((`"
+      match: Brackets are still open at the end
+  extraMatches:
+    - The text has letters in it
+  lesson:
+    title: Three ways to fail
+    explanation: A good check catches a wrong match on the top, a close with an empty stack, and a stack that isn't empty when the text ends.
+- id: when-counting-fails
+  skill: match-pairs
+  asks: when
+  type: pick-one
+  prompt: When does counting opening and closing brackets give the wrong answer?
+  reworded: In what case can the counts of opening and closing brackets agree, yet the brackets still not match?
+  options:
+    - text: When there's more than one kind of bracket, as in `([)]`
+      correct: true
+      reason: Each kind opens and closes once, but the square bracket closes while the round one is still open inside it.
+    - text: When the text is very long
+      reason: Length doesn't matter. The order of the marks does.
+    - text: When there are letters between the brackets
+      reason: Letters are skipped either way, so they can't change the answer.
+  lesson:
+    title: Counts miss the order
+    explanation: With one kind of bracket, a count that never drops below 0 and ends at 0 works. With several kinds, only a stack checks that each one closes the right partner.
+- id: why-monotonic-linear
+  skill: next-greater
+  asks: why
+  type: prompt
+  prompt: Finding the next greater value for every position with a monotonic stack has a loop inside a loop. Why is it still O(n)?
+  reworded: What keeps the next greater value search with a stack at O(n), despite the inner loop that pops?
+  points:
+    - Each position is pushed onto the stack once.
+    - Each position is popped at most once, when its answer is found.
+    - So across the whole pass the inner loop runs at most n times in total.
+  misconception: That a loop inside a loop always means O(n²).
+  lesson:
+    title: Count the pushes and pops
+    explanation: The work is one push and at most one pop per position, so 2n steps at most, whatever the values are.
+- id: monotonic-stack-steps
+  skill: next-greater
+  asks: what
+  type: ordering
+  prompt: Put the steps for handling one new day in the "days until a warmer day" search in order.
+  reworded: In what order does the monotonic stack handle each new day when finding how long until a warmer one?
+  steps:
+    - Look at the position on top of the stack.
+    - If its temperature is lower than today's, pop it and record today minus that day as its wait.
+    - Repeat until the stack is empty or the top is at least as warm as today.
+    - Push today's position onto the stack.
+  lesson:
+    title: Answer the waiting days, then wait
+    explanation: Today answers every colder day still waiting. Once a day at least as warm is on top, nothing under it can be answered either, so today joins the stack.
+- id: when-pop-direction
+  skill: next-greater
+  asks: when
+  type: matching
+  prompt: Match each question to when the stack pops.
+  reworded: For each of these questions, what condition makes the monotonic stack pop its top?
+  matchHeading: Pop while the top's value is
+  matchName: a condition
+  pairs:
+    - item: The next strictly greater value
+      match: Smaller than the new value
+    - item: The next strictly smaller value
+      match: Bigger than the new value
+    - item: The next value at least as big
+      match: No bigger than the new value
+  extraMatches:
+    - Equal to the first value
+  lesson:
+    title: Pop what the new value answers
+    explanation: The new value answers every waiting position it beats. Which way it beats them, and whether ties count, decides the comparison.
+- id: why-stack-holds-positions
+  skill: bar-reach
+  asks: why
+  type: pick-one
+  prompt: In the biggest rectangle under a row of bars, why does the stack hold positions instead of heights?
+  reworded: When finding the largest rectangle with a stack of rising bars, what would you lose by storing heights alone?
+  options:
+    - text: The width comes from positions, the distance between the two shorter bars
+      correct: true
+      reason: A popped bar's rectangle runs from the bar under it to the new bar, and only positions say how far apart those are.
+    - text: Heights can't be compared on a stack
+      reason: You still compare heights, by reading them through their positions.
+    - text: Positions use less memory than heights
+      reason: They use about the same. The reason is the width.
+  lesson:
+    title: Width needs positions
+    explanation: The area is a height times a width, and the width is `i - left - 1`, where `i` and `left` are positions of the shorter bars on each side.
+- id: why-zero-past-end
+  skill: bar-reach
+  asks: why
+  type: prompt
+  prompt: When finding the biggest rectangle under a row of bars, why add one more step past the end with a height of 0?
+  reworded: In the largest rectangle search with a rising stack, what does the extra bar of height 0 at the end do?
+  points:
+    - Bars still on the stack at the end never met a shorter bar on their right.
+    - A height of 0 is shorter than every bar, so it pops them all.
+    - Each popped bar then gets its rectangle, which stretches to the end of the row.
+  misconception: That the bars left on the stack can be ignored.
+  lesson:
+    title: Flush the stack
+    explanation: Without the last step, a row that only rises, like `[1, 2, 3]`, would never pop anything and would report 0.
+- id: why-right-pops-first
+  skill: evaluate-postfix
+  asks: why
+  type: pick-one
+  prompt: When evaluating `8 2 -` with a stack, why is the answer 6 and not -6?
+  reworded: In a postfix expression, which popped value goes on the left of a minus sign, and why?
+  options:
+    - text: The first value popped is the right side, since it was pushed last
+      correct: true
+      reason: 2 was pushed after 8, so it comes off first and is the value being taken away.
+    - text: Subtraction always takes the smaller value from the bigger one
+      reason: The expression `2 8 -` is -6. The order of the tokens decides it, not their sizes.
+    - text: The stack is read from the bottom
+      reason: A stack is only read from the top.
+  lesson:
+    title: Pop right, then left
+    explanation: Pop once for the right side and once more for the left side, then apply `left - right`. Swapping them still passes for `+` and `*`, so test with `-` and `/`.
+- id: postfix-steps
+  skill: evaluate-postfix
+  asks: what
+  type: ordering
+  prompt: Put the steps for evaluating a postfix expression in order.
+  reworded: In what order does a stack evaluate the tokens of a postfix expression?
+  steps:
+    - Read the next token from the left.
+    - If it's a number, push it.
+    - If it's an operator, pop the right value, then the left value.
+    - Apply the operator and push the result.
+    - When the tokens run out, return the one value left.
+  terms:
+    - term: Postfix
+      definition: A way of writing expressions where each operator comes after its two values, like `3 4 +`.
+  lesson:
+    title: Numbers wait, operators combine
+    explanation: Numbers sit on the stack until an operator needs them. Each operator turns the top two values into one.
+- id: when-division-rounds
+  skill: evaluate-postfix
+  asks: when
+  type: matching
+  prompt: Match each way of dividing -7 by 2 to its result.
+  reworded: What does each of these give for -7 divided by 2?
+  matchHeading: Result
+  matchName: a result
+  pairs:
+    - item: "`Math.trunc(-7 / 2)` in TypeScript"
+      match: "-3"
+    - item: "`-7 // 2` in Python"
+      match: "-4"
+    - item: "`-7 / 2` in TypeScript"
+      match: "-3.5"
+  extraMatches:
+    - "3"
+  lesson:
+    title: Cut toward zero
+    explanation: Python's `//` rounds down, so it gives -4 for a negative result. When a problem says division cuts toward zero, work out the sign separately in Python.
+- id: why-min-per-entry
+  skill: min-stack
+  asks: why
+  type: prompt
+  prompt: Why does a stack that reports its minimum store a minimum beside every entry, instead of one variable for the smallest value?
+  reworded: What goes wrong if a min stack keeps the smallest value in a single variable?
+  points:
+    - When the smallest value is popped, a single variable doesn't know the next smallest.
+    - Finding it would mean scanning the stack, which is O(n).
+    - A minimum beside each entry records what the minimum was before every push, so popping restores it in O(1).
+  misconception: That updating one variable on push is enough.
+  lesson:
+    title: Remember the minimum at every height
+    explanation: Each entry stores the smallest value from the bottom up to it. Whatever is on top, its stored minimum is the minimum of the whole stack.
+- id: when-min-changes
+  skill: min-stack
+  asks: what
+  type: pick-one
+  prompt: A min stack holds 5, then 3, then 7, pushed in that order. After one pop, what does it report as the minimum?
+  reworded: Push 5, 3, and 7 onto a min stack, then pop once. What's the minimum now?
+  options:
+    - text: "3"
+      correct: true
+      reason: The pop removes 7. The entry for 3 stored a minimum of 3, and it's now on top.
+    - text: "5"
+      reason: That would be the minimum after popping 3 as well.
+    - text: "7"
+      reason: 7 is the value that was popped.
+  lesson:
+    title: Read the top's stored minimum
+    explanation: The stored minimums are 5, 3, and 3. Popping the last one leaves 3 on top.
+- id: why-move-only-when-empty
+  skill: queue-from-stacks
+  asks: why
+  type: pick-one
+  prompt: In a queue built from an inbox stack and an outbox stack, why do you move items from the inbox only when the outbox is empty?
+  reworded: When a queue is built from two stacks, what goes wrong if you pour the inbox into the outbox while the outbox still has items?
+  options:
+    - text: Newer items would land on top of older ones and be served first
+      correct: true
+      reason: The outbox already holds the oldest items in the right order. Pouring more on top would put newer items ahead of them.
+    - text: The inbox can't be popped while the outbox has items
+      reason: Both stacks can always be popped. The problem is the order that results.
+    - text: It would make the queue use more memory
+      reason: The items are moved, not copied, so memory stays the same.
+  lesson:
+    title: Pour only into an empty outbox
+    explanation: Pouring reverses the inbox so the oldest is on top. That's only correct when nothing older is already waiting in the outbox.
+- id: two-stack-queue-steps
+  skill: queue-from-stacks
+  asks: what
+  type: ordering
+  prompt: Put the steps for serving the front of a queue built from two stacks in order.
+  reworded: In what order does a two stack queue take its front item?
+  steps:
+    - Check whether the outbox stack is empty.
+    - If it is, pop every item from the inbox and push each onto the outbox.
+    - Pop the top of the outbox.
+    - Return that item as the front of the queue.
+  lesson:
+    title: Refill, then pop
+    explanation: Refilling reverses the inbox, so the oldest item ends up on top of the outbox, ready to be served.
+- id: when-two-stacks
+  skill: queue-from-stacks
+  asks: when
+  type: prompt
+  prompt: When would you build a queue from two stacks?
+  reworded: What situations call for a queue made of two stacks?
+  points:
+    - When a language or system only gives you stacks, or arrays where removing from the front is slow.
+    - When you need to show that a queue can run in amortized O(1) per call with simple parts.
+    - When the items only need to be served in order, with no reading from the middle.
+  lesson:
+    title: Two reversals make an order
+    explanation: A stack reverses the order of what goes in. Doing that twice gives the original order back, which is first in, first out.
+- id: why-amortized
+  skill: fast-calls
+  asks: why
+  type: prompt
+  prompt: One call to serve the front of a two stack queue can move every item. Why is it still O(1) on average?
+  reworded: How can a two stack queue promise O(1) per call when a single call can be O(n)?
+  points:
+    - Each item moves from the inbox to the outbox at most once in its life.
+    - So each item costs at most a push, a move, and a pop, a fixed amount of work.
+    - Over any run of calls, the total work is O(1) times the number of calls.
+  misconception: That one slow call makes every call O(n).
+  lesson:
+    title: Slow calls are paid for in advance
+    explanation: A big move only happens after that many items were added, and each of those adds was cheap. Spread over all the calls, the cost per call stays constant. That's called amortized O(1).
+- id: when-store-extra
+  skill: fast-calls
+  asks: when
+  type: matching
+  prompt: Match each class to the extra thing it keeps so its calls stay fast.
+  reworded: What does each of these classes store beyond its items so every call is quick?
+  matchHeading: What it keeps
+  matchName: an extra
+  pairs:
+    - item: A stack that reports its minimum
+      match: The minimum beside each entry
+    - item: A queue built from stacks
+      match: A second stack holding items in reverse
+    - item: A queue in a TypeScript array
+      match: A head index for the front
+  extraMatches:
+    - A sorted copy of every item
+  lesson:
+    title: A little extra memory buys speed
+    explanation: Each of these spends O(1) extra per item, or one number in all, so that no call ever has to scan.
+- id: why-queue-for-fewest
+  skill: queue-order
+  asks: why
+  type: prompt
+  prompt: Why does a breadth-first search with a queue find the fewest moves to a goal, when every move costs the same?
+  reworded: What makes the first time a queue based search reaches the goal the shortest way there?
+  points:
+    - A queue serves places in the order they were found.
+    - Every place at distance 1 is found, and served, before any place at distance 2.
+    - So places come out in order of distance, and the first time the goal comes out is by the fewest moves.
+  misconception: That a stack would find the shortest path just as well.
+  lesson:
+    title: Nearest first
+    explanation: The queue holds at most two distances at once, d and d + 1, with every d in front. That ordering is what makes the first arrival the shortest.
+- id: when-mark-seen
+  skill: queue-order
+  asks: when
+  type: pick-one
+  prompt: In a breadth-first search, when should you mark a place as seen?
+  reworded: At what moment does a breadth-first search record that a place has been visited?
+  options:
+    - text: When it's added to the queue
+      correct: true
+      reason: Then no place can be added twice, so the queue never holds more than n places.
+    - text: When it's taken out of the queue
+      reason: Until then, other places can add it again and again, so the queue can grow far past n.
+    - text: Only when it's the goal
+      reason: Then nothing stops the search from going back and forth between the same places forever.
+  lesson:
+    title: Seen on the way in
+    explanation: Marking on entry means each place joins the queue once. The distance written then is already the shortest, because nothing closer is still waiting.
+- id: when-queue-or-stack
+  skill: queue-order
+  asks: when
+  type: matching
+  prompt: Match each task to the structure that fits it.
+  reworded: Which structure suits each of these tasks?
+  matchHeading: Structure
+  matchName: a structure
+  pairs:
+    - item: Give each print job a turn in the order it arrived
+      match: A queue
+    - item: Check that tags close in the reverse order they opened
+      match: A stack
+    - item: Find the fewest moves from a start to a goal
+      match: A queue, in a breadth-first search
+  extraMatches:
+    - A sorted list
+  lesson:
+    title: Oldest first or newest first
+    explanation: A queue serves what has waited longest, which suits fairness and nearest first searches. A stack serves the newest, which suits nesting.

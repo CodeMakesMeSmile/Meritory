@@ -1,0 +1,118 @@
+{
+  "exercise": "tags-nest",
+  "cases": [
+    {
+      "uuid": "f0a32b4c-60c7-4016-91c1-8c9a0a9ccd5f",
+      "description": "a tag closes while another is open inside it",
+      "property": "firstBadTag",
+      "input": {
+        "tags": ["page", "card", "/card", "list", "/page"]
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "a8c5bafe-f948-4d4a-bf72-92ec88a1f301",
+      "description": "tags still open at the end",
+      "property": "firstBadTag",
+      "input": {
+        "tags": ["page", "card", "/card"]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "97ed0e4e-102d-4c58-986a-b707f11d965a",
+      "description": "every tag nests",
+      "property": "firstBadTag",
+      "input": {
+        "tags": ["page", "card", "/card", "list", "/list", "/page"]
+      },
+      "expected": -1
+    },
+    {
+      "uuid": "0e0288ab-5bf1-43ea-8841-b13262347a14",
+      "description": "tags side by side",
+      "property": "firstBadTag",
+      "input": {
+        "tags": ["a", "/a", "b", "/b"]
+      },
+      "expected": -1
+    },
+    {
+      "uuid": "52c71737-8a70-4a05-aca8-693f8a75faa9",
+      "description": "closing tags that cross",
+      "property": "firstBadTag",
+      "input": {
+        "tags": ["a", "b", "/a", "/b"]
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "35b141fc-0604-4205-ab44-172b89c1de4c",
+      "description": "the same name nested inside itself",
+      "property": "firstBadTag",
+      "input": {
+        "tags": ["box", "box", "/box", "/box"]
+      },
+      "expected": -1
+    },
+    {
+      "uuid": "b76f37eb-5260-46cf-8b83-703e669e8513",
+      "description": "one close too many",
+      "property": "firstBadTag",
+      "input": {
+        "tags": ["box", "/box", "/box"]
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "b0bf11f1-c7be-45e8-84fe-9b5c2be6bc47",
+      "description": "a name that only starts the same",
+      "property": "firstBadTag",
+      "input": {
+        "tags": ["card", "/cards"]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "0d125e1a-c72c-4d57-9e3d-fd8bb5274b77",
+      "description": "a closing tag before anything opens",
+      "property": "firstBadTag",
+      "input": {
+        "tags": ["/page", "page"]
+      },
+      "expected": 0
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "36153b18-3b66-498d-a5ee-e01a4012fa9a",
+          "description": "no tags",
+          "property": "firstBadTag",
+          "input": {
+            "tags": []
+          },
+          "expected": -1
+        },
+        {
+          "uuid": "59b5dd50-e000-4165-b9c2-0f865cf66b7a",
+          "description": "one opening tag",
+          "property": "firstBadTag",
+          "input": {
+            "tags": ["page"]
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "b30781aa-8fc5-4415-8976-c687e93c1f9a",
+          "description": "one closing tag",
+          "property": "firstBadTag",
+          "input": {
+            "tags": ["/page"]
+          },
+          "expected": 0
+        }
+      ]
+    }
+  ]
+}

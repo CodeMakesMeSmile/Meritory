@@ -1,0 +1,17 @@
+id: price-span
+kind: coding
+title: How long the price held
+difficulty: medium
+skills:
+  - bar-reach
+  - next-greater
+sibling: largest-poster
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: priceSpans
+  params:
+    - name: prices
+      type: int[]
+  returns: int[]

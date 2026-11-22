@@ -1,0 +1,109 @@
+{
+  "exercise": "largest-poster",
+  "cases": [
+    {
+      "uuid": "7f0543ba-c970-4a52-b83a-a0bd7d8bc27f",
+      "description": "a shorter poster covers more boards",
+      "property": "largestPoster",
+      "input": {
+        "boards": [3, 1, 4, 5, 3, 4]
+      },
+      "expected": 12
+    },
+    {
+      "uuid": "db23a5ea-11b6-48d6-8e4a-1297f3dd4ab2",
+      "description": "boards that rise",
+      "property": "largestPoster",
+      "input": {
+        "boards": [1, 2, 3, 4, 5]
+      },
+      "expected": 9
+    },
+    {
+      "uuid": "49c6755b-c21f-4d76-a883-80807db294cc",
+      "description": "boards that fall",
+      "property": "largestPoster",
+      "input": {
+        "boards": [5, 4, 3, 2, 1]
+      },
+      "expected": 9
+    },
+    {
+      "uuid": "b9cf89e7-21a9-47aa-93b3-13fcbc63b4cd",
+      "description": "one tall board wins",
+      "property": "largestPoster",
+      "input": {
+        "boards": [1, 10, 1]
+      },
+      "expected": 10
+    },
+    {
+      "uuid": "7841bb25-7a3d-4498-aa55-90a119946df2",
+      "description": "a board of height 0 splits the fence",
+      "property": "largestPoster",
+      "input": {
+        "boards": [4, 4, 0, 4, 4, 4]
+      },
+      "expected": 12
+    },
+    {
+      "uuid": "7871c86a-8924-4763-8dfe-c3357f815e1a",
+      "description": "every board the same height",
+      "property": "largestPoster",
+      "input": {
+        "boards": [3, 3, 3, 3]
+      },
+      "expected": 12
+    },
+    {
+      "uuid": "5d5505a5-6ab0-4700-987e-deb094e02e7f",
+      "description": "a dip between two tall boards",
+      "property": "largestPoster",
+      "input": {
+        "boards": [5, 1, 5]
+      },
+      "expected": 5
+    },
+    {
+      "uuid": "3f716287-2031-44c2-93ed-95afec72b829",
+      "description": "the lowest board spans the whole fence",
+      "property": "largestPoster",
+      "input": {
+        "boards": [2, 4, 2, 4, 2]
+      },
+      "expected": 10
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "a3e9df98-c005-4ecf-9ec5-c3827096569a",
+          "description": "one board",
+          "property": "largestPoster",
+          "input": {
+            "boards": [7]
+          },
+          "expected": 7
+        },
+        {
+          "uuid": "bae7b378-9931-4d06-a697-53e6a507fe87",
+          "description": "every board has height 0",
+          "property": "largestPoster",
+          "input": {
+            "boards": [0, 0]
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "c566bcb0-33d8-4553-8523-2ba9ad591956",
+          "description": "handles the tallest boards",
+          "property": "largestPoster",
+          "input": {
+            "boards": [10000, 10000, 10000]
+          },
+          "expected": 30000
+        }
+      ]
+    }
+  ]
+}
