@@ -1,0 +1,329 @@
+- id: why-heap-fits-array
+  skill: heap-mechanics
+  asks: why
+  type: prompt
+  prompt: Why can a binary heap live in a plain array, with no pointers between nodes?
+  reworded: What about a binary heap's shape lets it be stored as an array instead of linked nodes?
+  points:
+    - Every level is full except the last, and the last fills from the left, so there are no gaps.
+    - With no gaps, the children of index i are always at 2i + 1 and 2i + 2.
+    - The parent of index i is always at (i - 1) / 2, rounded down, so moving up or down is arithmetic.
+  misconception: That a heap needs left and right pointers like a binary search tree.
+  lesson:
+    title: The shape is what makes the array work
+    explanation: A tree with gaps would leave holes in the array. A heap's shape rule never allows a gap, so positions alone say who's whose parent.
+- id: heap-child-index
+  skill: heap-mechanics
+  asks: what
+  type: pick-one
+  prompt: "In a heap stored in an array from index 0, where are the children of the value at index 3?"
+  reworded: "A heap sits in an array starting at index 0. Which indexes hold the two children of index 3?"
+  options:
+    - text: "7 and 8"
+      correct: true
+      reason: "The children of i are at 2i + 1 and 2i + 2, and 2 × 3 + 1 is 7."
+    - text: "6 and 7"
+      reason: That's 2i and 2i + 1, which is the rule when the array starts at index 1.
+    - text: "4 and 5"
+      reason: Those are just the next two places, not the children.
+  lesson:
+    title: Double it and add one
+    explanation: With the root at index 0, the children of i are at 2i + 1 and 2i + 2, and the parent is at (i - 1) / 2, rounded down.
+- id: heap-pop-steps
+  skill: heap-mechanics
+  asks: what
+  type: ordering
+  prompt: Put the steps for taking the smallest value out of a min-heap in order.
+  reworded: In what order does a min-heap remove and return its smallest value?
+  steps:
+    - Keep the value at index 0 to return.
+    - Move the last value in the array to index 0.
+    - Compare it with its children.
+    - Swap it with the smaller child while that child is smaller.
+    - Stop when neither child is smaller, then return the kept value.
+  terms:
+    - term: Sift down
+      definition: Swapping a value down the tree until it's no bigger than its children.
+  lesson:
+    title: Fill the hole from the end
+    explanation: Moving the last value to the root keeps the shape with no gaps. Sifting it down then fixes the order, one level per swap, so it's O(log n).
+- id: why-smaller-child
+  skill: heap-mechanics
+  asks: why
+  type: pick-one
+  prompt: When sifting a value down a min-heap, why swap it with the smaller of its two children?
+  reworded: In sift down, what goes wrong if you swap with the larger child instead of the smaller one?
+  options:
+    - text: The smaller child becomes the parent, and it's at most its old sibling, so the order rule holds
+      correct: true
+      reason: Promoting the larger child would put it above a smaller sibling, which breaks the heap.
+    - text: It makes the heap stay balanced in height
+      reason: The shape is already fixed by the array. Which child you swap with doesn't change it.
+    - text: It's faster, since the smaller child is always on the left
+      reason: Either child can be the smaller one. You have to compare them.
+  lesson:
+    title: Promote the one that belongs on top
+    explanation: After the swap, the new parent sits above the other child too. Only the smaller child is safe to put there.
+- id: heap-per-language
+  skill: heap-mechanics
+  asks: what
+  type: matching
+  prompt: Match each language to the heap it gives you.
+  reworded: What does each of these languages offer when you need a heap?
+  matchHeading: Heap
+  matchName: a heap
+  pairs:
+    - item: Python
+      match: The heapq functions on a list, smallest first
+    - item: Java
+      match: PriorityQueue, smallest first unless given a comparator
+    - item: TypeScript
+      match: None, so you write a small class
+  extraMatches:
+    - A sorted set that's always a max-heap
+  lesson:
+    title: Know what's in the box
+    explanation: Python and Java both give a min-heap by default. For a max-heap, push negated values in Python, or pass `Collections.reverseOrder()` in Java. TypeScript and C have no heap, so you write one.
+- id: why-min-heap-for-largest
+  skill: top-k
+  asks: why
+  type: prompt
+  prompt: To keep the k largest values from a long list, why use a min-heap rather than a max-heap?
+  reworded: A heap of size k tracks the k biggest values seen so far. Why should its smallest value be on top?
+  points:
+    - The value to throw out when a bigger one arrives is the smallest of the k kept so far.
+    - A min-heap keeps exactly that value on top, so each step is one push and maybe one pop.
+    - The heap never grows past k + 1, so each step is O(log k).
+  misconception: That the k largest need a max-heap, since you want large values.
+  lesson:
+    title: Keep the weakest keeper on top
+    explanation: The heap is a waiting room for the k best so far. The one at risk of losing its place is the smallest of them, so that's the one to keep handy.
+- id: when-top-k-heap-pays
+  skill: top-k
+  asks: when
+  type: pick-one
+  prompt: How long does a heap of size k take to find the 10 largest of a million values?
+  reworded: "With n of a million and k of 10, what's the cost of keeping a heap of size k over every value?"
+  options:
+    - text: O(n log k), about a million steps of a few swaps each
+      correct: true
+      reason: Every value gets one push and maybe one pop on a heap of at most 11 values.
+    - text: O(n log n), the same as sorting
+      reason: The heap holds k values, not n, so each step costs log k.
+    - text: O(k log n)
+      reason: Every one of the n values has to be looked at once.
+  lesson:
+    title: Small heap, cheap steps
+    explanation: When k is tiny next to n, log k is close to constant, so the pass is close to O(n).
+- id: when-k-nearest-heap
+  skill: top-k
+  asks: when
+  type: pick-one
+  prompt: To keep the k points nearest to a spot, which heap fits?
+  reworded: Which kind of heap holds the k closest points seen so far, ready to drop one?
+  options:
+    - text: A max-heap by distance, so the farthest keeper is on top
+      correct: true
+      reason: When a nearer point arrives, the farthest of the kept points is the one to drop.
+    - text: A min-heap by distance, so the nearest is on top
+      reason: The nearest point is the last one you'd want to drop.
+    - text: A min-heap by x, then by y
+      reason: Position along one axis isn't distance.
+  lesson:
+    title: Flip the order, keep the idea
+    explanation: For the k smallest of anything, keep the largest of them on top. For the k largest, keep the smallest on top.
+- id: why-one-front-per-list
+  skill: merge-k-sorted
+  asks: why
+  type: prompt
+  prompt: When merging k sorted lists, why does the heap only need to hold the front value of each list?
+  reworded: Merging k sorted lists with a heap, why is one value per list enough at any moment?
+  points:
+    - Each list is sorted, so its front is its smallest value not yet used.
+    - The next value of the merged answer must be the smallest of those fronts.
+    - After a front is used, the next value from the same list takes its place.
+  lesson:
+    title: The answer is always one of the fronts
+    explanation: No value deeper in a list can beat that list's own front. So the heap stays at k values, and each step is O(log k).
+- id: merge-k-steps
+  skill: merge-k-sorted
+  asks: what
+  type: ordering
+  prompt: Put the steps for merging k sorted lists with a heap in order.
+  reworded: In what order does the heap based merge of k sorted lists do its work?
+  steps:
+    - Push the first value of every list that isn't empty, with its list and position.
+    - Pop the smallest entry from the heap.
+    - Add its value to the merged list.
+    - Push the next value from the same list, if there is one.
+    - Repeat until the heap is empty.
+  lesson:
+    title: Pop one, push its replacement
+    explanation: Each value goes in and comes out of the heap once, and the heap never holds more than k entries, so N values take O(N log k).
+- id: when-stop-merge-early
+  skill: merge-k-sorted
+  asks: when
+  type: pick-one
+  prompt: When can you stop the heap merge of k sorted lists early?
+  reworded: In which case does the merge of k sorted lists not need to finish?
+  options:
+    - text: When you only want the k-th smallest value across all the lists
+      correct: true
+      reason: The values come out in sorted order, so the k-th one out is the answer.
+    - text: When one of the lists runs out
+      reason: The other lists still have values to merge.
+    - text: When the heap holds k values
+      reason: It holds up to k fronts the whole time, by design.
+  lesson:
+    title: Values leave in order
+    explanation: Each pop gives the next smallest value overall, so stopping after k pops finds the k-th smallest without touching the rest.
+- id: why-two-heaps-median
+  skill: two-heaps
+  asks: why
+  type: prompt
+  prompt: Why does a running median use two heaps, a max-heap for the lower half and a min-heap for the upper half?
+  reworded: What do the two heaps give you when tracking the median of values that keep arriving?
+  points:
+    - The median sits where the lower half meets the upper half.
+    - The max-heap's top is the largest of the lower half, and the min-heap's top is the smallest of the upper half.
+    - Those two tops are the middle values, so the median is O(1) to read and each new value is O(log n).
+  misconception: That you need the values fully sorted to find the middle.
+  lesson:
+    title: Only the middle needs order
+    explanation: Neither half needs to be sorted inside. You only need the two values on each side of the split, and each heap keeps one of them on top.
+- id: median-add-steps
+  skill: two-heaps
+  asks: what
+  type: ordering
+  prompt: Put the steps for adding a value to the two heaps of a running median in order.
+  reworded: In what order does a new value go into the lower and upper heaps?
+  steps:
+    - Push the new value onto the lower half's max-heap.
+    - Move the lower half's top over to the upper half's min-heap.
+    - If the upper half is now bigger, move its top back to the lower half.
+  terms:
+    - term: Lower half
+      definition: A max-heap holding the smaller values, the same count as the upper half or one more.
+  lesson:
+    title: Through the lower half, then balance
+    explanation: Passing every value through the lower half keeps every value there at most every value above. One move at the end fixes the sizes.
+- id: when-median-is-mean
+  skill: two-heaps
+  asks: when
+  type: pick-one
+  prompt: "The lower half holds 3 values with 5 on top, and the upper half holds 3 values with 8 on top. What's the median?"
+  reworded: "Both heaps hold three values each. The lower half's top is 5 and the upper half's top is 8. Which number is the median?"
+  options:
+    - text: "6.5"
+      correct: true
+      reason: With an even count, the median is the mean of the two middle values, 5 and 8.
+    - text: "5"
+      reason: The lower top alone is the median only when the lower half holds one extra value.
+    - text: "8"
+      reason: The upper top is one of the two middle values, not the median on its own.
+  lesson:
+    title: Even counts take the mean
+    explanation: When the halves are the same size, the median is halfway between the two tops. That's why the answer is a decimal.
+- id: why-end-times-heap
+  skill: schedule-with-heap
+  asks: why
+  type: pick-one
+  prompt: When finding the fewest rooms for a list of meetings, why keep each room's end time in a min-heap?
+  reworded: In the fewest rooms problem, what does a min-heap of end times tell you at each meeting?
+  options:
+    - text: The room that frees up soonest is on top, and it's the only one worth checking
+      correct: true
+      reason: If that room isn't free yet, no room is, so the meeting needs a new one.
+    - text: It keeps the meetings sorted by start time
+      reason: The meetings are sorted by start before the loop. The heap holds ends.
+    - text: It counts how many meetings have ended
+      reason: Ended meetings are popped only when a room is reused. The size counts rooms.
+  lesson:
+    title: Check the soonest free room
+    explanation: Sorting by start means each meeting only asks one question, whether any room is free yet. The earliest end answers it.
+- id: when-room-frees
+  skill: schedule-with-heap
+  asks: when
+  type: matching
+  prompt: Match each pair of meetings to how many rooms they need, when a meeting that ends at a minute frees its room for one starting that minute.
+  reworded: For each pair, how many rooms do the two meetings need if an end at minute t frees the room for a start at minute t?
+  matchHeading: Rooms
+  matchName: a count
+  pairs:
+    - item: "9 to 10, then 10 to 11"
+      match: One room
+    - item: "9 to 11, then 10 to 12"
+      match: Two rooms
+    - item: "9 to 12, 10 to 12, and 11 to 12"
+      match: Three rooms
+  extraMatches:
+    - Four rooms
+  lesson:
+    title: Ends at t, free at t
+    explanation: Compare the soonest end with the new start using `<=`. Ask which rule the question wants, since some count a shared minute as an overlap.
+- id: why-drop-longest
+  skill: schedule-with-heap
+  asks: why
+  type: prompt
+  prompt: When taking jobs by deadline to finish as many as possible, why drop the longest job taken so far when you run out of time?
+  reworded: In the deadline problem, a new job makes you late. Why is the longest job the right one to give up?
+  points:
+    - Some job has to go, and every job counts the same toward the total.
+    - Dropping the longest frees the most time for the jobs still to come.
+    - The jobs left all finish no later than before, so none of them becomes late.
+  misconception: That you should drop the job that just made you late.
+  lesson:
+    title: Lose one, keep the most time
+    explanation: A max-heap of the lengths taken so far gives the longest in O(log n), so the whole plan is O(n log n) after sorting by deadline.
+- id: when-heap-or-sort
+  skill: heap-or-sort
+  asks: when
+  type: matching
+  prompt: Match each task to the tool that fits it best.
+  reworded: Which tool would you reach for in each of these situations?
+  matchHeading: Tool
+  matchName: a tool
+  pairs:
+    - item: Print every score from a finished exam in order
+      match: Sort once
+    - item: Keep the 5 best scores as new ones keep arriving
+      match: A heap of size k
+    - item: Find the single highest score, once
+      match: One pass
+    - item: Join the two shortest pieces over and over, putting each join back
+      match: A heap of everything
+  extraMatches:
+    - A stack
+  lesson:
+    title: Ask what you really need
+    explanation: Sorting wins when you need everything in order at once. A heap wins when values arrive over time or keep changing. A single pass wins when you need one value.
+- id: why-sort-not-enough
+  skill: heap-or-sort
+  asks: why
+  type: prompt
+  prompt: When joining pieces of cable two at a time, always the two shortest, why isn't sorting the pieces once enough?
+  reworded: Why does joining the two shortest pieces again and again need a heap, when the pieces could be sorted at the start?
+  points:
+    - Each joined piece goes back on the pile.
+    - It can be shorter than pieces still waiting, so it has to slot back into its place.
+    - Putting it back in a sorted array costs O(n), and a heap does it in O(log n).
+  lesson:
+    title: The pile keeps changing
+    explanation: A sort is a picture of the values at one moment. When new values join while you work, a heap keeps the smallest on top for each step.
+- id: why-heap-cant-search
+  skill: heap-or-sort
+  asks: why
+  type: pick-one
+  prompt: Why does finding a given value in a heap take O(n)?
+  reworded: Looking for one value that's somewhere in a heap is slow. Why?
+  options:
+    - text: The heap only orders parents above children, so the value could be on any branch
+      correct: true
+      reason: Unlike a search tree, nothing tells you whether to go left or right.
+    - text: The heap is sorted from back to front
+      reason: The array isn't sorted in either direction.
+    - text: Searching would break the heap's shape
+      reason: Reading values never changes the heap.
+  lesson:
+    title: A heap knows its top, nothing more
+    explanation: If you need to find or remove values in the middle, mark them as removed and skip them when they reach the top, or use a balanced search tree.

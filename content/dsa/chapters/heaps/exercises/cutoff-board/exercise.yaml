@@ -1,0 +1,24 @@
+id: cutoff-board
+kind: coding
+title: The cutoff for the final
+difficulty: easy
+skills:
+  - top-k
+  - heap-or-sort
+sibling: top-scores
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  class: CutoffBoard
+  params:
+    - name: k
+      type: int
+    - name: scores
+      type: int[]
+  methods:
+    - name: add
+      params:
+        - name: score
+          type: int
+      returns: int

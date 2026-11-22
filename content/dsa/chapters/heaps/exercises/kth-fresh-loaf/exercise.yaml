@@ -1,0 +1,18 @@
+id: kth-fresh-loaf
+kind: coding
+title: The k-th loaf out of the ovens
+difficulty: medium
+skills:
+  - merge-k-sorted
+sibling: merge-waves
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: kthLoaf
+  params:
+    - name: ovens
+      type: int[][]
+    - name: k
+      type: int
+  returns: int

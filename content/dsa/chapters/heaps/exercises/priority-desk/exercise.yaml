@@ -1,0 +1,28 @@
+id: priority-desk
+kind: coding
+title: The most urgent repair first
+difficulty: easy
+skills:
+  - heap-mechanics
+sibling: join-cables
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  class: RepairDesk
+  params: []
+  methods:
+    - name: add
+      params:
+        - name: urgency
+          type: int
+      returns: void
+    - name: next
+      params: []
+      returns: int
+    - name: peek
+      params: []
+      returns: int
+    - name: size
+      params: []
+      returns: int

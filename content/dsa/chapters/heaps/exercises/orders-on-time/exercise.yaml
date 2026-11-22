@@ -1,0 +1,16 @@
+id: orders-on-time
+kind: coding
+title: As many cakes on time as possible
+difficulty: hard
+skills:
+  - schedule-with-heap
+sibling: fewest-rooms
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: mostOnTime
+  params:
+    - name: orders
+      type: int[][]
+  returns: int

@@ -1,0 +1,116 @@
+{
+  "exercise": "kth-fresh-loaf",
+  "cases": [
+    {
+      "uuid": "9a8e3164-412f-4e49-9cb4-324a6c3d1300",
+      "description": "finds the fourth loaf",
+      "property": "kthLoaf",
+      "input": {
+        "ovens": [[5, 20, 40], [10, 15], [12, 30, 45]],
+        "k": 4
+      },
+      "expected": 15
+    },
+    {
+      "uuid": "f32c5c13-94e9-47b8-9a48-f65d5c680fe9",
+      "description": "the first loaf of all",
+      "property": "kthLoaf",
+      "input": {
+        "ovens": [[5, 20, 40], [10, 15], [12, 30, 45]],
+        "k": 1
+      },
+      "expected": 5
+    },
+    {
+      "uuid": "50c13a51-f14b-4d69-b2b4-17d11ab1415a",
+      "description": "the last loaf of all",
+      "property": "kthLoaf",
+      "input": {
+        "ovens": [[5, 20, 40], [10, 15], [12, 30, 45]],
+        "k": 8
+      },
+      "expected": 45
+    },
+    {
+      "uuid": "a7b49d90-cacd-46e5-bd2b-0a82d8417b79",
+      "description": "loaves at the same minute each count",
+      "property": "kthLoaf",
+      "input": {
+        "ovens": [[10, 10], [10, 25]],
+        "k": 3
+      },
+      "expected": 10
+    },
+    {
+      "uuid": "9bb9960b-769d-436b-8ba5-56d8c8f834ff",
+      "description": "empty ovens are skipped",
+      "property": "kthLoaf",
+      "input": {
+        "ovens": [[], [7, 9], []],
+        "k": 2
+      },
+      "expected": 9
+    },
+    {
+      "uuid": "7c11bf0b-c5a1-4087-ac86-a23fcd19ef3e",
+      "description": "one oven",
+      "property": "kthLoaf",
+      "input": {
+        "ovens": [[3, 6, 9, 12]],
+        "k": 3
+      },
+      "expected": 9
+    },
+    {
+      "uuid": "de11d109-38cd-4c92-922f-22b3cbcddda5",
+      "description": "one oven finishes before the others start",
+      "property": "kthLoaf",
+      "input": {
+        "ovens": [[1, 2, 3], [100, 200]],
+        "k": 3
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "d1d809f8-3fe4-47ec-9288-621e0c532682",
+      "description": "five busy ovens",
+      "property": "kthLoaf",
+      "input": {
+        "ovens": [
+          [11],
+          [10, 36, 63, 66],
+          [2, 18, 24, 25, 31, 60, 86, 120],
+          [18, 22, 32, 39, 42, 44, 80, 116],
+          [45, 87]
+        ],
+        "k": 11
+      },
+      "expected": 36
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "05963cee-6e6b-4679-a3ca-52264277d147",
+          "description": "one loaf",
+          "property": "kthLoaf",
+          "input": {
+            "ovens": [[8]],
+            "k": 1
+          },
+          "expected": 8
+        },
+        {
+          "uuid": "3119cbb2-9444-4f24-bb48-6f8e8a09c690",
+          "description": "one loaf in each oven",
+          "property": "kthLoaf",
+          "input": {
+            "ovens": [[4], [2], [6]],
+            "k": 2
+          },
+          "expected": 4
+        }
+      ]
+    }
+  ]
+}

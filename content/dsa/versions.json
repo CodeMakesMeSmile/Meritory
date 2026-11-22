@@ -55,6 +55,15 @@
   "card/hash-lookup-steps": [
     "368d18e6b0a4d86ad7e7721468c94a0d499a6b01cd5dcf7a521a5735f88382fc"
   ],
+  "card/heap-child-index": [
+    "9b986486a43a1835f34f86b88b8f69cd8e3def4dd919547b75a37bb736885bea"
+  ],
+  "card/heap-per-language": [
+    "123163d5ecc662d2efbc138041b04ac4ac54c53670416692705383ab6d10a3c0"
+  ],
+  "card/heap-pop-steps": [
+    "bc1614cff30c7b63280a33d0bdbfe75ec1381cf5c0d80418c0fcfba98b80dbba"
+  ],
   "card/last-copy-steps": [
     "c163870ec606809bfae7f8dd82dd7fd75761c5a983d88ecd4f7e7a7bed5abda9"
   ],
@@ -67,8 +76,14 @@
   "card/lis-tails-steps": [
     "59d11d3600aefd3072935073e74f6d465f21b5c35c92bffda570be01a73cb942"
   ],
+  "card/median-add-steps": [
+    "12b0052fd21d289bbd186a96177dd0772585caede4aa2051d3d21ced623a30fb"
+  ],
   "card/memo-top-down-steps": [
     "c5f7ef50e2170df13a2f0ec7330720e33368dd725f14629d6d97265230dae6f0"
+  ],
+  "card/merge-k-steps": [
+    "cc88e14c0508b1b4c5f9a7b375580f7139343244151c8852b94792ca266e9db6"
   ],
   "card/merge-lists-steps": [
     "2e34bc36f30cdea3cc4ffe4b8d2457165ff0a9fc7da7888bf9f650601ced3128"
@@ -190,8 +205,14 @@
   "card/when-grid-method": [
     "66a210633086000cfa57098a555cfb0c3a1121d33258f0bc7bea9f53b84da0d5"
   ],
+  "card/when-heap-or-sort": [
+    "b1cfc250da6761363241cb1d1e1da78956e9b03cbb41901cb43bd2a3b794f78e"
+  ],
   "card/when-is-a-leaf": [
     "dc0827c240deb3fcce5d7d52757b4324adba9817390870f5e4aee63b3379a005"
+  ],
+  "card/when-k-nearest-heap": [
+    "252dbc2cb1830826c9f8483a210b786b0a5724f814d97b5dc608a01ef8e4ecc6"
   ],
   "card/when-letter-count-check": [
     "cfb49df5ccc44f8431871304dace28174fc547b8431e9b186c14bf219f36e9a9"
@@ -211,6 +232,9 @@
   ],
   "card/when-markers": [
     "d335f23c1ba92ccbfb149860577d6958c939dfd75e2f71f7a28fd12edd709a23"
+  ],
+  "card/when-median-is-mean": [
+    "1b06be3806f5550a77a4bfbb7e45d8a0005a388e9549465d40611fb9fcaa7db0"
   ],
   "card/when-memo-helps": [
     "b6174ae1371fb5734bdd612f57a9f700437ba8cf79608a97947a05a1da7a736b"
@@ -254,6 +278,9 @@
   "card/when-rolling-works": [
     "5214669863740d0b0e31a67898ab99ea08a44b93ad6ab18bc4055f3720d6f944"
   ],
+  "card/when-room-frees": [
+    "c4700865b97ba54f11de798826a1ce1dab0f5d5ac92e5498a8a6b116683fc81b"
+  ],
   "card/when-rotation-breaks": [
     "55fa1bf7ac19cbf855f605e096043b48a036830fb3d47c98960d926576e66e4f"
   ],
@@ -287,6 +314,9 @@
   "card/when-start-at-i": [
     "c82bd377969d37c4c362838422b6d7148e8b7a2267325aafab085eccf854b524"
   ],
+  "card/when-stop-merge-early": [
+    "b4df06d7cb88577f0ed243c548d9bf7502d17b653ecc92238fdc5f39c9be07f2"
+  ],
   "card/when-store-extra": [
     "37b50472459b5c6ab88b1c7db568428a1006041b5251449d772a8c46993d645e"
   ],
@@ -298,6 +328,9 @@
   ],
   "card/when-top-down-or-bottom-up": [
     "b8f6ccea4afe8b5a522173d94c14147dd084b5d56ff302aeed674d9c3f5097e7"
+  ],
+  "card/when-top-k-heap-pays": [
+    "92d8990ee0ec4657bde8f9226910ad8c410848a2e2cf511cdf49b9aa24eb1c6d"
   ],
   "card/when-two-stacks": [
     "58f9636dfa63e121ceb74ed6f73ee4e87499d5d89288a220f945a7221d0787eb"
@@ -353,8 +386,14 @@
   "card/why-diameter-variable": [
     "ec5630331485788c63e4c5b11ecab39488350ec84205030cffcd5c5334bef0fb"
   ],
+  "card/why-drop-longest": [
+    "6c5149419bb9939d758ebb6e085fae85aeb0e5619e7a3955c848a697d22da736"
+  ],
   "card/why-dummy-head": [
     "2228f0ca6b5161435d976a400d32a0ab4d333dc64d0efc70094d22639666d181"
+  ],
+  "card/why-end-times-heap": [
+    "d8abd230c75f7f3e33ff1ba6e35e1ad6dae35eaa1842880eab512959df68eba3"
   ],
   "card/why-exactly-not-direct": [
     "eb2e6326033a265ee5b6fa8a824fc3fe83f97e6044cbff809e050b3044ecb6af"
@@ -380,6 +419,12 @@
   "card/why-group-key-rules": [
     "75fdc6c45baa1ea8d4288b4bc46bf11ddb2f307ae63ced67c7e8cb17cf63fd27"
   ],
+  "card/why-heap-cant-search": [
+    "03d4a6eaed854db7fe52c74af85a9e64ca44e1aadc39a7da5ca50d8f1d11ec73"
+  ],
+  "card/why-heap-fits-array": [
+    "132c2ac642935187b331f4a5d4aaf9f18e151a9ce10371280f7f8d27fb788aec"
+  ],
   "card/why-inner-loop-linear": [
     "460e382476eb0a8a1044afd0f61996a1462ff050601ced43186692f2f2202bae"
   ],
@@ -397,6 +442,9 @@
   ],
   "card/why-mid-stays-after-swap": [
     "27584cda4f1b07725b47086aaee73c4d25a9d7d66b26974897fe70e9bb68b84b"
+  ],
+  "card/why-min-heap-for-largest": [
+    "7f23bee12f66dc7445d76a080a983b060929ea55ce5a2c71779b960a45950680"
   ],
   "card/why-min-per-entry": [
     "e7613b01bc0a923fefcb39b5569b1a5c27f3afa2d0ffc3f80badfa5692ed9a57"
@@ -427,6 +475,9 @@
   ],
   "card/why-not-lo-equals-mid": [
     "e58245d9aee07f7f54ec14e4c49fc37bf7fe211feae0f0e337d5427bdb6b7cdc"
+  ],
+  "card/why-one-front-per-list": [
+    "80c78f2679b625eb66bc3100060de498fb996e7d3e81cf52294313f1e9d8ba05"
   ],
   "card/why-pass-sum-down": [
     "b8aa8ae48e817e0954f2e79a17ee6410f5fdcd2633e3f3f848fc72d67c1043d0"
@@ -485,11 +536,17 @@
   "card/why-slide-not-resum": [
     "3128d20dd3154c94378cd319c7f66a06b8783b23fdf51c5e2e2f739490c81433"
   ],
+  "card/why-smaller-child": [
+    "e8782ae9fd597947ce390405684c574026daee2632738a6bdefbf148f0dd140a"
+  ],
   "card/why-sort-before-skipping": [
     "fc5813aaad0d357ec732a3a6b28b7b50eb216295f5b9458753b4ad78ae6e2079"
   ],
   "card/why-sort-needs-compare": [
     "dfd957210028e0c5a6998ff2ea608655142568afb6357ea5073ae2553f38e712"
+  ],
+  "card/why-sort-not-enough": [
+    "c3f4e91aa86518349122919943b108ecf1f25b2e5ae702888c94b1008e0d7567"
   ],
   "card/why-stack-for-brackets": [
     "0bed5baaf054ac0d47f2c03ad2d055e76d32dcfec1172d51fa4c4df99e1793c0"
@@ -526,6 +583,9 @@
   ],
   "card/why-trust-smaller-call": [
     "aed6cafb4795e465caa87b99ac73feaf8d33655b6f4fa5dc00a68f173f1322ab"
+  ],
+  "card/why-two-heaps-median": [
+    "016ff5077c87578e228ceac6d6dde62b07a19192146bff76a862a3705426bc6f"
   ],
   "card/why-two-searches": [
     "6296b8cbcb059a4ce056dcf7a2532abada936c312c75eb3ccfe1292a87938fc9"
@@ -574,6 +634,9 @@
   ],
   "chapter/dp-1d": [
     "3772ab444136d5c821d900de04e1d49b4051f8188418af834530fa3383b3b48b"
+  ],
+  "chapter/heaps": [
+    "dd6c52fe16364026e9f51210bced081e0b23961d7fc41368b01cd526105bf8b3"
   ],
   "chapter/linked-lists": [
     "fd29cc63a98eef7f5eb0ed0e21ba435f7e4d8fb0061925ec300261eb870b9bf3"
@@ -659,6 +722,9 @@
   "exercise/culture-growth": [
     "e781c433cf7436953558a3de10d37a543958197e78d0d8b2fdddae02ec819553"
   ],
+  "exercise/cutoff-board": [
+    "0781d3b8da075849015b96bbb47398dccce0da59d580e78e5fa7b6cdd16c3c59"
+  ],
   "exercise/east-view": [
     "d5cb1f9b2125da923c3e76c7de1daab83d4f787e8272d14c0fdd166642c5e17d"
   ],
@@ -682,6 +748,9 @@
   ],
   "exercise/fewest-hops": [
     "3877bd8e49f99b875f1d82286d06f063b74d683ef249e7fe4757cab552e4274a"
+  ],
+  "exercise/fewest-rooms": [
+    "b0b5892914b1dbe09fbcede2481930efe39189b61a7ada51fd984053da3aa1f8"
   ],
   "exercise/fewest-tokens": [
     "f262b53d37633911c172e5b3fbfe2bf62f45ba6e34bf2155a4ae53aec20e4594"
@@ -713,6 +782,12 @@
   "exercise/hop-lengths": [
     "aeedef571c434bbf5ff007339cd78ac588cf45f46d2d7607fc31abea5598bbe2"
   ],
+  "exercise/join-cables": [
+    "d915de9fd3ad41351914ab77d79d0c75d221a4f8b8569b7077725a5975ed7fe3"
+  ],
+  "exercise/kth-fresh-loaf": [
+    "43bab8c2be26d0c82bde9ae0eaec05f9bcf0f6c9f3174defb78f21a60cd17c98"
+  ],
   "exercise/kth-lowest-height": [
     "586006e38573113a2e2864b2993d436ab77da0d82e332329fc2ad867572a50e9"
   ],
@@ -743,6 +818,12 @@
   "exercise/lost-spaces": [
     "edebeb45d89867c7b3122b6ce5e905d94927230d36811025fe06a869d8115ec0"
   ],
+  "exercise/median-after-each": [
+    "8d04b90a7b21ce8fa4820b482ab5ed49fdc16d573239249525bdaa54cac7c5af"
+  ],
+  "exercise/median-board": [
+    "48d37859878aa07a3495bc5a8ffd151bdb211e824ec853bdf91a0f16ad6c65d1"
+  ],
   "exercise/meeting-hub": [
     "08ba4180043978d9149e93c0c295d89466f8b0c7e29d9f440e47b6c8584f6e38"
   ],
@@ -755,6 +836,9 @@
   "exercise/merge-timetables": [
     "758cb91aa1c8c26abfa156e8c1cdccd8089a1c5775528f87c896e1972f403d0a"
   ],
+  "exercise/merge-waves": [
+    "322aa573bf15cb79aa6305bcff87a83c53cd956ed5311c961d7ee5a9649ee87c"
+  ],
   "exercise/middle-stop": [
     "2154fff36e15cfce848a9a1712b5b327c84ccadb2c1c18cf388fd625a6613c30"
   ],
@@ -766,6 +850,9 @@
   ],
   "exercise/move-the-crates": [
     "f814349a6246c3fbea20e9889454ade29b101ce40d7a9f1849304a6b3fe9acd3"
+  ],
+  "exercise/nearest-chargers": [
+    "917a65e7abad328df9623176f26f7b2ff99077a48307713980bc756a68de8f89"
   ],
   "exercise/nesting-boxes": [
     "09ceee43c332adee7ec69d34f3b31708d6056e538fc76b5f33b623a2fe23c2cd"
@@ -784,6 +871,9 @@
   ],
   "exercise/odds-then-evens": [
     "af166f06ef1718b1ab0592b5c925b074e98a769c361be6a1b5a2e3af961f33db"
+  ],
+  "exercise/orders-on-time": [
+    "02521a1c739df6e2ff12355a82c6a5cdc37f28cc50dc160a1a83dc652ad7634d"
   ],
   "exercise/pack-choices": [
     "43b07b05eea974522b5c72e44b10290d70ee01c927cdb2e5281a14d24b2ff74d"
@@ -814,6 +904,9 @@
   ],
   "exercise/print-rounds": [
     "18a622da679b28f28f325e1087fe0d8c8adcaf9885b924f9353bbd9033e1ffe1"
+  ],
+  "exercise/priority-desk": [
+    "733210ec6ec4c8b0366a15ff71fcb03331e6410661765c792d704dd9bd0d64e6"
   ],
   "exercise/product-of-others": [
     "02eb84dcf89f10d67d2ece04ff6dac683957856ed94ef2d3acd3df30beb19964"
@@ -892,6 +985,12 @@
   ],
   "exercise/ticket-queue": [
     "5aa22cff60b09242dcc0434fa567b370b32ffe404196b16deb199340d580f13f"
+  ],
+  "exercise/top-scores": [
+    "04a367ad03a7e20997243c22cf702915ccefb757d0641d2f63ed9386de4ec34d"
+  ],
+  "exercise/top-searches": [
+    "a7fd313adeafd77b55af1dee038933dc81bdc99b02df5467246afa381d501137"
   ],
   "exercise/tower-tolls": [
     "817a49cb9b0b2774f5797ed548028b1e48e33254db3c58e92d1c4737f30ec47f"

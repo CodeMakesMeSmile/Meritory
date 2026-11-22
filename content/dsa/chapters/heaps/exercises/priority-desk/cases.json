@@ -1,0 +1,306 @@
+{
+  "exercise": "priority-desk",
+  "cases": [
+    {
+      "uuid": "5b9f09eb-216b-4c19-8dce-f6cd53e6a26f",
+      "description": "hands out the most urgent job first",
+      "property": "RepairDesk",
+      "input": {
+        "calls": [
+          "RepairDesk",
+          "add",
+          "add",
+          "add",
+          "peek",
+          "next",
+          "next",
+          "size"
+        ],
+        "args": [[], [5], [2], [8], [], [], [], []]
+      },
+      "expected": [null, null, null, null, 2, 2, 5, 1]
+    },
+    {
+      "uuid": "9b83113b-4acd-49a8-a8b1-5fd16f3ba3e4",
+      "description": "jobs come out from most to least urgent",
+      "property": "RepairDesk",
+      "input": {
+        "calls": [
+          "RepairDesk",
+          "add",
+          "add",
+          "add",
+          "add",
+          "add",
+          "next",
+          "next",
+          "next",
+          "next",
+          "next"
+        ],
+        "args": [[], [4], [1], [3], [2], [5], [], [], [], [], []]
+      },
+      "expected": [null, null, null, null, null, null, 1, 2, 3, 4, 5]
+    },
+    {
+      "uuid": "473d9ae9-66a6-488b-8472-c41390e90bfd",
+      "description": "jobs added from least to most urgent",
+      "property": "RepairDesk",
+      "input": {
+        "calls": [
+          "RepairDesk",
+          "add",
+          "add",
+          "add",
+          "add",
+          "add",
+          "next",
+          "next",
+          "next",
+          "size"
+        ],
+        "args": [[], [9], [7], [5], [3], [1], [], [], [], []]
+      },
+      "expected": [null, null, null, null, null, null, 1, 3, 5, 2]
+    },
+    {
+      "uuid": "974febd2-60e0-43bc-96d9-a94b240499d0",
+      "description": "jobs added from most to least urgent",
+      "property": "RepairDesk",
+      "input": {
+        "calls": [
+          "RepairDesk",
+          "add",
+          "add",
+          "add",
+          "add",
+          "add",
+          "next",
+          "next",
+          "next",
+          "peek"
+        ],
+        "args": [[], [1], [3], [5], [7], [9], [], [], [], []]
+      },
+      "expected": [null, null, null, null, null, null, 1, 3, 5, 7]
+    },
+    {
+      "uuid": "6d27afdb-55f9-4679-9940-cfa6be2fe4ab",
+      "description": "repeated urgencies",
+      "property": "RepairDesk",
+      "input": {
+        "calls": [
+          "RepairDesk",
+          "add",
+          "add",
+          "add",
+          "add",
+          "next",
+          "next",
+          "next",
+          "next"
+        ],
+        "args": [[], [3], [3], [1], [3], [], [], [], []]
+      },
+      "expected": [null, null, null, null, null, 1, 3, 3, 3]
+    },
+    {
+      "uuid": "25567927-39d2-4694-ab95-a4ccf3a9ec62",
+      "description": "adds and takes mixed together",
+      "property": "RepairDesk",
+      "input": {
+        "calls": [
+          "RepairDesk",
+          "add",
+          "add",
+          "next",
+          "add",
+          "add",
+          "next",
+          "peek",
+          "add",
+          "next",
+          "next",
+          "next",
+          "size"
+        ],
+        "args": [[], [10], [4], [], [7], [1], [], [], [6], [], [], [], []]
+      },
+      "expected": [null, null, null, 4, null, null, 1, 7, null, 6, 7, 10, 0]
+    },
+    {
+      "uuid": "bb9fee43-c3d3-4b59-93ab-57bd2f4f850e",
+      "description": "urgency 0 and the largest urgency",
+      "property": "RepairDesk",
+      "input": {
+        "calls": ["RepairDesk", "add", "add", "add", "next", "next", "next"],
+        "args": [[], [1000000000], [0], [500], [], [], []]
+      },
+      "expected": [null, null, null, null, 0, 500, 1000000000]
+    },
+    {
+      "uuid": "59a8121e-4492-4fe8-aa7c-9bc5cb8f0cc4",
+      "description": "a long run of jobs",
+      "property": "RepairDesk",
+      "input": {
+        "calls": [
+          "RepairDesk",
+          "add",
+          "add",
+          "add",
+          "next",
+          "size",
+          "next",
+          "peek",
+          "peek",
+          "next",
+          "add",
+          "peek",
+          "next",
+          "add",
+          "next",
+          "add",
+          "add",
+          "add",
+          "size",
+          "add",
+          "add",
+          "next",
+          "next",
+          "next",
+          "add",
+          "add",
+          "next",
+          "next",
+          "next",
+          "next",
+          "add",
+          "peek",
+          "add",
+          "peek",
+          "add",
+          "add",
+          "add",
+          "next",
+          "add",
+          "add",
+          "next",
+          "size"
+        ],
+        "args": [
+          [],
+          [709],
+          [709],
+          [812],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [131],
+          [],
+          [],
+          [846],
+          [],
+          [474],
+          [926],
+          [190],
+          [],
+          [2],
+          [732],
+          [],
+          [],
+          [],
+          [538],
+          [866],
+          [],
+          [],
+          [],
+          [],
+          [252],
+          [],
+          [928],
+          [],
+          [854],
+          [714],
+          [826],
+          [],
+          [678],
+          [23],
+          [],
+          []
+        ]
+      },
+      "expected": [
+        null,
+        null,
+        null,
+        null,
+        709,
+        2,
+        709,
+        812,
+        812,
+        812,
+        null,
+        131,
+        131,
+        null,
+        846,
+        null,
+        null,
+        null,
+        3,
+        null,
+        null,
+        2,
+        190,
+        474,
+        null,
+        null,
+        538,
+        732,
+        866,
+        926,
+        null,
+        252,
+        null,
+        252,
+        null,
+        null,
+        null,
+        252,
+        null,
+        null,
+        23,
+        5
+      ]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "0f1149bf-8011-4ea6-941f-0e24785a5f64",
+          "description": "one job",
+          "property": "RepairDesk",
+          "input": {
+            "calls": ["RepairDesk", "add", "peek", "size", "next", "size"],
+            "args": [[], [42], [], [], [], []]
+          },
+          "expected": [null, null, 42, 1, 42, 0]
+        },
+        {
+          "uuid": "daed4e66-18ab-49ec-b534-c3ff89c4e1bf",
+          "description": "the desk starts empty",
+          "property": "RepairDesk",
+          "input": {
+            "calls": ["RepairDesk", "size"],
+            "args": [[], []]
+          },
+          "expected": [null, 0]
+        }
+      ]
+    }
+  ]
+}

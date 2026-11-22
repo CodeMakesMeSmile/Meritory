@@ -1,0 +1,16 @@
+id: merge-waves
+kind: coding
+title: Every finishing time in one list
+difficulty: medium
+skills:
+  - merge-k-sorted
+sibling: kth-fresh-loaf
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: mergeWaves
+  params:
+    - name: waves
+      type: int[][]
+  returns: int[]

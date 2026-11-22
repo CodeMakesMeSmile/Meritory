@@ -1,0 +1,22 @@
+id: median-board
+kind: coding
+title: The middle reading so far
+difficulty: medium
+skills:
+  - two-heaps
+sibling: median-after-each
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  class: MedianBoard
+  params: []
+  methods:
+    - name: record
+      params:
+        - name: reading
+          type: int
+      returns: void
+    - name: median
+      params: []
+      returns: double

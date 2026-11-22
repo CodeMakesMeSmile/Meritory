@@ -1,0 +1,120 @@
+{
+  "exercise": "merge-waves",
+  "cases": [
+    {
+      "uuid": "4e842805-960f-4cc1-8df5-65ad2c44a237",
+      "description": "merges three waves",
+      "property": "mergeWaves",
+      "input": {
+        "waves": [[301, 340, 412], [298, 355], [320, 333, 400]]
+      },
+      "expected": [298, 301, 320, 333, 340, 355, 400, 412]
+    },
+    {
+      "uuid": "7c0e0d39-0fcf-40d2-add3-3fe7fc098781",
+      "description": "one wave",
+      "property": "mergeWaves",
+      "input": {
+        "waves": [[100, 200, 300]]
+      },
+      "expected": [100, 200, 300]
+    },
+    {
+      "uuid": "57f650c5-8310-4b8a-adb7-d665db6158e1",
+      "description": "some waves had no finishers",
+      "property": "mergeWaves",
+      "input": {
+        "waves": [[], [500], [], [450, 510]]
+      },
+      "expected": [450, 500, 510]
+    },
+    {
+      "uuid": "35bce6bb-4dea-4298-a618-c31deaf79513",
+      "description": "times that tie across waves",
+      "property": "mergeWaves",
+      "input": {
+        "waves": [[600, 600], [600], [590, 600]]
+      },
+      "expected": [590, 600, 600, 600, 600]
+    },
+    {
+      "uuid": "b23fe25e-bd00-4e01-97c4-90e9f850674e",
+      "description": "waves of very different lengths",
+      "property": "mergeWaves",
+      "input": {
+        "waves": [[1, 2, 3, 4, 5, 6, 7, 8], [3], [4, 9]]
+      },
+      "expected": [1, 2, 3, 3, 4, 4, 5, 6, 7, 8, 9]
+    },
+    {
+      "uuid": "43a9133f-dac7-45fb-a765-a23cf7a02964",
+      "description": "many waves with one finisher each",
+      "property": "mergeWaves",
+      "input": {
+        "waves": [[5], [3], [9], [1], [7], [2], [8]]
+      },
+      "expected": [1, 2, 3, 5, 7, 8, 9]
+    },
+    {
+      "uuid": "71bc1a32-9b78-487e-a576-8f98368a41c2",
+      "description": "one wave finishes before the next starts",
+      "property": "mergeWaves",
+      "input": {
+        "waves": [[10, 20], [30, 40], [50, 60]]
+      },
+      "expected": [10, 20, 30, 40, 50, 60]
+    },
+    {
+      "uuid": "5b810519-cbc6-410a-b1fc-41da56434261",
+      "description": "six mixed waves",
+      "property": "mergeWaves",
+      "input": {
+        "waves": [
+          [224, 270, 406, 425],
+          [271, 294, 430, 485, 539],
+          [226, 255, 275, 473, 526, 587],
+          [252, 319, 323, 325, 362, 522],
+          [310, 485, 538, 583, 586],
+          [215, 249, 344, 348, 506, 559, 577]
+        ]
+      },
+      "expected": [
+        215, 224, 226, 249, 252, 255, 270, 271, 275, 294, 310, 319, 323, 325,
+        344, 348, 362, 406, 425, 430, 473, 485, 485, 506, 522, 526, 538, 539,
+        559, 577, 583, 586, 587
+      ]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "231e8f8e-9fab-4e51-9f52-a4ed6bd8b15e",
+          "description": "no waves",
+          "property": "mergeWaves",
+          "input": {
+            "waves": []
+          },
+          "expected": []
+        },
+        {
+          "uuid": "d4f93e04-6036-4afb-9a08-950929dcf916",
+          "description": "every wave is empty",
+          "property": "mergeWaves",
+          "input": {
+            "waves": [[], [], []]
+          },
+          "expected": []
+        },
+        {
+          "uuid": "77c3756d-1013-450a-af75-e545a4883173",
+          "description": "one finisher",
+          "property": "mergeWaves",
+          "input": {
+            "waves": [[1]]
+          },
+          "expected": [1]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+id: top-scores
+kind: coding
+title: The top scores of quiz night
+difficulty: easy
+skills:
+  - top-k
+sibling: cutoff-board
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: topScores
+  params:
+    - name: scores
+      type: int[]
+    - name: k
+      type: int
+  returns: int[]

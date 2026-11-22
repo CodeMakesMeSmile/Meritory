@@ -1,0 +1,141 @@
+{
+  "exercise": "top-searches",
+  "cases": [
+    {
+      "uuid": "cfb7163a-c877-4f7e-b00d-6cd6fb77d953",
+      "description": "the two most searched words",
+      "property": "topSearches",
+      "input": {
+        "searches": ["maps", "jazz", "maps", "baking", "jazz", "maps"],
+        "k": 2
+      },
+      "expected": ["maps", "jazz"]
+    },
+    {
+      "uuid": "fd73ea15-d717-4f10-b985-1c5acfa1baed",
+      "description": "ties go in alphabetical order",
+      "property": "topSearches",
+      "input": {
+        "searches": ["owl", "cat", "owl", "cat", "bee"],
+        "k": 2
+      },
+      "expected": ["cat", "owl"]
+    },
+    {
+      "uuid": "3727b5ce-b706-4a5d-a9bb-397cb0e121bf",
+      "description": "only the top word",
+      "property": "topSearches",
+      "input": {
+        "searches": ["tea", "soup", "tea"],
+        "k": 1
+      },
+      "expected": ["tea"]
+    },
+    {
+      "uuid": "e610c386-bbad-4675-8ac9-0af65e6a144b",
+      "description": "k is every different word",
+      "property": "topSearches",
+      "input": {
+        "searches": ["b", "c", "a", "c"],
+        "k": 3
+      },
+      "expected": ["c", "a", "b"]
+    },
+    {
+      "uuid": "7fb83edd-3aee-4bdc-8e41-5a4c4f8acc34",
+      "description": "one word searched many times",
+      "property": "topSearches",
+      "input": {
+        "searches": ["knots", "knots", "knots"],
+        "k": 1
+      },
+      "expected": ["knots"]
+    },
+    {
+      "uuid": "8d4cf184-4ca3-4485-aec4-cc791c52d166",
+      "description": "a tie at the cutoff goes alphabetical",
+      "property": "topSearches",
+      "input": {
+        "searches": ["pear", "fig", "kiwi"],
+        "k": 2
+      },
+      "expected": ["fig", "kiwi"]
+    },
+    {
+      "uuid": "5ae7ad14-03b7-43ea-bd56-d2038cd60ade",
+      "description": "words that share a start",
+      "property": "topSearches",
+      "input": {
+        "searches": ["car", "cart", "card", "cart", "car", "cart"],
+        "k": 3
+      },
+      "expected": ["cart", "car", "card"]
+    },
+    {
+      "uuid": "1b05e53f-c29d-47a3-8604-5d15ed3c1360",
+      "description": "a week of searches",
+      "property": "topSearches",
+      "input": {
+        "searches": [
+          "maps",
+          "poems",
+          "jazz",
+          "jazz",
+          "poems",
+          "maps",
+          "poems",
+          "soup",
+          "soup",
+          "jazz",
+          "tea",
+          "soup",
+          "jazz",
+          "poems",
+          "tea",
+          "chess",
+          "chess",
+          "chess",
+          "knots",
+          "jazz",
+          "chess",
+          "birds",
+          "jazz",
+          "poems",
+          "jazz",
+          "jazz",
+          "poems",
+          "poems",
+          "tea",
+          "birds",
+          "jazz",
+          "chess",
+          "birds",
+          "jazz",
+          "poems",
+          "jazz",
+          "poems",
+          "chess",
+          "trains",
+          "jazz"
+        ],
+        "k": 4
+      },
+      "expected": ["jazz", "poems", "chess", "birds"]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "fba98449-8c59-453d-98d3-783636c8d592",
+          "description": "one search",
+          "property": "topSearches",
+          "input": {
+            "searches": ["poems"],
+            "k": 1
+          },
+          "expected": ["poems"]
+        }
+      ]
+    }
+  ]
+}

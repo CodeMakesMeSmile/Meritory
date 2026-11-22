@@ -1,0 +1,17 @@
+id: join-cables
+kind: coding
+title: Joining cables for the least work
+difficulty: medium
+skills:
+  - heap-mechanics
+  - heap-or-sort
+sibling: priority-desk
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: joinCables
+  params:
+    - name: lengths
+      type: int[]
+  returns: long

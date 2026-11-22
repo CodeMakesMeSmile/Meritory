@@ -1,0 +1,112 @@
+{
+  "exercise": "join-cables",
+  "cases": [
+    {
+      "uuid": "e7615253-a610-4a8b-9645-100839ad66bb",
+      "description": "joins the shortest pieces first",
+      "property": "joinCables",
+      "input": {
+        "lengths": [4, 3, 2, 6]
+      },
+      "expected": 29
+    },
+    {
+      "uuid": "3b7aaac2-9130-4725-a167-6b50818a943c",
+      "description": "two pieces",
+      "property": "joinCables",
+      "input": {
+        "lengths": [5, 7]
+      },
+      "expected": 12
+    },
+    {
+      "uuid": "17a95684-a8c2-48fc-a39b-d991710ce017",
+      "description": "four equal pieces",
+      "property": "joinCables",
+      "input": {
+        "lengths": [1, 1, 1, 1]
+      },
+      "expected": 8
+    },
+    {
+      "uuid": "026e4c27-8a42-4b7b-8409-d5b24fbe07e7",
+      "description": "five pieces of different lengths",
+      "property": "joinCables",
+      "input": {
+        "lengths": [1, 2, 3, 4, 5]
+      },
+      "expected": 33
+    },
+    {
+      "uuid": "fc44af8c-93ed-4c63-b676-300fd6018e3c",
+      "description": "a joined piece goes back on the pile",
+      "property": "joinCables",
+      "input": {
+        "lengths": [2, 2, 3, 3]
+      },
+      "expected": 20
+    },
+    {
+      "uuid": "33c14cae-b3be-4046-9733-d695003dd0b8",
+      "description": "one long piece and many short ones",
+      "property": "joinCables",
+      "input": {
+        "lengths": [100, 1, 1, 1]
+      },
+      "expected": 108
+    },
+    {
+      "uuid": "d9af3038-0ec0-4e0a-9818-40ff77c79309",
+      "description": "totals past what 32 bits can hold",
+      "property": "joinCables",
+      "input": {
+        "lengths": [1000000000, 1000000000, 1000000000, 1000000000, 1000000000]
+      },
+      "expected": 12000000000
+    },
+    {
+      "uuid": "c5ba5abf-3475-48a9-8b91-fd6018edf1a7",
+      "description": "a mixed pile",
+      "property": "joinCables",
+      "input": {
+        "lengths": [8, 1, 9, 3, 3, 7, 2]
+      },
+      "expected": 84
+    },
+    {
+      "uuid": "664386c5-8215-4c02-b5f5-b82285ff6166",
+      "description": "a big pile",
+      "property": "joinCables",
+      "input": {
+        "lengths": [
+          629, 242, 953, 648, 971, 86, 520, 985, 377, 818, 550, 747, 740, 784,
+          60
+        ]
+      },
+      "expected": 34012
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "9399856e-2359-4406-a62c-4ce47b520215",
+          "description": "one piece needs no joins",
+          "property": "joinCables",
+          "input": {
+            "lengths": [9]
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "4b1e1957-fafc-433c-bd51-41e6378eca75",
+          "description": "two short pieces",
+          "property": "joinCables",
+          "input": {
+            "lengths": [1, 1]
+          },
+          "expected": 2
+        }
+      ]
+    }
+  ]
+}

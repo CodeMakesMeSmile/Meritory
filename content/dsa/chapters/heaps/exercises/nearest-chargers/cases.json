@@ -1,0 +1,131 @@
+{
+  "exercise": "nearest-chargers",
+  "cases": [
+    {
+      "uuid": "a8af00b6-d1bb-4151-bb23-d352f0f9e578",
+      "description": "finds the two nearest",
+      "property": "nearestChargers",
+      "input": {
+        "chargers": [[3, 4], [1, -1], [-2, 2], [6, 0]],
+        "k": 2
+      },
+      "expected": [[1, -1], [-2, 2]]
+    },
+    {
+      "uuid": "5ccc1391-a735-42ab-805a-e651f8424fdd",
+      "description": "only the nearest",
+      "property": "nearestChargers",
+      "input": {
+        "chargers": [[5, 5], [-1, 2], [3, -3]],
+        "k": 1
+      },
+      "expected": [[-1, 2]]
+    },
+    {
+      "uuid": "413ec59a-a211-447b-b718-b7c6995b4d51",
+      "description": "k is every charger",
+      "property": "nearestChargers",
+      "input": {
+        "chargers": [[2, 2], [-3, 0], [0, 7]],
+        "k": 3
+      },
+      "expected": [[2, 2], [-3, 0], [0, 7]]
+    },
+    {
+      "uuid": "0f8948c8-6a1a-4641-aca4-cc8f0438cc9e",
+      "description": "chargers behind and below the van",
+      "property": "nearestChargers",
+      "input": {
+        "chargers": [[-1, -1], [-5, -5], [-2, -3], [4, 4]],
+        "k": 2
+      },
+      "expected": [[-1, -1], [-2, -3]]
+    },
+    {
+      "uuid": "92e61a0f-0f1f-4bad-a983-0dc6e46d07b2",
+      "description": "a charger right at the van",
+      "property": "nearestChargers",
+      "input": {
+        "chargers": [[0, 0], [1, 1], [2, 2]],
+        "k": 1
+      },
+      "expected": [[0, 0]]
+    },
+    {
+      "uuid": "a901d6cb-c1e1-41b4-a269-cbb82110b875",
+      "description": "ties inside the answer are fine",
+      "property": "nearestChargers",
+      "input": {
+        "chargers": [[1, 0], [0, 1], [5, 5]],
+        "k": 2
+      },
+      "expected": [[1, 0], [0, 1]]
+    },
+    {
+      "uuid": "0dfedbd7-73f6-4070-9763-06e7e5630e04",
+      "description": "chargers at the far edges",
+      "property": "nearestChargers",
+      "input": {
+        "chargers": [[10000, 10000], [-10000, -10000], [0, 10000], [9999, 0]],
+        "k": 2
+      },
+      "expected": [[9999, 0], [0, 10000]]
+    },
+    {
+      "uuid": "5dd428f1-dc16-469c-b2a1-b860e0d91231",
+      "description": "thirty chargers around town",
+      "property": "nearestChargers",
+      "input": {
+        "chargers": [
+          [-1, 32],
+          [13, 39],
+          [-38, -34],
+          [37, 30],
+          [-36, -48],
+          [2, -40],
+          [-14, -18],
+          [-37, -1],
+          [-16, 42],
+          [16, 20],
+          [-37, -32],
+          [3, 26],
+          [35, -39],
+          [-4, 41],
+          [39, 39],
+          [49, -34],
+          [28, 25],
+          [30, 34],
+          [-39, 26],
+          [49, -33],
+          [2, -45],
+          [-16, 38],
+          [25, 33],
+          [-25, -46],
+          [34, -16],
+          [34, 8],
+          [-47, 47],
+          [-2, -14],
+          [6, -23],
+          [-17, 46]
+        ],
+        "k": 5
+      },
+      "expected": [[-2, -14], [-14, -18], [6, -23], [16, 20], [3, 26]]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "0a4d404b-009e-4173-bc68-7f08bf960221",
+          "description": "one charger",
+          "property": "nearestChargers",
+          "input": {
+            "chargers": [[7, -2]],
+            "k": 1
+          },
+          "expected": [[7, -2]]
+        }
+      ]
+    }
+  ]
+}
