@@ -32,6 +32,7 @@ export function MatchingCard({
   focusOnOpen,
   checked,
   onCheck,
+  busy,
   after,
 }: {
   item: SittingCard;
@@ -39,6 +40,8 @@ export function MatchingCard({
   focusOnOpen: boolean;
   checked: Checked | null;
   onCheck: (right: boolean) => void;
+  /** Another save or Undo is still on its way */
+  busy: boolean;
   after: ReactNode;
 }) {
   const answers = card.pairs.map((pair) => pair.match);
@@ -191,7 +194,7 @@ export function MatchingCard({
       <div className="flex justify-end">
         <Button
           type="button"
-          waiting={!complete}
+          waiting={!complete || busy}
           onClick={() => complete && onCheck(matchingIsRight(filled, answers))}
           className="w-full sm:w-50"
         >

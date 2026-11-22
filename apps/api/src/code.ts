@@ -5,6 +5,7 @@ import {
   CodeRunBody,
   CodeRunResponse,
   type ErrorResponse,
+  MAX_CODE_BYTES,
 } from "@meritory/contracts";
 import type { FastifyInstance, FastifyReply } from "fastify";
 import type { ServedChapter } from "./content.ts";
@@ -76,6 +77,7 @@ function refuse(reply: FastifyReply, status: number, body: ErrorResponse) {
 
 const OFFLINE =
   "The code runner isn't running. Start it in Ubuntu, then try again.";
+const TOO_LARGE = "Your code is over 64 KB. Shorten it, then run it again.";
 
 export async function registerCodeRoutes(
   scope: FastifyInstance,
@@ -118,6 +120,12 @@ export async function registerCodeRoutes(
         return refuse(reply, 404, {
           code: "not_found",
           message: "That coding exercise doesn't exist.",
+        });
+      }
+      if (Buffer.byteLength(code) > MAX_CODE_BYTES) {
+        return refuse(reply, 413, {
+          code: CODE_ERRORS.codeTooLarge,
+          message: TOO_LARGE,
         });
       }
       if (!deps.runner) {

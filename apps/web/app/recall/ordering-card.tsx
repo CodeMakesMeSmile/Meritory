@@ -67,6 +67,7 @@ export function OrderingCard({
   focusOnOpen,
   checked,
   onCheck,
+  busy,
   after,
 }: {
   item: SittingCard;
@@ -74,6 +75,8 @@ export function OrderingCard({
   focusOnOpen: boolean;
   checked: Checked | null;
   onCheck: (right: boolean) => void;
+  /** Another save or Undo is still on its way */
+  busy: boolean;
   after: ReactNode;
 }) {
   // Steps are known by their right place, starting at 0
@@ -159,7 +162,7 @@ export function OrderingCard({
               onClick={() => setPlaced((list) => list.slice(0, -1))}
               className={`${linkClass} h-control self-start px-5`}
             >
-              Undo
+              Undo last step
             </button>
           </div>
         )}
@@ -196,7 +199,7 @@ export function OrderingCard({
       <div className="flex justify-end">
         <Button
           type="button"
-          waiting={!done}
+          waiting={!done || busy}
           onClick={() =>
             done && onCheck(orderingIsRight(placed, card.steps.length))
           }

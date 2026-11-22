@@ -30,6 +30,17 @@ describe("reset password page", () => {
     expect(html.match(/autocomplete="new-password"/gi)).toHaveLength(2);
   });
 
+  it("asks for a first password when the link finishes a sign-up", async () => {
+    const html = await reset({ token: "abc123", finish: "1" });
+    expect(html).toContain("Choose your password");
+    expect(html).toContain(
+      "Saving it finishes signing up and confirms your email.",
+    );
+    expect(html).toContain("Confirm password");
+    expect(html).not.toContain("new password");
+    expect(html).not.toContain("other devices");
+  });
+
   it.each([
     ["a failed link", { error: "INVALID_TOKEN", token: "abc123" }],
     ["no token", {}],

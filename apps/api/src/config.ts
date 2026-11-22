@@ -66,6 +66,22 @@ function readWebOrigin(env: Record<string, string | undefined>): string {
   return url.origin;
 }
 
+// Without either, a forged header picks the address and the rest share one count
+function readClientIp(env: Record<string, string | undefined>) {
+  const ipAddressHeaders = list(env.AUTH_IP_HEADERS);
+  const trustedProxies = list(env.AUTH_TRUSTED_PROXIES);
+  if (
+    env.NODE_ENV === "production" &&
+    !ipAddressHeaders?.length &&
+    !trustedProxies?.length
+  ) {
+    throw new Error(
+      "Set AUTH_IP_HEADERS or AUTH_TRUSTED_PROXIES in production, so rate limits count each client.",
+    );
+  }
+  return { ipAddressHeaders, trustedProxies };
+}
+
 export function readConfig(env: Record<string, string | undefined>): ApiConfig {
   const databaseUrl = env.DATABASE_URL;
   if (!databaseUrl) {
@@ -91,8 +107,7 @@ export function readConfig(env: Record<string, string | undefined>): ApiConfig {
     authSecret,
     appScheme: "app.meritory.mobile://",
     expoGoScheme: env.NODE_ENV === "production" ? undefined : "exp://",
-    ipAddressHeaders: list(env.AUTH_IP_HEADERS),
-    trustedProxies: list(env.AUTH_TRUSTED_PROXIES),
+    ...readClientIp(env),
     mailJobKey: readMailKey(env.MAIL_JOB_KEY),
     providers: {
       github: credentials(env.GITHUB_CLIENT_ID, env.GITHUB_CLIENT_SECRET),

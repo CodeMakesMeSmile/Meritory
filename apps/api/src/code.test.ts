@@ -130,6 +130,19 @@ describe("code runs", () => {
     }
   });
 
+  // Two bytes a letter, so it's under the length cap but over the runner's
+  it("refuses code over 64 KB in bytes before it reaches the runner", async () => {
+    const seen: unknown[] = [];
+    const api = await start(runner({ kind: "ok", result: PASSED }, seen));
+    const res = await post(api, body({ code: "é".repeat(40000) }));
+    expect(res.statusCode).toBe(413);
+    expect(res.json()).toEqual({
+      code: "code_too_large",
+      message: "Your code is over 64 KB. Shorten it, then run it again.",
+    });
+    expect(seen).toEqual([]);
+  });
+
   it("says plainly when the runner isn't set up or isn't running", async () => {
     for (const api of [
       await start(),

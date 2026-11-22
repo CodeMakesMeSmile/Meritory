@@ -24,6 +24,7 @@ import {
   emailChanged,
   emailInUse,
   existingAccount,
+  finishSignUp,
   passwordChanged,
   providerLinked,
   resetPassword,
@@ -67,6 +68,8 @@ const LINK_FAILED_PATH = `${EMAIL_CONFIRMED_PATH}?error=INVALID_TOKEN`;
 
 /** Where reset links land, with ?token= or ?error= */
 export const RESET_PASSWORD_PATH = "/reset-password";
+/** The same page, asking for a first password instead of a new one */
+export const FINISH_SIGN_UP_PATH = `${RESET_PASSWORD_PATH}?finish=1`;
 
 /** Change password tries per IP in the window */
 export const CHANGE_PASSWORD_LIMIT = { window: 15 * 60, max: 5 };
@@ -237,6 +240,11 @@ export function createAuth(config: AuthConfig) {
       if (user) {
         checkPasswordRules(body.newPassword, user);
         await rejectBreached(body.newPassword);
+      }
+      // A sign-up finishing has no way in yet, so no password is being changed
+      if (user && ctx.request) {
+        const methods = await ctx.context.internalAdapter.findAccounts(user.id);
+        if (methods.length === 0) firstPasswords.add(ctx.request);
       }
     }
 
@@ -529,8 +537,13 @@ export function createAuth(config: AuthConfig) {
     if (user) sendPasswordChanged(user);
   });
 
+  // Reset links that finish a sign-up instead of changing a password, by user
+  const finishing = new Set<string>();
+  // Resets that set an account's first way to sign in, by request
+  const firstPasswords = new WeakSet<Request>();
+
   // Set once auth exists, so the duplicate sign-up hook can use its API
-  let sendFreshLink: (email: string) => void = () => {};
+  let sendFinishLink: (user: { id: string; email: string }) => void = () => {};
 
   const auth = betterAuth({
     appName: "Meritory",
@@ -698,8 +711,9 @@ export function createAuth(config: AuthConfig) {
       autoSignIn: false,
       // Better Auth answers as if the account were new. This tells the real owner.
       onExistingUserSignUp: async ({ user }) => {
+        // Either sign-up may not own the inbox, so neither password is kept
         if (!user.emailVerified) {
-          sendFreshLink(user.email);
+          sendFinishLink(user);
           return;
         }
         sendLater(
@@ -715,7 +729,18 @@ export function createAuth(config: AuthConfig) {
         resetLinks
           .claim(user.id, token)
           .then((fresh) => {
+            const finish = finishing.delete(user.id);
             if (!fresh) return;
+            if (finish) {
+              const link = new URL(url);
+              link.searchParams.set("callbackURL", FINISH_SIGN_UP_PATH);
+              sendLater(
+                finishSignUp(user.email, link.toString()),
+                "finish-sign-up",
+                user.id,
+              );
+              return;
+            }
             sendLater(
               resetPassword(user.email, url),
               "reset-password",
@@ -726,7 +751,7 @@ export function createAuth(config: AuthConfig) {
             config.log.error({ err, userId: user.id }, "reset link failed"),
           );
       },
-      onPasswordReset: async ({ user }) => {
+      onPasswordReset: async ({ user }, request) => {
         await resetLinks.revokeAll(user.id);
         // Opening the link proved they read this inbox
         if (!user.emailVerified) {
@@ -735,6 +760,7 @@ export function createAuth(config: AuthConfig) {
             .set({ emailVerified: true })
             .where(eq(schema.users.id, user.id));
         }
+        if (request && firstPasswords.has(request)) return;
         sendPasswordChanged(user);
       },
     },
@@ -793,14 +819,26 @@ export function createAuth(config: AuthConfig) {
     },
   });
 
-  sendFreshLink = (email) => {
-    auth.api
-      .sendVerificationEmail({
-        body: { email, callbackURL: EMAIL_CONFIRMED_PATH },
+  // Drops the unconfirmed password and emails a link to choose one, which also confirms the email
+  sendFinishLink = (user) => {
+    config.db
+      .delete(schema.accounts)
+      .where(
+        and(
+          eq(schema.accounts.userId, user.id),
+          eq(schema.accounts.providerId, "credential"),
+        ),
+      )
+      .then(() => {
+        finishing.add(user.id);
+        return auth.api.requestPasswordReset({
+          body: { email: user.email, redirectTo: RESET_PASSWORD_PATH },
+        });
       })
-      .catch((err: unknown) =>
-        config.log.error({ err }, "verification email failed"),
-      );
+      .catch((err: unknown) => {
+        finishing.delete(user.id);
+        config.log.error({ err, userId: user.id }, "finish sign-up failed");
+      });
   };
 
   return auth;

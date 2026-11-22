@@ -36,6 +36,7 @@ const account = async (
     name: "Rowan Lee",
     email: "rowan@meritory.test",
     signInMethods,
+    timeZone: "America/Toronto",
   };
   return renderToStaticMarkup(
     await AccountPage({ searchParams: Promise.resolve(params) }),

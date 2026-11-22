@@ -196,7 +196,7 @@ export function createRecallStore(db: Database["db"]) {
       const before = toRecallCard(row);
       const reviewTime = effectiveReviewTime(
         input.answeredAt,
-        before.lastReviewAt,
+        before.lastReviewAt ?? row.addedAt,
         now,
       );
       const { card, revlog } = reviewRecallCard(

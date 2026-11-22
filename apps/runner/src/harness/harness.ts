@@ -1,4 +1,5 @@
 // Runs inside the sandbox next to solution.ts, signature.json, and cases.json
+// It only reports what came back. The runner judges it, since nothing here knows the answers.
 import { appendFileSync, readFileSync } from "node:fs";
 
 class ListNode {
@@ -39,10 +40,10 @@ type Signature = {
   anyOrder?: boolean;
   methods?: { name: string; params: Param[]; returns: string }[];
 };
-type Case = { name: string; input: Record<string, unknown>; expected: unknown };
+type Case = { name: string; input: Record<string, unknown> };
+type Line = Record<string, unknown>;
 
 const RESULTS = "results.jsonl";
-const TOLERANCE = 1e-5;
 const MAX_NODES = 100000;
 
 function record(line: object) {
@@ -123,44 +124,28 @@ function back(type: string, value: unknown): unknown {
   return value;
 }
 
-function same(actual: unknown, expected: unknown, loose: boolean): boolean {
-  if (typeof actual === "number" && typeof expected === "number") {
-    return loose
-      ? Math.abs(actual - expected) <= TOLERANCE
-      : actual === expected;
-  }
-  if (Array.isArray(actual) && Array.isArray(expected)) {
-    return (
-      actual.length === expected.length &&
-      actual.every((item, i) => same(item, expected[i], loose))
-    );
-  }
-  return JSON.stringify(actual) === JSON.stringify(expected);
-}
-
-function sortedCopy(value: unknown): unknown {
-  return Array.isArray(value)
-    ? [...value].sort((a, b) =>
-        JSON.stringify(a) < JSON.stringify(b) ? -1 : 1,
-      )
-    : value;
-}
-
-function matches(
-  type: string,
-  actual: unknown,
-  expected: unknown,
-  anyOrder = false,
-): boolean {
-  const loose = type.startsWith("double");
-  return anyOrder
-    ? same(sortedCopy(actual), sortedCopy(expected), loose)
-    : same(actual, expected, loose);
-}
-
 function show(value: unknown): string {
-  const text = JSON.stringify(value);
-  return text === undefined ? String(value) : text;
+  try {
+    const text = JSON.stringify(value);
+    if (text !== undefined) return text;
+  } catch {
+    // Falls through to the plain name below
+  }
+  try {
+    return String(value);
+  } catch {
+    return "a value that can't be shown";
+  }
+}
+
+/** Adds what came back, or how it looks when JSON can't carry it */
+function carry(line: Line, value: unknown): Line {
+  try {
+    if (JSON.stringify(value) !== undefined) return { ...line, actual: value };
+  } catch {
+    // Falls through to how it looks
+  }
+  return { ...line, shown: show(value) };
 }
 
 function describe(error: unknown): string {
@@ -169,17 +154,8 @@ function describe(error: unknown): string {
     : `Threw ${show(error)}`;
 }
 
-function isRefusal(expected: unknown): expected is { error: string } {
-  return (
-    typeof expected === "object" &&
-    expected !== null &&
-    !Array.isArray(expected) &&
-    "error" in expected
-  );
-}
-
-/** Calls a function and checks what it returns, or what it changed */
-function runFunction(fn: Callable, signature: Signature, test: Case) {
+/** Calls a function and reports what it returned, or what it changed */
+function runFunction(fn: Callable, signature: Signature, test: Case): Line {
   const args = new Map<string, unknown>();
   for (const param of signature.params) {
     args.set(param.name, build(param.type, test.input[param.name]));
@@ -201,42 +177,31 @@ function runFunction(fn: Callable, signature: Signature, test: Case) {
     }
   }
   const passed = signature.params.filter((p) => !p.hidden);
-  const refusal = isRefusal(test.expected);
   let value: unknown;
   try {
     value = fn(...passed.map((p) => args.get(p.name)));
   } catch (error) {
-    if (refusal) return { status: "pass" };
-    return { status: "error", message: describe(error) };
-  }
-  if (refusal) {
-    return {
-      status: "fail",
-      message: `Expected an error, but got ${show(value)}`,
-    };
+    return { status: "threw", message: describe(error) };
   }
   const checked = signature.checks
     ? signature.params.find((p) => p.name === signature.checks)
     : undefined;
   const type = checked ? checked.type : (signature.returns as string);
-  const actual = back(type, checked ? args.get(checked.name) : value);
-  return matches(type, actual, test.expected, signature.anyOrder)
-    ? { status: "pass" }
-    : {
-        status: "fail",
-        message: `Expected ${show(test.expected)} but got ${show(actual)}`,
-      };
+  return carry(
+    { status: "done" },
+    back(type, checked ? args.get(checked.name) : value),
+  );
 }
 
-/** Makes the object, then makes each call in order */
+/** Makes the object, then makes each call in order, reporting each value */
 function runClass(
   Made: new (...args: unknown[]) => object,
   signature: Signature,
   test: Case,
-) {
+  note: (line: Line) => void,
+): Line {
   const calls = test.input.calls as string[];
   const argLists = test.input.args as unknown[][];
-  const expected = test.expected as unknown[];
   let object: Record<string, Callable> | null = null;
   for (let i = 0; i < calls.length; i++) {
     const name = calls[i] as string;
@@ -250,6 +215,7 @@ function runClass(
     try {
       if (i === 0) {
         object = new Made(...args) as Record<string, Callable>;
+        note({ status: "call", actual: null });
         continue;
       }
       const fn = object?.[name];
@@ -262,21 +228,19 @@ function runClass(
       value = fn.apply(object, args);
     } catch (error) {
       return {
-        status: "error",
+        status: "threw",
         message: `Call ${i + 1}, ${name}: ${describe(error)}`,
       };
     }
     const returns = method?.returns ?? "void";
-    const actual = returns === "void" ? null : back(returns, value);
-    const want = returns === "void" ? null : expected[i];
-    if (!matches(returns, actual, want)) {
-      return {
-        status: "fail",
-        message: `Call ${i + 1}, ${name}: expected ${show(want)} but got ${show(actual)}`,
-      };
-    }
+    note(
+      carry(
+        { status: "call" },
+        returns === "void" ? null : back(returns, value),
+      ),
+    );
   }
-  return { status: "pass" };
+  return { status: "done" };
 }
 
 const signature = JSON.parse(
@@ -312,7 +276,14 @@ for (const test of cases) {
     continue;
   }
   const result = signature.class
-    ? runClass(target as new (...args: unknown[]) => object, signature, test)
+    ? runClass(
+        target as new (
+          ...args: unknown[]
+        ) => object,
+        signature,
+        test,
+        (line) => record({ name: test.name, ...line }),
+      )
     : runFunction(target as Callable, signature, test);
   record({ name: test.name, ...result });
 }

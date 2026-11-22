@@ -7,6 +7,9 @@ export type CodeLanguage = (typeof CODE_LANGUAGES)[number];
 /** Code longer than this is refused before it reaches the runner */
 export const MAX_CODE_LENGTH = 65536;
 
+/** The runner's own cap, in UTF-8 bytes, which code under the length can still pass */
+export const MAX_CODE_BYTES = 65536;
+
 const Id = Type.String({ pattern: "^[a-z0-9]+(-[a-z0-9]+)*$", maxLength: 80 });
 
 export const CodeRunBody = Type.Object(
@@ -51,4 +54,5 @@ export const CODE_ERRORS = {
   runnerOffline: "runner_offline",
   runnerBusy: "runner_busy",
   runnerFailed: "runner_failed",
+  codeTooLarge: "code_too_large",
 } as const;

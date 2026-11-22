@@ -115,9 +115,10 @@ function renderBlock(block: EmailBlock): string {
   }
   const href = escapeHtml(safeUrl(block.url));
   return [
-    `<table role="presentation" class="button" width="200" cellpadding="0" cellspacing="0" border="0" style="margin:16px 0 0;border-collapse:separate">`,
-    `<tr><td class="button-fill" align="center" height="44" style="background-color:${light.accentDefault};border-radius:2px">`,
-    `<a class="button-label" href="${href}" style="display:block;padding:0 20px;font-family:${FONT};font-size:16px;line-height:44px;font-weight:600;color:${light.textOnAccent};text-decoration:none;text-align:center;border-radius:2px">${escapeHtml(block.button)}</a>`,
+    // At least 200 wide and as wide as its label, which stays on one line
+    `<table role="presentation" class="button" cellpadding="0" cellspacing="0" border="0" style="margin:16px 0 0;border-collapse:separate">`,
+    `<tr><td class="button-fill" align="center" height="44" style="min-width:200px;mso-padding-alt:0 20px;background-color:${light.accentDefault};border-radius:2px">`,
+    `<a class="button-label" href="${href}" style="display:block;padding:0 20px;font-family:${FONT};font-size:16px;line-height:44px;font-weight:600;white-space:nowrap;color:${light.textOnAccent};text-decoration:none;text-align:center;border-radius:2px">${escapeHtml(block.button)}</a>`,
     `</td></tr></table>`,
     `<p class="note" style="${SMALL}">${PASTE_LABEL}</p>`,
     `<p style="${SMALL};margin-top:4px;word-break:break-all"><a class="link" href="${href}" style="color:${light.textAccent};text-decoration:none">${href}</a></p>`,

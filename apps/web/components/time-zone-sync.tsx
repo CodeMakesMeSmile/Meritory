@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
-import { readStored, writeStored } from "@/lib/device-storage";
+import { useEffect, useRef } from "react";
 import { saveTimeZone } from "@/lib/recall-api";
 
 /** The browser's own IANA name, as it reports it */
@@ -13,25 +12,31 @@ export function browserTimeZone(): string | null {
   }
 }
 
-/** Sends the time zone when it differs from the last one this browser sent */
-export async function syncTimeZone(userId: string) {
+/**
+ * Sends the browser's zone when it differs from the one the server holds, and
+ * returns the zone the server holds afterwards. Another device may have changed it.
+ */
+export async function syncTimeZone(saved: string): Promise<string> {
   const timeZone = browserTimeZone();
-  if (!timeZone) return;
-  const key = `meritory.timeZone.${userId}`;
-  if (readStored(key) === timeZone) return;
+  if (!timeZone || timeZone === saved) return saved;
   const result = await saveTimeZone(timeZone);
-  if (result.ok) writeStored(key, timeZone);
+  return result.ok ? timeZone : saved;
 }
 
 /** A recall day starts at 4 a.m. where the learner is, so the API needs their zone */
-export function TimeZoneSync({ userId }: { userId: string }) {
+export function TimeZoneSync({ timeZone }: { timeZone: string }) {
+  const saved = useRef(timeZone);
   useEffect(() => {
+    saved.current = timeZone;
     const sync = () => {
-      if (document.visibilityState === "visible") void syncTimeZone(userId);
+      if (document.visibilityState !== "visible") return;
+      void syncTimeZone(saved.current).then((now) => {
+        saved.current = now;
+      });
     };
     sync();
     document.addEventListener("visibilitychange", sync);
     return () => document.removeEventListener("visibilitychange", sync);
-  }, [userId]);
+  }, [timeZone]);
   return null;
 }

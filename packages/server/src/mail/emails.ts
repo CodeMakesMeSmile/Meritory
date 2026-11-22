@@ -17,6 +17,21 @@ export function verifyEmail(to: string, url: string): Mail {
   });
 }
 
+export function finishSignUp(to: string, url: string): Mail {
+  return renderEmail({
+    to,
+    subject: "Finish signing up for Meritory",
+    heading: "Choose your password",
+    blocks: [
+      {
+        text: "Someone started signing up for Meritory with this email. To finish, choose your password. The link works for 1 hour.",
+      },
+      { button: "Choose your password", url },
+      { note: "If this wasn't you, you can ignore this email." },
+    ],
+  });
+}
+
 export function resetPassword(to: string, url: string): Mail {
   return renderEmail({
     to,

@@ -8,6 +8,7 @@ import {
   emailChanged,
   emailInUse,
   existingAccount,
+  finishSignUp,
   passwordChanged,
   providerLinked,
   providerUnlinked,
@@ -31,9 +32,10 @@ const notices = () => [
 ];
 
 describe("emails", () => {
-  it("gives the four action emails a button with the link", () => {
+  it("gives the five action emails a button with the link", () => {
     for (const [mail, button] of [
       [verifyEmail(TO, LINK), "Confirm email"],
+      [finishSignUp(TO, LINK), "Choose your password"],
       [resetPassword(TO, LINK), "Choose a new password"],
       [approveEmailChange(TO, NEXT, LINK, ORIGIN), "Approve change"],
       [confirmNewEmail(TO, LINK), "Confirm new email"],
@@ -77,6 +79,7 @@ describe("emails", () => {
   it("addresses each one to the account and says so in the footer", () => {
     for (const mail of [
       verifyEmail(TO, LINK),
+      finishSignUp(TO, LINK),
       resetPassword(TO, LINK),
       approveEmailChange(TO, NEXT, LINK, ORIGIN),
       confirmNewEmail(TO, LINK),

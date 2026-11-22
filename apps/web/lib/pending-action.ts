@@ -96,3 +96,14 @@ export function takePendingEmail(): string | null {
     ? value.email
     : null;
 }
+
+/** Forgets every saved action, so one left from a cancelled or failed confirm can't run later */
+export function clearPendingActions() {
+  try {
+    for (const key of [SESSION_KEY, METHOD_KEY, DELETE_KEY, EMAIL_KEY]) {
+      sessionStorage.removeItem(key);
+    }
+  } catch {
+    // Without storage nothing was saved
+  }
+}
