@@ -1,0 +1,18 @@
+id: no-song-twice
+kind: coding
+title: No song twice
+difficulty: medium
+skills:
+  - grow-shrink-window
+  - window-counts
+  - longest-valid-window
+sibling: few-kinds
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: noSongTwice
+  params:
+    - name: songs
+      type: int[]
+  returns: int

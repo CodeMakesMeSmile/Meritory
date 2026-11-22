@@ -1,0 +1,100 @@
+{
+  "exercise": "exact-kinds",
+  "cases": [
+    {
+      "uuid": "9811af12-e608-4d14-9261-6b7a913a51cc",
+      "description": "counts the stretches with exactly two kinds",
+      "property": "exactKinds",
+      "input": {
+        "sightings": [1, 2, 1, 3],
+        "k": 2
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "066fd018-71e2-481f-8951-45c898e7816a",
+      "description": "kinds that keep coming back",
+      "property": "exactKinds",
+      "input": {
+        "sightings": [1, 2, 1, 2, 3],
+        "k": 2
+      },
+      "expected": 7
+    },
+    {
+      "uuid": "18fed684-7960-4739-98e5-e98608febf68",
+      "description": "one kind seen many times",
+      "property": "exactKinds",
+      "input": {
+        "sightings": [3, 3, 3],
+        "k": 1
+      },
+      "expected": 6
+    },
+    {
+      "uuid": "284afd99-73c4-4b93-b6eb-66fe8ddf42cc",
+      "description": "every sighting a new kind, one at a time",
+      "property": "exactKinds",
+      "input": {
+        "sightings": [1, 2, 3],
+        "k": 1
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "10fd5016-cccc-4866-9705-b71cd6365a49",
+      "description": "every sighting a new kind, all at once",
+      "property": "exactKinds",
+      "input": {
+        "sightings": [1, 2, 3],
+        "k": 3
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "79e59bf0-3052-4137-9109-f7a12a5ffd44",
+      "description": "more kinds asked for than were seen",
+      "property": "exactKinds",
+      "input": {
+        "sightings": [1, 2, 1],
+        "k": 3
+      },
+      "expected": 0
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "e6017857-52ec-4b46-b9ae-9a520d84fe85",
+          "description": "no sightings",
+          "property": "exactKinds",
+          "input": {
+            "sightings": [],
+            "k": 1
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "6cd284fa-701a-4269-b1bf-d3667f8d5247",
+          "description": "one sighting",
+          "property": "exactKinds",
+          "input": {
+            "sightings": [5],
+            "k": 1
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "8a1d5f15-1369-4803-bbed-57dd596cd4f4",
+          "description": "handles the largest kind numbers",
+          "property": "exactKinds",
+          "input": {
+            "sightings": [100000, 1, 100000],
+            "k": 2
+          },
+          "expected": 3
+        }
+      ]
+    }
+  ]
+}

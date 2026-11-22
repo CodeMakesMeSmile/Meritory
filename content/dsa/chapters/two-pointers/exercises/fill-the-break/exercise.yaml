@@ -1,0 +1,18 @@
+id: fill-the-break
+kind: coding
+title: Two songs for the break
+difficulty: easy
+skills:
+  - ends-on-sorted
+sibling: gifts-under-budget
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: fillTheBreak
+  params:
+    - name: lengths
+      type: int[]
+    - name: target
+      type: int
+  returns: int[]

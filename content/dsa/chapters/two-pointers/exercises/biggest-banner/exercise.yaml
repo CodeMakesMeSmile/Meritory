@@ -1,0 +1,16 @@
+id: biggest-banner
+kind: coding
+title: Biggest banner between two posts
+difficulty: medium
+skills:
+  - move-the-limit
+sibling: rain-between-walls
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: biggestBanner
+  params:
+    - name: heights
+      type: int[]
+  returns: int

@@ -1,0 +1,19 @@
+id: exact-kinds
+kind: coding
+title: Exactly k kinds of bird
+difficulty: medium
+skills:
+  - at-most-twice
+  - window-counts
+sibling: rainy-stretches
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: exactKinds
+  params:
+    - name: sightings
+      type: int[]
+    - name: k
+      type: int
+  returns: long

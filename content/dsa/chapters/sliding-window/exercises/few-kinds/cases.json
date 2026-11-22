@@ -1,0 +1,110 @@
+{
+  "exercise": "few-kinds",
+  "cases": [
+    {
+      "uuid": "76307df2-727f-48bf-8375-edccf87d5c87",
+      "description": "finds the longest stretch with two kinds",
+      "property": "fewKinds",
+      "input": {
+        "jars": [1, 2, 1, 3, 3, 2, 2],
+        "k": 2
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "c25cf272-d69d-4f0a-96b0-4d54b7bad14e",
+      "description": "the window gives up several jars to drop a kind",
+      "property": "fewKinds",
+      "input": {
+        "jars": [1, 2, 1, 2, 3, 3, 3, 3],
+        "k": 2
+      },
+      "expected": 5
+    },
+    {
+      "uuid": "aabb6fb6-dc72-461e-b6c2-ab3aa464d76d",
+      "description": "one kind at a time",
+      "property": "fewKinds",
+      "input": {
+        "jars": [1, 1, 2, 2, 2, 1],
+        "k": 1
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "d4ab371b-8033-40da-9d7d-1a7a0bb9a7be",
+      "description": "room for every kind takes the whole shelf",
+      "property": "fewKinds",
+      "input": {
+        "jars": [1, 2, 3],
+        "k": 3
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "b9651213-496f-4bd7-b34c-01b11e7fdc7a",
+      "description": "room for more kinds than the shelf has",
+      "property": "fewKinds",
+      "input": {
+        "jars": [4, 4, 4],
+        "k": 2
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "b3784239-51a7-4154-a9a6-fd0a4b862fba",
+      "description": "every jar a different kind",
+      "property": "fewKinds",
+      "input": {
+        "jars": [5, 6, 7, 8],
+        "k": 2
+      },
+      "expected": 2
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "2dda29c0-4a52-4046-9c37-3ebee3ad30b1",
+          "description": "room for no kinds takes nothing",
+          "property": "fewKinds",
+          "input": {
+            "jars": [1, 2],
+            "k": 0
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "ea05440c-c438-4e3d-aaae-8ef67c795b2a",
+          "description": "an empty shelf",
+          "property": "fewKinds",
+          "input": {
+            "jars": [],
+            "k": 2
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "fc55a516-233c-42f3-a76c-fe6982c070eb",
+          "description": "one jar",
+          "property": "fewKinds",
+          "input": {
+            "jars": [9],
+            "k": 1
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "cc3ba389-412b-4d3d-a04b-9ca71f12d93a",
+          "description": "handles the largest kind numbers",
+          "property": "fewKinds",
+          "input": {
+            "jars": [100000, 1, 100000, 2],
+            "k": 2
+          },
+          "expected": 3
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+id: warm-stretches
+kind: coding
+title: Warm stretches
+difficulty: easy
+skills:
+  - fixed-window
+sibling: best-stretch
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: warmStretches
+  params:
+    - name: temperatures
+      type: int[]
+    - name: k
+      type: int
+    - name: limit
+      type: int
+  returns: int

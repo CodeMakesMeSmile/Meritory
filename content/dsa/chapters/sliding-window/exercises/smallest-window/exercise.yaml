@@ -1,0 +1,20 @@
+id: smallest-window
+kind: coding
+title: Smallest window with every letter
+difficulty: hard
+skills:
+  - grow-shrink-window
+  - shortest-valid-window
+  - window-counts
+sibling: fewest-days
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: smallestWindow
+  params:
+    - name: text
+      type: string
+    - name: needed
+      type: string
+  returns: string

@@ -1,0 +1,16 @@
+id: rain-between-walls
+kind: coding
+title: Rain held between walls
+difficulty: hard
+skills:
+  - move-the-limit
+sibling: biggest-banner
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: rainBetweenWalls
+  params:
+    - name: walls
+      type: int[]
+  returns: int

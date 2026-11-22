@@ -1,0 +1,17 @@
+id: readings-once
+kind: coding
+title: Each reading once
+difficulty: easy
+skills:
+  - read-write-pointers
+sibling: cancelled-to-back
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: readingsOnce
+  params:
+    - name: readings
+      type: int[]
+  returns: void
+  checks: readings

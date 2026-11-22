@@ -1,0 +1,17 @@
+id: cancelled-to-back
+kind: coding
+title: Cancelled orders to the back
+difficulty: easy
+skills:
+  - read-write-pointers
+sibling: readings-once
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: cancelledToBack
+  params:
+    - name: orders
+      type: int[]
+  returns: void
+  checks: orders

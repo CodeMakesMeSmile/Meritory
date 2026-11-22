@@ -1,0 +1,17 @@
+id: three-parcel-sizes
+kind: coding
+title: Three sizes of parcel
+difficulty: medium
+skills:
+  - partition-in-place
+sibling: kth-quickest
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: sortBySize
+  params:
+    - name: parcels
+      type: int[]
+  returns: void
+  checks: parcels

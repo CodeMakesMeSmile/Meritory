@@ -1,0 +1,18 @@
+id: two-pointers
+title: Two pointers
+order: 3
+skills:
+  - id: ends-on-sorted
+    name: Close in from both ends of a sorted list
+  - id: move-the-limit
+    name: Move the pointer that limits the answer
+  - id: read-write-pointers
+    name: Compact a list in place with a read and a write pointer
+  - id: partition-in-place
+    name: Partition a list in place by swapping
+  - id: merge-sorted
+    name: Merge two sorted lists with a pointer in each
+  - id: sort-first
+    name: Decide when sorting first is worth O(n log n)
+  - id: skip-repeats
+    name: Skip repeated values so each answer appears once

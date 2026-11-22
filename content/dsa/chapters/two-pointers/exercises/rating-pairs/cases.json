@@ -1,0 +1,100 @@
+{
+  "exercise": "rating-pairs",
+  "cases": [
+    {
+      "uuid": "4150eecb-8a5a-472c-a94a-dd6c131102cf",
+      "description": "lists each pair of ratings once",
+      "property": "ratingPairs",
+      "input": {
+        "ratings": [4, 1, 3, 2, 3, 5, 1],
+        "target": 6
+      },
+      "expected": [[1, 5], [2, 4], [3, 3]]
+    },
+    {
+      "uuid": "7f279f7b-e9d8-4f91-82a2-a14fcb56b491",
+      "description": "negative ratings count",
+      "property": "ratingPairs",
+      "input": {
+        "ratings": [-2, 7, 0, 5, -2],
+        "target": 5
+      },
+      "expected": [[-2, 7], [0, 5]]
+    },
+    {
+      "uuid": "edd8ae48-1279-40c8-91ae-418e870431a5",
+      "description": "a target of 0 pairs a rating with its negative",
+      "property": "ratingPairs",
+      "input": {
+        "ratings": [-1, 1, 0, 0, -1],
+        "target": 0
+      },
+      "expected": [[-1, 1], [0, 0]]
+    },
+    {
+      "uuid": "7617586d-6223-4353-b808-5000fc18c132",
+      "description": "many players with one rating make one pair",
+      "property": "ratingPairs",
+      "input": {
+        "ratings": [2, 2, 2, 2],
+        "target": 4
+      },
+      "expected": [[2, 2]]
+    },
+    {
+      "uuid": "248d7451-12cc-4e54-ab56-1ccaf6ed7bcb",
+      "description": "a player can't pair with themselves",
+      "property": "ratingPairs",
+      "input": {
+        "ratings": [3, 1],
+        "target": 6
+      },
+      "expected": []
+    },
+    {
+      "uuid": "c1f18fd7-1b36-4982-8d00-57df8d4f306b",
+      "description": "no pair makes the total",
+      "property": "ratingPairs",
+      "input": {
+        "ratings": [1, 2, 3],
+        "target": 10
+      },
+      "expected": []
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "9383d24b-d495-4b9d-8c5e-7407fcd3a969",
+          "description": "no players make no pairs",
+          "property": "ratingPairs",
+          "input": {
+            "ratings": [],
+            "target": 6
+          },
+          "expected": []
+        },
+        {
+          "uuid": "9efe9af3-dddf-4557-ac5d-86c68c8bbe81",
+          "description": "one player makes no pair",
+          "property": "ratingPairs",
+          "input": {
+            "ratings": [3],
+            "target": 6
+          },
+          "expected": []
+        },
+        {
+          "uuid": "eb1281b2-d8b8-42f3-8ffc-796da7f5534d",
+          "description": "handles the largest and smallest ratings",
+          "property": "ratingPairs",
+          "input": {
+            "ratings": [1000000, -1000000, 1000000],
+            "target": 2000000
+          },
+          "expected": [[1000000, 1000000]]
+        }
+      ]
+    }
+  ]
+}

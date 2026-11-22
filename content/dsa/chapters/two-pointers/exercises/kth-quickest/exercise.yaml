@@ -1,0 +1,18 @@
+id: kth-quickest
+kind: coding
+title: The k-th quickest delivery
+difficulty: medium
+skills:
+  - partition-in-place
+sibling: three-parcel-sizes
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: kthQuickest
+  params:
+    - name: times
+      type: int[]
+    - name: k
+      type: int
+  returns: int

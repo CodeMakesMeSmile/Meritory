@@ -1,0 +1,355 @@
+- id: why-slide-not-resum
+  skill: fixed-window
+  asks: why
+  type: prompt
+  prompt: Why is sliding a window of size k along n values O(n), when adding up each window from scratch is O(nk)?
+  reworded: What makes a sliding total faster than summing every window of size k on its own?
+  points:
+    - Neighbouring windows share all but two values.
+    - Sliding adds the value that enters and takes away the one that leaves, which is O(1) per step.
+    - Summing from scratch reads all k values again for each of about n windows.
+  misconception: That each window needs its own loop over its values.
+  lesson:
+    title: Reuse the last window
+    explanation: The window starting at i + 1 is the window at i, minus one value on the left, plus one on the right. Keeping the total and fixing those two values is all the work a step needs.
+- id: fixed-window-steps
+  skill: fixed-window
+  asks: what
+  type: ordering
+  prompt: Put the steps for one move of a fixed-size window in order.
+  reworded: In what order does a fixed-size window of k values update its total at each step?
+  steps:
+    - Add the value at `right` to the total.
+    - If the window now holds more than k values, take away the value at `right - k`.
+    - If the window holds exactly k values, compare its total with the best so far.
+    - Move `right` one step.
+  lesson:
+    title: In, out, then read
+    explanation: The total only describes a full window after one value has entered and, once the window is full, one has left. Reading it before then would count a window of the wrong size.
+- id: why-no-division
+  skill: fixed-window
+  asks: why
+  type: pick-one
+  prompt: When counting windows of k values whose average is at least a limit, why compare the total with `limit * k` instead of dividing?
+  reworded: In a check that a window's average reaches a limit, what's gained by multiplying the limit instead of dividing the total?
+  options:
+    - text: Whole numbers compare exactly, and dividing can leave a fraction to round
+      correct: true
+      reason: A total of 65 over 3 days isn't a whole number, but 65 compared with 22 times 3 is exact.
+    - text: Division is not allowed on a running total
+      reason: You can divide a running total. It's just less exact than multiplying.
+    - text: Multiplying makes the window slide faster
+      reason: Both are O(1). The gain is exactness, not speed.
+  lesson:
+    title: Multiply to stay exact
+    explanation: An average of at least `limit` means a total of at least `limit * k`. That check uses only whole numbers, so there's nothing to round.
+- id: why-inner-loop-linear
+  skill: grow-shrink-window
+  asks: why
+  type: prompt
+  prompt: A grow and shrink window has a `while` loop inside its `for` loop. Why is it still O(n)?
+  reworded: What keeps a window that grows on the right and shrinks on the left at O(n), despite the loop inside a loop?
+  points:
+    - The inner loop only moves `left` forward.
+    - The `left` pointer never moves back, so across the whole run it moves at most n times.
+    - So the inner loop runs at most n times in total, not n times for each `right`.
+  misconception: That a loop inside a loop always means O(n²).
+  lesson:
+    title: Count the moves, not the loops
+    explanation: Each value enters the window once, when `right` reaches it, and leaves at most once, when `left` passes it. That's at most 2n steps.
+- id: when-window-fits
+  skill: grow-shrink-window
+  asks: when
+  type: prompt
+  prompt: When does a window that grows on the right and shrinks on the left give the right answer?
+  reworded: What has to be true of the rule a window follows for grow and shrink to work?
+  points:
+    - For the longest valid window, shrinking a window that follows the rule must never break it.
+    - For the shortest window that meets a goal, growing a window that meets it must never undo it.
+    - Sums of positive numbers, the number of different values, and no repeats all behave this way.
+    - Sums with negative numbers don't, so use prefix sums with a map for those.
+  misconception: That any question about stretches can be answered with a sliding window.
+  lesson:
+    title: The rule must change one way
+    explanation: Moving `left` forward throws away every window that starts earlier. That's only safe when the rule changes in one direction as the window grows, so the windows thrown away can't beat the ones kept.
+- id: grow-shrink-steps
+  skill: grow-shrink-window
+  asks: what
+  type: ordering
+  prompt: Put the steps for one move of a grow and shrink window in order.
+  reworded: In what order does a window that grows and shrinks handle each new value?
+  steps:
+    - Add the value at `right` to what the window tracks.
+    - While the window breaks the rule, remove the value at `left` and move `left` forward.
+    - Record the window's length, `right - left + 1`, if it beats the best.
+    - Move `right` one step.
+  lesson:
+    title: Grow, fix, record
+    explanation: The new value can break the rule, so the window shrinks until it follows the rule again. Only then does it describe a valid window to record.
+- id: why-delete-empty-counts
+  skill: window-counts
+  asks: why
+  type: pick-one
+  prompt: When keeping counts of the values in a window with a map, why delete a value's key when its count drops to 0?
+  reworded: In a map of counts for a sliding window, what's the point of removing keys whose count reaches 0?
+  options:
+    - text: So the map's size is the number of different values in the window
+      correct: true
+      reason: A key with a count of 0 isn't in the window, but it would still count toward the size.
+    - text: Because a map can't store the number 0
+      reason: A map can store 0 as a value. The problem is what its size then means.
+    - text: To make adding a value faster
+      reason: Adding is O(1) on average either way.
+  lesson:
+    title: Size means kinds in the window
+    explanation: Questions like "at most k kinds" read the map's size. Keys left at 0 make the window look like it holds more kinds than it does.
+    fix: After taking one away, delete the key if the count is now 0.
+- id: when-count-array-window
+  skill: window-counts
+  asks: when
+  type: pick-one
+  prompt: When should a sliding window keep its counts in an array instead of a map?
+  reworded: In what case is an array of counts a better fit than a map for a sliding window?
+  options:
+    - text: When the values come from a small, known range, like the 26 lowercase letters
+      correct: true
+      reason: Each value can be its own index, so there's no hashing.
+    - text: When the window has a fixed size
+      reason: Size doesn't decide it. The range of the values does.
+    - text: When values can be any whole number
+      reason: An array with a slot for every whole number would be far too big.
+  lesson:
+    title: Small ranges suit arrays
+    explanation: With letters, `counts[letter - 'a']` is a perfect table. With values that could be anything, use a map.
+- id: window-tracking-numbers
+  skill: window-counts
+  asks: what
+  type: matching
+  prompt: Match each window question to the one number worth keeping beside the counts.
+  reworded: For each of these window questions, what single number tells you whether the window is valid?
+  matchHeading: Number to keep
+  matchName: a number
+  pairs:
+    - item: Does the window repeat any value?
+      match: How many values appear more than once
+    - item: Does the window hold every letter of a word, with repeats?
+      match: How many needed letters are still missing
+    - item: Does the window hold at most k kinds?
+      match: How many keys the map has
+  extraMatches:
+    - The sum of every count
+  lesson:
+    title: One number, updated in O(1)
+    explanation: Each of these numbers changes only when a count crosses a line, like going from 1 to 2. Checking it is O(1), so you never have to compare every count.
+- id: why-record-after-shrink
+  skill: longest-valid-window
+  asks: why
+  type: pick-one
+  prompt: When finding the longest window that follows a rule, why do you record the length after the shrinking loop and not before it?
+  reworded: In the longest valid window search, what goes wrong if you record the length before shrinking?
+  options:
+    - text: Before shrinking, the window might break the rule
+      correct: true
+      reason: The new value can break the rule, and only the shrinking loop fixes that.
+    - text: The length is wrong until `right` moves again
+      reason: The length `right - left + 1` is right at any moment. The question is whether the window is valid.
+    - text: Recording first would make it O(n²)
+      reason: Recording is O(1) either way. It would give a wrong answer, not a slow one.
+  lesson:
+    title: Record only valid windows
+    explanation: After the shrinking loop, the window follows the rule, so its length is a real candidate.
+- id: why-left-never-back
+  skill: longest-valid-window
+  asks: why
+  type: pick-one
+  prompt: When finding the longest stretch with no repeats by remembering each value's last position, why set `left` to `Math.max(left, last + 1)` and not just `last + 1`?
+  reworded: In the no-repeats window that jumps `left` past a repeat, why can't `left` simply be set to the repeat's last position plus 1?
+  options:
+    - text: The last position can be from before the window, and `left` must never move back
+      correct: true
+      reason: Moving `left` back would bring in a repeat that was already removed.
+    - text: Max is faster than plain assignment
+      reason: Speed isn't the reason. Correctness is.
+    - text: The last position is always after `left`
+      reason: It can be before `left`, which is exactly the case the max handles.
+  lesson:
+    title: Old positions don't count
+    explanation: A value last seen before the window started isn't in the window, so it isn't a repeat. Taking the max ignores those old positions.
+- id: when-longest-or-shortest
+  skill: longest-valid-window
+  asks: when
+  type: matching
+  prompt: Match each window search to when it records the length.
+  reworded: In each of these window searches, at what point do you record the window's length?
+  matchHeading: When to record
+  matchName: a moment
+  pairs:
+    - item: The longest window that follows a rule
+      match: After shrinking until the window follows the rule
+    - item: The shortest window that meets a goal
+      match: Inside the shrinking loop, before each value leaves
+    - item: The best total over windows of exactly k values
+      match: Once the window holds k values, at each step
+  extraMatches:
+    - Only when `left` reaches the end
+  lesson:
+    title: Record when the window is the kind you want
+    explanation: Longest searches shrink to become valid, then record. Shortest searches record while still valid, then shrink to try for shorter.
+- id: why-record-inside-loop
+  skill: shortest-valid-window
+  asks: why
+  type: prompt
+  prompt: When finding the shortest window that meets a goal, why do you record the length inside the shrinking loop?
+  reworded: In the shortest window search, why does recording the length happen before each value leaves on the left?
+  points:
+    - The loop keeps going only while the window meets the goal.
+    - Each time round, the window is valid and as short as it's been with this `right`.
+    - After the loop the window no longer meets the goal, so recording then would be wrong.
+  lesson:
+    title: Valid inside, invalid after
+    explanation: The shrinking loop is where the window is shortest and still meets the goal. Once it exits, the last value removed was the one the goal needed.
+- id: shortest-window-steps
+  skill: shortest-valid-window
+  asks: what
+  type: ordering
+  prompt: Put the steps for finding the fewest days in a row whose savings reach a goal in order, for each new day.
+  reworded: For each new day, what does the shortest window search for a savings goal do, and in what order?
+  steps:
+    - Add the day's savings to the total.
+    - While the total reaches the goal, record the window's length if it's the shortest.
+    - Still inside that loop, take away the savings at `left` and move `left` forward.
+    - Move on to the next day.
+  lesson:
+    title: Grow until it's enough, then trim
+    explanation: The window grows until it meets the goal, then trims from the left as far as it can, recording each length on the way.
+- id: why-missing-count
+  skill: shortest-valid-window
+  asks: why
+  type: pick-one
+  prompt: When finding the shortest stretch of text that holds every letter of a word, why keep a count of letters still missing?
+  reworded: In the smallest window that holds every needed letter, what does a running count of missing letters give you?
+  options:
+    - text: It tells you in O(1) whether the window holds everything
+      correct: true
+      reason: The window is valid exactly when the count is 0, so there's no need to check every letter.
+    - text: It tells you where the next needed letter is
+      reason: It counts how many are missing, not where they are.
+    - text: It keeps the window a fixed size
+      reason: The window still grows and shrinks. The count just says when it's valid.
+  lesson:
+    title: Valid when nothing is missing
+    explanation: Start the count at the word's length. Take one off when a letter enters that's still needed, and add one back when a needed letter leaves and the window no longer has enough of it.
+- id: why-exactly-not-direct
+  skill: at-most-twice
+  asks: why
+  type: prompt
+  prompt: Why can't you count windows with exactly k different values with one grow and shrink window?
+  reworded: What stops a single grow and shrink window from counting the stretches with exactly k kinds?
+  points:
+    - A window with exactly k kinds can break the rule by growing, when a new kind enters.
+    - It can also break it by shrinking, when the last copy of a kind leaves.
+    - So there's no single rule for when to move `left`.
+    - At most k only breaks by growing, so it fits, and exactly k is at most k minus at most k - 1.
+  misconception: That every counting question about stretches fits one window.
+  lesson:
+    title: Turn exactly into two at mosts
+    explanation: The windows with exactly k kinds are the ones with at most k kinds, minus the ones with at most k - 1. Each of those is a normal grow and shrink count.
+- id: why-add-window-length
+  skill: at-most-twice
+  asks: why
+  type: pick-one
+  prompt: When counting the windows with at most k kinds, why add `right - left + 1` at each step?
+  reworded: In the at most k count, what does `right - left + 1` stand for?
+  options:
+    - text: It's the number of windows that end at `right` and have at most k kinds
+      correct: true
+      reason: Every start from `left` to `right` gives such a window, since shrinking never adds kinds.
+    - text: It's the length of the longest window so far
+      reason: That's what a longest window search records. Here each length is a count of windows.
+    - text: It's the number of kinds in the window
+      reason: That's the map's size, not the window's length.
+  lesson:
+    title: Every start from left counts
+    explanation: If the window from `left` to `right` has at most k kinds, so does every shorter window ending at `right`. There are `right - left + 1` of them.
+- id: when-at-most-trick
+  skill: at-most-twice
+  asks: when
+  type: matching
+  prompt: Match each counting question to how you'd count it.
+  reworded: How would you count the stretches in each of these questions?
+  matchHeading: How to count
+  matchName: a method
+  pairs:
+    - item: Stretches with exactly k different values
+      match: At most k minus at most k - 1
+    - item: Stretches with at least k different values
+      match: All stretches minus at most k - 1
+    - item: Stretches with at most k different values
+      match: One window, adding its length at each step
+  extraMatches:
+    - One window, recording only the longest
+  lesson:
+    title: Build everything from at most
+    explanation: At most k is the one count a window does directly. Exactly and at least both come from subtracting one at most count from another number.
+- id: why-pop-smaller
+  skill: monotonic-deque
+  asks: why
+  type: prompt
+  prompt: When keeping each window's maximum with a deque, why remove values from the back that are no bigger than the new value?
+  reworded: In the monotonic deque for window maximums, what makes it safe to drop smaller values when a bigger one arrives?
+  points:
+    - The new value is at least as big as each of them.
+    - It also arrived later, so it stays in the window at least as long.
+    - So none of them can be the maximum of any later window, and they're never needed again.
+  misconception: That the deque has to keep every value in the window.
+  lesson:
+    title: Older and smaller never wins
+    explanation: A value can only be a window's maximum if nothing bigger and newer is in that window. Once a bigger, newer value arrives, the older smaller ones have no future.
+- id: deque-steps
+  skill: monotonic-deque
+  asks: what
+  type: ordering
+  prompt: Put the steps for one move of the window maximum deque in order.
+  reworded: In what order does the monotonic deque handle a new value at `right`?
+  steps:
+    - Remove positions from the back while their values are no bigger than the new value.
+    - Add the new position at the back.
+    - If the front position has slid out of the window, remove it.
+    - Once the window holds k values, read the maximum at the front.
+  lesson:
+    title: Clear the back, add, check the front
+    explanation: The back keeps values getting smaller, so the front is the biggest. The only other thing to fix is a front that's too old for the window.
+- id: why-store-positions
+  skill: monotonic-deque
+  asks: why
+  type: pick-one
+  prompt: Why does the window maximum deque hold positions and not the values themselves?
+  reworded: What would you lose if the monotonic deque stored values instead of positions?
+  options:
+    - text: You couldn't tell when the front value has slid out of the window
+      correct: true
+      reason: A position says when the value entered, so you can compare it with `right - k`.
+    - text: Positions take less memory than values
+      reason: They take about the same. The reason is knowing their age.
+    - text: Values can't be compared with each other
+      reason: You still compare values, by looking them up through their positions.
+  lesson:
+    title: Positions carry their age
+    explanation: The front leaves when its position is `right - k` or earlier. With only the value, repeats would make it impossible to tell which copy is leaving.
+- id: when-deque-over-heap
+  skill: monotonic-deque
+  asks: when
+  type: pick-one
+  prompt: When finding the maximum of every window of k values, when is a monotonic deque a better choice than a heap?
+  reworded: Why might you pick a deque over a heap for the maximum of each sliding window?
+  options:
+    - text: When you want O(n) in total instead of O(n log k)
+      correct: true
+      reason: Each position enters and leaves the deque once, where each heap step costs O(log k).
+    - text: When the values are all different
+      reason: The deque handles repeats too, by removing positions whose values are no bigger.
+    - text: When k is 1
+      reason: With k of 1 every value is its own maximum, so neither is needed.
+  lesson:
+    title: Amortized O(1) per step
+    explanation: The deque does at most two operations per position over the whole slide, so it beats a heap's O(log k) per step.

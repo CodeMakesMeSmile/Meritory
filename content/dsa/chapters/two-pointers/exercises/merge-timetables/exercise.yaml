@@ -1,0 +1,18 @@
+id: merge-timetables
+kind: coding
+title: Two timetables in one
+difficulty: easy
+skills:
+  - merge-sorted
+sibling: free-on-both
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: mergeTimetables
+  params:
+    - name: first
+      type: int[]
+    - name: second
+      type: int[]
+  returns: int[]

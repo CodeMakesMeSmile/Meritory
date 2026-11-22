@@ -1,0 +1,100 @@
+{
+  "exercise": "three-parcel-sizes",
+  "cases": [
+    {
+      "uuid": "05bb5d08-96a6-426d-89a6-566550dc551d",
+      "description": "sorts small, medium, and large parcels",
+      "property": "sortBySize",
+      "input": {
+        "parcels": [2, 0, 1, 2, 0]
+      },
+      "expected": [0, 0, 1, 2, 2]
+    },
+    {
+      "uuid": "ff9f1e3e-9c06-4078-a6d4-f5720d7337eb",
+      "description": "a longer mixed belt",
+      "property": "sortBySize",
+      "input": {
+        "parcels": [1, 2, 0, 1, 0, 2, 1, 0]
+      },
+      "expected": [0, 0, 0, 1, 1, 1, 2, 2]
+    },
+    {
+      "uuid": "f583c6f8-313c-4161-adef-c3b291b60969",
+      "description": "largest first becomes smallest first",
+      "property": "sortBySize",
+      "input": {
+        "parcels": [2, 2, 1, 1, 0, 0]
+      },
+      "expected": [0, 0, 1, 1, 2, 2]
+    },
+    {
+      "uuid": "5f45ff5d-b7b8-438d-be4d-d57d4ee11b17",
+      "description": "a large parcel swapped in from the back is checked again",
+      "property": "sortBySize",
+      "input": {
+        "parcels": [2, 1, 2]
+      },
+      "expected": [1, 2, 2]
+    },
+    {
+      "uuid": "affccd03-08d5-4ddc-8c16-5fb7bd8debaa",
+      "description": "no medium parcels",
+      "property": "sortBySize",
+      "input": {
+        "parcels": [2, 0, 2, 0]
+      },
+      "expected": [0, 0, 2, 2]
+    },
+    {
+      "uuid": "8d8cbb82-e9aa-4014-bfff-433ad545ac60",
+      "description": "no small parcels",
+      "property": "sortBySize",
+      "input": {
+        "parcels": [2, 1, 2, 1]
+      },
+      "expected": [1, 1, 2, 2]
+    },
+    {
+      "uuid": "5a010860-e390-42aa-aaf4-ccc7d85172ba",
+      "description": "already sorted stays the same",
+      "property": "sortBySize",
+      "input": {
+        "parcels": [0, 1, 2]
+      },
+      "expected": [0, 1, 2]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "1da54f37-0946-4863-9a7f-5c96d5077157",
+          "description": "an empty belt",
+          "property": "sortBySize",
+          "input": {
+            "parcels": []
+          },
+          "expected": []
+        },
+        {
+          "uuid": "ef42fad1-22c8-4c76-a90e-65e963e06e1e",
+          "description": "one parcel",
+          "property": "sortBySize",
+          "input": {
+            "parcels": [2]
+          },
+          "expected": [2]
+        },
+        {
+          "uuid": "9a13091f-dd66-4d22-b177-1c9d8a8735a8",
+          "description": "every parcel the same size",
+          "property": "sortBySize",
+          "input": {
+            "parcels": [1, 1, 1]
+          },
+          "expected": [1, 1, 1]
+        }
+      ]
+    }
+  ]
+}

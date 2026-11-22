@@ -1,0 +1,120 @@
+{
+  "exercise": "kth-quickest",
+  "cases": [
+    {
+      "uuid": "7d4fbef0-77b9-4049-9171-d78f4c86da1f",
+      "description": "finds the second quickest time",
+      "property": "kthQuickest",
+      "input": {
+        "times": [7, 2, 9, 4, 5],
+        "k": 2
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "1689ba21-69cf-4d19-b725-357ecc17df39",
+      "description": "k of 1 is the quickest",
+      "property": "kthQuickest",
+      "input": {
+        "times": [7, 2, 9, 4, 5],
+        "k": 1
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "9fc7b72d-38be-4604-95f8-8999886738de",
+      "description": "k equal to the count is the slowest",
+      "property": "kthQuickest",
+      "input": {
+        "times": [7, 2, 9, 4, 5],
+        "k": 5
+      },
+      "expected": 9
+    },
+    {
+      "uuid": "50d47a54-7dcf-44b2-844d-cd6ae0291ff7",
+      "description": "repeated times each count",
+      "property": "kthQuickest",
+      "input": {
+        "times": [5, 3, 3],
+        "k": 2
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "1fcd00c1-b3f6-463f-86ce-35eb78fdbc5a",
+      "description": "the time after a run of repeats",
+      "property": "kthQuickest",
+      "input": {
+        "times": [5, 3, 3],
+        "k": 3
+      },
+      "expected": 5
+    },
+    {
+      "uuid": "e9b7c157-efe3-44ab-83f7-a1362d5bc61f",
+      "description": "times already in order",
+      "property": "kthQuickest",
+      "input": {
+        "times": [1, 2, 3, 4, 5, 6, 7, 8],
+        "k": 6
+      },
+      "expected": 6
+    },
+    {
+      "uuid": "8fcd5e1d-f292-411e-8463-a35b3a6f8fe7",
+      "description": "times in reverse order",
+      "property": "kthQuickest",
+      "input": {
+        "times": [8, 7, 6, 5, 4, 3, 2, 1],
+        "k": 3
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "ed850fcb-eb60-4b29-8ce7-c525c66595e3",
+      "description": "many repeats around the answer",
+      "property": "kthQuickest",
+      "input": {
+        "times": [6, 1, 6, 6, 2, 6, 9],
+        "k": 4
+      },
+      "expected": 6
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "cdccd59d-6939-4535-9957-2897146528df",
+          "description": "one delivery",
+          "property": "kthQuickest",
+          "input": {
+            "times": [42],
+            "k": 1
+          },
+          "expected": 42
+        },
+        {
+          "uuid": "d8d25020-ffab-4283-aefd-909139fbb541",
+          "description": "every time the same",
+          "property": "kthQuickest",
+          "input": {
+            "times": [4, 4, 4, 4],
+            "k": 3
+          },
+          "expected": 4
+        },
+        {
+          "uuid": "50a9dd85-665e-4a09-88d2-1763e99df2a9",
+          "description": "handles the longest times",
+          "property": "kthQuickest",
+          "input": {
+            "times": [1000000000, 1, 999999999],
+            "k": 3
+          },
+          "expected": 1000000000
+        }
+      ]
+    }
+  ]
+}

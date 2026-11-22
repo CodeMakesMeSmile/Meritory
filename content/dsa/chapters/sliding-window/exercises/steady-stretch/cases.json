@@ -1,0 +1,110 @@
+{
+  "exercise": "steady-stretch",
+  "cases": [
+    {
+      "uuid": "88b5a11e-c560-4b26-a8ed-7005c4386536",
+      "description": "finds the longest stretch within the limit",
+      "property": "steadyStretch",
+      "input": {
+        "temperatures": [20, 22, 27, 25, 24, 30],
+        "limit": 3
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "f8decfeb-56b1-4fa3-8ade-47e2f5790d25",
+      "description": "the lowest reading leaves the window",
+      "property": "steadyStretch",
+      "input": {
+        "temperatures": [8, 2, 4, 5, 6, 9],
+        "limit": 4
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "3865e4b5-54d6-4a48-91d5-64c520dfb1da",
+      "description": "the highest reading leaves the window",
+      "property": "steadyStretch",
+      "input": {
+        "temperatures": [9, 15, 12, 11, 10, 14],
+        "limit": 4
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "ce00a634-b088-43c3-bc47-224447045697",
+      "description": "a limit of 0 needs equal readings",
+      "property": "steadyStretch",
+      "input": {
+        "temperatures": [5, 5, 6, 6, 6],
+        "limit": 0
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "5c8dccf7-5397-4c63-af50-484abc3a643d",
+      "description": "every reading within the limit",
+      "property": "steadyStretch",
+      "input": {
+        "temperatures": [1, 2, 3],
+        "limit": 5
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "9b49ecb5-c703-4699-adb3-5d490b505cfa",
+      "description": "no two readings close enough",
+      "property": "steadyStretch",
+      "input": {
+        "temperatures": [1, 10, 20],
+        "limit": 5
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "07ab9b66-d26f-42d6-a725-bcd2b7a4aeab",
+      "description": "below freezing",
+      "property": "steadyStretch",
+      "input": {
+        "temperatures": [-3, -1, -2, 4],
+        "limit": 2
+      },
+      "expected": 3
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "6e4970d2-62b3-43eb-b43e-064def6643bc",
+          "description": "no readings",
+          "property": "steadyStretch",
+          "input": {
+            "temperatures": [],
+            "limit": 3
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "587665a2-b7ec-4e74-8e95-242cf25e584a",
+          "description": "one reading",
+          "property": "steadyStretch",
+          "input": {
+            "temperatures": [7],
+            "limit": 0
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "5bfb78b3-17fd-4c5c-a4fd-d1e97accd54c",
+          "description": "handles the widest gap",
+          "property": "steadyStretch",
+          "input": {
+            "temperatures": [-1000000, 1000000, -1000000],
+            "limit": 2000000
+          },
+          "expected": 3
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+id: window-highs
+kind: coding
+title: Highest price in each window
+difficulty: medium
+skills:
+  - monotonic-deque
+  - fixed-window
+sibling: steady-stretch
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: windowHighs
+  params:
+    - name: prices
+      type: int[]
+    - name: k
+      type: int
+  returns: int[]

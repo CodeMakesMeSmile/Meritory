@@ -1,0 +1,109 @@
+{
+  "exercise": "biggest-banner",
+  "cases": [
+    {
+      "uuid": "7df4f2b4-db73-4ec4-a568-25026b2a93fb",
+      "description": "finds the biggest banner",
+      "property": "biggestBanner",
+      "input": {
+        "heights": [3, 1, 6, 4, 5, 2]
+      },
+      "expected": 12
+    },
+    {
+      "uuid": "662101f2-6b80-4111-9bd2-17a781be3ac4",
+      "description": "the widest pair isn't always best",
+      "property": "biggestBanner",
+      "input": {
+        "heights": [1, 9, 9, 1]
+      },
+      "expected": 9
+    },
+    {
+      "uuid": "09ff24f6-e844-4e0a-9d77-b687087641bd",
+      "description": "tall posts at both ends win",
+      "property": "biggestBanner",
+      "input": {
+        "heights": [5, 1, 1, 5]
+      },
+      "expected": 15
+    },
+    {
+      "uuid": "271e0d27-0daf-4727-976c-6455797134f8",
+      "description": "rising heights",
+      "property": "biggestBanner",
+      "input": {
+        "heights": [1, 2, 3, 4, 5]
+      },
+      "expected": 6
+    },
+    {
+      "uuid": "94804a46-379a-4d6a-855d-8b86079ff96e",
+      "description": "posts of height 0 hold no banner",
+      "property": "biggestBanner",
+      "input": {
+        "heights": [0, 2, 0, 3, 0]
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "bbbc269c-138f-4401-8718-fdc7c7c57e84",
+      "description": "the best pair sits away from both ends",
+      "property": "biggestBanner",
+      "input": {
+        "heights": [2, 8, 1, 1, 8, 2, 1]
+      },
+      "expected": 24
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "54bba01e-c4f1-428f-b834-10df03bf8687",
+          "description": "no posts hold no banner",
+          "property": "biggestBanner",
+          "input": {
+            "heights": []
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "f28303fb-9622-41da-a161-a6955a22102f",
+          "description": "one post holds no banner",
+          "property": "biggestBanner",
+          "input": {
+            "heights": [7]
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "3f3618af-bc5e-4b26-a633-da77438e3d6d",
+          "description": "two posts use the shorter height",
+          "property": "biggestBanner",
+          "input": {
+            "heights": [4, 9]
+          },
+          "expected": 4
+        },
+        {
+          "uuid": "72805a55-8ced-4e87-b518-87eb45bfd0ed",
+          "description": "every post has height 0",
+          "property": "biggestBanner",
+          "input": {
+            "heights": [0, 0, 0]
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "ec4cda24-21d4-4ac1-97ba-79851992d122",
+          "description": "handles the tallest posts",
+          "property": "biggestBanner",
+          "input": {
+            "heights": [10000, 1, 10000]
+          },
+          "expected": 20000
+        }
+      ]
+    }
+  ]
+}

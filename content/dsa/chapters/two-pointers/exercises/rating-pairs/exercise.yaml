@@ -1,0 +1,21 @@
+id: rating-pairs
+kind: coding
+title: Drill pairs with a set total
+difficulty: medium
+skills:
+  - sort-first
+  - skip-repeats
+  - ends-on-sorted
+sibling: balanced-triples
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: ratingPairs
+  params:
+    - name: ratings
+      type: int[]
+    - name: target
+      type: int
+  returns: int[][]
+  anyOrder: true

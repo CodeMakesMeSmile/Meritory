@@ -1,0 +1,19 @@
+id: steady-stretch
+kind: coding
+title: Longest steady stretch
+difficulty: medium
+skills:
+  - monotonic-deque
+  - longest-valid-window
+sibling: window-highs
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: steadyStretch
+  params:
+    - name: temperatures
+      type: int[]
+    - name: limit
+      type: int
+  returns: int

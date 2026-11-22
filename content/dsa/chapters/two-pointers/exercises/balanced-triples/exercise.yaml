@@ -1,0 +1,19 @@
+id: balanced-triples
+kind: coding
+title: Three entries that balance
+difficulty: medium
+skills:
+  - sort-first
+  - skip-repeats
+  - ends-on-sorted
+sibling: rating-pairs
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: balancedTriples
+  params:
+    - name: amounts
+      type: int[]
+  returns: int[][]
+  anyOrder: true

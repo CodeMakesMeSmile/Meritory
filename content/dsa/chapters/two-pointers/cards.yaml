@@ -1,0 +1,354 @@
+- id: why-move-left-when-small
+  skill: ends-on-sorted
+  asks: why
+  type: pick-one
+  prompt: In a sorted list, the values at `left` and `right` add up to less than the target. Why is it safe to move `left` forward?
+  reworded: When the pair from both ends of a sorted list comes up short, what lets you drop the value at `left` for good?
+  options:
+    - text: Its largest possible partner is the value at `right`, and even that isn't enough
+      correct: true
+      reason: Every other value still in play is smaller than the one at `right`, so no partner can reach the target.
+    - text: The value at `left` has already been paired with every other value
+      reason: It has only been paired with the value at `right`. The sorted order is what rules out the rest.
+    - text: Moving `left` always makes the sum smaller
+      reason: In a sorted list, moving `left` forward makes the sum bigger or keeps it the same.
+    - text: The target can only be reached by values near the end
+      reason: The answer can sit anywhere in the list. The argument is about this one value's partners.
+  misconception: That two pointers work by trying pairs in a lucky order.
+  lesson:
+    title: Each move rules out one value
+    explanation: In a sorted list, the value at `right` is the biggest one still in play. If even it can't lift the value at `left` to the target, nothing can, so `left` moves on. The same argument in reverse moves `right` back when the sum is too big.
+- id: when-ends-need-sorting
+  skill: ends-on-sorted
+  asks: when
+  type: prompt
+  prompt: When does closing in from both ends fail to find a pair with a given sum, and what should you use instead?
+  reworded: In what situation can't you search for a pair by moving pointers in from both ends, and what's the fix?
+  points:
+    - It fails when the list isn't sorted, since a small sum no longer means the left value is too small.
+    - If you need the original positions, use a map from value to position in one pass.
+    - If positions don't matter, you can sort first and then use the pointers, for O(n log n) in all.
+  misconception: That two pointers from both ends work on any list.
+  lesson:
+    title: The order makes the moves safe
+    explanation: Moving `left` when the sum is too small only makes sense because everything after `left` is at least as big. Without sorted order there's no reason to drop either value.
+    fix: Use a map for unsorted input, or sort first when you don't need the original positions.
+- id: ends-search-steps
+  skill: ends-on-sorted
+  asks: what
+  type: ordering
+  prompt: Put the steps for finding a pair with a given sum in a sorted list in order.
+  reworded: In what order does the search from both ends of a sorted list find a pair with a given sum?
+  steps:
+    - Put `left` at the first position and `right` at the last.
+    - Add the two values they point to.
+    - If the sum matches the target, return the two positions.
+    - If it's too small move `left` forward, and if it's too big move `right` back.
+    - Stop with no answer when the pointers meet.
+  lesson:
+    title: Check, then drop one value
+    explanation: Each round looks at one pair and either returns it or rules out one value, so the search ends after at most n rounds.
+- id: why-move-shorter-post
+  skill: move-the-limit
+  asks: why
+  type: prompt
+  prompt: When finding the biggest banner between two posts, where the banner is as tall as the shorter post, why do you move the shorter post inward and not the taller one?
+  reworded: In the biggest banner search from both ends, what goes wrong if you move the taller of the two posts?
+  points:
+    - Moving either post makes the banner narrower.
+    - If you move the taller post, the height is still capped by the shorter one, so the area can only shrink.
+    - Moving the shorter post is the only move that might raise the height enough to win.
+    - So every banner using the shorter post with a closer partner can be dropped without checking.
+  misconception: That you should move whichever pointer is closer to the middle, or move both at once.
+  lesson:
+    title: The shorter post holds the answer back
+    explanation: The area is width times the shorter height. Every remaining pair that keeps the shorter post is narrower and no taller, so none of them can beat the current one. Dropping that post is safe.
+- id: why-settle-lower-side
+  skill: move-the-limit
+  asks: why
+  type: pick-one
+  prompt: When counting rain held between walls with two pointers, why can you settle the position on the side whose tallest wall so far is lower?
+  reworded: In the two pointer count of rain between walls, what makes it safe to fill in the side with the lower tallest wall?
+  options:
+    - text: The other side already has a wall at least as tall, so the lower side's tallest wall sets the level
+      correct: true
+      reason: Water rises to the lower of the two tallest walls, and you already know which one that is.
+    - text: The lower side always holds no water
+      reason: It can hold water. Its level is just decided by its own tallest wall.
+    - text: The walls are sorted, so the lower side is always on the left
+      reason: The walls aren't sorted. Either side can be the lower one at any step.
+  lesson:
+    title: The lower wall decides the level
+    explanation: Water above a position rises to the lower of the tallest wall to its left and the tallest to its right. If the left side's tallest is lower than a wall you've already seen on the right, the left side's tallest is the limit, whatever else stands in between.
+- id: proof-before-moving
+  skill: move-the-limit
+  asks: what
+  type: prompt
+  prompt: What should you be able to say before moving a pointer in a two pointer search?
+  reworded: How do you know a pointer move in a two pointer search won't skip the answer?
+  points:
+    - Which pairs the move drops without checking them.
+    - Why none of those pairs can beat the best answer found so far.
+    - If you can't say both, the move might skip the answer.
+  lesson:
+    title: Every move is a small proof
+    explanation: Two pointers are fast because each move throws away many pairs at once. That's only safe when you can explain why those pairs can't win.
+- id: why-write-never-passes-read
+  skill: read-write-pointers
+  asks: why
+  type: pick-one
+  prompt: When compacting an array in place with a read pointer and a write pointer, why is it safe to write into the array while you're still reading it?
+  reworded: In read and write pointer compaction, what stops a write from destroying a value that hasn't been read yet?
+  options:
+    - text: The write pointer never gets ahead of the read pointer
+      correct: true
+      reason: Each write lands at or before the current read position, on a value that has already been read.
+    - text: The kept values are copied to a second array first
+      reason: There is no second array. That's the point of doing it in place.
+    - text: The read pointer starts at the end of the array
+      reason: Both pointers start at the front and move the same way.
+  lesson:
+    title: Write lands behind read
+    explanation: The write pointer only moves when an item is kept, and the read pointer moves every step, so write is never past read. Anything at or before write has been read already.
+- id: when-not-remove-one-by-one
+  skill: read-write-pointers
+  asks: when
+  type: pick-one
+  prompt: When is calling `splice`, `del`, or `remove` for each unwanted item a poor way to clean up an array?
+  reworded: In what case does removing items from an array one at a time get slow?
+  options:
+    - text: When many items might be removed from a long array
+      correct: true
+      reason: Each removal shifts everything after it, so many removals add up to O(n²).
+    - text: When the array has only a few items
+      reason: On a short array the cost hardly matters. It's long arrays with many removals that hurt.
+    - text: When the items are numbers rather than strings
+      reason: The type doesn't matter. The shifting does.
+    - text: When the array is sorted
+      reason: Sorted or not, each removal still shifts the items after it.
+  lesson:
+    title: Each removal shifts the rest
+    explanation: Removing from the middle of an array is O(n), because the values after it slide over. A read and a write pointer move each kept value once, so the whole job is O(n).
+    fix: Copy each kept value to the write position, then deal with the leftover slots at the end.
+- id: compact-steps
+  skill: read-write-pointers
+  asks: what
+  type: ordering
+  prompt: Put the steps for moving every 0 to the back of an array, keeping the other values in order, in order.
+  reworded: In what order do you move the zeros in an array to the end with a read and a write pointer?
+  steps:
+    - Start the write pointer at 0.
+    - Read each value from left to right.
+    - When a value isn't 0, copy it to the write position and move write along.
+    - After the last value, fill every slot from write to the end with 0.
+  lesson:
+    title: Copy what you keep, then fill
+    explanation: The first pass packs the kept values at the front in their original order. The slots after them still hold old values, so a short second loop sets them to 0.
+- id: why-mid-stays-after-swap
+  skill: partition-in-place
+  asks: why
+  type: pick-one
+  prompt: When sorting 0s, 1s, and 2s in one pass with `low`, `mid`, and `high`, why doesn't `mid` move after swapping a 2 with the value at `high`?
+  reworded: In the one-pass three-way partition, why does `mid` stay put after a swap with `high`?
+  options:
+    - text: The value that just arrived from `high` hasn't been checked yet
+      correct: true
+      reason: It came from the unchecked part of the list, so it could be a 0, a 1, or a 2.
+    - text: The value at `high` is always a 2
+      reason: The position at `high` is in the unchecked part, so it can hold anything.
+    - text: Moving `mid` would make the loop end too early
+      reason: The loop ending isn't the problem. Skipping an unchecked value is.
+  lesson:
+    title: Only checked values are behind mid
+    explanation: Everything before `mid` has been looked at. A swap with `low` brings back a 1 that was already checked, so `mid` can move on. A swap with `high` brings back an unknown value, so `mid` must look at it next.
+- id: when-swapping-breaks-order
+  skill: partition-in-place
+  asks: when
+  type: pick-one
+  prompt: When should you avoid partitioning by swapping?
+  reworded: In what case is swapping items across a boundary the wrong way to split a list into groups?
+  options:
+    - text: When items must keep their original order within each group
+      correct: true
+      reason: Swaps move items past each other, so the order inside a group can change.
+    - text: When the list has repeated values
+      reason: Repeats are fine. A three-way partition handles them well.
+    - text: When the list is very long
+      reason: Partitioning is one pass, so length doesn't rule it out.
+  misconception: That an in-place partition keeps each group in its original order.
+  lesson:
+    title: Swaps aren't stable
+    explanation: A swap can carry an item past others in its own group. When the order inside a group matters, copy the kept items forward with a read and a write pointer, which keeps them in order.
+- id: three-way-regions
+  skill: partition-in-place
+  asks: what
+  type: matching
+  prompt: During the one-pass sort of 0s, 1s, and 2s, match each part of the list to what it holds.
+  reworded: In the three-way partition with `low`, `mid`, and `high`, what does each part of the list hold?
+  matchHeading: What it holds
+  matchName: a group
+  pairs:
+    - item: Before `low`
+      match: Only 0s
+    - item: From `low` up to `mid`
+      match: Only 1s
+    - item: From `mid` through `high`
+      match: Values not checked yet
+    - item: After `high`
+      match: Only 2s
+  extraMatches:
+    - Values in their original order
+  lesson:
+    title: Four regions, three pointers
+    explanation: The pointers split the list into three finished groups and one unchecked stretch in the middle. Each step shrinks the unchecked stretch by one.
+- id: why-quickselect-linear
+  skill: partition-in-place
+  asks: why
+  type: prompt
+  prompt: Why does quickselect find the k-th smallest value in O(n) time on average, when sorting takes O(n log n)?
+  reworded: What makes quickselect faster on average than sorting the list to find the k-th smallest value?
+  points:
+    - Each partition puts the pivot exactly where it would be in sorted order.
+    - You only keep going on the side that holds position k and ignore the other side.
+    - On average each round halves the list, so the work is about n + n/2 + n/4, which is under 2n.
+    - Picking the pivot at random makes the O(n²) worst case very unlikely.
+  lesson:
+    title: Only one side matters
+    explanation: Sorting has to finish both sides of every partition. Quickselect throws one side away each time, so the total shrinks like a halving series.
+- id: why-merge-linear
+  skill: merge-sorted
+  asks: why
+  type: prompt
+  prompt: Why does merging two sorted lists of n and m values take O(n + m) time?
+  reworded: What keeps a merge of two sorted lists to one pass over the values?
+  points:
+    - Each step places exactly one value in the answer.
+    - The pointer it came from moves forward and never goes back.
+    - So there are n + m steps in all, plus copying whatever is left when one list runs out.
+  misconception: That merging means comparing every value in one list with every value in the other.
+  lesson:
+    title: One value per step
+    explanation: The smallest value left is always at the front of one of the two lists, so a single comparison finds it.
+- id: merge-steps
+  skill: merge-sorted
+  asks: what
+  type: ordering
+  prompt: Put the steps for merging two sorted lists in order.
+  reworded: In what order does a merge of two sorted lists build its answer?
+  steps:
+    - Put a pointer at the front of each list.
+    - Compare the two front values.
+    - Add the smaller one to the answer, taking from the first list on a tie.
+    - Move that list's pointer forward and compare again.
+    - When one list runs out, add the rest of the other.
+  lesson:
+    title: Smallest front value wins
+    explanation: Both lists are sorted, so the next value in the answer is always one of the two front values.
+- id: when-merge-walk
+  skill: merge-sorted
+  asks: when
+  type: matching
+  prompt: Match each problem to the approach that fits it best.
+  reworded: Which approach suits each of these problems about two lists?
+  matchHeading: Approach
+  matchName: an approach
+  pairs:
+    - item: Combine two sorted lists into one sorted list
+      match: A pointer in each list, taking the smaller front
+    - item: Find the values two sorted lists share, using O(1) extra memory
+      match: A pointer in each list, moving the smaller one
+    - item: Find the values two unsorted lists share
+      match: Put one list in a set and check the other
+  extraMatches:
+    - Sort both lists together and scan once
+  lesson:
+    title: The merge walk needs sorted lists
+    explanation: Moving the pointer at the smaller value is only safe when both lists are sorted. For unsorted lists, a set gives O(n + m) time without sorting.
+- id: when-sort-first
+  skill: sort-first
+  asks: when
+  type: matching
+  prompt: Match each problem to whether sorting first is worth it.
+  reworded: For each of these problems, should you sort the input first?
+  matchHeading: Sort first?
+  matchName: an answer
+  pairs:
+    - item: Find every set of three values that adds to 0
+      match: Yes, it turns O(n³) into O(n²)
+    - item: Find two values with a given sum and return their original positions
+      match: No, a map does it in O(n) and keeps the positions
+    - item: Find the k-th smallest value
+      match: No, quickselect is O(n) on average
+  extraMatches:
+    - Yes, sorting is always O(n)
+  lesson:
+    title: Sort when it beats the slow way
+    explanation: Sorting costs O(n log n) and loses the original positions. It pays off when the alternative is O(n²) or worse, or when it makes repeats easy to skip.
+- id: why-sort-needs-compare
+  skill: sort-first
+  asks: why
+  type: pick-one
+  prompt: In TypeScript, why does `[10, 9, 1].sort()` give `[1, 10, 9]`?
+  reworded: What makes a plain `sort()` call put 10 before 9 in TypeScript?
+  options:
+    - text: With no compare function, values are compared as text
+      correct: true
+      reason: As text, "10" comes before "9" because "1" comes before "9".
+    - text: Sort is only stable for strings
+      reason: Stability isn't the issue. The values are being compared as text.
+    - text: Sort puts numbers in reverse order by default
+      reason: The default is ascending order of the text form, not reverse order.
+  lesson:
+    title: Pass a compare function for numbers
+    explanation: Array sort in JavaScript and TypeScript turns values into strings before comparing, unless you give it a compare function.
+    fix: Write `nums.sort((a, b) => a - b)`.
+    source:
+      url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+      title: Array.prototype.sort(), MDN
+- id: why-skip-same-first
+  skill: skip-repeats
+  asks: why
+  type: prompt
+  prompt: When finding every set of three values that adds to 0 in a sorted list, why do you skip a first value that's the same as the one before it?
+  reworded: In the sorted search for sets of three that add to 0, what goes wrong if a repeated first value isn't skipped?
+  points:
+    - The repeated value would search the same remaining values for the same partners.
+    - So it would find sets you've already found, and they'd appear twice.
+    - Repeats sit next to each other in a sorted list, so checking the previous value is enough.
+  misconception: That you need a set of found triples to remove repeats.
+  lesson:
+    title: Same first value, same sets
+    explanation: Every set a repeated first value could find, the first copy already found, since it searched a stretch that includes everything the repeat will search.
+    fix: Skip `i` when `i > 0` and `nums[i] === nums[i - 1]`.
+- id: triple-search-steps
+  skill: skip-repeats
+  asks: what
+  type: ordering
+  prompt: Put the steps for finding every set of three values that adds to 0, each set once, in order.
+  reworded: In what order does the sorted search find each set of three that adds to 0 exactly once?
+  steps:
+    - Sort the values.
+    - Fix a first value, skipping it if it repeats the one before.
+    - Put two pointers at the two ends of the values after it.
+    - Move the pointers in until the three values add to 0.
+    - Record the set, then move `left` past every copy of its value.
+  lesson:
+    title: Sort, fix one, walk two
+    explanation: Fixing one value turns the problem into a pair search on a sorted stretch. Skipping repeats at both levels keeps each set from showing up twice.
+- id: when-set-of-answers
+  skill: skip-repeats
+  asks: when
+  type: pick-one
+  prompt: When is it fine to remove repeated answers by putting them in a set instead of skipping repeats in a sorted list?
+  reworded: In what situation is a set of found answers a reasonable way to avoid listing an answer twice?
+  options:
+    - text: When the list isn't sorted and sorting isn't worth it, and you can afford the extra memory
+      correct: true
+      reason: A set removes repeats in any order, at the cost of memory and of building a key for each answer.
+    - text: When the list is already sorted
+      reason: Sorted input makes skipping repeats free, so the set only costs memory.
+    - text: When the answers are single numbers that never repeat
+      reason: If answers can't repeat, there's nothing to remove.
+  lesson:
+    title: Skipping is free once you've sorted
+    explanation: In a sorted list repeats sit side by side, so skipping them costs nothing. A set works on any order but needs memory, and in TypeScript a key built as a string, since arrays are compared by identity.

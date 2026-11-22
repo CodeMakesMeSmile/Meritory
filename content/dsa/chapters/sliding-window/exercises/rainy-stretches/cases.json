@@ -1,0 +1,110 @@
+{
+  "exercise": "rainy-stretches",
+  "cases": [
+    {
+      "uuid": "3e838b99-4c98-40e3-80a9-3aec6e790122",
+      "description": "counts the stretches with one rainy day",
+      "property": "rainyStretches",
+      "input": {
+        "rainy": [false, true, false],
+        "k": 1
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "3bde6fdc-1659-4f92-ab4e-1e133e2904f2",
+      "description": "two rainy days among dry ones",
+      "property": "rainyStretches",
+      "input": {
+        "rainy": [true, false, true, false, false, true],
+        "k": 2
+      },
+      "expected": 5
+    },
+    {
+      "uuid": "4fc6eeb3-960d-48cf-8534-95c9300af129",
+      "description": "k of 0 counts the dry stretches",
+      "property": "rainyStretches",
+      "input": {
+        "rainy": [false, false, true],
+        "k": 0
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "be15d4c5-e914-47a8-a5c5-3d2acbedfa46",
+      "description": "k of 0 when every day rained",
+      "property": "rainyStretches",
+      "input": {
+        "rainy": [true, true],
+        "k": 0
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "777d3428-48ff-44ce-98ac-868b2f3d7fb7",
+      "description": "rain every day",
+      "property": "rainyStretches",
+      "input": {
+        "rainy": [true, true, true],
+        "k": 2
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "b95ae52c-ec0e-4ec7-a7db-7e8eeb16663a",
+      "description": "more rainy days asked for than there were",
+      "property": "rainyStretches",
+      "input": {
+        "rainy": [true, false],
+        "k": 2
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "c57cbfb3-4448-4b35-b85d-087377193237",
+      "description": "no rain at all",
+      "property": "rainyStretches",
+      "input": {
+        "rainy": [false, false, false],
+        "k": 1
+      },
+      "expected": 0
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "c0882c96-f30f-4b95-a891-1d1d139e10fc",
+          "description": "no days",
+          "property": "rainyStretches",
+          "input": {
+            "rainy": [],
+            "k": 0
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "3dc180bb-4324-4ce0-ac4f-80045fccbc6d",
+          "description": "one rainy day",
+          "property": "rainyStretches",
+          "input": {
+            "rainy": [true],
+            "k": 1
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "c9514d91-bb45-410d-9602-e1cf527d56ec",
+          "description": "one dry day with k of 0",
+          "property": "rainyStretches",
+          "input": {
+            "rainy": [false],
+            "k": 0
+          },
+          "expected": 1
+        }
+      ]
+    }
+  ]
+}
