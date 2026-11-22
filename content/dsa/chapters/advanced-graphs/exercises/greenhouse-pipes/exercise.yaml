@@ -1,0 +1,19 @@
+id: greenhouse-pipes
+kind: coding
+title: Water pipes to every greenhouse
+difficulty: easy
+skills:
+  - kruskal-tree
+  - prim-tree
+sibling: beacon-wires
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: leastPipe
+  params:
+    - name: n
+      type: int
+    - name: pipes
+      type: int[][]
+  returns: int

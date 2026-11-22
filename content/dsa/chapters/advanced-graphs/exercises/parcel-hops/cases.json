@@ -1,0 +1,196 @@
+{
+  "exercise": "parcel-hops",
+  "cases": [
+    {
+      "uuid": "5bec0c37-6e14-424b-9fdb-a36d507b1ad5",
+      "description": "one stop allowed",
+      "property": "cheapestRoute",
+      "input": {
+        "n": 4,
+        "routes": [
+          [0, 1, 100],
+          [1, 2, 100],
+          [0, 2, 500],
+          [2, 3, 100],
+          [1, 3, 600]
+        ],
+        "source": 0,
+        "target": 3,
+        "maxStops": 1
+      },
+      "expected": 600
+    },
+    {
+      "uuid": "5c5e5a92-5e5e-4df5-a4d4-96b76c3e3d68",
+      "description": "two stops allowed",
+      "property": "cheapestRoute",
+      "input": {
+        "n": 4,
+        "routes": [
+          [0, 1, 100],
+          [1, 2, 100],
+          [0, 2, 500],
+          [2, 3, 100],
+          [1, 3, 600]
+        ],
+        "source": 0,
+        "target": 3,
+        "maxStops": 2
+      },
+      "expected": 300
+    },
+    {
+      "uuid": "4ec46acc-6ccc-4166-8941-1a96639d8787",
+      "description": "no stops means a direct route",
+      "property": "cheapestRoute",
+      "input": {
+        "n": 4,
+        "routes": [
+          [0, 1, 100],
+          [1, 2, 100],
+          [0, 2, 500],
+          [2, 3, 100],
+          [1, 3, 600]
+        ],
+        "source": 0,
+        "target": 2,
+        "maxStops": 0
+      },
+      "expected": 500
+    },
+    {
+      "uuid": "62eb3945-4aa7-44cc-b4e2-be9273f17bf9",
+      "description": "too few stops to get there",
+      "property": "cheapestRoute",
+      "input": {
+        "n": 4,
+        "routes": [[0, 1, 5], [1, 2, 5], [2, 3, 5]],
+        "source": 0,
+        "target": 3,
+        "maxStops": 1
+      },
+      "expected": -1
+    },
+    {
+      "uuid": "4f7f7a6f-6827-4a49-a6a2-697828b336c8",
+      "description": "routes listed so one round could chain them",
+      "property": "cheapestRoute",
+      "input": {
+        "n": 4,
+        "routes": [[0, 1, 1], [1, 2, 1], [2, 3, 1], [0, 3, 10]],
+        "source": 0,
+        "target": 3,
+        "maxStops": 0
+      },
+      "expected": 10
+    },
+    {
+      "uuid": "8970c7c1-8640-4b71-b773-77d72db01cf6",
+      "description": "the same routes with two stops",
+      "property": "cheapestRoute",
+      "input": {
+        "n": 4,
+        "routes": [[0, 1, 1], [1, 2, 1], [2, 3, 1], [0, 3, 10]],
+        "source": 0,
+        "target": 3,
+        "maxStops": 2
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "4a24626c-8ff6-4794-8615-cc24fba2a511",
+      "description": "a loop of routes doesn't help",
+      "property": "cheapestRoute",
+      "input": {
+        "n": 4,
+        "routes": [[0, 1, 3], [1, 2, 3], [2, 0, 3], [1, 3, 20], [2, 3, 4]],
+        "source": 0,
+        "target": 3,
+        "maxStops": 3
+      },
+      "expected": 10
+    },
+    {
+      "uuid": "9473a811-4098-494f-b32f-83499141285f",
+      "description": "routes only go one way",
+      "property": "cheapestRoute",
+      "input": {
+        "n": 3,
+        "routes": [[0, 1, 4], [1, 2, 4]],
+        "source": 2,
+        "target": 0,
+        "maxStops": 2
+      },
+      "expected": -1
+    },
+    {
+      "uuid": "da145bae-6f17-40ef-8900-68b47d766bde",
+      "description": "a busy network",
+      "property": "cheapestRoute",
+      "input": {
+        "n": 9,
+        "routes": [
+          [5, 3, 123],
+          [0, 7, 148],
+          [8, 3, 193],
+          [6, 5, 96],
+          [8, 0, 198],
+          [4, 2, 139],
+          [8, 0, 114],
+          [5, 0, 142],
+          [6, 8, 18],
+          [7, 3, 131],
+          [4, 2, 55],
+          [1, 8, 148],
+          [6, 1, 33],
+          [2, 8, 176],
+          [7, 3, 85],
+          [3, 0, 47],
+          [7, 6, 191],
+          [0, 5, 128],
+          [2, 3, 181],
+          [3, 7, 82],
+          [3, 5, 93],
+          [6, 4, 149],
+          [7, 8, 76],
+          [5, 7, 92]
+        ],
+        "source": 0,
+        "target": 8,
+        "maxStops": 3
+      },
+      "expected": 224
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "7bc1678d-ffd5-4867-997f-e41acef2caab",
+          "description": "more stops allowed than needed",
+          "property": "cheapestRoute",
+          "input": {
+            "n": 3,
+            "routes": [[0, 2, 9], [0, 1, 2], [1, 2, 2]],
+            "source": 0,
+            "target": 2,
+            "maxStops": 2
+          },
+          "expected": 4
+        },
+        {
+          "uuid": "3f3151a8-f360-4fd7-8a34-3825709b5f5b",
+          "description": "two depots and one route",
+          "property": "cheapestRoute",
+          "input": {
+            "n": 2,
+            "routes": [[0, 1, 7]],
+            "source": 0,
+            "target": 1,
+            "maxStops": 0
+          },
+          "expected": 7
+        }
+      ]
+    }
+  ]
+}

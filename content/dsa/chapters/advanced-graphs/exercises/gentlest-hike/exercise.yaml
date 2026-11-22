@@ -1,0 +1,17 @@
+id: gentlest-hike
+kind: coding
+title: The gentlest route across the ridge
+difficulty: hard
+skills:
+  - bottleneck-paths
+  - dijkstra-heap
+sibling: rising-tide
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: gentlestClimb
+  params:
+    - name: heights
+      type: int[][]
+  returns: int

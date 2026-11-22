@@ -1,0 +1,21 @@
+id: endless-bonus
+kind: coding
+title: A loop of doors that pays forever
+difficulty: medium
+skills:
+  - bellman-ford
+  - negative-edges
+sibling: parcel-hops
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: hasEndlessBonus
+  params:
+    - name: n
+      type: int
+    - name: doors
+      type: int[][]
+    - name: start
+      type: int
+  returns: boolean

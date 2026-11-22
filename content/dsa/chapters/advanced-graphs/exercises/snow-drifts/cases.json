@@ -1,0 +1,109 @@
+{
+  "exercise": "snow-drifts",
+  "cases": [
+    {
+      "uuid": "4ac84d64-d810-4fb1-a01c-e7e22cb4c8ce",
+      "description": "goes around most of the drifts",
+      "property": "fewestDrifts",
+      "input": {
+        "field": [[0, 1, 0, 0], [0, 1, 0, 1], [0, 0, 0, 1], [1, 1, 1, 0]]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "9ac19560-9b0a-41da-8342-7da20647bfdc",
+      "description": "a clear way through",
+      "property": "fewestDrifts",
+      "input": {
+        "field": [[0, 0, 1], [1, 0, 1], [1, 0, 0]]
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "30cd49b2-f01b-485c-8874-27bb16de8815",
+      "description": "every cell is a drift",
+      "property": "fewestDrifts",
+      "input": {
+        "field": [[1, 1, 1], [1, 1, 1]]
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "31fdd2ff-a338-4bee-b030-9540ee665b30",
+      "description": "a wall of drifts to break through",
+      "property": "fewestDrifts",
+      "input": {
+        "field": [[0, 0, 0], [1, 1, 1], [0, 0, 0]]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "3f3613ff-3dd8-4f98-ac8e-948ad05c436f",
+      "description": "both corners are drifts",
+      "property": "fewestDrifts",
+      "input": {
+        "field": [[1, 0], [0, 1]]
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "22bae9c3-98dc-498d-8088-fcd69d887f85",
+      "description": "a winding clear path beats a short one",
+      "property": "fewestDrifts",
+      "input": {
+        "field": [[0, 1, 1, 1], [0, 1, 0, 0], [0, 0, 0, 0], [1, 1, 1, 0]]
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "52397fde-b05e-4ced-a755-1ddfa35d3990",
+      "description": "a busy field",
+      "property": "fewestDrifts",
+      "input": {
+        "field": [
+          [0, 1, 1, 0, 1, 1, 1, 0, 0],
+          [1, 1, 1, 1, 1, 0, 1, 1, 1],
+          [1, 1, 1, 1, 0, 1, 0, 0, 1],
+          [1, 0, 0, 1, 1, 1, 0, 1, 0],
+          [1, 1, 1, 1, 0, 0, 0, 1, 0],
+          [1, 1, 0, 0, 0, 0, 0, 0, 0],
+          [1, 0, 0, 0, 1, 0, 0, 0, 1],
+          [1, 0, 0, 1, 1, 1, 1, 1, 0]
+        ]
+      },
+      "expected": 5
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "938b3ce4-193b-47c8-aa6c-b3e2e54cd60b",
+          "description": "one clear cell",
+          "property": "fewestDrifts",
+          "input": {
+            "field": [[0]]
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "cc8c8f95-01f2-4e48-9c88-5a29b139121e",
+          "description": "one drift",
+          "property": "fewestDrifts",
+          "input": {
+            "field": [[1]]
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "a35ac03e-e940-4ebb-8692-6ab0ca09afd2",
+          "description": "a single row",
+          "property": "fewestDrifts",
+          "input": {
+            "field": [[0, 1, 0, 1, 1]]
+          },
+          "expected": 3
+        }
+      ]
+    }
+  ]
+}

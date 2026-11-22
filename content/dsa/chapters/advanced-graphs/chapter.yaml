@@ -1,0 +1,20 @@
+id: advanced-graphs
+title: Weighted graphs
+order: 15
+skills:
+  - id: dijkstra-heap
+    name: Find the cheapest paths from one start with Dijkstra's algorithm and a heap, skipping stale entries
+  - id: negative-edges
+    name: Explain why negative edges break Dijkstra's algorithm, and spot a loop that keeps getting cheaper
+  - id: bellman-ford
+    name: Relax every edge in rounds with Bellman-Ford, from a copy when the stops are limited
+  - id: prim-tree
+    name: Build a minimum spanning tree with Prim's algorithm
+  - id: kruskal-tree
+    name: Build a minimum spanning tree with Kruskal's algorithm, sorting the edges and joining with union-find
+  - id: zero-one-bfs
+    name: Find the cheapest path when every edge costs 0 or 1 with a deque
+  - id: dag-paths
+    name: Find the longest or shortest path in a graph with no cycles by relaxing in topological order
+  - id: bottleneck-paths
+    name: Find the path whose worst single step is smallest by changing what Dijkstra's algorithm adds up

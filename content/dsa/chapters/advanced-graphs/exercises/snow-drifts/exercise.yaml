@@ -1,0 +1,16 @@
+id: snow-drifts
+kind: coding
+title: Clearing the fewest snowdrifts
+difficulty: medium
+skills:
+  - zero-one-bfs
+sibling: against-traffic
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: fewestDrifts
+  params:
+    - name: field
+      type: int[][]
+  returns: int

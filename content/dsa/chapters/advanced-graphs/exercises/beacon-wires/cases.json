@@ -1,0 +1,140 @@
+{
+  "exercise": "beacon-wires",
+  "cases": [
+    {
+      "uuid": "69386c0d-3971-4a2c-b117-bd2674c9f7eb",
+      "description": "joins five beacons",
+      "property": "leastWire",
+      "input": {
+        "beacons": [[0, 0], [2, 2], [3, 10], [5, 2], [7, 0]]
+      },
+      "expected": 20
+    },
+    {
+      "uuid": "f621431f-b175-458a-b08d-578a265d1af7",
+      "description": "beacons in a row",
+      "property": "leastWire",
+      "input": {
+        "beacons": [[0, 0], [0, 7], [0, 3]]
+      },
+      "expected": 7
+    },
+    {
+      "uuid": "98718e1a-aab2-4cf9-b7c8-ef42f8a47762",
+      "description": "the corners of a square",
+      "property": "leastWire",
+      "input": {
+        "beacons": [[0, 0], [0, 4], [4, 0], [4, 4]]
+      },
+      "expected": 12
+    },
+    {
+      "uuid": "1669bec3-8b4a-4a5b-aa65-055667bbede3",
+      "description": "beacons below and left of zero",
+      "property": "leastWire",
+      "input": {
+        "beacons": [[-3, -3], [2, -1], [-1, 4], [0, 0]]
+      },
+      "expected": 14
+    },
+    {
+      "uuid": "caa6deaf-ca37-49ab-817c-133ed4262892",
+      "description": "a cluster and one far beacon",
+      "property": "leastWire",
+      "input": {
+        "beacons": [[0, 0], [1, 0], [0, 1], [1, 1], [20, 20]]
+      },
+      "expected": 41
+    },
+    {
+      "uuid": "6eecb878-33fc-44f5-9569-72e2f061bad3",
+      "description": "a busy trail",
+      "property": "leastWire",
+      "input": {
+        "beacons": [
+          [-4, 9],
+          [17, 12],
+          [-1, 6],
+          [12, -1],
+          [-20, -6],
+          [-12, 20],
+          [-10, 17]
+        ]
+      },
+      "expected": 94
+    },
+    {
+      "uuid": "7acc37dc-e2e1-4ad8-9166-de9077cb4410",
+      "description": "a long trail",
+      "property": "leastWire",
+      "input": {
+        "beacons": [
+          [-340, -174],
+          [329, -477],
+          [222, 373],
+          [395, 360],
+          [-103, 163],
+          [75, 291],
+          [-146, 117],
+          [-209, 312],
+          [198, 392],
+          [-379, 321],
+          [184, -352],
+          [355, 324],
+          [-174, 255],
+          [477, 130],
+          [395, -58],
+          [-416, 468],
+          [-451, 155],
+          [52, -179],
+          [312, 469],
+          [491, -203],
+          [-458, 402],
+          [-382, 399],
+          [201, 118],
+          [-487, 484],
+          [20, -206],
+          [184, -347],
+          [-413, -306],
+          [-329, -65],
+          [-350, -162],
+          [98, 162],
+          [416, -478],
+          [-304, 293],
+          [-255, -106],
+          [-448, -58],
+          [-115, -291],
+          [-434, 299],
+          [152, -21],
+          [-339, 484],
+          [-237, -452],
+          [152, 26]
+        ]
+      },
+      "expected": 5718
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "62ba1882-f872-4a9b-a6fe-6a1ad08e0ddd",
+          "description": "one beacon",
+          "property": "leastWire",
+          "input": {
+            "beacons": [[5, -5]]
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "20c74e02-52fd-4949-bb77-afbb30378db5",
+          "description": "two beacons",
+          "property": "leastWire",
+          "input": {
+            "beacons": [[1, 2], [-4, 6]]
+          },
+          "expected": 9
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+id: walk-times
+kind: coding
+title: Walking times to every stall
+difficulty: easy
+skills:
+  - dijkstra-heap
+sibling: alert-relay
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: walkTimes
+  params:
+    - name: n
+      type: int
+    - name: paths
+      type: int[][]
+    - name: start
+      type: int
+  returns: int[]

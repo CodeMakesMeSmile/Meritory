@@ -1,0 +1,18 @@
+id: project-finish
+kind: coding
+title: The earliest the build can finish
+difficulty: medium
+skills:
+  - dag-paths
+sibling: scenic-descent
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: earliestFinish
+  params:
+    - name: hours
+      type: int[]
+    - name: needs
+      type: int[][]
+  returns: int

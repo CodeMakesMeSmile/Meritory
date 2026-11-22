@@ -1,0 +1,161 @@
+{
+  "exercise": "endless-bonus",
+  "cases": [
+    {
+      "uuid": "90c7e66a-0dcb-4694-a3fa-a1fa44b657e7",
+      "description": "two rooms that pay each other",
+      "property": "hasEndlessBonus",
+      "input": {
+        "n": 4,
+        "doors": [[0, 1, 3], [1, 2, -2], [2, 1, -2], [2, 3, 5]],
+        "start": 0
+      },
+      "expected": true
+    },
+    {
+      "uuid": "362247a4-d8f5-4bad-9170-adb34c6982ad",
+      "description": "a loop that adds up to exactly zero",
+      "property": "hasEndlessBonus",
+      "input": {
+        "n": 2,
+        "doors": [[0, 1, 2], [1, 0, -2]],
+        "start": 0
+      },
+      "expected": false
+    },
+    {
+      "uuid": "ffe075b3-23aa-4df2-bd86-dda4300fd170",
+      "description": "a paying loop out of reach",
+      "property": "hasEndlessBonus",
+      "input": {
+        "n": 4,
+        "doors": [[0, 1, 1], [2, 3, -5], [3, 2, 1]],
+        "start": 0
+      },
+      "expected": false
+    },
+    {
+      "uuid": "262389cc-42c8-433d-9154-6dcf6cd202fe",
+      "description": "paying doors with no loop",
+      "property": "hasEndlessBonus",
+      "input": {
+        "n": 3,
+        "doors": [[0, 1, -5], [1, 2, -5], [0, 2, 1]],
+        "start": 0
+      },
+      "expected": false
+    },
+    {
+      "uuid": "29c8abc1-b8b6-41b0-9afe-a1de5f7533d0",
+      "description": "a door back into the same room",
+      "property": "hasEndlessBonus",
+      "input": {
+        "n": 2,
+        "doors": [[0, 1, 1], [1, 1, -1]],
+        "start": 0
+      },
+      "expected": true
+    },
+    {
+      "uuid": "68c03e00-7ed8-4ba9-b1f6-0490bcb03ff5",
+      "description": "a long loop that pays a little",
+      "property": "hasEndlessBonus",
+      "input": {
+        "n": 5,
+        "doors": [[0, 1, 4], [1, 2, -3], [2, 3, 2], [3, 4, -2], [4, 0, -2]],
+        "start": 2
+      },
+      "expected": true
+    },
+    {
+      "uuid": "5177f692-2c32-4070-af6f-60c3096836f2",
+      "description": "a paying loop behind a one way door",
+      "property": "hasEndlessBonus",
+      "input": {
+        "n": 3,
+        "doors": [[1, 0, 1], [1, 2, -4], [2, 1, 2]],
+        "start": 0
+      },
+      "expected": false
+    },
+    {
+      "uuid": "1cfb2716-1087-4ea6-aa0b-745242a6fb52",
+      "description": "a busy maze with a paying loop",
+      "property": "hasEndlessBonus",
+      "input": {
+        "n": 8,
+        "doors": [
+          [3, 6, -2],
+          [2, 1, 3],
+          [1, 7, -2],
+          [6, 2, -3],
+          [2, 5, 4],
+          [3, 6, 10],
+          [5, 6, 12],
+          [0, 2, 1],
+          [6, 3, 0],
+          [5, 2, 7],
+          [3, 7, 0],
+          [7, 4, 1],
+          [5, 2, 2],
+          [4, 5, 2]
+        ],
+        "start": 0
+      },
+      "expected": true
+    },
+    {
+      "uuid": "5801f5fd-2043-41f1-8167-102e1d127d56",
+      "description": "a busy maze with no paying loop",
+      "property": "hasEndlessBonus",
+      "input": {
+        "n": 8,
+        "doors": [
+          [1, 3, 3],
+          [6, 4, 4],
+          [7, 0, -2],
+          [5, 0, 6],
+          [5, 2, 0],
+          [1, 2, 3],
+          [5, 1, 8],
+          [5, 3, 10],
+          [5, 2, 9],
+          [5, 7, -1],
+          [4, 5, 9],
+          [3, 2, 2],
+          [0, 6, 2],
+          [0, 5, 12]
+        ],
+        "start": 0
+      },
+      "expected": false
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "4e93c048-d7c2-482b-b3d3-acefe5481f6b",
+          "description": "one room and no doors",
+          "property": "hasEndlessBonus",
+          "input": {
+            "n": 1,
+            "doors": [],
+            "start": 0
+          },
+          "expected": false
+        },
+        {
+          "uuid": "36d15e26-64e6-4cb9-8a9c-14daddd36555",
+          "description": "a loop that costs coins",
+          "property": "hasEndlessBonus",
+          "input": {
+            "n": 3,
+            "doors": [[0, 1, 2], [1, 2, 2], [2, 0, -3]],
+            "start": 0
+          },
+          "expected": false
+        }
+      ]
+    }
+  ]
+}
