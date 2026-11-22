@@ -46,6 +46,7 @@ export function PickOneCard({
   focusOnOpen,
   checked,
   onCheck,
+  busy,
   after,
 }: {
   item: SittingCard;
@@ -53,6 +54,8 @@ export function PickOneCard({
   focusOnOpen: boolean;
   checked: Checked | null;
   onCheck: (right: boolean) => void;
+  /** Another save or Undo is still on its way */
+  busy: boolean;
   after: ReactNode;
 }) {
   const options = useMemo(
@@ -130,7 +133,7 @@ export function PickOneCard({
       <div className="flex justify-end">
         <Button
           type="button"
-          waiting={pick === null}
+          waiting={pick === null || busy}
           onClick={() => pick && onCheck(pick.correct === true)}
           className="w-full sm:w-50"
         >

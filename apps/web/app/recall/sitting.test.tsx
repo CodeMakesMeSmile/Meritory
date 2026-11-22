@@ -8,7 +8,7 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ replace: () => {}, push: () => {}, refresh: () => {} }),
 }));
 
-const { Sitting, UndoBar } = await import("./sitting.tsx");
+const { ratingsWait, Sitting, UndoBar } = await import("./sitting.tsx");
 const { PromptCard } = await import("./prompt-card.tsx");
 const { Explanation, Lesson } = await import("./parts.tsx");
 
@@ -245,6 +245,51 @@ describe("a recall sitting", () => {
     expect(html).toContain('aria-label="Undo the Missed rating"');
     expect(html).toContain('aria-busy="true"');
     expect(html).toContain('aria-disabled="true"');
+  });
+
+  it("holds Undo while a rating saves or after it failed to", () => {
+    const html = renderToStaticMarkup(
+      <UndoBar
+        line={{
+          kind: "offer",
+          id: "r1",
+          rating: "good",
+          at: 0,
+          busy: false,
+          offline: false,
+        }}
+        locked
+        onUndo={() => {}}
+      />,
+    );
+    expect(html).toContain('aria-disabled="true"');
+    expect(html).toContain('aria-busy="true"');
+  });
+
+  const offer = (busy: boolean) =>
+    ({
+      kind: "offer",
+      id: "r1",
+      rating: "good",
+      at: 0,
+      busy,
+      offline: false,
+    }) as const;
+  const review = {
+    id: "r2",
+    card: item({ type: "prompt", points: ["Copies"] }).session,
+    rating: "good",
+    answeredAt: new Date(NOW),
+    durationMs: 1000,
+  } as const;
+
+  it.each([
+    ["nothing is out", { state: "idle" }, offer(false), false],
+    ["a rating saves", { state: "saving" }, null, true],
+    ["a rating failed to save", { state: "failed", review }, null, true],
+    ["an Undo is out", { state: "idle" }, offer(true), true],
+  ] as const)("holds ratings when %s", (_, saving, line, held) => {
+    expect(ratingsWait(saving, line)).toBe(held);
   });
 
   it("drops Undo once the rating is kept", () => {

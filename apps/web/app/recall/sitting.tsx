@@ -51,9 +51,12 @@ type Saving =
 export function UndoBar({
   line,
   onUndo,
+  locked = false,
 }: {
   line: UndoLine;
   onUndo: () => void;
+  /** A rating is saving or failed to save, so Undo waits for it */
+  locked?: boolean;
 }) {
   if (line.kind === "kept") {
     return (
@@ -73,8 +76,8 @@ export function UndoBar({
       <button
         type="button"
         onClick={onUndo}
-        aria-disabled={line.busy}
-        aria-busy={line.busy}
+        aria-disabled={line.busy || locked}
+        aria-busy={line.busy || locked}
         aria-label={`Undo the ${label} rating`}
         className={`${linkClass} flex h-control items-center pr-5`}
       >
@@ -82,6 +85,11 @@ export function UndoBar({
       </button>
     </div>
   );
+}
+
+/** Ratings and checks wait while a save or an Undo is out, and after a failed save */
+export function ratingsWait(saving: Saving, line: UndoLine | null): boolean {
+  return saving.state !== "idle" || (line?.kind === "offer" && line.busy);
 }
 
 function plural(count: number, one: string) {
@@ -162,6 +170,8 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
   // Cards done before Stop for now, when this sitting carries on from one
   const [before, setBefore] = useState<number | null>(null);
   const cardStart = useRef(Date.now());
+  // Set before the first await, so a second press in the same frame waits too
+  const inFlight = useRef(false);
 
   useEffect(() => {
     setShortcuts(shortcutsOn());
@@ -174,8 +184,12 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
 
   const save = useCallback(
     async (review: ReviewToSave, advance: boolean) => {
+      if (inFlight.current) return;
+      inFlight.current = true;
       setSaving({ state: "saving" });
-      const result = await saveReview(review);
+      const result = await saveReview(review).finally(() => {
+        inFlight.current = false;
+      });
       if (!result.ok) {
         if (result.reason === "signed_out") {
           router.replace(`/sign-in?next=${encodeURIComponent("/recall")}`);
@@ -221,7 +235,9 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
   const rate = useCallback(
     (rating: RecallRating) => {
       const next = review(rating);
-      if (!next || !item || saving.state === "saving") return;
+      if (!next || !item || inFlight.current || saving.state !== "idle") {
+        return;
+      }
       const missed = rating === "again";
       if (missed) {
         setChecked({
@@ -236,7 +252,7 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
   );
 
   function check(right: boolean) {
-    if (!item) return;
+    if (!item || inFlight.current || saving.state !== "idle") return;
     const rating: RecallRating = right ? "good" : "again";
     setChecked({
       right,
@@ -255,9 +271,13 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
   }
 
   async function undo() {
-    if (line?.kind !== "offer" || line.busy) return;
+    if (line?.kind !== "offer" || inFlight.current) return;
+    if (saving.state !== "idle") return;
+    inFlight.current = true;
     setLine({ ...line, busy: true });
-    const result = await undoReview(line.id);
+    const result = await undoReview(line.id).finally(() => {
+      inFlight.current = false;
+    });
     if (result.ok) {
       setSaved((list) => list.slice(0, -1));
       setLine(null);
@@ -294,7 +314,11 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
 
   const undoBar =
     line && showsUndo(line, index) ? (
-      <UndoBar line={line} onUndo={() => void undo()} />
+      <UndoBar
+        line={line}
+        locked={saving.state !== "idle"}
+        onUndo={() => void undo()}
+      />
     ) : null;
 
   if (!item) {
@@ -306,6 +330,7 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
     );
   }
 
+  const busy = ratingsWait(saving, line);
   const failed = saving.state === "failed" ? saving.review : null;
   const after = (
     <>
@@ -340,8 +365,10 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
         <div className="flex justify-end">
           <Button
             type="button"
-            waiting={saving.state === "saving"}
-            onClick={() => saving.state === "idle" && nextCard()}
+            waiting={busy}
+            onClick={() =>
+              !inFlight.current && saving.state === "idle" && nextCard()
+            }
             className="w-full sm:w-50"
           >
             Next card
@@ -391,7 +418,7 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
           checked={checked}
           shortcuts={shortcuts}
           onToggleShortcuts={toggleShortcuts}
-          saving={saving.state === "saving"}
+          saving={busy}
           onRate={rate}
         />
       ) : card.type === "pick-one" ? (
@@ -400,6 +427,7 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
           {...shared}
           card={card}
           checked={checked}
+          busy={busy}
           onCheck={check}
         />
       ) : card.type === "ordering" ? (
@@ -408,6 +436,7 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
           {...shared}
           card={card}
           checked={checked}
+          busy={busy}
           onCheck={check}
         />
       ) : (
@@ -416,6 +445,7 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
           {...shared}
           card={card}
           checked={checked}
+          busy={busy}
           onCheck={check}
         />
       )}
