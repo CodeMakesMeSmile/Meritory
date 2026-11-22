@@ -63,7 +63,10 @@ export function ProviderSignInProvider({ children }: { children: ReactNode }) {
         const back = providerReturn(url);
         setNotice(providerNotice(back.provider, back.error));
         setLinked(linkedText(back.linked));
-        if (back.code) pending.session = redeem(back.code, verifier);
+        // A code is single use, so a second return can't replace the first
+        if (back.code && !pending.session) {
+          pending.session = redeem(back.code, verifier);
+        }
       });
       try {
         const { error } = await authClient.signIn.social({
