@@ -1,0 +1,25 @@
+id: blank-tiles
+kind: coding
+title: Checking plays with blank tiles
+difficulty: medium
+skills:
+  - wildcard-search
+  - trie-insert-search
+sibling: pattern-counts
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  class: TileDictionary
+  params: []
+  methods:
+    - name: add
+      params:
+        - name: word
+          type: string
+      returns: void
+    - name: matches
+      params:
+        - name: pattern
+          type: string
+      returns: boolean

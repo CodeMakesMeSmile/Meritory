@@ -1,0 +1,19 @@
+id: pattern-counts
+kind: coding
+title: How many words fit the half-filled answer
+difficulty: medium
+skills:
+  - wildcard-search
+  - trie-shape
+sibling: blank-tiles
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: countFits
+  params:
+    - name: words
+      type: string[]
+    - name: patterns
+      type: string[]
+  returns: int[]

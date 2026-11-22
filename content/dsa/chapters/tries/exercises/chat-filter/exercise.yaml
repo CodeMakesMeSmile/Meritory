@@ -1,0 +1,20 @@
+id: chat-filter
+kind: coding
+title: Flagged words in a chat message
+difficulty: medium
+skills:
+  - many-words-at-once
+  - trie-or-set
+sibling: word-hunt
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: flaggedWords
+  params:
+    - name: message
+      type: string
+    - name: words
+      type: string[]
+  returns: string[]
+  anyOrder: true

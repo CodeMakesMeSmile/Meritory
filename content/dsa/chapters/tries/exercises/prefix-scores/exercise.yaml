@@ -1,0 +1,17 @@
+id: prefix-scores
+kind: coding
+title: Scoring words by the starts they share
+difficulty: medium
+skills:
+  - prefix-counts
+  - trie-shape
+sibling: prefix-tally
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: prefixScores
+  params:
+    - name: words
+      type: string[]
+  returns: int[]

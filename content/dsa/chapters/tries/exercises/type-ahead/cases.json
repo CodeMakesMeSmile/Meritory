@@ -1,0 +1,264 @@
+{
+  "exercise": "type-ahead",
+  "cases": [
+    {
+      "uuid": "b5c8d38c-a715-4cae-905a-d38c94573422",
+      "description": "suggests after each letter",
+      "property": "typeAhead",
+      "input": {
+        "products": ["hammer", "hinge", "hook", "hose", "hacksaw"],
+        "typed": "hos",
+        "k": 2
+      },
+      "expected": [["hacksaw", "hammer"], ["hook", "hose"], ["hose"]]
+    },
+    {
+      "uuid": "6a2aa47c-da0c-4d31-a3b1-5149589989b7",
+      "description": "fewer matches than k",
+      "property": "typeAhead",
+      "input": {
+        "products": ["nail", "nut"],
+        "typed": "na",
+        "k": 3
+      },
+      "expected": [["nail", "nut"], ["nail"]]
+    },
+    {
+      "uuid": "7ae3e975-00b4-445b-8e12-5522d359564c",
+      "description": "nothing matches after a letter",
+      "property": "typeAhead",
+      "input": {
+        "products": ["drill", "drain"],
+        "typed": "dry",
+        "k": 2
+      },
+      "expected": [["drain", "drill"], ["drain", "drill"], []]
+    },
+    {
+      "uuid": "6d84d25d-9f1b-4994-9069-c4115ea29ae4",
+      "description": "a name before the longer names that start with it",
+      "property": "typeAhead",
+      "input": {
+        "products": ["saw", "sawhorse", "sander", "saws"],
+        "typed": "saw",
+        "k": 3
+      },
+      "expected": [
+        ["sander", "saw", "sawhorse"],
+        ["sander", "saw", "sawhorse"],
+        ["saw", "sawhorse", "saws"]
+      ]
+    },
+    {
+      "uuid": "72b7cefa-9a80-47d8-bde8-fd56d0ae4d1b",
+      "description": "no match from the first letter",
+      "property": "typeAhead",
+      "input": {
+        "products": ["tape", "tile"],
+        "typed": "zip",
+        "k": 1
+      },
+      "expected": [[], [], []]
+    },
+    {
+      "uuid": "054f8335-855f-4f7d-aeb1-7b6339475e79",
+      "description": "typing past a whole name",
+      "property": "typeAhead",
+      "input": {
+        "products": ["bolt", "bolts"],
+        "typed": "boltss",
+        "k": 2
+      },
+      "expected": [
+        ["bolt", "bolts"],
+        ["bolt", "bolts"],
+        ["bolt", "bolts"],
+        ["bolt", "bolts"],
+        ["bolts"],
+        []
+      ]
+    },
+    {
+      "uuid": "9934bd89-3fb6-48e3-8a06-d271362a3a5d",
+      "description": "many products",
+      "property": "typeAhead",
+      "input": {
+        "products": [
+          "a",
+          "aa",
+          "aaaabbbb",
+          "aaacc",
+          "aab",
+          "aabaabb",
+          "aabbbbba",
+          "aabbcc",
+          "aacbbcab",
+          "ab",
+          "aba",
+          "abaa",
+          "ababba",
+          "abb",
+          "abbbab",
+          "abbcac",
+          "abbcbbba",
+          "abbcbcc",
+          "abc",
+          "abcb",
+          "abcbc",
+          "abccabc",
+          "acaab",
+          "acaabca",
+          "acaac",
+          "acaaca",
+          "acabbab",
+          "acabcccb",
+          "acacbaac",
+          "acacc",
+          "acaccaac",
+          "acbbcba",
+          "acbc",
+          "acc",
+          "accba",
+          "accbaa",
+          "accbbc",
+          "accc",
+          "acccccb",
+          "b",
+          "ba",
+          "baaaaabc",
+          "baaac",
+          "babaa",
+          "babb",
+          "babbacbc",
+          "babcacbc",
+          "babccbba",
+          "bacac",
+          "bacc",
+          "baccbca",
+          "bb",
+          "bbaacccb",
+          "bbab",
+          "bbacbabc",
+          "bbacbaca",
+          "bbbaccb",
+          "bbbcbcbc",
+          "bbc",
+          "bbcb",
+          "bbcbabac",
+          "bbcbacab",
+          "bbcbb",
+          "bbcca",
+          "bcabcab",
+          "bcac",
+          "bcacbba",
+          "bcacc",
+          "bcbbccc",
+          "bcbcaccb",
+          "bcc",
+          "bccac",
+          "bccbabbc",
+          "bccc",
+          "bcccbbab",
+          "bccccbc",
+          "c",
+          "ca",
+          "caa",
+          "caaabaab",
+          "caaacb",
+          "caacbaa",
+          "cabbcbba",
+          "cabc",
+          "cac",
+          "cacab",
+          "cacac",
+          "cacacac",
+          "cacbbaaa",
+          "caccccbb",
+          "cb",
+          "cbabba",
+          "cbabbabb",
+          "cbabbcca",
+          "cbabcba",
+          "cbaca",
+          "cbbacbb",
+          "cbbbccab",
+          "cbbcab",
+          "cbbccc",
+          "cbc",
+          "cbca",
+          "cbcba",
+          "cbcc",
+          "cc",
+          "ccaacba",
+          "ccabcba",
+          "ccacaca",
+          "ccb",
+          "ccbba",
+          "ccbcaca",
+          "cccac",
+          "cccb",
+          "cccbcbac",
+          "ccccbc"
+        ],
+        "typed": "abcab",
+        "k": 10
+      },
+      "expected": [
+        [
+          "a",
+          "aa",
+          "aaaabbbb",
+          "aaacc",
+          "aab",
+          "aabaabb",
+          "aabbbbba",
+          "aabbcc",
+          "aacbbcab",
+          "ab"
+        ],
+        [
+          "ab",
+          "aba",
+          "abaa",
+          "ababba",
+          "abb",
+          "abbbab",
+          "abbcac",
+          "abbcbbba",
+          "abbcbcc",
+          "abc"
+        ],
+        ["abc", "abcb", "abcbc", "abccabc"],
+        [],
+        []
+      ]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "992650e4-4c7d-45fb-833c-7a69b1d5cd23",
+          "description": "one product and one letter",
+          "property": "typeAhead",
+          "input": {
+            "products": ["glue"],
+            "typed": "g",
+            "k": 1
+          },
+          "expected": [["glue"]]
+        },
+        {
+          "uuid": "e522fd83-0744-4057-be1c-dbc82087fdbe",
+          "description": "k of one",
+          "property": "typeAhead",
+          "input": {
+            "products": ["clamp", "chisel", "clip"],
+            "typed": "cl",
+            "k": 1
+          },
+          "expected": [["chisel"], ["clamp"]]
+        }
+      ]
+    }
+  ]
+}

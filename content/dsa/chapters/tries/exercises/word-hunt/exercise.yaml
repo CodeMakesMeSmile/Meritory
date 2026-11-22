@@ -1,0 +1,20 @@
+id: word-hunt
+kind: coding
+title: Every listed word in the letter grid
+difficulty: hard
+skills:
+  - many-words-at-once
+  - trie-insert-search
+sibling: chat-filter
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: wordHunt
+  params:
+    - name: grid
+      type: string[]
+    - name: words
+      type: string[]
+  returns: string[]
+  anyOrder: true
