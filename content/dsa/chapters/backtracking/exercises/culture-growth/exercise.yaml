@@ -1,0 +1,18 @@
+id: culture-growth
+kind: coding
+title: How big the culture grows
+difficulty: easy
+skills:
+  - base-and-smaller
+sibling: move-the-crates
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: cultureSize
+  params:
+    - name: factor
+      type: int
+    - name: hours
+      type: int
+  returns: int

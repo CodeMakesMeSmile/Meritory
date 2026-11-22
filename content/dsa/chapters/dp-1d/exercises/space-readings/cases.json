@@ -1,0 +1,90 @@
+{
+  "exercise": "space-readings",
+  "cases": [
+    {
+      "uuid": "d29c5342-6b57-40f4-9b87-84d9a42636e8",
+      "description": "counts the ways to read the note",
+      "property": "splitCount",
+      "input": {
+        "text": "icecreamcone",
+        "words": ["ice", "cream", "icecream", "cone", "creamcone", "i", "ce"]
+      },
+      "expected": 5
+    },
+    {
+      "uuid": "c250a452-468e-4c22-81ba-fe62378b9415",
+      "description": "short words that combine",
+      "property": "splitCount",
+      "input": {
+        "text": "aaaa",
+        "words": ["a", "aa"]
+      },
+      "expected": 5
+    },
+    {
+      "uuid": "c3a74073-9ca0-44d7-88a2-9e780c15ca8f",
+      "description": "a note that can't be read",
+      "property": "splitCount",
+      "input": {
+        "text": "xyz",
+        "words": ["x", "y"]
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "6d1b769f-21a0-4aa5-b3e6-bd1ea01065da",
+      "description": "one way only",
+      "property": "splitCount",
+      "input": {
+        "text": "bluesky",
+        "words": ["blue", "sky", "blu"]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "b5c46e10-e1ba-4624-9248-9d6e5cba5919",
+      "description": "a count past the modulus",
+      "property": "splitCount",
+      "input": {
+        "text": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "words": ["a", "aa"]
+      },
+      "expected": 782204094
+    },
+    {
+      "uuid": "c29297a1-98ee-4bfe-a40f-aa626a23f07d",
+      "description": "the longest note",
+      "property": "splitCount",
+      "input": {
+        "text": "abababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababab",
+        "words": ["a", "b", "ab", "ba", "aba"]
+      },
+      "expected": 149864664
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "1adc7d57-af3f-4805-a821-73a2c9749502",
+          "description": "one letter that's a word",
+          "property": "splitCount",
+          "input": {
+            "text": "z",
+            "words": ["z"]
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "10ced08a-d706-4e7d-8d2e-b7910f13f1b1",
+          "description": "one letter that isn't",
+          "property": "splitCount",
+          "input": {
+            "text": "z",
+            "words": ["zz"]
+          },
+          "expected": 0
+        }
+      ]
+    }
+  ]
+}

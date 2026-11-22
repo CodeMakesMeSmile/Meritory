@@ -25,6 +25,11 @@ const START = "/v1/recall/tracks/dsa/chapters/arrays-and-hashing/start";
 
 let app: Awaited<ReturnType<typeof buildApp>> | undefined;
 
+// Building the whole curriculum can take longer than one test's time limit when every file runs at once
+beforeAll(async () => {
+  await builtContent();
+}, 60000);
+
 afterEach(async () => {
   await app?.close();
   app = undefined;

@@ -1,0 +1,17 @@
+id: rising-streak
+kind: coding
+title: Peaks that keep getting higher
+difficulty: medium
+skills:
+  - increasing-subsequence
+  - state-and-recurrence
+sibling: nesting-boxes
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: longestRise
+  params:
+    - name: heights
+      type: int[]
+  returns: int

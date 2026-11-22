@@ -1,0 +1,132 @@
+{
+  "exercise": "pack-choices",
+  "cases": [
+    {
+      "uuid": "7ce2a4c6-9d88-4fff-bb52-ee8dab66e112",
+      "description": "lists every set of three items",
+      "property": "packChoices",
+      "input": {
+        "items": [4, 7, 2]
+      },
+      "expected": [[], [4], [7], [2], [4, 7], [4, 2], [7, 2], [4, 7, 2]]
+    },
+    {
+      "uuid": "9f53bc5f-fd7c-4078-b093-79a8d6f18e69",
+      "description": "keeps the input order inside each set",
+      "property": "packChoices",
+      "input": {
+        "items": [5, 1]
+      },
+      "expected": [[], [5], [1], [5, 1]]
+    },
+    {
+      "uuid": "0801af1a-06c1-4ead-9a04-29ba2a271231",
+      "description": "items in falling order",
+      "property": "packChoices",
+      "input": {
+        "items": [3, 2, 1]
+      },
+      "expected": [[], [3], [2], [1], [3, 2], [3, 1], [2, 1], [3, 2, 1]]
+    },
+    {
+      "uuid": "a96188eb-04cb-4603-aedb-aa2104a33c9a",
+      "description": "four items make sixteen sets",
+      "property": "packChoices",
+      "input": {
+        "items": [10, 20, 30, 40]
+      },
+      "expected": [
+        [],
+        [10],
+        [20],
+        [30],
+        [40],
+        [10, 20],
+        [10, 30],
+        [10, 40],
+        [20, 30],
+        [20, 40],
+        [30, 40],
+        [10, 20, 30],
+        [10, 20, 40],
+        [10, 30, 40],
+        [20, 30, 40],
+        [10, 20, 30, 40]
+      ]
+    },
+    {
+      "uuid": "89afaab9-de9a-4932-ba36-4489553f263c",
+      "description": "five items make thirty two sets",
+      "property": "packChoices",
+      "input": {
+        "items": [9, 3, 7, 1, 5]
+      },
+      "expected": [
+        [],
+        [9],
+        [3],
+        [7],
+        [1],
+        [5],
+        [9, 3],
+        [9, 7],
+        [9, 1],
+        [9, 5],
+        [3, 7],
+        [3, 1],
+        [3, 5],
+        [7, 1],
+        [7, 5],
+        [1, 5],
+        [9, 3, 7],
+        [9, 3, 1],
+        [9, 3, 5],
+        [9, 7, 1],
+        [9, 7, 5],
+        [9, 1, 5],
+        [3, 7, 1],
+        [3, 7, 5],
+        [3, 1, 5],
+        [7, 1, 5],
+        [9, 3, 7, 1],
+        [9, 3, 7, 5],
+        [9, 3, 1, 5],
+        [9, 7, 1, 5],
+        [3, 7, 1, 5],
+        [9, 3, 7, 1, 5]
+      ]
+    },
+    {
+      "uuid": "238b32fc-dcf4-4db0-9d0b-1d608ef1a138",
+      "description": "the heaviest items",
+      "property": "packChoices",
+      "input": {
+        "items": [1000, 1]
+      },
+      "expected": [[], [1000], [1], [1000, 1]]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "f5361c37-215b-4a62-b852-02e1cedc2640",
+          "description": "nothing to pack still allows the empty set",
+          "property": "packChoices",
+          "input": {
+            "items": []
+          },
+          "expected": [[]]
+        },
+        {
+          "uuid": "53ff58b7-ed94-4aca-80f1-d5d4485777d5",
+          "description": "one item",
+          "property": "packChoices",
+          "input": {
+            "items": [8]
+          },
+          "expected": [[], [8]]
+        }
+      ]
+    }
+  ]
+}

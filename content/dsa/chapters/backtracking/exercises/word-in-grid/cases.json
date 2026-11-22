@@ -1,0 +1,130 @@
+{
+  "exercise": "word-in-grid",
+  "cases": [
+    {
+      "uuid": "45079b54-d750-4bde-991b-e1744e77ed6d",
+      "description": "finds a word that turns corners",
+      "property": "wordInGrid",
+      "input": {
+        "grid": ["pne", "lat"],
+        "word": "planet"
+      },
+      "expected": true
+    },
+    {
+      "uuid": "bc72a931-46e4-4782-9292-28689a72cba2",
+      "description": "a word that isn't there",
+      "property": "wordInGrid",
+      "input": {
+        "grid": ["pne", "lat"],
+        "word": "plant"
+      },
+      "expected": false
+    },
+    {
+      "uuid": "7d95d112-17c5-4f45-b009-494e7b0ebb06",
+      "description": "a word that would use a cell twice",
+      "property": "wordInGrid",
+      "input": {
+        "grid": ["ab", "cd"],
+        "word": "aba"
+      },
+      "expected": false
+    },
+    {
+      "uuid": "bb9809d6-1222-4c73-bfe4-52c6f651fd3a",
+      "description": "needs cells that an earlier try used",
+      "property": "wordInGrid",
+      "input": {
+        "grid": ["aa", "ab"],
+        "word": "aaab"
+      },
+      "expected": true
+    },
+    {
+      "uuid": "f10097e7-6f0e-4755-922e-6e60f4d5e405",
+      "description": "the first start is a dead end",
+      "property": "wordInGrid",
+      "input": {
+        "grid": ["dox", "xdo", "xxg"],
+        "word": "dog"
+      },
+      "expected": true
+    },
+    {
+      "uuid": "bc0c2bdd-c09c-41fa-bcff-63ddc0a15ba1",
+      "description": "diagonal steps don't count",
+      "property": "wordInGrid",
+      "input": {
+        "grid": ["ax", "yb"],
+        "word": "ab"
+      },
+      "expected": false
+    },
+    {
+      "uuid": "7f9127f8-3479-48d7-b7f8-3c66aab519a0",
+      "description": "a letter the grid doesn't have",
+      "property": "wordInGrid",
+      "input": {
+        "grid": ["rot", "ate"],
+        "word": "rotz"
+      },
+      "expected": false
+    },
+    {
+      "uuid": "2c178dc0-d860-4687-944e-4323e1b7f87c",
+      "description": "a word that fills the whole grid",
+      "property": "wordInGrid",
+      "input": {
+        "grid": ["abc", "fed", "ghi"],
+        "word": "abcdefghi"
+      },
+      "expected": true
+    },
+    {
+      "uuid": "55bd60b7-e540-456f-8794-9ab274819aa9",
+      "description": "reads up and to the left",
+      "property": "wordInGrid",
+      "input": {
+        "grid": ["tsr", "uvq", "wxp"],
+        "word": "pqrstu"
+      },
+      "expected": true
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "8be18f40-07fb-4d32-9313-4b1fc61402ee",
+          "description": "one cell that matches",
+          "property": "wordInGrid",
+          "input": {
+            "grid": ["q"],
+            "word": "q"
+          },
+          "expected": true
+        },
+        {
+          "uuid": "b7e50f6e-2ff2-4c3d-81f6-f807043317ae",
+          "description": "one cell that doesn't match",
+          "property": "wordInGrid",
+          "input": {
+            "grid": ["q"],
+            "word": "z"
+          },
+          "expected": false
+        },
+        {
+          "uuid": "170c3bd2-90af-4ec8-9f4f-b92a7657f81b",
+          "description": "a word longer than the grid has cells",
+          "property": "wordInGrid",
+          "input": {
+            "grid": ["aa", "aa"],
+            "word": "aaaaa"
+          },
+          "expected": false
+        }
+      ]
+    }
+  ]
+}

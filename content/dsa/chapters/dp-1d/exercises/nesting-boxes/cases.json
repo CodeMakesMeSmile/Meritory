@@ -1,0 +1,113 @@
+{
+  "exercise": "nesting-boxes",
+  "cases": [
+    {
+      "uuid": "4632e48b-d75e-458f-9ce5-fba20736714b",
+      "description": "nests the most boxes",
+      "property": "mostNested",
+      "input": {
+        "boxes": [[3, 5], [4, 6], [4, 2], [1, 1], [5, 8]]
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "12526242-021c-4bf5-a52a-6ee375c48f77",
+      "description": "equal widths can't nest",
+      "property": "mostNested",
+      "input": {
+        "boxes": [[2, 3], [2, 4], [2, 5]]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "ed4329d8-bf15-4a30-98eb-ae961b566ecf",
+      "description": "equal heights can't nest",
+      "property": "mostNested",
+      "input": {
+        "boxes": [[1, 5], [2, 5], [3, 5]]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "edc67789-fc4d-4e1c-a703-b47ca0792d39",
+      "description": "boxes can't be turned",
+      "property": "mostNested",
+      "input": {
+        "boxes": [[3, 6], [7, 4]]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "28360a59-abaf-43e8-b786-9f036de952ce",
+      "description": "a full chain in any order",
+      "property": "mostNested",
+      "input": {
+        "boxes": [[3, 3], [1, 1], [4, 4], [2, 2]]
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "03037180-c89e-4994-af42-2958f9c46563",
+      "description": "two copies of the same box",
+      "property": "mostNested",
+      "input": {
+        "boxes": [[4, 4], [4, 4]]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "d1bb2a35-8d2d-425a-bcba-42bc9cf1fb99",
+      "description": "same widths among a chain",
+      "property": "mostNested",
+      "input": {
+        "boxes": [[1, 2], [2, 3], [2, 5], [3, 4], [3, 6], [4, 7]]
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "8188a785-d5cb-456d-9d32-83232c51c821",
+      "description": "twelve boxes",
+      "property": "mostNested",
+      "input": {
+        "boxes": [
+          [5, 10],
+          [1, 5],
+          [2, 1],
+          [9, 6],
+          [4, 8],
+          [3, 5],
+          [5, 6],
+          [8, 8],
+          [2, 3],
+          [12, 8],
+          [12, 1],
+          [8, 8]
+        ]
+      },
+      "expected": 4
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "e3bba265-a3db-4ff6-b798-401854969ae6",
+          "description": "one box",
+          "property": "mostNested",
+          "input": {
+            "boxes": [[5, 5]]
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "f37c6090-1adf-4560-b01f-aabd7fceeac6",
+          "description": "the largest sizes",
+          "property": "mostNested",
+          "input": {
+            "boxes": [[100000, 100000], [1, 1], [99999, 99999]]
+          },
+          "expected": 3
+        }
+      ]
+    }
+  ]
+}

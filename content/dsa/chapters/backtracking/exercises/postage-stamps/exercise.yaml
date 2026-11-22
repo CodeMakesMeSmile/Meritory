@@ -1,0 +1,20 @@
+id: postage-stamps
+kind: coding
+title: Stamps for the postage
+difficulty: medium
+skills:
+  - target-combinations
+  - prune-early
+sibling: voucher-spend
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: stampSets
+  params:
+    - name: values
+      type: int[]
+    - name: postage
+      type: int
+  returns: int[][]
+  anyOrder: true

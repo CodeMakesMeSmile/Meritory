@@ -1,0 +1,17 @@
+id: berry-maze
+kind: coding
+title: The best berry picking walk
+difficulty: medium
+skills:
+  - grid-word-search
+  - choose-explore-undo
+sibling: word-in-grid
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: mostBerries
+  params:
+    - name: field
+      type: int[][]
+  returns: int

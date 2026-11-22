@@ -1,0 +1,19 @@
+id: change-ways
+kind: coding
+title: Ways to make the change
+difficulty: medium
+skills:
+  - make-change
+  - state-and-recurrence
+sibling: fewest-tokens
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: changeWays
+  params:
+    - name: coins
+      type: int[]
+    - name: amount
+      type: int
+  returns: int

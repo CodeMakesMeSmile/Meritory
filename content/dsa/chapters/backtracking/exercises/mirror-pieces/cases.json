@@ -1,0 +1,120 @@
+{
+  "exercise": "mirror-pieces",
+  "cases": [
+    {
+      "uuid": "81907734-485f-4e35-a0fe-b1e3211b8e2e",
+      "description": "lists every split into mirror pieces",
+      "property": "mirrorSplits",
+      "input": {
+        "word": "noon"
+      },
+      "expected": [["noon"], ["n", "oo", "n"], ["n", "o", "o", "n"]]
+    },
+    {
+      "uuid": "2c218c6b-0356-4181-b553-f739aad1f2a0",
+      "description": "a pair at the start",
+      "property": "mirrorSplits",
+      "input": {
+        "word": "aab"
+      },
+      "expected": [["aa", "b"], ["a", "a", "b"]]
+    },
+    {
+      "uuid": "462b863b-1f2f-41de-9732-0c644cd61614",
+      "description": "no piece longer than one letter",
+      "property": "mirrorSplits",
+      "input": {
+        "word": "abc"
+      },
+      "expected": [["a", "b", "c"]]
+    },
+    {
+      "uuid": "c33d4319-8545-48b1-9197-aeccbaa563d2",
+      "description": "every letter the same",
+      "property": "mirrorSplits",
+      "input": {
+        "word": "aaa"
+      },
+      "expected": [["aaa"], ["a", "aa"], ["aa", "a"], ["a", "a", "a"]]
+    },
+    {
+      "uuid": "10c7ad7c-4846-4629-bf8b-cba6dd90cd1c",
+      "description": "a long mirror word",
+      "property": "mirrorSplits",
+      "input": {
+        "word": "racecar"
+      },
+      "expected": [
+        ["racecar"],
+        ["r", "aceca", "r"],
+        ["r", "a", "cec", "a", "r"],
+        ["r", "a", "c", "e", "c", "a", "r"]
+      ]
+    },
+    {
+      "uuid": "ea01ba63-36f7-42a8-84a7-0a1d87bdd7d4",
+      "description": "mirrors inside mirrors",
+      "property": "mirrorSplits",
+      "input": {
+        "word": "abacaba"
+      },
+      "expected": [
+        ["abacaba"],
+        ["aba", "c", "aba"],
+        ["a", "b", "a", "c", "aba"],
+        ["a", "bacab", "a"],
+        ["a", "b", "aca", "b", "a"],
+        ["aba", "c", "a", "b", "a"],
+        ["a", "b", "a", "c", "a", "b", "a"]
+      ]
+    },
+    {
+      "uuid": "06c04f8c-f2a1-4896-8229-af1ee85cc635",
+      "description": "pieces that overlap",
+      "property": "mirrorSplits",
+      "input": {
+        "word": "abbab"
+      },
+      "expected": [
+        ["a", "b", "bab"],
+        ["abba", "b"],
+        ["a", "bb", "a", "b"],
+        ["a", "b", "b", "a", "b"]
+      ]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "017c433c-c6a5-4936-821b-fea1c2aa6e02",
+          "description": "one letter",
+          "property": "mirrorSplits",
+          "input": {
+            "word": "x"
+          },
+          "expected": [["x"]]
+        },
+        {
+          "uuid": "c8a5f62d-188f-4d74-b3a3-4edbf0c711af",
+          "description": "two different letters",
+          "property": "mirrorSplits",
+          "input": {
+            "word": "ab"
+          },
+          "expected": [["a", "b"]]
+        },
+        {
+          "uuid": "ee76e8c7-b5f4-4765-8b31-f84ddabd5294",
+          "description": "the longest word",
+          "property": "mirrorSplits",
+          "input": {
+            "word": "abcdefghijkl"
+          },
+          "expected": [
+            ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"]
+          ]
+        }
+      ]
+    }
+  ]
+}

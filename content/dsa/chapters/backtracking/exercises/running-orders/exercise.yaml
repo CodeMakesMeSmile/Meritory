@@ -1,0 +1,18 @@
+id: running-orders
+kind: coding
+title: Every running order for the show
+difficulty: medium
+skills:
+  - all-orderings
+  - choose-explore-undo
+sibling: bead-patterns
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: runningOrders
+  params:
+    - name: acts
+      type: int[]
+  returns: int[][]
+  anyOrder: true

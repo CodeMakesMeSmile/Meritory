@@ -1,0 +1,100 @@
+{
+  "exercise": "change-ways",
+  "cases": [
+    {
+      "uuid": "0fb511b6-3785-43f1-8626-13b991525440",
+      "description": "counts the sets of coins",
+      "property": "changeWays",
+      "input": {
+        "coins": [1, 2, 5],
+        "amount": 5
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "ee576702-68c9-4e0a-85fd-6dfb026788df",
+      "description": "an amount that can't be made",
+      "property": "changeWays",
+      "input": {
+        "coins": [2],
+        "amount": 3
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "3c2678ab-f258-4f10-9af3-7703160f9930",
+      "description": "one coin that matches",
+      "property": "changeWays",
+      "input": {
+        "coins": [10],
+        "amount": 10
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "634ad84b-bdc9-42a0-87c3-5b7f43916183",
+      "description": "three odd coins",
+      "property": "changeWays",
+      "input": {
+        "coins": [3, 5, 7],
+        "amount": 20
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "c714d7b6-6eab-434e-9937-c03d82e7e756",
+      "description": "coins in any order",
+      "property": "changeWays",
+      "input": {
+        "coins": [5, 1, 2],
+        "amount": 12
+      },
+      "expected": 13
+    },
+    {
+      "uuid": "c7c41c13-ceba-4bc7-958a-b3c6eb81dc62",
+      "description": "a count past the modulus",
+      "property": "changeWays",
+      "input": {
+        "coins": [1, 2, 5, 10, 20, 50, 100, 200],
+        "amount": 5000
+      },
+      "expected": 315143852
+    },
+    {
+      "uuid": "83419813-56b2-4275-aa56-be8a0dfdcee1",
+      "description": "many small coins",
+      "property": "changeWays",
+      "input": {
+        "coins": [1, 2, 3],
+        "amount": 2000
+      },
+      "expected": 334334
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "e142a455-0970-4a63-8cff-c2f308fae7ea",
+          "description": "an amount of 0 has one way, no coins",
+          "property": "changeWays",
+          "input": {
+            "coins": [1, 2],
+            "amount": 0
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "5ce26d79-e222-47ba-a189-748d40376b20",
+          "description": "every coin is bigger than the amount",
+          "property": "changeWays",
+          "input": {
+            "coins": [7],
+            "amount": 5
+          },
+          "expected": 0
+        }
+      ]
+    }
+  ]
+}

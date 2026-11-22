@@ -1,0 +1,20 @@
+id: backtracking
+title: Recursion and backtracking
+order: 8
+skills:
+  - id: base-and-smaller
+    name: Solve a problem with a base case and a smaller problem of the same shape
+  - id: choose-explore-undo
+    name: Build answers one choice at a time with choose, explore, and undo
+  - id: all-subsets
+    name: List every subset by moving forward through the items
+  - id: all-orderings
+    name: List every ordering by tracking which items are already used
+  - id: target-combinations
+    name: Find the combinations that hit a target, with and without reusing items
+  - id: skip-duplicates
+    name: Sort first, then skip repeated choices so each answer appears once
+  - id: prune-early
+    name: Cut a branch as soon as it can't lead to an answer
+  - id: grid-word-search
+    name: Search a grid for a path, marking each cell on the way in and clearing it on the way out

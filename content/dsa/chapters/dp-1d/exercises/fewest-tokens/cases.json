@@ -1,0 +1,120 @@
+{
+  "exercise": "fewest-tokens",
+  "cases": [
+    {
+      "uuid": "238252c3-5b14-4da1-bfaa-984d19b16042",
+      "description": "the biggest token first isn't best",
+      "property": "fewestTokens",
+      "input": {
+        "tokens": [1, 3, 4],
+        "fare": 6
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "aebddc6b-8eaf-4945-b5d8-dcde51028119",
+      "description": "a fare that can't be paid",
+      "property": "fewestTokens",
+      "input": {
+        "tokens": [2],
+        "fare": 3
+      },
+      "expected": -1
+    },
+    {
+      "uuid": "b6dd095e-87be-46f9-87bd-1f7817bdeeeb",
+      "description": "two tokens of different values",
+      "property": "fewestTokens",
+      "input": {
+        "tokens": [5, 10, 25],
+        "fare": 30
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "fd793fa2-6686-4d86-a0a6-7313b6abb25e",
+      "description": "greedy would use three tokens",
+      "property": "fewestTokens",
+      "input": {
+        "tokens": [9, 6, 5, 1],
+        "fare": 11
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "8b08f7de-9273-47d8-af90-6004d6137e4a",
+      "description": "a mix of values",
+      "property": "fewestTokens",
+      "input": {
+        "tokens": [4, 7],
+        "fare": 15
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "9160799e-5a5e-4f5c-9651-8249d1d8b491",
+      "description": "no mix of two values works",
+      "property": "fewestTokens",
+      "input": {
+        "tokens": [3, 7],
+        "fare": 11
+      },
+      "expected": -1
+    },
+    {
+      "uuid": "c201ee86-ce23-4ff1-8515-821b4ed59e0d",
+      "description": "the largest fare",
+      "property": "fewestTokens",
+      "input": {
+        "tokens": [1, 50, 99],
+        "fare": 10000
+      },
+      "expected": 102
+    },
+    {
+      "uuid": "ce083f17-5177-4499-8a3f-d3f8c86dac35",
+      "description": "token values in any order",
+      "property": "fewestTokens",
+      "input": {
+        "tokens": [10, 1, 5, 2],
+        "fare": 10000
+      },
+      "expected": 1000
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "86cbb77d-2d4a-4520-be72-351912930453",
+          "description": "a fare of 0 needs no tokens",
+          "property": "fewestTokens",
+          "input": {
+            "tokens": [1],
+            "fare": 0
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "c280c628-ed47-480b-8a5b-bb26b921ba93",
+          "description": "every token is worth more than the fare",
+          "property": "fewestTokens",
+          "input": {
+            "tokens": [7, 9],
+            "fare": 5
+          },
+          "expected": -1
+        },
+        {
+          "uuid": "2850bb11-0057-4695-976a-a2f5c7e9c23b",
+          "description": "one token that matches",
+          "property": "fewestTokens",
+          "input": {
+            "tokens": [10000],
+            "fare": 10000
+          },
+          "expected": 1
+        }
+      ]
+    }
+  ]
+}

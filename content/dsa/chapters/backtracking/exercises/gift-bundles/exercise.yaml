@@ -1,0 +1,18 @@
+id: gift-bundles
+kind: coding
+title: Gift bundles without repeats
+difficulty: medium
+skills:
+  - all-subsets
+  - skip-duplicates
+sibling: pack-choices
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: giftBundles
+  params:
+    - name: prices
+      type: int[]
+  returns: int[][]
+  anyOrder: true

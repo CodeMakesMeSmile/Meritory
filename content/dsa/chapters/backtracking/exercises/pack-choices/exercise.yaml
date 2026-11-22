@@ -1,0 +1,18 @@
+id: pack-choices
+kind: coding
+title: Every way to pack the bag
+difficulty: easy
+skills:
+  - all-subsets
+  - choose-explore-undo
+sibling: gift-bundles
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: packChoices
+  params:
+    - name: items
+      type: int[]
+  returns: int[][]
+  anyOrder: true

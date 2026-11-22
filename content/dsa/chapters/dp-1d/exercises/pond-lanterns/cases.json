@@ -1,0 +1,102 @@
+{
+  "exercise": "pond-lanterns",
+  "cases": [
+    {
+      "uuid": "48c05e0c-0116-4965-9eea-c7e3088caeaa",
+      "description": "lights the brightest lanterns around the pond",
+      "property": "brightestRing",
+      "input": {
+        "glow": [3, 10, 3, 1, 2]
+      },
+      "expected": 12
+    },
+    {
+      "uuid": "ef9dc428-4475-497b-a00f-60be50f7722f",
+      "description": "the two ends are neighbours",
+      "property": "brightestRing",
+      "input": {
+        "glow": [9, 1, 1, 9]
+      },
+      "expected": 10
+    },
+    {
+      "uuid": "d583d363-d216-485e-bc6f-3cd8acc61d8a",
+      "description": "three lanterns all touch",
+      "property": "brightestRing",
+      "input": {
+        "glow": [5, 1, 5]
+      },
+      "expected": 5
+    },
+    {
+      "uuid": "9032d415-6270-4e1a-8554-e85af689835f",
+      "description": "two lanterns",
+      "property": "brightestRing",
+      "input": {
+        "glow": [6, 8]
+      },
+      "expected": 8
+    },
+    {
+      "uuid": "ccadfc60-7353-430d-bcbb-801489baa0c6",
+      "description": "every lantern is as bright",
+      "property": "brightestRing",
+      "input": {
+        "glow": [4, 4, 4, 4]
+      },
+      "expected": 8
+    },
+    {
+      "uuid": "b2f0049d-5997-4ed5-91ba-ee56e7a26de8",
+      "description": "the best plan skips both ends",
+      "property": "brightestRing",
+      "input": {
+        "glow": [1, 7, 2, 7, 1]
+      },
+      "expected": 14
+    },
+    {
+      "uuid": "c9903c5f-4734-497e-9fae-9201a30f4894",
+      "description": "eighteen lanterns",
+      "property": "brightestRing",
+      "input": {
+        "glow": [
+          10, 48, 39, 20, 2, 15, 39, 17, 2, 10, 39, 43, 41, 2, 30, 30, 39, 41
+        ]
+      },
+      "expected": 260
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "64fe6801-03b4-4a62-8198-0a228689ba0f",
+          "description": "one lantern",
+          "property": "brightestRing",
+          "input": {
+            "glow": [1]
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "7516133d-1517-49ac-b11b-aee5820258cf",
+          "description": "lanterns with no glow",
+          "property": "brightestRing",
+          "input": {
+            "glow": [0, 0]
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "cef5a166-6873-4fee-8936-a010cffb6ecb",
+          "description": "the brightest lanterns",
+          "property": "brightestRing",
+          "input": {
+            "glow": [10000, 10000, 10000, 10000, 10000]
+          },
+          "expected": 20000
+        }
+      ]
+    }
+  ]
+}
