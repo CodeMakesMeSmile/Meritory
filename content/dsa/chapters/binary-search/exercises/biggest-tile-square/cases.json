@@ -1,0 +1,109 @@
+{
+  "exercise": "biggest-tile-square",
+  "cases": [
+    {
+      "uuid": "4738d061-69a0-405e-8739-01d1eee7b229",
+      "description": "stops short of the next square",
+      "property": "biggestSquare",
+      "input": {
+        "tiles": 30
+      },
+      "expected": 5
+    },
+    {
+      "uuid": "e94763cf-983c-49f2-9915-33b02ba52c69",
+      "description": "an exact square",
+      "property": "biggestSquare",
+      "input": {
+        "tiles": 36
+      },
+      "expected": 6
+    },
+    {
+      "uuid": "ad769c9e-9264-4ab7-96da-de082d8e0a48",
+      "description": "one short of a square",
+      "property": "biggestSquare",
+      "input": {
+        "tiles": 35
+      },
+      "expected": 5
+    },
+    {
+      "uuid": "76bd4447-69db-4723-bd64-68a2d7d41d22",
+      "description": "one past a square",
+      "property": "biggestSquare",
+      "input": {
+        "tiles": 37
+      },
+      "expected": 6
+    },
+    {
+      "uuid": "a1b4c188-f787-4e6c-9195-d736d4a0ef1b",
+      "description": "a few tiles",
+      "property": "biggestSquare",
+      "input": {
+        "tiles": 3
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "2a4b7925-79a4-4c61-b18f-3c1e56e642a0",
+      "description": "a big exact square",
+      "property": "biggestSquare",
+      "input": {
+        "tiles": 1000000
+      },
+      "expected": 1000
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "bd5e5ae7-61c9-4ee3-9376-2a0cdd591734",
+          "description": "no tiles",
+          "property": "biggestSquare",
+          "input": {
+            "tiles": 0
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "aefb0d23-6c91-4054-bb1a-0882fcd7b867",
+          "description": "one tile",
+          "property": "biggestSquare",
+          "input": {
+            "tiles": 1
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "1af18a60-e2da-4db5-bfb1-2b666ca284da",
+          "description": "two tiles",
+          "property": "biggestSquare",
+          "input": {
+            "tiles": 2
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "d3cbdf65-36f4-42fb-a289-39f4113bdf12",
+          "description": "the most tiles",
+          "property": "biggestSquare",
+          "input": {
+            "tiles": 2147483647
+          },
+          "expected": 46340
+        },
+        {
+          "uuid": "fb1e1048-7e29-4550-9cb0-80119094bc24",
+          "description": "the largest exact square that fits in 32 bits",
+          "property": "biggestSquare",
+          "input": {
+            "tiles": 2147395600
+          },
+          "expected": 46340
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,327 @@
+- id: why-check-must-stay-true
+  skill: half-open-invariant
+  asks: why
+  type: prompt
+  prompt: Binary search looks for the first position where a yes or no check is true. Why must the check never go from true back to false?
+  reworded: What has to be true of the check for binary search to find where it first passes?
+  points:
+    - Each step looks at one position and throws away half the range based on it.
+    - A pass at `mid` is taken to mean every later position passes too.
+    - If the check could go back to false, the first pass might be in the half that was thrown away.
+  misconception: That binary search works on any list as long as you know what you're looking for.
+  lesson:
+    title: False, then true, never back
+    explanation: Sorted order is what makes "at least the target" turn true once and stay true. Without that, one look at `mid` says nothing about the positions around it.
+- id: half-open-promise
+  skill: half-open-invariant
+  asks: what
+  type: matching
+  prompt: In the half-open template, match each part of the range to what's known about it.
+  reworded: With the unknown range written `[lo, hi)`, what's known about each part of the positions?
+  matchHeading: What's known
+  matchName: a fact
+  pairs:
+    - item: Positions before `lo`
+      match: Every one fails the check
+    - item: Positions from `lo` up to but not including `hi`
+      match: Not checked yet
+    - item: Positions from `hi` on
+      match: Every one passes the check
+  extraMatches:
+    - Every one equals the target
+  lesson:
+    title: Three parts, one unknown
+    explanation: The loop only ever shrinks the middle part. When it's empty, `lo` and `hi` meet at the first position that passes.
+- id: when-search-ends
+  skill: half-open-invariant
+  asks: when
+  type: pick-one
+  prompt: When the half-open search ends with `lo` equal to n, the length of the list, what does that mean?
+  reworded: The first true search finishes and `lo` is one past the last position. What does that tell you?
+  options:
+    - text: No position passes the check
+      correct: true
+      reason: Position n stands for "past the end", which is treated as passing so the promise holds even when nothing else does.
+    - text: The last position is the first one that passes
+      reason: Then `lo` would be n - 1.
+    - text: The search went wrong and should be run again
+      reason: It's a normal answer. It's where a value bigger than everything would go.
+  lesson:
+    title: One past the end means none
+    explanation: Starting `hi` at n promises that n passes. If every real position fails, `lo` climbs all the way to n, so check for it before reading the list there.
+- id: why-lo-less-than-hi
+  skill: off-by-one
+  asks: why
+  type: pick-one
+  prompt: In the half-open template, why does the loop run while `lo < hi` and not `lo <= hi`?
+  reworded: Why is `lo < hi` the right condition for a search over `[lo, hi)`?
+  options:
+    - text: The unknown range `[lo, hi)` is empty once `lo` equals `hi`
+      correct: true
+      reason: There's nothing left to check, and `lo` is already the answer.
+    - text: Using `<=` would make the search O(n)
+      reason: It would still halve. The trouble is that it looks at a position that isn't unknown, and with `hi = mid` it can loop forever.
+    - text: It's only a style choice
+      reason: The condition has to match the range. `<=` belongs with a closed range and different moves.
+  lesson:
+    title: Loop while something is unknown
+    explanation: In a half-open range, `hi` itself is outside the unknown part. The loop stops when nothing is left, and every rule in the template follows from that.
+- id: why-not-lo-equals-mid
+  skill: off-by-one
+  asks: why
+  type: prompt
+  prompt: When the check fails at `mid`, why set `lo = mid + 1` and never `lo = mid`?
+  reworded: What goes wrong in the half-open template if a failed check sets `lo` to `mid`?
+  points:
+    - The check failed at `mid`, so `mid` can't be the answer and belongs before `lo`.
+    - When `hi` is `lo + 1`, `mid` rounds down to `lo`, so `lo = mid` changes nothing.
+    - The range never shrinks, and the loop runs forever.
+  misconception: That `mid` should stay in the range just in case.
+  lesson:
+    title: Fail moves past mid, pass moves to mid
+    explanation: A pass keeps `mid` as a candidate with `hi = mid`. A fail rules it out with `lo = mid + 1`. Both shrink the range by at least one every time.
+- id: midpoint-overflow
+  skill: off-by-one
+  asks: when
+  type: pick-one
+  prompt: When does `(lo + hi) / 2` give a wrong midpoint in Java or C, where `lo + (hi - lo) / 2` doesn't?
+  reworded: In which case is `lo + (hi - lo) / 2` safer than `(lo + hi) / 2` for the midpoint?
+  options:
+    - text: When `lo` and `hi` are both big enough that their sum goes past the largest 32-bit number
+      correct: true
+      reason: The sum wraps around to a negative number. The difference `hi - lo` never gets that big.
+    - text: When the list has an odd length
+      reason: Both round down the same way for any length.
+    - text: When `lo` is 0
+      reason: With `lo` at 0 both give `hi / 2`.
+  lesson:
+    title: Subtract, then halve
+    explanation: Searching the answer space often uses ranges up to 2 billion, so the sum overflows sooner than you'd expect. `lo + (hi - lo) / 2` stays inside the range.
+- id: why-two-searches
+  skill: first-and-last
+  asks: why
+  type: prompt
+  prompt: To find the first and last positions of a value in a sorted list, why run two binary searches instead of finding one copy and walking outward?
+  reworded: What's wrong with finding one copy of a value and stepping left and right to find the rest?
+  points:
+    - The walk is O(k), where k is the number of copies.
+    - When most of the list is that value, the walk is O(n).
+    - Two searches, for the first value at least the target and the first value bigger, are O(log n) whatever k is.
+  misconception: That finding any copy is the hard part.
+  lesson:
+    title: Search for both edges
+    explanation: The first copy is where "at least the target" turns true. The last copy is just before "bigger than the target" turns true. Each edge is its own O(log n) search.
+- id: last-copy-steps
+  skill: first-and-last
+  asks: what
+  type: ordering
+  prompt: Put the steps for finding the first and last positions of `target` in a sorted list of whole numbers in order.
+  reworded: In what order do you find where a value's copies start and end in a sorted list?
+  steps:
+    - Search for the first position whose value is at least `target`, and call it `start`.
+    - If `start` is past the end or doesn't hold `target`, report that it isn't there.
+    - Search for the first position whose value is at least `target + 1`, and call it `end`.
+    - Report `start` and `end - 1`.
+  lesson:
+    title: The second search lands one past
+    explanation: The first value bigger than `target` sits just after its last copy, so the last copy is one before it.
+- id: when-count-is-difference
+  skill: first-and-last
+  asks: when
+  type: pick-one
+  prompt: A sorted list of readings is searched for the first reading of at least `low` and the first reading bigger than `high`. When does the difference of those two positions give the right count of readings from `low` to `high`?
+  reworded: In a sorted list, when is "first bigger than high" minus "first at least low" the number of readings in that range?
+  options:
+    - text: Always, as long as `low` is at most `high`
+      correct: true
+      reason: Everything from the first position up to just before the second is in the range, and nothing else is.
+    - text: Only when `low` and `high` are both in the list
+      reason: The searches find where they would go, so they don't need to be in the list.
+    - text: Only when the readings have no repeats
+      reason: Repeats are counted correctly, since both edges are found exactly.
+  lesson:
+    title: Edges don't need to exist
+    explanation: Each search returns where its value would go. The readings between those two places are exactly the ones in range.
+- id: why-compare-with-last
+  skill: rotated-minimum
+  asks: why
+  type: prompt
+  prompt: When finding the minimum of a rotated sorted list of different values, why compare each value with the last value of the list?
+  reworded: What makes "is this at most the last value?" a check that binary search can use on a rotated list?
+  points:
+    - The list is two sorted runs, and every value in the first run is bigger than every value in the second.
+    - The last value is the end of the second run, so the first run is all bigger than it.
+    - The second run, from the minimum on, is all at most the last value.
+    - So the check is false, then true, and the first true is the minimum.
+  misconception: That a rotated list can't be binary searched because it isn't sorted.
+  lesson:
+    title: The last value splits the runs
+    explanation: Comparing with the last value turns a rotated list into the false, then true shape the template needs.
+- id: when-rotation-breaks
+  skill: rotated-minimum
+  asks: when
+  type: pick-one
+  prompt: When does a binary search for the minimum of a rotated sorted list stop working in O(log n)?
+  reworded: In what case can't you find a rotated list's minimum by comparing with the last value?
+  options:
+    - text: When values can repeat, as in `[2, 2, 2, 1, 2]`
+      correct: true
+      reason: Every value is at most the last one, so the check can't tell the runs apart.
+    - text: When the list wasn't rotated at all
+      reason: Every value is then at most the last, and the search correctly returns position 0.
+    - text: When the list has an even length
+      reason: Length doesn't matter.
+  lesson:
+    title: Repeats hide the drop
+    explanation: With repeats, a value equal to the last could be in either run. In the worst case you have to look at every value.
+- id: why-find-pivot-first
+  skill: rotated-search
+  asks: why
+  type: prompt
+  prompt: To find a value in a rotated sorted list, why find the minimum's position first?
+  reworded: How does knowing where the minimum is help you search a rotated sorted list?
+  points:
+    - The minimum's position splits the list into two sorted runs.
+    - Comparing the target with the last value says which run it could be in.
+    - That run is sorted, so a normal binary search finishes the job.
+    - Two O(log n) searches are still O(log n).
+  lesson:
+    title: Split, then search one side
+    explanation: Once you know where the runs meet, the rotated list is just two sorted lists, and you only need to search one of them.
+- id: rotated-search-steps
+  skill: rotated-search
+  asks: what
+  type: ordering
+  prompt: Put the steps for finding `target` in a rotated sorted list of different values in order.
+  reworded: In what order do you search a rotated sorted list for a value?
+  steps:
+    - Find `p`, the first position whose value is at most the last value.
+    - If `target` is at most the last value, search positions `p` to the end.
+    - Otherwise, search positions 0 to `p - 1`.
+    - Return the position if it holds `target`, or -1 if it doesn't.
+  lesson:
+    title: Pick the run, then search it
+    explanation: Values at most the last one live in the second run, from `p` to the end. Bigger values live in the first run, before `p`.
+- id: when-target-in-first-run
+  skill: rotated-search
+  asks: when
+  type: matching
+  prompt: In the rotated list `[40, 50, 60, 10, 20, 30]`, match each target to the part you'd search.
+  reworded: For each target in `[40, 50, 60, 10, 20, 30]`, which part of the list could hold it?
+  matchHeading: Part to search
+  matchName: a part
+  pairs:
+    - item: "50"
+      match: Positions 0 to 2, the first run
+    - item: "20"
+      match: Positions 3 to 5, the second run
+  extraMatches:
+    - The whole list, one value at a time
+    - Neither, since the list isn't sorted
+  lesson:
+    title: Compare with the last value
+    explanation: The last value is 30. Anything at most 30 can only be in the second run, which starts at the minimum. Anything bigger can only be in the first run.
+- id: when-answer-space
+  skill: answer-space
+  asks: when
+  type: prompt
+  prompt: When can you binary search over possible answers instead of over the input?
+  reworded: What signs tell you a problem can be solved by searching the range of answers?
+  points:
+    - The question asks for the smallest value that works, or the largest that's still safe.
+    - The answer comes from a known range, like 1 to the biggest input.
+    - You can check "does this value work?" in reasonable time.
+    - The check never goes from working back to failing as the value grows, or the other way round.
+  misconception: That binary search only searches lists you're given.
+  lesson:
+    title: Search answers, not items
+    explanation: If you can test any one answer and the results are false, then true, the answers form a list binary search can walk, even though nobody stored it.
+- id: why-check-greedy
+  skill: answer-space
+  asks: why
+  type: pick-one
+  prompt: When searching for the smallest van that delivers parcels, in order, within a number of days, why is it fine to check each capacity by loading every day as full as it can be?
+  reworded: Why does a greedy "fill each day as much as you can" pass answer whether a van size is big enough?
+  options:
+    - text: Filling each day as much as possible never uses more days than any other way of splitting the parcels
+      correct: true
+      reason: Starting a new day early only leaves more parcels for later days, so it can't help.
+    - text: The parcels are sorted, so any split works
+      reason: The parcels stay in their order and aren't sorted. The greedy pass is right for another reason.
+    - text: It's the only split that's fast enough to try
+      reason: Speed isn't the argument. The greedy pass is right because it never wastes a day.
+  lesson:
+    title: The check can be simple
+    explanation: Finding the best van directly is hard, but checking one van is a single greedy pass. Binary search turns many easy checks into the answer.
+- id: answer-space-bounds
+  skill: answer-space
+  asks: what
+  type: matching
+  prompt: Match each answer space search to a safe starting range.
+  reworded: For each of these searches, what range of answers do you search?
+  matchHeading: Range
+  matchName: a range
+  pairs:
+    - item: The slowest reading pace that finishes every chapter in time
+      match: From 1 to the longest chapter
+    - item: The smallest van that delivers every parcel in time
+      match: From the heaviest parcel to the total weight
+    - item: The largest whole square root of n
+      match: From 0 to n
+  extraMatches:
+    - From 0 to the number of items
+  lesson:
+    title: Start where the answer could be
+    explanation: The low end is the least that could work, like a van that fits the heaviest parcel. The high end is a value you know passes, like one van for everything in one day.
+- id: why-flatten-grid
+  skill: sorted-grid
+  asks: why
+  type: pick-one
+  prompt: A grid's rows are each sorted, and each row starts after the last one ends. Why can you binary search it as one list of rows × cols positions?
+  reworded: What lets you treat a grid sorted row after row as one sorted list?
+  options:
+    - text: Reading the rows one after another gives a single sorted list, and position `i` is row `i / cols`, column `i % cols`
+      correct: true
+      reason: The order of the positions matches the order of the values, so the template works unchanged.
+    - text: Each column is sorted
+      reason: That's true here, but it isn't what makes the grid one list. The rows joining in order is.
+    - text: The grid is square
+      reason: It doesn't need to be. Any number of rows and columns works.
+  lesson:
+    title: Rows joined end to end
+    explanation: Row 1 continues where row 0 stops, so the whole grid is one sorted list cut into pieces. Divide and take the remainder to find a position's row and column.
+- id: why-start-top-right
+  skill: sorted-grid
+  asks: why
+  type: prompt
+  prompt: In a grid where values rise along every row and down every column, why does a search start at the top right corner?
+  reworded: In a grid sorted along rows and columns, what's special about the top right corner?
+  points:
+    - It's the biggest value in its row and the smallest in its column.
+    - If it's too big, every value below it in that column is bigger, so the column can go.
+    - If it's too small, every value to its left in that row is smaller, so the row can go.
+    - Each step drops a row or a column, so the walk is O(rows + cols).
+  misconception: That you can binary search such a grid as one sorted list.
+  lesson:
+    title: One comparison, one row or column gone
+    explanation: From the top right, the two ways to move go in opposite directions in value. That's what lets every comparison rule something out. The bottom left works too, for the same reason.
+- id: when-grid-method
+  skill: sorted-grid
+  asks: when
+  type: matching
+  prompt: Match each grid to the way you'd search it.
+  reworded: Which search fits each kind of sorted grid?
+  matchHeading: Search
+  matchName: a search
+  pairs:
+    - item: Each row sorted, and each row starts after the last one ends
+      match: One binary search over every position
+    - item: Rows and columns both sorted, looking for one value
+      match: A walk from the top right corner
+    - item: Each row a run of 0s then 1s, looking for the fullest row
+      match: A binary search in each row
+  extraMatches:
+    - Sorting the whole grid first
+  lesson:
+    title: Use the order you're given
+    explanation: The more the grid is sorted as a whole, the more one search can cover. When only rows are sorted, each row gets its own search.

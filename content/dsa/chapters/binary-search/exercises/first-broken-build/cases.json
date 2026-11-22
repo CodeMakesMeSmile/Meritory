@@ -1,0 +1,109 @@
+{
+  "exercise": "first-broken-build",
+  "cases": [
+    {
+      "uuid": "d23f0f78-2618-44d4-9c8a-2a3ecf284e0c",
+      "description": "finds the first failure",
+      "property": "firstFailing",
+      "input": {
+        "builds": [true, true, true, false, false]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "96662c3e-0a96-40e0-b412-d533bf6b9bc6",
+      "description": "the very first build failed",
+      "property": "firstFailing",
+      "input": {
+        "builds": [false, false, false]
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "21da7543-de73-4072-a1fa-6648abb2e67d",
+      "description": "every build passed",
+      "property": "firstFailing",
+      "input": {
+        "builds": [true, true, true, true]
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "030ac335-41dd-4457-bc45-c4c342108b2c",
+      "description": "only the last build failed",
+      "property": "firstFailing",
+      "input": {
+        "builds": [true, true, true, true, true, false]
+      },
+      "expected": 5
+    },
+    {
+      "uuid": "314644bc-a924-4150-856f-00f23f57eb8c",
+      "description": "only the first build passed",
+      "property": "firstFailing",
+      "input": {
+        "builds": [true, false, false, false, false, false, false]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "73831eca-aa36-425f-b103-7eac1ef9e84e",
+      "description": "an even number of builds",
+      "property": "firstFailing",
+      "input": {
+        "builds": [true, true, false, false]
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "b91467a6-1d9d-488a-bd1b-a8be8c7ec84b",
+      "description": "a long run of passes",
+      "property": "firstFailing",
+      "input": {
+        "builds": [true, true, true, true, true, true, true, true, true, false]
+      },
+      "expected": 9
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "ca76368c-af29-4ccc-9999-d4ae69335ae5",
+          "description": "no builds",
+          "property": "firstFailing",
+          "input": {
+            "builds": []
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "c454b757-67c3-4709-8f68-f6eb988de68e",
+          "description": "one build that passed",
+          "property": "firstFailing",
+          "input": {
+            "builds": [true]
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "b28b8eda-d128-4c5a-88a6-923c529837ab",
+          "description": "one build that failed",
+          "property": "firstFailing",
+          "input": {
+            "builds": [false]
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "ef719f6f-e925-45b5-b22b-68727c3490e5",
+          "description": "two builds, the second failed",
+          "property": "firstFailing",
+          "input": {
+            "builds": [true, false]
+          },
+          "expected": 1
+        }
+      ]
+    }
+  ]
+}

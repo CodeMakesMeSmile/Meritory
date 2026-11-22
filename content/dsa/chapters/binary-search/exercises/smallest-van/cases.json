@@ -1,0 +1,112 @@
+{
+  "exercise": "smallest-van",
+  "cases": [
+    {
+      "uuid": "e9810797-efa2-43ab-a733-238288547b07",
+      "description": "finds the smallest van that fits",
+      "property": "smallestVan",
+      "input": {
+        "parcels": [4, 8, 2, 6, 5, 3],
+        "days": 3
+      },
+      "expected": 12
+    },
+    {
+      "uuid": "98af9db5-c04c-4f1d-9b3d-ef8997885653",
+      "description": "one day carries everything",
+      "property": "smallestVan",
+      "input": {
+        "parcels": [3, 1, 4],
+        "days": 1
+      },
+      "expected": 8
+    },
+    {
+      "uuid": "10d76577-6676-45b9-8a7b-d03a3ad50a5d",
+      "description": "a day for every parcel needs the heaviest",
+      "property": "smallestVan",
+      "input": {
+        "parcels": [3, 1, 4],
+        "days": 3
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "a3be785f-7e9b-463d-8779-1f3cc33ef88a",
+      "description": "a heavy parcel in the middle",
+      "property": "smallestVan",
+      "input": {
+        "parcels": [1, 1, 9, 1, 1],
+        "days": 2
+      },
+      "expected": 11
+    },
+    {
+      "uuid": "3b4b474f-8559-49da-8876-cedd152e2db2",
+      "description": "the order can't change",
+      "property": "smallestVan",
+      "input": {
+        "parcels": [5, 1, 1, 5],
+        "days": 2
+      },
+      "expected": 6
+    },
+    {
+      "uuid": "7af8d896-428c-4b8e-a2af-e15451554139",
+      "description": "every parcel the same weight",
+      "property": "smallestVan",
+      "input": {
+        "parcels": [2, 2, 2, 2, 2, 2],
+        "days": 4
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "209bac50-4b6c-4958-9de6-37c93c0c0823",
+      "description": "more days than the parcels need",
+      "property": "smallestVan",
+      "input": {
+        "parcels": [7, 2, 5],
+        "days": 3
+      },
+      "expected": 7
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "06c08758-35dc-4547-a2e1-7783b2ee8082",
+          "description": "one parcel",
+          "property": "smallestVan",
+          "input": {
+            "parcels": [5],
+            "days": 1
+          },
+          "expected": 5
+        },
+        {
+          "uuid": "77869a3a-a59f-4e11-8054-89423544fa3f",
+          "description": "handles the heaviest parcels",
+          "property": "smallestVan",
+          "input": {
+            "parcels": [500, 500, 500],
+            "days": 2
+          },
+          "expected": 1000
+        },
+        {
+          "uuid": "b4672a20-2d19-45e3-9dd3-001ffa255ac6",
+          "description": "many light parcels",
+          "property": "smallestVan",
+          "input": {
+            "parcels": [
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+            ],
+            "days": 3
+          },
+          "expected": 7
+        }
+      ]
+    }
+  ]
+}

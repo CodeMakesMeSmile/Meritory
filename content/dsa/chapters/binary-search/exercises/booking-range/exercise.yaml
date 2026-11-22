@@ -1,0 +1,19 @@
+id: booking-range
+kind: coding
+title: Bookings on one day
+difficulty: medium
+skills:
+  - first-and-last
+  - half-open-invariant
+sibling: count-in-range
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: bookingRange
+  params:
+    - name: days
+      type: int[]
+    - name: day
+      type: int
+  returns: int[]

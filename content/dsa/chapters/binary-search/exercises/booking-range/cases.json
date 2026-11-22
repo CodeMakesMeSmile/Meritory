@@ -1,0 +1,130 @@
+{
+  "exercise": "booking-range",
+  "cases": [
+    {
+      "uuid": "3d377b0a-a3fd-47f9-bd4b-833826d9007b",
+      "description": "finds where a busy day starts and ends",
+      "property": "bookingRange",
+      "input": {
+        "days": [2, 5, 5, 5, 9, 12],
+        "day": 5
+      },
+      "expected": [1, 3]
+    },
+    {
+      "uuid": "8cf6be9a-9ab9-40dc-95b0-79eb1a2e869e",
+      "description": "no bookings that day",
+      "property": "bookingRange",
+      "input": {
+        "days": [2, 5, 5, 5, 9, 12],
+        "day": 6
+      },
+      "expected": [-1, -1]
+    },
+    {
+      "uuid": "51618f03-d645-4afa-9736-a9e1592c7817",
+      "description": "one booking that day",
+      "property": "bookingRange",
+      "input": {
+        "days": [2, 5, 5, 5, 9, 12],
+        "day": 9
+      },
+      "expected": [4, 4]
+    },
+    {
+      "uuid": "4afcb29e-f602-4027-ab63-d91d5bbe2a8a",
+      "description": "bookings at the start",
+      "property": "bookingRange",
+      "input": {
+        "days": [3, 3, 4, 8],
+        "day": 3
+      },
+      "expected": [0, 1]
+    },
+    {
+      "uuid": "df399dce-fa5f-4be4-90d8-47e69d8e85eb",
+      "description": "bookings at the end",
+      "property": "bookingRange",
+      "input": {
+        "days": [1, 4, 7, 7, 7],
+        "day": 7
+      },
+      "expected": [2, 4]
+    },
+    {
+      "uuid": "9babd8ed-351f-46d7-a595-28ed599ac417",
+      "description": "every booking on that day",
+      "property": "bookingRange",
+      "input": {
+        "days": [6, 6, 6, 6],
+        "day": 6
+      },
+      "expected": [0, 3]
+    },
+    {
+      "uuid": "da079285-2751-4cc0-9073-8c54d0ff9581",
+      "description": "a day before every booking",
+      "property": "bookingRange",
+      "input": {
+        "days": [10, 20],
+        "day": 5
+      },
+      "expected": [-1, -1]
+    },
+    {
+      "uuid": "8d67c84c-17aa-4d43-b99d-050fbfc5d360",
+      "description": "a day after every booking",
+      "property": "bookingRange",
+      "input": {
+        "days": [10, 20],
+        "day": 25
+      },
+      "expected": [-1, -1]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "e6484ed8-2220-46c0-bb84-1592453a61f1",
+          "description": "no bookings",
+          "property": "bookingRange",
+          "input": {
+            "days": [],
+            "day": 3
+          },
+          "expected": [-1, -1]
+        },
+        {
+          "uuid": "f4060f22-34de-46e0-a19e-656d74c47bab",
+          "description": "one booking on that day",
+          "property": "bookingRange",
+          "input": {
+            "days": [8],
+            "day": 8
+          },
+          "expected": [0, 0]
+        },
+        {
+          "uuid": "b4fa1d35-2cf7-47ae-a986-cbf2f98f0cdb",
+          "description": "one booking on another day",
+          "property": "bookingRange",
+          "input": {
+            "days": [8],
+            "day": 9
+          },
+          "expected": [-1, -1]
+        },
+        {
+          "uuid": "7e0f99fd-e8d3-4eac-9cd1-5bc3064d1394",
+          "description": "handles the largest day numbers",
+          "property": "bookingRange",
+          "input": {
+            "days": [999999999, 1000000000, 1000000000],
+            "day": 1000000000
+          },
+          "expected": [1, 2]
+        }
+      ]
+    }
+  ]
+}

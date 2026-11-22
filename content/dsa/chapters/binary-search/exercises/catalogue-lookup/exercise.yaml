@@ -1,0 +1,19 @@
+id: catalogue-lookup
+kind: coding
+title: A number in the printed catalogue
+difficulty: medium
+skills:
+  - sorted-grid
+  - half-open-invariant
+sibling: fullest-shelf
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: inCatalogue
+  params:
+    - name: grid
+      type: int[][]
+    - name: target
+      type: int
+  returns: boolean

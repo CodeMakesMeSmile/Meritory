@@ -1,0 +1,100 @@
+{
+  "exercise": "where-the-log-starts",
+  "cases": [
+    {
+      "uuid": "ac3f090c-f733-4617-9646-26adaabd39ca",
+      "description": "finds the oldest entry after the wrap",
+      "property": "oldestEntry",
+      "input": {
+        "totals": [520, 610, 700, 130, 290, 400]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "e062a5a4-2f50-4e89-9eea-cd154f8e45b2",
+      "description": "the ring hasn't wrapped",
+      "property": "oldestEntry",
+      "input": {
+        "totals": [5, 9, 14]
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "3ffe2d9a-52a6-4900-9744-6d43f32b6bbc",
+      "description": "the oldest entry is the last slot",
+      "property": "oldestEntry",
+      "input": {
+        "totals": [20, 30, 40, 10]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "bbc9833d-a4b1-4ebe-a71a-3ccc14bfa377",
+      "description": "the oldest entry is the second slot",
+      "property": "oldestEntry",
+      "input": {
+        "totals": [90, 10, 20, 30, 40]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "6e8009be-4573-4c49-90a7-1fdff29beb17",
+      "description": "an odd number of slots",
+      "property": "oldestEntry",
+      "input": {
+        "totals": [6, 7, 1, 2, 3]
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "045364b7-8aee-43d1-9b29-172a09509df3",
+      "description": "the wrap past the middle",
+      "property": "oldestEntry",
+      "input": {
+        "totals": [4, 5, 6, 7, 1, 2, 3]
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "2bf95ea2-55dd-4cb2-a825-7c6a5b1f9189",
+      "description": "two slots that wrap",
+      "property": "oldestEntry",
+      "input": {
+        "totals": [8, 3]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "c72aab6f-e8e8-4d64-8383-5a11619e9cbc",
+      "description": "two slots in order",
+      "property": "oldestEntry",
+      "input": {
+        "totals": [3, 8]
+      },
+      "expected": 0
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "bfcd81dd-d83b-459c-8e27-3be8a1eba942",
+          "description": "one slot",
+          "property": "oldestEntry",
+          "input": {
+            "totals": [42]
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "0bb72d77-18ec-4bdd-b68d-e2d28515e668",
+          "description": "handles the largest totals",
+          "property": "oldestEntry",
+          "input": {
+            "totals": [1000000000, 1, 2]
+          },
+          "expected": 1
+        }
+      ]
+    }
+  ]
+}

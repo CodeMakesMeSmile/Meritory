@@ -1,0 +1,18 @@
+id: slowest-pace
+kind: coding
+title: The slowest pace that finishes
+difficulty: medium
+skills:
+  - answer-space
+sibling: smallest-van
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: slowestPace
+  params:
+    - name: chapters
+      type: int[]
+    - name: hours
+      type: int
+  returns: int

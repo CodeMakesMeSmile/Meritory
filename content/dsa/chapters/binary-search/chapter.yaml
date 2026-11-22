@@ -1,0 +1,18 @@
+id: binary-search
+title: Binary search
+order: 6
+skills:
+  - id: half-open-invariant
+    name: Keep a half-open range and its invariant true at every step
+  - id: off-by-one
+    name: Pick the midpoint and the moves so the loop always ends on the answer
+  - id: first-and-last
+    name: Find the first and last position of a value
+  - id: rotated-search
+    name: Search a sorted list that was rotated
+  - id: rotated-minimum
+    name: Find the minimum of a rotated sorted list
+  - id: answer-space
+    name: Search the answer space with a yes or no check
+  - id: sorted-grid
+    name: Search a sorted grid

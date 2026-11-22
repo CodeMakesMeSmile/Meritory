@@ -1,0 +1,19 @@
+id: rotated-playlist
+kind: coding
+title: A track in a looped playlist
+difficulty: medium
+skills:
+  - rotated-search
+  - rotated-minimum
+sibling: where-the-log-starts
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: findTrack
+  params:
+    - name: tracks
+      type: int[]
+    - name: target
+      type: int
+  returns: int

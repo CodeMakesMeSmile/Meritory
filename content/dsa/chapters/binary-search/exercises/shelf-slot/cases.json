@@ -1,0 +1,130 @@
+{
+  "exercise": "shelf-slot",
+  "cases": [
+    {
+      "uuid": "4cbcd635-5a88-4426-b85a-60637e70262e",
+      "description": "goes in front of its copies",
+      "property": "shelfSlot",
+      "input": {
+        "ids": [3, 8, 8, 12, 20],
+        "newId": 8
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "ffbff2ba-ba2a-40be-954a-7ff2849ea8fc",
+      "description": "goes between two numbers",
+      "property": "shelfSlot",
+      "input": {
+        "ids": [3, 8, 8, 12, 20],
+        "newId": 15
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "b91471cb-0c22-4d34-87cb-ceebc40cc76f",
+      "description": "goes before every book",
+      "property": "shelfSlot",
+      "input": {
+        "ids": [3, 8, 8, 12, 20],
+        "newId": 1
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "0ed53309-603d-4e7b-883d-66ebd79581b2",
+      "description": "goes after every book",
+      "property": "shelfSlot",
+      "input": {
+        "ids": [3, 8, 8, 12, 20],
+        "newId": 25
+      },
+      "expected": 5
+    },
+    {
+      "uuid": "e6516fd0-f143-4b1d-b51e-f2ed6e3ab993",
+      "description": "goes in front of the last book when it matches",
+      "property": "shelfSlot",
+      "input": {
+        "ids": [3, 8, 8, 12, 20],
+        "newId": 20
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "f7ea2160-434e-4cd5-8c81-61f3c17cf042",
+      "description": "goes in front of the first book when it matches",
+      "property": "shelfSlot",
+      "input": {
+        "ids": [3, 8, 8, 12, 20],
+        "newId": 3
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "b051a689-2635-49e8-b5ae-e20f9a50c646",
+      "description": "every book has the same number",
+      "property": "shelfSlot",
+      "input": {
+        "ids": [5, 5, 5, 5],
+        "newId": 5
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "f3ee6bd2-f8d1-4d3f-b1ce-ef4c300379ed",
+      "description": "a shelf of two",
+      "property": "shelfSlot",
+      "input": {
+        "ids": [4, 9],
+        "newId": 6
+      },
+      "expected": 1
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "5809a203-27fb-45ed-8aa4-9a4afe33390c",
+          "description": "an empty shelf",
+          "property": "shelfSlot",
+          "input": {
+            "ids": [],
+            "newId": 7
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "4fd860c5-4544-4b0e-8423-8e1390c4566a",
+          "description": "one book with a bigger number",
+          "property": "shelfSlot",
+          "input": {
+            "ids": [10],
+            "newId": 4
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "bee28c1b-ee8d-47eb-902a-78f2af0e5032",
+          "description": "one book with a smaller number",
+          "property": "shelfSlot",
+          "input": {
+            "ids": [10],
+            "newId": 11
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "7d69333a-aee6-4689-9104-0fed7dbab1ac",
+          "description": "handles the largest numbers",
+          "property": "shelfSlot",
+          "input": {
+            "ids": [1, 1000000000],
+            "newId": 1000000000
+          },
+          "expected": 1
+        }
+      ]
+    }
+  ]
+}

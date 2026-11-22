@@ -1,0 +1,20 @@
+id: count-in-range
+kind: coding
+title: Readings in a range
+difficulty: medium
+skills:
+  - first-and-last
+sibling: booking-range
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: countBetween
+  params:
+    - name: readings
+      type: int[]
+    - name: low
+      type: int
+    - name: high
+      type: int
+  returns: int

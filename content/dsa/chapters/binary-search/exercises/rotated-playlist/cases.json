@@ -1,0 +1,130 @@
+{
+  "exercise": "rotated-playlist",
+  "cases": [
+    {
+      "uuid": "31a220cd-7ca4-49ee-be4f-158db5fda842",
+      "description": "finds a track after the wrap",
+      "property": "findTrack",
+      "input": {
+        "tracks": [40, 50, 60, 10, 20, 30],
+        "target": 20
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "01344510-8c81-4a61-a2b9-b861db1179ca",
+      "description": "a track that isn't in the loop",
+      "property": "findTrack",
+      "input": {
+        "tracks": [40, 50, 60, 10, 20, 30],
+        "target": 45
+      },
+      "expected": -1
+    },
+    {
+      "uuid": "c425c62e-93bb-4e9b-85ce-70c5d5ba5e6d",
+      "description": "finds a track before the wrap",
+      "property": "findTrack",
+      "input": {
+        "tracks": [40, 50, 60, 10, 20, 30],
+        "target": 50
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "e8eb5fdd-3c08-4840-8ec5-d34d16fb6924",
+      "description": "the lowest track, where the loop wraps",
+      "property": "findTrack",
+      "input": {
+        "tracks": [40, 50, 60, 10, 20, 30],
+        "target": 10
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "aa7f42a0-561d-462e-b9c8-dec7bfdf54d1",
+      "description": "the last track",
+      "property": "findTrack",
+      "input": {
+        "tracks": [40, 50, 60, 10, 20, 30],
+        "target": 30
+      },
+      "expected": 5
+    },
+    {
+      "uuid": "8137b25a-0e0e-4d60-a254-74620036168b",
+      "description": "a loop that doesn't wrap",
+      "property": "findTrack",
+      "input": {
+        "tracks": [10, 20, 30, 40],
+        "target": 30
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "6310cf02-f2bf-4632-bf32-a8885e879483",
+      "description": "a loop that wraps at the last position",
+      "property": "findTrack",
+      "input": {
+        "tracks": [20, 30, 40, 10],
+        "target": 10
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "70a2ae01-a91e-4da1-b2a8-13e728cecbb9",
+      "description": "a target lower than every track",
+      "property": "findTrack",
+      "input": {
+        "tracks": [20, 30, 40, 10],
+        "target": 5
+      },
+      "expected": -1
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "0571f294-2f86-43f6-b089-2cefbb533738",
+          "description": "one track, the one we want",
+          "property": "findTrack",
+          "input": {
+            "tracks": [7],
+            "target": 7
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "22453a24-350b-4583-8f43-26dbe9807ad8",
+          "description": "one track, another number",
+          "property": "findTrack",
+          "input": {
+            "tracks": [7],
+            "target": 8
+          },
+          "expected": -1
+        },
+        {
+          "uuid": "1e3f6ab8-b1e6-4184-9d36-af7785bdc028",
+          "description": "two tracks that wrap",
+          "property": "findTrack",
+          "input": {
+            "tracks": [9, 2],
+            "target": 9
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "30713d67-4889-4193-b4d1-516dc87c3a5d",
+          "description": "handles the largest numbers",
+          "property": "findTrack",
+          "input": {
+            "tracks": [1000000000, 1],
+            "target": 1000000000
+          },
+          "expected": 0
+        }
+      ]
+    }
+  ]
+}

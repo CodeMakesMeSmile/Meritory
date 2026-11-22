@@ -1,0 +1,18 @@
+id: smallest-van
+kind: coding
+title: The smallest van that keeps up
+difficulty: medium
+skills:
+  - answer-space
+sibling: slowest-pace
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: smallestVan
+  params:
+    - name: parcels
+      type: int[]
+    - name: days
+      type: int
+  returns: int
