@@ -91,10 +91,11 @@ Copy that line into the repo's `.env` on Windows, next to `RUNNER_URL=http://loc
 
 ## 6. Start the runner
 
-In Ubuntu, from the Windows checkout:
+In Ubuntu, go to the Windows checkout, where Windows drives sit under `/mnt`. Change the path to match where your checkout is:
 
 ```bash
-node --env-file="$HOME/.config/meritory-runner.env" /mnt/c/Users/<you>/Desktop/Projects/Meritory/apps/runner/src/main.ts
+cd /mnt/c/Users/YOUR_WINDOWS_NAME/Desktop/Projects/Meritory
+node --env-file="$HOME/.config/meritory-runner.env" apps/runner/src/main.ts
 ```
 
 It prints the port it listens on. From PowerShell, `curl.exe http://localhost:4100/health` answers `ok`. Leave the Ubuntu window open while you practise, and the exercise page says plainly when the runner isn't running.
