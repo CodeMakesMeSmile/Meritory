@@ -4,7 +4,7 @@ import { SOLUTION_FILES } from "@meritory/content";
 import { SQL_ATTACKS } from "@meritory/security-testing";
 import type { RecallStore } from "@meritory/server";
 import Type from "typebox";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import { buildApp } from "./app.ts";
 import type { ServedContent } from "./content.ts";
 import type {
@@ -14,6 +14,11 @@ import type {
   SignInMethodDependency,
 } from "./session.ts";
 import { builtContent, CONTENT_DIR } from "./test-content.ts";
+
+// Building the whole curriculum can take longer than one test's time limit when every file runs at once
+beforeAll(async () => {
+  await builtContent();
+}, 60000);
 
 let app: Awaited<ReturnType<typeof buildApp>> | undefined;
 

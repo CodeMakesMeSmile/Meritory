@@ -2,9 +2,14 @@ import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { canonicalJson } from "@meritory/content";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { ifNoneMatchHits, loadContent } from "./content.ts";
 import { builtContent } from "./test-content.ts";
+
+// Building the whole curriculum can take longer than one test's time limit when every file runs at once
+beforeAll(async () => {
+  await builtContent();
+}, 60000);
 
 let dir: string;
 let file: string;

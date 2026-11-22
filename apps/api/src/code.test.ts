@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { SQL_ATTACKS } from "@meritory/security-testing";
 import type { RecallStore } from "@meritory/server";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import { buildApp } from "./app.ts";
 import {
   CODE_RUN_LIMIT,
@@ -11,6 +11,11 @@ import {
 } from "./code.ts";
 import type { CurrentSession } from "./session.ts";
 import { builtContent } from "./test-content.ts";
+
+// Building the whole curriculum can take longer than one test's time limit when every file runs at once
+beforeAll(async () => {
+  await builtContent();
+}, 60000);
 
 const ORIGIN = "https://meritory.test";
 const URL = "/v1/code/runs";
