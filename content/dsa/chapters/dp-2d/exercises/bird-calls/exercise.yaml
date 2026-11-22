@@ -1,0 +1,19 @@
+id: bird-calls
+kind: coding
+title: A song hidden in the bird calls
+difficulty: medium
+skills:
+  - two-index-state
+  - one-row
+sibling: merged-tickers
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: songCount
+  params:
+    - name: calls
+      type: string
+    - name: song
+      type: string
+  returns: int

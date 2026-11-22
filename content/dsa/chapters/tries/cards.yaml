@@ -1,0 +1,329 @@
+- id: why-end-of-word-mark
+  skill: trie-shape
+  asks: why
+  type: pick-one
+  prompt: A trie holds car and cart. Why does each node need a flag saying whether a word ends there?
+  reworded: In a trie, what goes wrong without a mark on the nodes where words end?
+  options:
+    - text: A node for a prefix like ca exists without ca being a word, and car has children though it is one
+      correct: true
+      reason: Neither "the path exists" nor "the node has no children" tells you a word ends there. Only the mark does.
+    - text: The mark makes the trie use less memory
+      reason: It adds a little memory. It's there for correctness.
+    - text: It stops the same word being inserted twice
+      reason: Inserting twice just sets the same mark again. The mark is about where words end.
+  lesson:
+    title: A path isn't a word
+    explanation: Every prefix of every word has a node, so a search must check the mark at the last letter. That's the difference between search and starts with.
+- id: when-array-or-map
+  skill: trie-shape
+  asks: when
+  type: matching
+  prompt: Match each situation to the way a trie node should keep its children.
+  reworded: For each of these, should the children live in a 26-slot array or a map?
+  matchHeading: Children kept in
+  matchName: a choice
+  pairs:
+    - item: Lowercase a to z words in Java or C, where speed matters
+      match: An array of 26 slots
+    - item: Words that can hold any character, like names in many scripts
+      match: A map from character to node
+    - item: Millions of nodes where most have only one child
+      match: A map, so empty slots take no memory
+  extraMatches:
+    - A sorted list of all the words
+  lesson:
+    title: Fast slots or small maps
+    explanation: An array finds a child by `letter - 'a'` with no hashing, but every node pays for 26 slots. A map only pays for children that exist and works for any alphabet.
+- id: what-a-node-means
+  skill: trie-shape
+  asks: what
+  type: prompt
+  prompt: In a trie, what does a single node stand for, and what does the root stand for?
+  reworded: What is the meaning of one node in a trie, and of its root?
+  points:
+    - A node stands for the prefix spelled by the letters on the path from the root to it.
+    - The root stands for the empty prefix, which every word starts with.
+    - Words with the same start share the nodes for that start.
+  lesson:
+    title: Every node is a prefix
+    explanation: The path to a node spells its prefix, so the subtree below it holds exactly the words that start with that prefix.
+- id: trie-insert-steps
+  skill: trie-insert-search
+  asks: what
+  type: ordering
+  prompt: Put the steps for inserting a word into a trie in order.
+  reworded: In what order does a trie add a new word?
+  steps:
+    - Start at the root.
+    - Take the next letter of the word.
+    - If the current node has no child for it, create one.
+    - Move to that child, and repeat until the letters run out.
+    - Set the end of word mark on the last node.
+  lesson:
+    title: Walk, create, mark
+    explanation: Insert is the same walk as search, except that a missing child is made instead of ending the walk. The mark goes on at the very end.
+- id: why-search-checks-mark
+  skill: trie-insert-search
+  asks: why
+  type: pick-one
+  prompt: Search and starts with both walk the trie letter by letter. Why do they give different answers for ca when the trie holds only car?
+  reworded: With only car in the trie, why is a search for ca false while starts with ca is true?
+  options:
+    - text: Search also needs the end of word mark on the last node, and starts with only needs the walk to succeed
+      correct: true
+      reason: The walk for ca succeeds, but no word ends at that node.
+    - text: Search walks the trie and starts with uses a hash set
+      reason: Both walk the trie. Only the last check differs.
+    - text: Starts with skips the last letter
+      reason: It reads every letter of the prefix. It just doesn't need the mark.
+  lesson:
+    title: Same walk, different last check
+    explanation: Write one walk that returns the last node, then search checks its mark and starts with checks that it exists.
+- id: why-cost-is-length
+  skill: trie-insert-search
+  asks: why
+  type: prompt
+  prompt: Why does a trie search take O(L) for a word of length L, whether the trie holds ten words or ten million?
+  reworded: What makes the time for a trie lookup depend on the word and not on how many words are stored?
+  points:
+    - The search takes one step down the tree per letter, so it makes L steps.
+    - Each step looks up one child, which costs O(1) with an array or a map.
+    - The other words only add nodes off to the side, which the walk never visits.
+  misconception: That a trie search has to compare the word with every stored word that shares its first letter.
+  lesson:
+    title: One step per letter
+    explanation: The depth of the walk is the length of the word. More words make the trie wider, not the walk longer.
+- id: why-count-on-node
+  skill: prefix-counts
+  asks: why
+  type: pick-one
+  prompt: To count the words that start with a prefix, why keep a count on every node instead of searching the subtree below the prefix?
+  reworded: What does storing how many words pass through each node buy you?
+  options:
+    - text: The count is ready on the prefix's node, so each question takes O(L) instead of a walk through every word below it
+      correct: true
+      reason: Insert does the counting once, by adding 1 along the word's path.
+    - text: It's the only way to find the prefix's node
+      reason: The walk finds the node. The count saves the search below it.
+    - text: It stops repeated words from being counted
+      reason: Each insert adds 1, so repeats count each time unless you decide otherwise.
+  lesson:
+    title: Count on the way in
+    explanation: Every word adds 1 to each node it passes, so a node's count is the number of words with that prefix, read in one step.
+- id: when-ends-count
+  skill: prefix-counts
+  asks: when
+  type: pick-one
+  prompt: When should a trie keep a count of the words ending at each node, instead of a true or false mark?
+  reworded: In what case is a number of words ending at a node better than a yes or no flag?
+  options:
+    - text: When the same word can be added more than once and each copy counts, or copies can be removed
+      correct: true
+      reason: A flag can't say there are two copies, or that one is left after a removal.
+    - text: When the words are long
+      reason: Length doesn't matter. Repeats do.
+    - text: When the children are kept in a map
+      reason: How children are kept has nothing to do with it.
+  lesson:
+    title: Flags can't count copies
+    explanation: With counts, insert adds 1 at the last node, remove takes 1 away, and the word is there while the count is above 0.
+- id: why-preorder-sorted
+  skill: autocomplete
+  asks: why
+  type: prompt
+  prompt: Why does a depth-first walk that visits children from a to z, recording a node's word before its children, list the words in alphabetical order?
+  reworded: In autocomplete, what makes the a to z preorder walk give sorted suggestions?
+  points:
+    - A word comes before every longer word that starts with it, like car before cart, and recording before the children puts it first.
+    - Children in letter order put every word through a before every word through b, and so on.
+    - Stopping after k words then gives the first k in sorted order.
+  misconception: That the suggestions need a sort after they're collected.
+  lesson:
+    title: The trie is already in order
+    explanation: Alphabetical order compares letter by letter, which is exactly how the trie branches. Visiting in letter order reads them off sorted.
+- id: when-sorted-list-autocomplete
+  skill: autocomplete
+  asks: when
+  type: pick-one
+  prompt: When is a sorted list with binary search a better choice than a trie for suggesting words that start with a prefix?
+  reworded: For prefix suggestions, in what case does a sorted array beat building a trie?
+  options:
+    - text: When the word list doesn't change, so it can be sorted once and searched for each prefix
+      correct: true
+      reason: Find the first word that's at least the prefix, then read forward while words still start with it.
+    - text: When words are added all the time
+      reason: Each new word would mean inserting into the middle of the list. A trie adds it in O(L).
+    - text: When the prefix is empty
+      reason: Both handle an empty prefix. It's whether the list changes that decides.
+  lesson:
+    title: Static lists sort well
+    explanation: A sorted list is simple and small. A trie earns its memory when words keep arriving or when each typed letter is a new question.
+- id: autocomplete-steps
+  skill: autocomplete
+  asks: what
+  type: ordering
+  prompt: Put the steps for suggesting up to k words that start with a prefix in order.
+  reworded: In what order does trie autocomplete find its suggestions?
+  steps:
+    - Walk from the root to the prefix's node, and return nothing if the walk falls off.
+    - Start a depth-first walk from that node, carrying the letters so far.
+    - At each node, record its word if a word ends there.
+    - Visit its children in letter order, from a to z.
+    - Stop as soon as k words are recorded.
+  lesson:
+    title: Find the prefix, then read in order
+    explanation: Everything below the prefix's node starts with the prefix, so the walk only has to read that part of the trie.
+- id: why-dot-tries-all
+  skill: wildcard-search
+  asks: why
+  type: prompt
+  prompt: Searching a trie for a pattern where `.` matches any letter, why does the search try every child at a `.` and not just one?
+  reworded: Why can't a wildcard search follow a single child when it meets a `.`?
+  points:
+    - Any letter could fill the `.`, and only some choices lead to a stored word.
+    - The search can't know which child works until it explores below it.
+    - It returns yes as soon as one child's branch matches the rest of the pattern, and backtracks to the next child otherwise.
+  misconception: That the first child is enough, since the `.` matches anything.
+  lesson:
+    title: Try each, keep the first that works
+    explanation: The `.` is a choice point, as in backtracking. Ordinary letters have one child to follow, so only the dots branch.
+- id: when-wildcard-depth
+  skill: wildcard-search
+  asks: when
+  type: pick-one
+  prompt: A recursive wildcard search goes one level per letter of the pattern. When could that recursion be too deep?
+  reworded: How deep does a recursive trie pattern search go, and when is that a problem?
+  options:
+    - text: Only when the patterns are very long, like thousands of letters, since the depth is the pattern's length
+      correct: true
+      reason: For words of a few dozen letters, the depth is tiny in every language.
+    - text: Whenever the trie holds many words
+      reason: More words make the trie wider, not deeper.
+    - text: Whenever the pattern has more than one `.`
+      reason: Dots add branches at the same depth. The depth is still the pattern's length.
+  lesson:
+    title: Depth is the pattern length
+    explanation: Each call handles one letter of the pattern, so the stack never goes deeper than the pattern is long.
+- id: why-stop-at-word-end
+  skill: common-prefix
+  asks: why
+  type: pick-one
+  prompt: Finding the longest common prefix with a trie, why does the walk stop at a node where a word ends, even if that node has one child?
+  reworded: With car and cart in the trie, why must the common prefix walk stop after car?
+  options:
+    - text: The word that ends there has no more letters, so no longer prefix can be shared by every word
+      correct: true
+      reason: Car is one of the words, and nothing past car is part of it.
+    - text: Nodes with marks have no children
+      reason: The car node has a child, t. That's why the check is needed.
+    - text: The walk always stops after three letters
+      reason: It stops at the first branch or the first word end, wherever that is.
+  lesson:
+    title: Two reasons to stop
+    explanation: Stop when the node branches, since the words disagree there, or when a word ends, since that word can't go further.
+- id: when-trie-for-prefix
+  skill: common-prefix
+  asks: when
+  type: matching
+  prompt: Match each question to the simplest approach that answers it well.
+  reworded: Which approach suits each of these prefix questions best?
+  matchHeading: Approach
+  matchName: an approach
+  pairs:
+    - item: The longest prefix every word in one list shares, asked once
+      match: Compare the words column by column
+    - item: For each word, the shortest prefix no other word starts with
+      match: A trie with counts on the nodes
+    - item: Whether one word is in the list
+      match: A hash set
+  extraMatches:
+    - Sort by length first
+  lesson:
+    title: Build a trie when it's reused
+    explanation: A one-off question about every word's shared start needs only a scan. When each word asks its own prefix question, the counts in a trie answer them all.
+- id: why-trie-for-many-words
+  skill: many-words-at-once
+  asks: why
+  type: prompt
+  prompt: To find which of many words appear in a letter grid, why walk one trie alongside the grid instead of searching for each word on its own?
+  reworded: What does putting the words in a trie save when searching a grid for many of them?
+  points:
+    - Words that share a start, like cart and care, share the same steps through the grid, which a trie does once.
+    - A path stops as soon as no word starts with its letters, so dead paths end early.
+    - Each grid walk can find several words, recording one every time it reaches a node with a mark.
+  misconception: That the trie only helps by making each single word lookup faster.
+  lesson:
+    title: Shared starts, shared work
+    explanation: One search per word repeats every shared prefix. The trie lets one walk serve every word at once.
+- id: why-clear-found-mark
+  skill: many-words-at-once
+  asks: why
+  type: pick-one
+  prompt: In the grid search for many words, why clear a word's mark in the trie once the word is found?
+  reworded: After recording a found word in a grid search, what is clearing its mark in the trie for?
+  options:
+    - text: So a word that appears in more than one place is reported only once
+      correct: true
+      reason: Later walks pass the node without a mark, so they don't record it again.
+    - text: So the grid cell can be used again
+      reason: That's the mark on the grid cell, cleared on the way out. This one is in the trie.
+    - text: So the trie takes less memory
+      reason: Clearing a flag frees nothing.
+  lesson:
+    title: Found once is enough
+    explanation: Without it, a word hiding in three places comes back three times. A set of found words works too, but clearing the mark is free.
+- id: grid-trie-steps
+  skill: many-words-at-once
+  asks: what
+  type: ordering
+  prompt: Put the steps for finding many words in a grid with a trie in order.
+  reworded: In what order does the trie and grid search work?
+  steps:
+    - Insert every word into a trie.
+    - Start a walk from each cell of the grid, at the trie's root.
+    - Move to the trie child for the cell's letter, and stop if there isn't one.
+    - If that child marks a word, record the word and clear the mark.
+    - Mark the cell, walk on to each neighbour, then clear the cell's mark on the way out.
+  lesson:
+    title: Two marks, two jobs
+    explanation: The cell mark stops a path using a cell twice. The trie mark is cleared so each word is reported once.
+- id: when-which-structure
+  skill: trie-or-set
+  asks: when
+  type: matching
+  prompt: Match each task to the structure that fits it best.
+  reworded: Which structure suits each of these word tasks?
+  matchHeading: Structure
+  matchName: a structure
+  pairs:
+    - item: Check whether a word is banned, many times a second
+      match: A hash set
+    - item: Count the saved searches that start with what's typed so far
+      match: A trie with counts
+    - item: Find the first five words with a prefix in a dictionary that never changes
+      match: A sorted list and binary search
+    - item: Check guesses with blank tiles against a word list
+      match: A trie and backtracking
+  extraMatches:
+    - A heap
+  lesson:
+    title: Prefixes and patterns call for a trie
+    explanation: Exact lookups are a hash set's job. A trie is worth its memory when the question is about prefixes, patterns, or many words at once.
+- id: why-trie-memory
+  skill: trie-or-set
+  asks: why
+  type: pick-one
+  prompt: Why can a trie with 26-slot arrays take much more memory than the words it holds?
+  reworded: What makes an array-based trie so much bigger than a plain list of its words?
+  options:
+    - text: Each letter can need its own node, and every node carries 26 slots, most of them empty
+      correct: true
+      reason: A word with no shared prefix costs one node per letter, each with 26 pointers.
+    - text: The trie stores each word twice
+      reason: Letters are stored once, as paths. The slots are the cost.
+    - text: The end of word marks take most of the space
+      reason: A mark is one flag per node. The slots dwarf it.
+  lesson:
+    title: Pointers add up
+    explanation: Shared prefixes save letters, but every node pays for its slots. When memory matters, use maps or a sorted list instead.

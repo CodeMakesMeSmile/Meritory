@@ -1,0 +1,143 @@
+{
+  "exercise": "shared-start",
+  "cases": [
+    {
+      "uuid": "609d9a24-a5dc-47cb-82bb-6a3ddf2f2524",
+      "description": "finds the shared start",
+      "property": "sharedStart",
+      "input": {
+        "names": ["beach", "beachday", "beacon"]
+      },
+      "expected": "beac"
+    },
+    {
+      "uuid": "f6eb9c58-e60b-4351-9e9c-77630e1a62f4",
+      "description": "no shared start",
+      "property": "sharedStart",
+      "input": {
+        "names": ["sunset", "moon"]
+      },
+      "expected": ""
+    },
+    {
+      "uuid": "41e53687-1397-4e36-9860-1a173376d70d",
+      "description": "every name the same",
+      "property": "sharedStart",
+      "input": {
+        "names": ["pier", "pier", "pier"]
+      },
+      "expected": "pier"
+    },
+    {
+      "uuid": "68c9f0f6-a214-44eb-a67b-0ae8270103e6",
+      "description": "one name is the shared start",
+      "property": "sharedStart",
+      "input": {
+        "names": ["dune", "dunes", "dunelight"]
+      },
+      "expected": "dune"
+    },
+    {
+      "uuid": "73765fdc-9c3b-4347-8613-249f67a5ce13",
+      "description": "they differ at the last letter",
+      "property": "sharedStart",
+      "input": {
+        "names": ["wavea", "waveb"]
+      },
+      "expected": "wave"
+    },
+    {
+      "uuid": "f81230ed-bb9c-4332-a24e-8911a2e27845",
+      "description": "many names with a long shared start",
+      "property": "sharedStart",
+      "input": {
+        "names": [
+          "harbourb",
+          "harbourwpgo",
+          "harbourscyz",
+          "harbourhayqm",
+          "harbource",
+          "harbourfccl",
+          "harbouruz",
+          "harbourojlb",
+          "harbourwn",
+          "harbourukeui",
+          "harbourpm",
+          "harbourehm",
+          "harbour",
+          "harbourpw",
+          "harbour",
+          "harbourw",
+          "harbourktds",
+          "harbourfdiu",
+          "harbour",
+          "harbour",
+          "harbourymoy",
+          "harbourkm",
+          "harbourlx",
+          "harbourktob",
+          "harboura",
+          "harbour",
+          "harbourjrur",
+          "harbouryxc",
+          "harbour",
+          "harboury",
+          "harbourrglmj",
+          "harbour",
+          "harbour",
+          "harbour",
+          "harbourdydu",
+          "harbour",
+          "harbourqzv",
+          "harbourwtkhr",
+          "harboure",
+          "harbourer",
+          "harbourtjrw",
+          "harbour",
+          "harbourukdxe",
+          "harbourrhrl",
+          "harbourcbcd",
+          "harbourdsh",
+          "harbourcu",
+          "harbourlsk",
+          "harbourttwmj",
+          "harbourut",
+          "harbour"
+        ]
+      },
+      "expected": "harbour"
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "f8296f02-b038-43f6-98db-a44459d3c884",
+          "description": "one name",
+          "property": "sharedStart",
+          "input": {
+            "names": ["tide"]
+          },
+          "expected": "tide"
+        },
+        {
+          "uuid": "8babced5-31a3-4073-b6ac-1eab10f24d17",
+          "description": "an empty name",
+          "property": "sharedStart",
+          "input": {
+            "names": ["cliff", ""]
+          },
+          "expected": ""
+        },
+        {
+          "uuid": "12c00120-c73b-4321-b858-640af4e425d8",
+          "description": "only empty names",
+          "property": "sharedStart",
+          "input": {
+            "names": [""]
+          },
+          "expected": ""
+        }
+      ]
+    }
+  ]
+}

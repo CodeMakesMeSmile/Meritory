@@ -1,0 +1,30 @@
+id: word-shelf
+kind: coding
+title: A word list for the crossword helper
+difficulty: easy
+skills:
+  - trie-shape
+  - trie-insert-search
+sibling: short-roots
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  class: WordShelf
+  params: []
+  methods:
+    - name: add
+      params:
+        - name: word
+          type: string
+      returns: void
+    - name: has
+      params:
+        - name: word
+          type: string
+      returns: boolean
+    - name: hasPrefix
+      params:
+        - name: prefix
+          type: string
+      returns: boolean

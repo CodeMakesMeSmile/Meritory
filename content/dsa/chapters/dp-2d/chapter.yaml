@@ -1,0 +1,18 @@
+id: dp-2d
+title: Dynamic programming in two dimensions
+order: 17
+skills:
+  - id: two-index-state
+    name: Name a state by two indexes, like a cell, two prefixes, or a range, and fill in an order with every input ready
+  - id: grid-paths
+    name: Count the paths through a grid, or find the cheapest, moving only right or down around blocked cells
+  - id: common-subsequence
+    name: Find the longest common subsequence of two sequences
+  - id: edit-distance
+    name: Find the fewest edits, or the cheapest, that turn one string into another
+  - id: knapsack-once
+    name: Choose items at most once under a limit with 0/1 knapsack, and find which subset sums can be made
+  - id: interval-ranges
+    name: Solve a range from the smaller ranges inside it, like the cheapest way to cut or merge
+  - id: one-row
+    name: Shrink a 2-D table to one row, running the inner loop backwards when each item can be used only once

@@ -1,0 +1,19 @@
+id: short-roots
+kind: coding
+title: Cutting words down to their stems
+difficulty: medium
+skills:
+  - trie-insert-search
+  - trie-or-set
+sibling: word-shelf
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: shortenWords
+  params:
+    - name: stems
+      type: string[]
+    - name: sentence
+      type: string
+  returns: string

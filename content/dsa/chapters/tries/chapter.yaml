@@ -1,0 +1,20 @@
+id: tries
+title: Tries
+order: 10
+skills:
+  - id: trie-shape
+    name: Explain how a trie stores words, with a children map or a 26-slot array and an end of word mark
+  - id: trie-insert-search
+    name: Insert a word, search for it, and check a prefix in time that grows with the word's length
+  - id: prefix-counts
+    name: Count the words under a prefix by keeping a count on each node
+  - id: autocomplete
+    name: List up to k words under a prefix in sorted order with a depth-first walk
+  - id: wildcard-search
+    name: Match a pattern with wildcards by trying every child at a wildcard and backtracking
+  - id: common-prefix
+    name: Find the longest common prefix, and the shortest prefix that picks out one word
+  - id: many-words-at-once
+    name: Find many words at once in a grid or a text by walking a trie alongside the search
+  - id: trie-or-set
+    name: Choose between a trie, a hash set, and a sorted list for a word problem

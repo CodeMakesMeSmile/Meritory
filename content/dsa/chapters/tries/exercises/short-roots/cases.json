@@ -1,0 +1,143 @@
+{
+  "exercise": "short-roots",
+  "cases": [
+    {
+      "uuid": "37b2008d-3cb8-4c8a-a316-3b154e7ce698",
+      "description": "cuts each word to its shortest stem",
+      "property": "shortenWords",
+      "input": {
+        "stems": ["walk", "run", "wa"],
+        "sentence": "walking runners wait here"
+      },
+      "expected": "wa run wa here"
+    },
+    {
+      "uuid": "8c1a119e-08f4-48f4-b45c-bb014454671e",
+      "description": "words with no stem stay the same",
+      "property": "shortenWords",
+      "input": {
+        "stems": ["cat"],
+        "sentence": "dogs and birds"
+      },
+      "expected": "dogs and birds"
+    },
+    {
+      "uuid": "ddb5729e-f35f-4603-96d8-0512911615a2",
+      "description": "a word that is a stem",
+      "property": "shortenWords",
+      "input": {
+        "stems": ["go", "going"],
+        "sentence": "going go gone"
+      },
+      "expected": "go go go"
+    },
+    {
+      "uuid": "c46cc7f8-63a4-4b25-9d68-3737bed84049",
+      "description": "longer stems listed first",
+      "property": "shortenWords",
+      "input": {
+        "stems": ["abcd", "abc", "ab"],
+        "sentence": "abcde abc a"
+      },
+      "expected": "ab ab a"
+    },
+    {
+      "uuid": "c94c7170-2b23-41d1-899c-3a51c20513ea",
+      "description": "a stem longer than the word",
+      "property": "shortenWords",
+      "input": {
+        "stems": ["running"],
+        "sentence": "run runningshoes"
+      },
+      "expected": "run running"
+    },
+    {
+      "uuid": "0e93e480-fd47-47f9-b283-389172182d0f",
+      "description": "the same word twice",
+      "property": "shortenWords",
+      "input": {
+        "stems": ["re"],
+        "sentence": "redo redo read"
+      },
+      "expected": "re re re"
+    },
+    {
+      "uuid": "c3c5c452-4d67-4b92-bd27-9ffc152a25d9",
+      "description": "many stems and words",
+      "property": "shortenWords",
+      "input": {
+        "stems": [
+          "a",
+          "aa",
+          "aac",
+          "aacb",
+          "aadc",
+          "abb",
+          "ac",
+          "aca",
+          "acc",
+          "ad",
+          "adb",
+          "b",
+          "ba",
+          "bb",
+          "bbb",
+          "bbc",
+          "bbd",
+          "bbdb",
+          "bc",
+          "bcaa",
+          "bd",
+          "bdab",
+          "bdb",
+          "bdc",
+          "c",
+          "cab",
+          "caba",
+          "cac",
+          "cacd",
+          "cbb",
+          "cc",
+          "ccab",
+          "ccb",
+          "ccc",
+          "cdb",
+          "d",
+          "da",
+          "db",
+          "dbc",
+          "dccc",
+          "dd",
+          "dddb"
+        ],
+        "sentence": "aabccedcccde cbeeace eacdcedee cace dbcbecdeccba ebdda ebd dbcedcaee dbdcbec abbb becbccccabc bdadddccbaee edeeabba bcbdcac beeb aaaaededeaa a acaba ec bbeaacd dcd cdbdd dc bbc bcccaadcbaa eb adbedb cbdcdedebe cbc ecdaeebbaddd bceedcceaa cbdbbdeded caba eecda bbdcea ceaddcdbbd daeaceded eaeebeed abedaebc eced cddcddbbb edabebcdcc ebebbcdbea edcacdbceeac bdeeea ecacbeeceacd acd cc dcdbeccaabbc eeabcbbdeccb dee dcdccacbbad addedeceb badbbd eeaddbbcdc bbcaeab dcaebeaadbde e dda bae aacdcdadb aacdbdcb ebadcaae eedddcbccbdb bde dcbcbcd aecbddb eaaacacbdade cbabccbda bbc acdbbdeade beeb eaddd debee dcedcaebeaa dbbabdcaada bbbbdc edbeab ebcdacdaddea bdbbcdace dceaeabdecab dbaebbdee aebddc cbecbda eb eeadac bddbcbccda bceadb beebbcc ca ccbedaedac abdbcaeeb c da aed cacdaa ccdaacaacc ae aebaacadeeec eccabcdbaed adaadeddcdcd ddbdeb a bde dcadaaedeaa acecdaedce edeaceac cdedbdaadcc eaabadba edddcbdedccc edcdcdeaeb aeaacdcebae baeacabccec ddbeced aeecab ebcbccc dabc e acbecb eaabdcdcc eebcacaac dcbbacaa a debda aeaacdbebea e aaa eabacdba ebdd ccee bcde bcded c bedbeddcdada ac cbaaebb edee baaadcecb deedbd dbecc cbceeadaeedb a eeadedccbd eacdd eeedc ad cadaddbddc abeeedebeede becbaaeeaee deaedcabe acdcdabedda a bbedabb dcdaaeddbeda bebbb ecdbd aaecedceaddd b eacabeeabbd abeab bedcee abe acecbeb cceb cecdcabcabcd cddcb b adabedeba bcd eaedd bcebbbba bbbaecdcbc bedcbebababe dbbcbcbebaed aeded b cb ebde adbcbba bb bbbb bbdbbacbbcab cc acc bccbedaaecdb bcba ebbbee bcaaacdded cddcdbccdebe dcacccec dbcdde eaaebcbadcde bbee dabdbbb dbdeaebed ababca ebaccdcbea deacbb d ca bdedbcbeb adeaebbe eccae eada edbbd edccedddaa dbdbecdd dcc acaacc ea ebcdabbe bba dcb dbeb bee accdc cddccae e cdabeebccb deba cadadcbeb bd bdecbbcac baeddb abcbcdcd bbbebadcedab bdaaac beeaeaadcbde ee e cdedc cbeeede eddaba eddacbe ecaca a deccacbdcdc ebebbabbbbe ede aaeceaecdeea aebcd deaeaedceddd eaddeeca acbbb eeeadcbeced aebebbcedbda bebd bccddbcaccd daeebd cdcadddca e ba d dabcadcabdbd acdcbadabb aeba eccacdcbb ecdebcbeea eaebcabebab ededdbbdcabb baeadcced bad eaecbdde bdbd babd bdebaed bccddedaccea adedcdabeec becdbddcece bcbcaaddbec cacbcab cadddade caed cea e ecada bcaacbacac eecaebdceedb eac dadeddcbdb ababccdc bcbccba eaacb dcdeadd cceacaaee ebcebac bccdaded acbeed dacdccae cd dbbabcbdeceb eab bdaedcdbdad bbacddeeadad dcbadbbbacb caecaebdde cdcbaaccbc e aceaddac cbdea b add cbacbb de bcbe deddcdea dcdc eabbddcbbeac dccaacadeac ebedc dabcbeccdd deabaee caacababbd eacce abeddeceee ebccccc eceedcbeaa cddaadda da d cbdbbe dcdcaabcacec bbbade c beea bcdeaca ebccaeeaccc bddba bc beaebddda c ae acca ddb eddadbed dcaeba eddaebabe e ce ecdeebe cecee bbdeabbaa ae cdcdbdd bceebbc baadecdeedc bdabcbabea ac ceaedaeeba dab b bcedc bbdbeedbddc bdbcaeedebe cbcdbdde bbcecacbb eaad eccb ceaddeeebe eeaccbbcde bcdcccecb bbba cbcdede adcb ed baddbb ebedce e bbbce eebacee adcca ecdc baebdbbbb dabbeab b dadedeaae eabebdea bedaabedaa ebcd ceb cceceeacdcee d decac dcddc bdcc dcbbdceaae cbebcbcaee dcdccb adcdba ebebda cababbad d cddeeaadbdb bedcad debdecaecc cab eebcacceecd bcea aebcbddaa acdcaadc"
+      },
+      "expected": "a c eacdcedee c d ebdda ebd d d a b b edeeabba b b a a a ec b d c d b b eb a c c ecdaeebbaddd b c c eecda b c d eaeebeed a eced c edabebcdcc ebebbcdbea edcacdbceeac b ecacbeeceacd a c d eeabcbbdeccb d d a b eeaddbbcdc b d e d b a a ebadcaae eedddcbccbdb b d a eaaacacbdade c b a b eaddd d d d b edbeab ebcdacdaddea b d d a c eb eeadac b b b c c a c d a c c a a eccabcdbaed a d a b d a edeaceac c eaabadba edddcbdedccc edcdcdeaeb a b d a ebcbccc d e a eaabdcdcc eebcacaac d a d a e a eabacdba ebdd c b b c b a c edee b d d c a eeadedccbd eacdd eeedc a c a b d a a b d b ecdbd a b eacabeeabbd a b a a c c c b a b eaedd b b b d a b c ebde a b b b c a b b ebbbee b c d d eaaebcbadcde b d d a ebaccdcbea d d c b a eccae eada edbbd edccedddaa d d a ea ebcdabbe b d d b a c e c d c b b b a b b b ee e c c eddaba eddacbe ecaca a d ebebbabbbbe ede a a d eaddeeca a eeeadcbeced a b b d c e b d d a a eccacdcbb ecdebcbeea eaebcabebab ededdbbdcabb b b eaecbdde b b b b a b b c c c c e ecada b eecaebdceedb eac d a b eaacb d c ebcebac b a d c d eab b b d c c e a c b a c d b d d eabbddcbbeac d ebedc d d c eacce a ebccccc eceedcbeaa c d d c d b c b b ebccaeeaccc b b b c a a d eddadbed d eddaebabe e c ecdeebe c b a c b b b a c d b b b b c b eaad eccb c eeaccbbcde b b c a ed b ebedce e b eebacee a ecdc b d b d eabebdea b ebcd c c d d d b d c d a ebebda c d c b d c eebcacceecd b a a"
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "dc3e8d44-5909-4bbb-953e-f86ba77f48f0",
+          "description": "one word with a one letter stem",
+          "property": "shortenWords",
+          "input": {
+            "stems": ["x"],
+            "sentence": "xylophone"
+          },
+          "expected": "x"
+        },
+        {
+          "uuid": "b90c40d3-e3e5-4c4f-bb7d-fc39027f7758",
+          "description": "one word and no match",
+          "property": "shortenWords",
+          "input": {
+            "stems": ["y"],
+            "sentence": "xylophone"
+          },
+          "expected": "xylophone"
+        }
+      ]
+    }
+  ]
+}

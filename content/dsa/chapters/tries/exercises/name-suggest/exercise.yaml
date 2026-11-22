@@ -1,0 +1,21 @@
+id: name-suggest
+kind: coding
+title: Contacts that start with what you typed
+difficulty: easy
+skills:
+  - autocomplete
+  - trie-or-set
+sibling: type-ahead
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: suggestNames
+  params:
+    - name: names
+      type: string[]
+    - name: prefix
+      type: string
+    - name: k
+      type: int
+  returns: string[]

@@ -1,0 +1,142 @@
+{
+  "exercise": "beam-cuts",
+  "cases": [
+    {
+      "uuid": "bb1b48f4-c450-4950-a088-b1cdc42b9e7e",
+      "description": "finds the cheapest order",
+      "property": "cheapestCuts",
+      "input": {
+        "length": 10,
+        "marks": [7, 2, 4]
+      },
+      "expected": 20
+    },
+    {
+      "uuid": "dba1e7b6-f6fa-47d4-8d3c-8ea41236b834",
+      "description": "one mark",
+      "property": "cheapestCuts",
+      "input": {
+        "length": 9,
+        "marks": [4]
+      },
+      "expected": 9
+    },
+    {
+      "uuid": "14dad662-b510-4c03-ac1c-14d0a472e804",
+      "description": "marks in order",
+      "property": "cheapestCuts",
+      "input": {
+        "length": 12,
+        "marks": [3, 6, 9]
+      },
+      "expected": 24
+    },
+    {
+      "uuid": "1d51d240-cd70-4b7a-951b-3027ba5ccb31",
+      "description": "marks bunched at one end",
+      "property": "cheapestCuts",
+      "input": {
+        "length": 100,
+        "marks": [1, 2, 3, 4]
+      },
+      "expected": 108
+    },
+    {
+      "uuid": "3f3df9a0-5a2d-46c3-9251-8b726d996780",
+      "description": "marks next to each other",
+      "property": "cheapestCuts",
+      "input": {
+        "length": 7,
+        "marks": [1, 2, 3, 4, 5, 6]
+      },
+      "expected": 20
+    },
+    {
+      "uuid": "e5f406bf-730d-4681-91e2-8e2f00914ace",
+      "description": "a mixed beam",
+      "property": "cheapestCuts",
+      "input": {
+        "length": 30,
+        "marks": [13, 25, 4, 18, 9, 27, 1]
+      },
+      "expected": 87
+    },
+    {
+      "uuid": "6b592f34-dd84-4126-86bf-acd70c6c440e",
+      "description": "many marks",
+      "property": "cheapestCuts",
+      "input": {
+        "length": 1000,
+        "marks": [
+          1, 740, 27, 994, 612, 886, 477, 940, 453, 364, 88, 949, 120, 258, 588,
+          765, 335, 597, 412, 626, 196, 907, 205, 151, 537, 590, 648, 233, 127,
+          198, 786, 256, 664, 29, 987, 408, 427, 324, 639, 128
+        ]
+      },
+      "expected": 4958
+    },
+    {
+      "uuid": "fb99bd5b-4252-4e18-981f-ce07b1b65947",
+      "description": "a cost past 32 bits",
+      "property": "cheapestCuts",
+      "input": {
+        "length": 1000000000,
+        "marks": [100000000, 300000000, 500000000, 700000000, 900000000]
+      },
+      "expected": 2600000000
+    },
+    {
+      "uuid": "98f5755d-f674-4eab-8475-7f5ee6f2e981",
+      "description": "the most marks on the longest beam",
+      "property": "cheapestCuts",
+      "input": {
+        "length": 1000000000,
+        "marks": [
+          850206003, 738027767, 213881847, 483874965, 973699962, 707224009,
+          185764332, 184209279, 775409398, 527082252, 188744404, 384758134,
+          266684099, 495497891, 37498315, 360717439, 536207928, 87186618,
+          119982999, 339673489, 910758615, 58150771, 388298258, 597689127,
+          857498340, 915754034, 822688565, 460732081, 591929000, 331422673,
+          248119312, 616332277, 444121606, 851393862, 554058107, 696303771,
+          197889433, 887651494, 480941772, 261996239, 653708418, 307924109,
+          690000038, 45405290, 10741916, 873772756, 812400619, 948636328,
+          679738689, 235446410, 519035868, 585066312, 98015342, 288841496,
+          287958078, 760750493, 451904733, 620720943, 363490814, 917053452,
+          559025560, 747025179, 120963524, 28686410, 322843087, 762172784,
+          799207572, 234858548, 19918106, 631624401, 267227555, 679276252,
+          147506247, 772184026, 82397304, 650531221, 880729430, 305429477,
+          228341956, 515147448, 100484195, 627098811, 558398557, 686609726,
+          599505684, 281746894, 942335048, 79379325, 62613206, 382049099,
+          639221284, 272563262, 470748584, 910509123, 872393905, 961378369,
+          685715144, 895066234, 150295175, 613024067
+        ]
+      },
+      "expected": 6332225365
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "956ecd8a-dc20-4eb4-9697-eb7c6094de62",
+          "description": "no marks to cut",
+          "property": "cheapestCuts",
+          "input": {
+            "length": 50,
+            "marks": []
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "86e9eaef-1877-465e-93ca-843fb57339dc",
+          "description": "the shortest beam",
+          "property": "cheapestCuts",
+          "input": {
+            "length": 2,
+            "marks": [1]
+          },
+          "expected": 2
+        }
+      ]
+    }
+  ]
+}

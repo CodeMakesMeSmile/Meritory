@@ -1,0 +1,17 @@
+id: shared-start
+kind: coding
+title: The start every file name shares
+difficulty: easy
+skills:
+  - common-prefix
+  - trie-or-set
+sibling: short-codes
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: sharedStart
+  params:
+    - name: names
+      type: string[]
+  returns: string

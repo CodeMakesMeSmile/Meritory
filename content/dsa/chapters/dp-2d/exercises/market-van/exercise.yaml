@@ -1,0 +1,21 @@
+id: market-van
+kind: coding
+title: Packing the market van
+difficulty: medium
+skills:
+  - knapsack-once
+  - one-row
+sibling: even-loads
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: bestTakings
+  params:
+    - name: weights
+      type: int[]
+    - name: takings
+      type: int[]
+    - name: capacity
+      type: int
+  returns: int

@@ -1,0 +1,120 @@
+{
+  "exercise": "two-drafts",
+  "cases": [
+    {
+      "uuid": "4488b207-f749-4a59-b5b8-b9ebc6d55632",
+      "description": "trims both drafts",
+      "property": "fewestDeletions",
+      "input": {
+        "first": "sunrise",
+        "second": "sunlit"
+      },
+      "expected": 5
+    },
+    {
+      "uuid": "d2dd2545-a0e3-41d0-ae54-f7857c500f1f",
+      "description": "drafts that already match",
+      "property": "fewestDeletions",
+      "input": {
+        "first": "breaking",
+        "second": "breaking"
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "f0e3e28c-5ea5-4e5f-baf8-f6f7e9cd9b21",
+      "description": "no letter in common",
+      "property": "fewestDeletions",
+      "input": {
+        "first": "abc",
+        "second": "xyz"
+      },
+      "expected": 6
+    },
+    {
+      "uuid": "61f5e281-4e34-49be-9099-517d3423977a",
+      "description": "most of one draft inside the other",
+      "property": "fewestDeletions",
+      "input": {
+        "first": "hello",
+        "second": "yellowed"
+      },
+      "expected": 5
+    },
+    {
+      "uuid": "01774d25-5a5b-4475-9183-9c42bb911818",
+      "description": "letters in the opposite order",
+      "property": "fewestDeletions",
+      "input": {
+        "first": "stop",
+        "second": "pots"
+      },
+      "expected": 6
+    },
+    {
+      "uuid": "0915c75a-c9f1-43b6-9220-84288349d88a",
+      "description": "repeated letters",
+      "property": "fewestDeletions",
+      "input": {
+        "first": "aabbaa",
+        "second": "ababab"
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "568f34dd-0444-45a8-9a50-3b6e4efff569",
+      "description": "long drafts",
+      "property": "fewestDeletions",
+      "input": {
+        "first": "ccecbaadaedbedeecaeaadcceccbbbdabedebabeebededeebbbadcdadcbcbacbdeeedaeabacabbabaebeadcebedbcbdcbaedbcabaeacedcdbdebedbcbebceedcbdbdabacacbeccbbdecdabaedddaadbdddebecabaadbccdeadcdcdcaeebebbbdebbcbdacddebadecadbcdbaeeacbceeebedadbbddbdeaeaeadbdbdcbbabbeebdbacebbcdcadaddacadbeaedaecbcecaccdbeceaeebbb",
+        "second": "beceaeadabaaeaeeeddcbbddbcabebbaccdeeacdcdddaaaebcbabebbbdcdbebbadcddacededdaebbbcabbaabdbbabbeeeebccbaaeccbbbdedebeabaeadebbadecddbeeaccbdcedcccbebbecbeceaeadcccdcbaeaacacdcaecebaccadaeeaeeaadbcbcbeecbeabdeadeedbcedaaabdaddedddabadadadddabadcabdadececccbbccbeedacbccdbaeccebdeecc"
+      },
+      "expected": 236
+    },
+    {
+      "uuid": "34ad2436-a9d9-4a05-bbde-481f8ba6748b",
+      "description": "the longest drafts",
+      "property": "fewestDeletions",
+      "input": {
+        "first": "babaabcacacabcbccacbcccbabacbcbbbcaccbacbaabaaaaccbabbaacbaccbababacabbabbacacbbacccabaabaaaaccbcbcbaabacccccabcabcccbbcaccbbcbbcbcacbbabacbbcbabbacccaccabacbaaabaccabbcccbabcaaabbcabaccaacabacbacacaccbbcabaabaccacaaaabababccbcaaaaacbaaaaacccaacbcbbbacbbccbacabbbbbbaaaaaacbcbcabbcbbbcbaaabccbbabacbcbcccacccccacbccbcccbbccbcaacccabbbbababaabccccbbbaaaaabaccccbccabcbcbabcaacaaacbabbcbcababaabccbaacbcbbacaaaabacbabcccbabaccabcbacbccabaabbacbcacabcbaccaaaabcacbbabbcbcabbcccbccabbaccbbaabcccbacaaacaccbcaababccbccbabbabaaccaaababacccaacacbbbabcaacbccbbbcbbbacacbbaaacbbbccbcccaccbbcbababaccbaaacaaccbcbbbbbaabccaabbabbacaaaaababaabccaacbbcabcbbabcbbccaababcaabbbbbacbaabbcccaaaaabaccaccbcbccbcccbbaacaccabbbbbcacbcccaacccbbcabcbcbccbbccbacabbbaacccabacacbccbccaccaacaabbcbcbbcacbbcbabcabcabbccaabbbacbcbcbcbaacccbbcaaaabbbbcccbbaabbacbccccbbaabacabbacbacaccbbbcccababaaaccbbcccabbaacccccabaabbabbabaaacccabbacaccabaacacaacbabcbbbbbccaabacbcabaaabaabaaacbbaabcbaaccbaccacbacaccabbaaabccaabbcbbbcbbcbac",
+        "second": "cbbcbacacabbcacaabacccbcabbabcbcbbcabbbbbaaacacccacabbcbbbcbcbcccacacacaaaabcbcaabcaabbccbbaaabccbcbaacbbcaccbbabcacacbaccccbcccbaacbcabcbcbbcbabcaacacbcbabcbbcbbccaabbccbbaabaabbbabcabababbabcacbbccbbccbabccbabcbacaaaaccbcacbababacabbbbcabbabcbaaaabcbacaaacbcaccbbccaacbacccabcbcccbacabcbabbcaaabbaaaaaacccbaacbbcabaaaacbaaaabcbbccbabbccaababaccbabaccbbaacacccbccacacaccbacaacbcbbaacacabbcbbcacbacbcaaacbaabaacacabcaccaaacbbbcacccacaacabaccbacbbbcaabbbcaabccabaccbbcbabbbbcbaaabbcbcacbcbbcbbbccabccbaaccbabbaaaabaaabbbaccccbaacabbccbabccabbbbacbbbaabaaacbbacbacbbacaabcabcabccacacabbccabccbbacbcababbcbcaaabbbacacccbcbaccacbbbbbabbbbbbaacbacbaabacbcbaabaccaabcbcbacacabbcbacbbabccaabcbaacbccacbcbaccbabcbccacccbbbacbbccbbacacaaaaabccbccbbbacabaaaccbabaacccaccbbbbacaccaabcccaaababcccbccabccbbbcccbbabccaacaaabbbbacbcaacbcbabcbabbacbcbccaacbbbbaccbbaabcaaabbcbbbbbcbbccbbacbacbcbbbcbbccbcaabbbbbcaabcbacaabaaaaaacccbbcbcacbacbaaabbbccbbabcacacabaabaccccccacaaaabbabbcaaabaaccccbacbbcccbbcbaccbaacabcb"
+      },
+      "expected": 578
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "df86eeba-6a60-4693-920b-5c8b0372b192",
+          "description": "one letter each, the same",
+          "property": "fewestDeletions",
+          "input": {
+            "first": "q",
+            "second": "q"
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "a96937eb-b6ed-4ad7-bea2-2b5b7552462d",
+          "description": "one letter each, different",
+          "property": "fewestDeletions",
+          "input": {
+            "first": "q",
+            "second": "r"
+          },
+          "expected": 2
+        },
+        {
+          "uuid": "2d8b796c-6795-43ff-a0e2-675e20d0d2a0",
+          "description": "one letter against a long draft",
+          "property": "fewestDeletions",
+          "input": {
+            "first": "z",
+            "second": "pizza"
+          },
+          "expected": 4
+        }
+      ]
+    }
+  ]
+}

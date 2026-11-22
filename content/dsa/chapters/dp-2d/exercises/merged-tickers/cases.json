@@ -1,0 +1,142 @@
+{
+  "exercise": "merged-tickers",
+  "cases": [
+    {
+      "uuid": "9d8b20e4-205d-48a0-8e70-862313f6f51b",
+      "description": "the two messages mix onto the tape",
+      "property": "canMerge",
+      "input": {
+        "first": "abc",
+        "second": "xay",
+        "tape": "axabyc"
+      },
+      "expected": true
+    },
+    {
+      "uuid": "8aa6ec05-c79c-4e64-8a2f-c0fcd620fce5",
+      "description": "a tape the machines couldn't print",
+      "property": "canMerge",
+      "input": {
+        "first": "abc",
+        "second": "xay",
+        "tape": "xyaabc"
+      },
+      "expected": false
+    },
+    {
+      "uuid": "270bd023-9ed1-4070-9de7-0a5a446015b8",
+      "description": "one message after the other",
+      "property": "canMerge",
+      "input": {
+        "first": "news",
+        "second": "flash",
+        "tape": "newsflash"
+      },
+      "expected": true
+    },
+    {
+      "uuid": "d66fd4eb-38c1-4ff0-a3e6-71db6c42e5a4",
+      "description": "a letter out of order",
+      "property": "canMerge",
+      "input": {
+        "first": "ab",
+        "second": "cd",
+        "tape": "adcb"
+      },
+      "expected": false
+    },
+    {
+      "uuid": "f956e37a-90df-4072-899a-f766aac93aed",
+      "description": "an early choice has to be undone",
+      "property": "canMerge",
+      "input": {
+        "first": "aab",
+        "second": "aac",
+        "tape": "aacaab"
+      },
+      "expected": true
+    },
+    {
+      "uuid": "e6a806b0-1b93-4c8c-a55a-324b2c3f3267",
+      "description": "the right letters in the wrong order",
+      "property": "canMerge",
+      "input": {
+        "first": "ab",
+        "second": "ab",
+        "tape": "abba"
+      },
+      "expected": false
+    },
+    {
+      "uuid": "092e16d7-46d3-4e62-83da-16dc2b6399e8",
+      "description": "long messages",
+      "property": "canMerge",
+      "input": {
+        "first": "bababbaabbbaabbbbbabbabaaaaabaabbabaaaabbbabaaabbaabbaaabbbabababaaaaabbaabaabbabaabababbbabbabbbabababaababaaabaabaaaabaaababaaaaaaaababaaabaaaabbbbabababbaabbaaaaaababaaaaaaaaabbaababbbaabbaaaaababb",
+        "second": "baaaaaaababaabaababbbbbbbbabaaaabababbaababaababbaabbbababaababbaabaaababbbbbaaaabababaabaabaabaabababbbaabbabbbaaabababaaabbaababbabbabbbbbaaabbbbaabbababbaaaaaaaaaaaaabbaaaabbabaaaabbaababaaaaaaaaaa",
+        "tape": "bbabaaaaaaabaabbbaaababbbaabbaababbbbbbabbbbbababbabaaaaaaabaabaabbabbbabaaaaaabbabaabbbabaaabbaaabbaabbbbbabaaaabbbaababbabbaabababaaaaaaaabbabbababbbabaabbaaabababaabaabbaabbabbaaabbbaaabbbabaabbabaabbabbabaaabbabbaaabbbaaabaaabbaabaaaabbaaaaaabababbaaaaaaaaabbaabababaabbabaabaabbbbbbababaabbbabbbaaabbbbaabababbaabaaaaaaaaabaaabaaaaaaababaaaaaabbaabaaaababaaaabbaabababbabbaaababaaaaaaaaaaaaababb"
+      },
+      "expected": true
+    },
+    {
+      "uuid": "c355dc84-b5a9-403d-aff7-44b4fade5451",
+      "description": "long messages with two letters swapped",
+      "property": "canMerge",
+      "input": {
+        "first": "bababbaabbbaabbbbbabbabaaaaabaabbabaaaabbbabaaabbaabbaaabbbabababaaaaabbaabaabbabaabababbbabbabbbabababaababaaabaabaaaabaaababaaaaaaaababaaabaaaabbbba",
+        "second": "baaaaaaababaabaababbbbbbbbabaaaabababbaababaababbaabbbababaababbaabaaababbbbbaaaabababaabaabaabaabababbbaabbabbbaaabababaaabbaababbabbabbbbbaaabbbbaab",
+        "tape": "abbaabababaaaaaabbbabbaabaaaabbbbabbbbbbbbabbbbaabaabaaaaaaabbaababbaabbbaaabaaaabbbbaabaabaaabbaabbbbaaababbaababbbaababbababaaabbaaaaabbbaaaaabbaababbbbbbabaaaaabaabbaababbabbabbabbabbaabababaaabbaaabaababaababaaabababbaaabaaabaababbaaaaaaaabbbbaaaabbabaabaaaabbaaabaaaabbabbbbababbabbbbbaaabbbbaab"
+      },
+      "expected": false
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "feb78e0d-0045-4d58-a433-7e333e280a01",
+          "description": "everything empty",
+          "property": "canMerge",
+          "input": {
+            "first": "",
+            "second": "",
+            "tape": ""
+          },
+          "expected": true
+        },
+        {
+          "uuid": "937ba0a5-3738-41e5-9e56-06e500847ce4",
+          "description": "one machine silent",
+          "property": "canMerge",
+          "input": {
+            "first": "",
+            "second": "ping",
+            "tape": "ping"
+          },
+          "expected": true
+        },
+        {
+          "uuid": "e9aa78ad-1ed7-42b9-81df-318188d98abb",
+          "description": "a tape that's too long",
+          "property": "canMerge",
+          "input": {
+            "first": "a",
+            "second": "b",
+            "tape": "abc"
+          },
+          "expected": false
+        },
+        {
+          "uuid": "3efbf85f-5181-4483-8ee1-b9b342dd59f2",
+          "description": "a tape that's too short",
+          "property": "canMerge",
+          "input": {
+            "first": "ab",
+            "second": "c",
+            "tape": "ab"
+          },
+          "expected": false
+        }
+      ]
+    }
+  ]
+}

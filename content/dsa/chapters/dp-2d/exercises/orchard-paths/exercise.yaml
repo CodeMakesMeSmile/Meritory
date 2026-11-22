@@ -1,0 +1,17 @@
+id: orchard-paths
+kind: coding
+title: Paths through the orchard
+difficulty: easy
+skills:
+  - grid-paths
+  - one-row
+sibling: snow-plough
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: orchardPaths
+  params:
+    - name: orchard
+      type: int[][]
+  returns: int

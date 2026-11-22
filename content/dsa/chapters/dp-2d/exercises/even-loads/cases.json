@@ -1,0 +1,135 @@
+{
+  "exercise": "even-loads",
+  "cases": [
+    {
+      "uuid": "9e479ad1-22ba-42a4-a4f8-8475dabba6cf",
+      "description": "splits the parcels evenly",
+      "property": "canSplitEvenly",
+      "input": {
+        "parcels": [3, 8, 4, 5, 2]
+      },
+      "expected": true
+    },
+    {
+      "uuid": "61e471e1-a043-4b37-8558-12e5c1d0fa97",
+      "description": "an odd total",
+      "property": "canSplitEvenly",
+      "input": {
+        "parcels": [6, 2, 3]
+      },
+      "expected": false
+    },
+    {
+      "uuid": "4a7b0aeb-1847-4a5d-a9f0-acf83e53bdc2",
+      "description": "an even total that can't be split",
+      "property": "canSplitEvenly",
+      "input": {
+        "parcels": [10, 2, 2, 2]
+      },
+      "expected": false
+    },
+    {
+      "uuid": "71b0f4f8-5022-4c3c-97bd-6a02b35a712f",
+      "description": "five small parcels balance one big one",
+      "property": "canSplitEvenly",
+      "input": {
+        "parcels": [1, 1, 1, 1, 1, 5]
+      },
+      "expected": true
+    },
+    {
+      "uuid": "f233eab7-e811-487a-a575-13349055ab07",
+      "description": "pairs of the same weight",
+      "property": "canSplitEvenly",
+      "input": {
+        "parcels": [7, 7, 9, 9]
+      },
+      "expected": true
+    },
+    {
+      "uuid": "398b73dd-c5db-438b-9654-77f5849560fd",
+      "description": "one parcel heavier than all the rest",
+      "property": "canSplitEvenly",
+      "input": {
+        "parcels": [20, 3, 4, 5]
+      },
+      "expected": false
+    },
+    {
+      "uuid": "0e73a1eb-672d-4142-8abd-926fdc2bfc3d",
+      "description": "many parcels",
+      "property": "canSplitEvenly",
+      "input": {
+        "parcels": [
+          74, 43, 84, 23, 36, 69, 65, 71, 15, 15, 28, 17, 21, 68, 44, 100, 51,
+          86, 82, 33, 18, 7, 42, 51, 99, 100, 92, 84, 41, 96, 7, 97, 40, 76, 60,
+          27, 16, 74, 39, 88
+        ]
+      },
+      "expected": false
+    },
+    {
+      "uuid": "01fdaf37-4062-4a91-9a59-a371e01bb8cd",
+      "description": "the most parcels",
+      "property": "canSplitEvenly",
+      "input": {
+        "parcels": [
+          81, 33, 54, 83, 99, 82, 13, 99, 81, 57, 40, 37, 42, 19, 74, 78, 19, 1,
+          76, 35, 32, 60, 84, 26, 82, 3, 44, 52, 50, 67, 98, 60, 23, 44, 33, 69,
+          2, 84, 30, 42, 43, 65, 41, 27, 87, 82, 94, 69, 84, 34, 44, 98, 90, 8,
+          41, 63, 32, 54, 32, 34, 94, 8, 41, 96, 31, 11, 82, 14, 98, 90, 63, 85,
+          28, 59, 35, 79, 98, 94, 1, 16, 69, 94, 64, 22, 88, 13, 45, 50, 42, 81,
+          93, 80, 77, 47, 7, 99, 54, 38, 77, 6, 61, 45, 91, 75, 52, 30, 59, 42,
+          73, 97, 8, 17, 78, 96, 41, 4, 85, 80, 86, 42, 67, 52, 39, 18, 96, 2,
+          55, 73, 71, 6, 17, 95, 77, 19, 58, 8, 56, 85, 3, 45, 52, 70, 20, 51,
+          47, 29, 18, 90, 68, 63, 30, 63, 53, 54, 73, 54, 75, 81, 34, 52, 57,
+          51, 73, 24, 22, 76, 54, 59, 99, 3, 53, 46, 8, 42, 74, 66, 99, 10, 86,
+          12, 22, 17, 18, 5, 67, 34, 63, 11, 34, 95, 47, 81, 31, 84, 72, 86, 75,
+          65, 82, 3
+        ]
+      },
+      "expected": true
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "9a7f2e14-0375-444a-9db8-3b80044e169f",
+          "description": "one parcel",
+          "property": "canSplitEvenly",
+          "input": {
+            "parcels": [4]
+          },
+          "expected": false
+        },
+        {
+          "uuid": "97bcd84e-a80c-43e9-b71c-f59fca4f2be6",
+          "description": "two equal parcels",
+          "property": "canSplitEvenly",
+          "input": {
+            "parcels": [100, 100]
+          },
+          "expected": true
+        },
+        {
+          "uuid": "4ad2c6b2-7e73-4996-ba77-dfefe5aa7bdc",
+          "description": "two different parcels",
+          "property": "canSplitEvenly",
+          "input": {
+            "parcels": [99, 100]
+          },
+          "expected": false
+        },
+        {
+          "uuid": "ec3e3767-f996-47d4-9229-589efb56923a",
+          "description": "each parcel used once",
+          "property": "canSplitEvenly",
+          "input": {
+            "parcels": [2, 6]
+          },
+          "expected": false
+        }
+      ]
+    }
+  ]
+}

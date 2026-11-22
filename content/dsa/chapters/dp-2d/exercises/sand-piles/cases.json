@@ -1,0 +1,133 @@
+{
+  "exercise": "sand-piles",
+  "cases": [
+    {
+      "uuid": "de505397-64cc-4e5b-ae80-c28e7f1763b8",
+      "description": "joins the row cheaply",
+      "property": "cheapestJoin",
+      "input": {
+        "piles": [4, 1, 3, 2]
+      },
+      "expected": 20
+    },
+    {
+      "uuid": "a834ec41-585c-4f5b-af97-c81c6e4b3fbc",
+      "description": "two piles",
+      "property": "cheapestJoin",
+      "input": {
+        "piles": [6, 9]
+      },
+      "expected": 15
+    },
+    {
+      "uuid": "b2b0c5fd-fbe8-4ba0-bd88-56877c41902b",
+      "description": "three equal piles",
+      "property": "cheapestJoin",
+      "input": {
+        "piles": [5, 5, 5]
+      },
+      "expected": 25
+    },
+    {
+      "uuid": "a104219a-bdf3-4223-b9b0-ad782b7e749c",
+      "description": "small piles in the middle",
+      "property": "cheapestJoin",
+      "input": {
+        "piles": [9, 1, 1, 9]
+      },
+      "expected": 33
+    },
+    {
+      "uuid": "697253c4-f77f-4eea-86b9-655bb7dd236f",
+      "description": "a heavy pile at one end",
+      "property": "cheapestJoin",
+      "input": {
+        "piles": [100, 1, 2, 3, 4]
+      },
+      "expected": 129
+    },
+    {
+      "uuid": "e9458623-b404-4661-92ee-b15a5dc40c4f",
+      "description": "a mixed row",
+      "property": "cheapestJoin",
+      "input": {
+        "piles": [3, 7, 2, 8, 1, 6, 4]
+      },
+      "expected": 89
+    },
+    {
+      "uuid": "0c00a5ef-6691-4670-bc49-f0a52ef69450",
+      "description": "a longer row",
+      "property": "cheapestJoin",
+      "input": {
+        "piles": [
+          18, 12, 1, 39, 23, 36, 8, 12, 23, 43, 36, 1, 9, 5, 40, 22, 45, 47, 22,
+          13, 22, 27, 19, 6, 32, 16, 5, 38, 37, 20
+        ]
+      },
+      "expected": 3190
+    },
+    {
+      "uuid": "805a055f-c21c-4bdc-b418-f54e203965d2",
+      "description": "a fuel bill past 32 bits",
+      "property": "cheapestJoin",
+      "input": {
+        "piles": [
+          1000000000, 1000000000, 1000000000, 1000000000, 1000000000,
+          1000000000, 1000000000, 1000000000
+        ]
+      },
+      "expected": 24000000000
+    },
+    {
+      "uuid": "d4d0520f-bc59-4931-bd7f-a7ad8045fdf7",
+      "description": "the longest row of the heaviest piles",
+      "property": "cheapestJoin",
+      "input": {
+        "piles": [
+          943783208, 952683962, 926570925, 946973194, 903848751, 917563955,
+          919653734, 930196569, 988994808, 922164707, 944516431, 993959295,
+          943369701, 950294199, 936815136, 911454023, 913363871, 912794932,
+          991273572, 908070135, 901205958, 912435484, 999186053, 959395613,
+          997912958, 998010802, 934253799, 924174083, 959963669, 998046951,
+          974064213, 937100300, 965392369, 972350115, 904716246, 956586920,
+          914560879, 934024643, 987958079, 973464289, 998217674, 974556722,
+          928034586, 953999699, 939212680, 965099897, 972801188, 903869906,
+          928242665, 982130935, 970331246, 926891255, 943685463, 979624022,
+          942316179, 989277504, 929724711, 975757808, 959369103, 971607522,
+          903027870, 989247492, 949558403, 950269391, 997598153, 949429900,
+          973639873, 985061086, 973158841, 988967882, 911517154, 998632647,
+          911281260, 956606075, 918948077, 975940488, 997621738, 912000337,
+          984232986, 995222706, 912077734, 958481823, 944526972, 918038541,
+          933620455, 989967190, 928993908, 959323333, 930340429, 927615891,
+          910095348, 923816537, 934843069, 984573610, 932941795, 963801181,
+          942887348, 987732238, 979817247, 980194357
+        ]
+      },
+      "expected": 638598309143
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "fccdc8f1-69f8-4e4f-ba74-a15a4d93a3a5",
+          "description": "one pile needs no joins",
+          "property": "cheapestJoin",
+          "input": {
+            "piles": [42]
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "6486edeb-8a16-491f-b65a-b759fe17eca1",
+          "description": "two of the lightest piles",
+          "property": "cheapestJoin",
+          "input": {
+            "piles": [1, 1]
+          },
+          "expected": 2
+        }
+      ]
+    }
+  ]
+}

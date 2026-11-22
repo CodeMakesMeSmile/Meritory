@@ -1,0 +1,19 @@
+id: shared-landmarks
+kind: coding
+title: Landmarks both hikers passed
+difficulty: medium
+skills:
+  - common-subsequence
+  - two-index-state
+sibling: two-drafts
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: sharedLandmarks
+  params:
+    - name: first
+      type: int[]
+    - name: second
+      type: int[]
+  returns: int

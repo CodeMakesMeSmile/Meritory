@@ -1,0 +1,35 @@
+id: prefix-tally
+kind: coding
+title: Tallying searches by how they start
+difficulty: medium
+skills:
+  - prefix-counts
+  - trie-insert-search
+sibling: prefix-scores
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  class: PrefixTally
+  params: []
+  methods:
+    - name: add
+      params:
+        - name: word
+          type: string
+      returns: void
+    - name: remove
+      params:
+        - name: word
+          type: string
+      returns: void
+    - name: countStarting
+      params:
+        - name: prefix
+          type: string
+      returns: int
+    - name: countExact
+      params:
+        - name: word
+          type: string
+      returns: int

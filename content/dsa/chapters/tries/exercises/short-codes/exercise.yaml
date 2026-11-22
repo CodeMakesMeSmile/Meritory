@@ -1,0 +1,17 @@
+id: short-codes
+kind: coding
+title: The shortest code for each bin
+difficulty: medium
+skills:
+  - common-prefix
+  - prefix-counts
+sibling: shared-start
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: shortCodes
+  params:
+    - name: items
+      type: string[]
+  returns: string[]

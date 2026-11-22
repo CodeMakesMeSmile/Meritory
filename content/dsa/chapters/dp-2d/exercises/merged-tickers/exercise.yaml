@@ -1,0 +1,21 @@
+id: merged-tickers
+kind: coding
+title: Two tickers on one tape
+difficulty: medium
+skills:
+  - two-index-state
+  - one-row
+sibling: bird-calls
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: canMerge
+  params:
+    - name: first
+      type: string
+    - name: second
+      type: string
+    - name: tape
+      type: string
+  returns: boolean

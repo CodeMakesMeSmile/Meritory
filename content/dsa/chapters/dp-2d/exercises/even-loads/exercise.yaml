@@ -1,0 +1,17 @@
+id: even-loads
+kind: coding
+title: Two equal loads
+difficulty: medium
+skills:
+  - knapsack-once
+  - one-row
+sibling: market-van
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: canSplitEvenly
+  params:
+    - name: parcels
+      type: int[]
+  returns: boolean
