@@ -38,10 +38,16 @@ EOF
 sudo apt update && sudo apt install -y isolate
 ```
 
-Start the service that gives Isolate its control group, then check the setup:
+Start the service that gives Isolate its control group, and add yourself to the `isolate` group, since only that group may run `/usr/bin/isolate`:
 
 ```bash
 sudo systemctl enable --now isolate.service
+sudo usermod -aG isolate "$USER"
+```
+
+The new group applies to new sessions only. In PowerShell, run `wsl --terminate Ubuntu-24.04`, then open Ubuntu again and check the setup:
+
+```bash
 isolate-check-environment
 isolate --cg --init && isolate --cg --cleanup
 ```
@@ -50,9 +56,10 @@ isolate --cg --init && isolate --cg --cleanup
 
 ## 3. Install Node and Python
 
-Ubuntu 24.04 already has Python 3. Install Node from the official prebuilt Linux build into `/usr/local`, so the sandbox can see it (it only sees `/usr`, `/bin`, and `/lib`):
+Ubuntu 24.04 already has Python 3. Node's prebuilt Linux build needs `libatomic1`, which WSL's Ubuntu leaves out. Install Node into `/usr/local`, so the sandbox can see it (it only sees `/usr`, `/bin`, and `/lib`):
 
 ```bash
+sudo apt install -y libatomic1
 cd /tmp
 curl -fsSLO https://nodejs.org/dist/v26.13.1/node-v26.13.1-linux-x64.tar.xz
 curl -fsSL https://nodejs.org/dist/v26.13.1/SHASUMS256.txt | grep linux-x64.tar.xz | sha256sum -c
