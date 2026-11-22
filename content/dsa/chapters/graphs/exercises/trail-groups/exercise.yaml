@@ -1,0 +1,19 @@
+id: trail-groups
+kind: coding
+title: Groups of campsites
+difficulty: easy
+skills:
+  - adjacency-list
+  - graph-dfs
+sibling: pond-count
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: trailGroups
+  params:
+    - name: n
+      type: int
+    - name: trails
+      type: int[][]
+  returns: int

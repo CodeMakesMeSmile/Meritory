@@ -1,0 +1,16 @@
+id: courtyard-path
+kind: coding
+title: The mower's shortest path
+difficulty: medium
+skills:
+  - graph-bfs
+sibling: fewest-legs
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: fewestSteps
+  params:
+    - name: yard
+      type: int[][]
+  returns: int

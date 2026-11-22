@@ -1,0 +1,19 @@
+id: top-searches
+kind: coding
+title: The most searched words
+difficulty: medium
+skills:
+  - top-k
+  - heap-or-sort
+sibling: nearest-chargers
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: topSearches
+  params:
+    - name: searches
+      type: string[]
+    - name: k
+      type: int
+  returns: string[]

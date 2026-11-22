@@ -1,0 +1,133 @@
+{
+  "exercise": "pond-count",
+  "cases": [
+    {
+      "uuid": "66b468f0-5e50-4c70-ac4a-a3af8c5f05b1",
+      "description": "counts three ponds",
+      "property": "pondCount",
+      "input": {
+        "marsh": [[1, 1, 0, 0], [0, 1, 0, 1], [1, 0, 0, 1]]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "f7e74be6-8a4e-43ae-a69a-35985039968a",
+      "description": "water that only touches at corners",
+      "property": "pondCount",
+      "input": {
+        "marsh": [[1, 0], [0, 1]]
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "4c414a1c-3e52-4938-a368-3e2e1eb5d3fe",
+      "description": "the whole marsh is one pond",
+      "property": "pondCount",
+      "input": {
+        "marsh": [[1, 1, 1], [1, 1, 1]]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "784b675e-f6d0-4cad-b539-a62ec55858e7",
+      "description": "no water at all",
+      "property": "pondCount",
+      "input": {
+        "marsh": [[0, 0, 0], [0, 0, 0]]
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "ef8d9e28-c9d3-4092-9f96-7dbf7bec20af",
+      "description": "one pond that winds around",
+      "property": "pondCount",
+      "input": {
+        "marsh": [
+          [1, 1, 1, 1, 1],
+          [0, 0, 0, 0, 1],
+          [1, 1, 1, 0, 1],
+          [1, 0, 0, 0, 1],
+          [1, 1, 1, 1, 1]
+        ]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "98518b72-8a1c-4ab4-a2e8-c2ccb45a1773",
+      "description": "a checkerboard of water",
+      "property": "pondCount",
+      "input": {
+        "marsh": [[0, 1, 0, 1], [1, 0, 1, 0], [0, 1, 0, 1], [1, 0, 1, 0]]
+      },
+      "expected": 8
+    },
+    {
+      "uuid": "1eb7344d-12d0-4c7a-8d94-e7a045e4f3a6",
+      "description": "a pond that wraps around dry ground",
+      "property": "pondCount",
+      "input": {
+        "marsh": [[1, 1, 1], [1, 0, 1], [1, 1, 1]]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "03b4c849-0d13-472c-a326-3d058bdc5198",
+      "description": "a wide marsh",
+      "property": "pondCount",
+      "input": {
+        "marsh": [
+          [0, 1, 1, 1, 1, 0, 0, 0, 0, 0],
+          [0, 1, 1, 1, 1, 1, 1, 0, 1, 1],
+          [1, 1, 1, 0, 0, 0, 1, 0, 0, 1],
+          [0, 1, 0, 1, 0, 0, 1, 0, 1, 1],
+          [1, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+          [1, 1, 0, 0, 0, 1, 1, 0, 1, 0],
+          [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+          [0, 1, 0, 1, 1, 1, 0, 1, 0, 0]
+        ]
+      },
+      "expected": 9
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "b514695a-96f5-446a-a9d2-b97c617c858c",
+          "description": "one wet cell",
+          "property": "pondCount",
+          "input": {
+            "marsh": [[1]]
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "6b048b0a-1196-4fa6-89f3-0fe02a2f2c12",
+          "description": "one dry cell",
+          "property": "pondCount",
+          "input": {
+            "marsh": [[0]]
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "5e2097fe-286f-49f1-94ae-c0e339cb8e75",
+          "description": "one row",
+          "property": "pondCount",
+          "input": {
+            "marsh": [[1, 0, 1, 1, 0, 1]]
+          },
+          "expected": 3
+        },
+        {
+          "uuid": "f3066120-c956-4fc6-bab6-8f2313f27fbd",
+          "description": "one column",
+          "property": "pondCount",
+          "input": {
+            "marsh": [[1], [1], [0], [1]]
+          },
+          "expected": 2
+        }
+      ]
+    }
+  ]
+}

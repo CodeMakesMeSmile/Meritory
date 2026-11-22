@@ -1,0 +1,16 @@
+id: heaps
+title: Heaps
+order: 11
+skills:
+  - id: heap-mechanics
+    name: Explain how a binary heap sits in an array, and how sift up and sift down keep it in order in O(log n)
+  - id: top-k
+    name: Keep the k largest or smallest values with a heap of size k
+  - id: merge-k-sorted
+    name: Merge k sorted lists with a heap of their front values
+  - id: two-heaps
+    name: Track a running median with two heaps
+  - id: schedule-with-heap
+    name: Schedule by end time or deadline with a heap
+  - id: heap-or-sort
+    name: Choose between a heap, a full sort, and a single pass

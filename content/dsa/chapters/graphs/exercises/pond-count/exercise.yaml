@@ -1,0 +1,16 @@
+id: pond-count
+kind: coding
+title: Ponds in the marsh
+difficulty: easy
+skills:
+  - graph-dfs
+sibling: trail-groups
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: pondCount
+  params:
+    - name: marsh
+      type: int[][]
+  returns: int

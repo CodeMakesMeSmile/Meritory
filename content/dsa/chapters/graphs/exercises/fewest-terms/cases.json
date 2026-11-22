@@ -1,0 +1,131 @@
+{
+  "exercise": "fewest-terms",
+  "cases": [
+    {
+      "uuid": "f126c4b0-03f6-4f1b-934a-008638b80bf1",
+      "description": "three terms for five modules",
+      "property": "fewestTerms",
+      "input": {
+        "n": 5,
+        "prerequisites": [[0, 2], [1, 2], [2, 3], [1, 4]]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "f74dbff6-ca11-409c-85ab-b98fee4fd550",
+      "description": "no prerequisites",
+      "property": "fewestTerms",
+      "input": {
+        "n": 4,
+        "prerequisites": []
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "ce27d3ed-7926-46a9-a88c-3a323ef4e3ae",
+      "description": "a chain of modules",
+      "property": "fewestTerms",
+      "input": {
+        "n": 5,
+        "prerequisites": [[3, 1], [1, 4], [4, 0], [0, 2]]
+      },
+      "expected": 5
+    },
+    {
+      "uuid": "61a1b026-1b25-4ca4-b463-e1ab5d627793",
+      "description": "prerequisites in a circle",
+      "property": "fewestTerms",
+      "input": {
+        "n": 3,
+        "prerequisites": [[0, 1], [1, 2], [2, 0]]
+      },
+      "expected": -1
+    },
+    {
+      "uuid": "8fd04186-4009-405c-9951-1f7e014a328c",
+      "description": "a circle in one part of the course",
+      "property": "fewestTerms",
+      "input": {
+        "n": 6,
+        "prerequisites": [[0, 1], [2, 3], [3, 4], [4, 2], [1, 5]]
+      },
+      "expected": -1
+    },
+    {
+      "uuid": "e72eba68-978d-4b53-9fa6-1b876e9540d2",
+      "description": "a module waits for its slowest prerequisite",
+      "property": "fewestTerms",
+      "input": {
+        "n": 5,
+        "prerequisites": [[0, 1], [1, 2], [3, 2], [2, 4]]
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "397588ec-2a8d-451b-bf93-a9886987bb03",
+      "description": "a prerequisite listed twice",
+      "property": "fewestTerms",
+      "input": {
+        "n": 3,
+        "prerequisites": [[0, 1], [0, 1], [1, 2]]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "28588a55-75be-43e7-bfeb-d5e4b1bb71af",
+      "description": "fifteen modules",
+      "property": "fewestTerms",
+      "input": {
+        "n": 15,
+        "prerequisites": [
+          [13, 8],
+          [0, 1],
+          [12, 10],
+          [8, 12],
+          [14, 5],
+          [4, 1],
+          [3, 12],
+          [5, 1],
+          [5, 10],
+          [6, 10],
+          [12, 10],
+          [5, 12],
+          [6, 8],
+          [4, 13],
+          [8, 9],
+          [4, 9],
+          [2, 1],
+          [14, 3],
+          [5, 1],
+          [6, 2]
+        ]
+      },
+      "expected": 5
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "b7105629-81d0-40a1-bbf6-b512d3bff907",
+          "description": "one module",
+          "property": "fewestTerms",
+          "input": {
+            "n": 1,
+            "prerequisites": []
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "9fd382c9-7bb1-4a34-b4b7-8c6baf489065",
+          "description": "a module that needs itself",
+          "property": "fewestTerms",
+          "input": {
+            "n": 2,
+            "prerequisites": [[1, 1]]
+          },
+          "expected": -1
+        }
+      ]
+    }
+  ]
+}

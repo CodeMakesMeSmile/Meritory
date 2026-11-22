@@ -1,0 +1,16 @@
+id: nearest-exit
+kind: coding
+title: Steps to the nearest exit
+difficulty: medium
+skills:
+  - multi-source-bfs
+sibling: frost-spread
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: exitDistances
+  params:
+    - name: plan
+      type: int[][]
+  returns: int[][]

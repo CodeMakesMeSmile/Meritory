@@ -1,0 +1,121 @@
+{
+  "exercise": "fewest-rooms",
+  "cases": [
+    {
+      "uuid": "804df070-feca-47f3-ba6c-cb011c7a82db",
+      "description": "a room frees up when a session ends",
+      "property": "fewestRooms",
+      "input": {
+        "sessions": [[540, 600], [560, 620], [600, 660]]
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "7ae6ca1a-b2fa-4519-8f6a-6e28f77e3f13",
+      "description": "sessions back to back share one room",
+      "property": "fewestRooms",
+      "input": {
+        "sessions": [[0, 10], [10, 20], [20, 30]]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "fe7a2723-74ee-46ed-9654-2cdb81bd21b5",
+      "description": "every session overlaps",
+      "property": "fewestRooms",
+      "input": {
+        "sessions": [[1, 10], [2, 9], [3, 8], [4, 7]]
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "9f166dbd-08fb-429b-b558-fbd095a82cfe",
+      "description": "short sessions inside a long one",
+      "property": "fewestRooms",
+      "input": {
+        "sessions": [[0, 100], [10, 20], [30, 40]]
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "0e813975-316a-43c1-ab7a-15ff07a10b15",
+      "description": "sessions in no particular order",
+      "property": "fewestRooms",
+      "input": {
+        "sessions": [[30, 75], [0, 50], [60, 150], [55, 70]]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "0122e5e1-a596-4049-ac1d-e438fcca0e52",
+      "description": "sessions that start together",
+      "property": "fewestRooms",
+      "input": {
+        "sessions": [[5, 10], [5, 20], [5, 15], [12, 30]]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "c6a219c6-52d3-4bd5-a2a3-5afb3c51d61d",
+      "description": "a busy week of sessions",
+      "property": "fewestRooms",
+      "input": {
+        "sessions": [
+          [89, 134],
+          [4, 21],
+          [171, 190],
+          [199, 234],
+          [126, 146],
+          [0, 17],
+          [1, 25],
+          [104, 129],
+          [175, 205],
+          [36, 92],
+          [141, 193],
+          [57, 83],
+          [171, 205],
+          [58, 61],
+          [71, 105],
+          [162, 198],
+          [74, 113],
+          [111, 144],
+          [4, 15],
+          [23, 78]
+        ]
+      },
+      "expected": 5
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "3b8bb8d1-e5cf-44de-b9e5-bdffca59d332",
+          "description": "no sessions",
+          "property": "fewestRooms",
+          "input": {
+            "sessions": []
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "4307e6d4-cd59-472a-9647-1e05c7a303ae",
+          "description": "one session",
+          "property": "fewestRooms",
+          "input": {
+            "sessions": [[100, 200]]
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "b4900241-feb6-44dc-869d-91f17c955c7d",
+          "description": "one minute sessions",
+          "property": "fewestRooms",
+          "input": {
+            "sessions": [[0, 1], [1, 2], [0, 1]]
+          },
+          "expected": 2
+        }
+      ]
+    }
+  ]
+}

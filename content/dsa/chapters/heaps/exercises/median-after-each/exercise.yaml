@@ -1,0 +1,16 @@
+id: median-after-each
+kind: coding
+title: The median after every delivery
+difficulty: medium
+skills:
+  - two-heaps
+sibling: median-board
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: runningMedians
+  params:
+    - name: times
+      type: int[]
+  returns: double[]

@@ -1,0 +1,18 @@
+id: graphs
+title: Graphs
+order: 14
+skills:
+  - id: adjacency-list
+    name: Build an adjacency list from a list of edges
+  - id: graph-dfs
+    name: Search a graph or a grid depth first, and count its separate parts
+  - id: graph-bfs
+    name: Find the fewest steps in an unweighted graph or grid with breadth-first search
+  - id: multi-source-bfs
+    name: Spread from many starting points at once with one breadth-first search
+  - id: graph-cycles
+    name: Detect a cycle in a directed or an undirected graph
+  - id: topological-order
+    name: Put tasks with prerequisites in order with Kahn's algorithm
+  - id: union-find
+    name: Join and compare groups with union-find, using path compression and union by rank

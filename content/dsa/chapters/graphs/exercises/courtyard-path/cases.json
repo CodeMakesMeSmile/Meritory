@@ -1,0 +1,133 @@
+{
+  "exercise": "courtyard-path",
+  "cases": [
+    {
+      "uuid": "ae88d9aa-d76f-4732-a5fd-82a4cb61bf93",
+      "description": "goes around the flower beds",
+      "property": "fewestSteps",
+      "input": {
+        "yard": [[0, 0, 1], [1, 0, 1], [1, 0, 0]]
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "d021f5b4-d628-4137-a08b-3b5c54e46ef8",
+      "description": "an open yard",
+      "property": "fewestSteps",
+      "input": {
+        "yard": [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
+      },
+      "expected": 5
+    },
+    {
+      "uuid": "c480c9f8-a425-4443-856c-f721d873f794",
+      "description": "flower beds cut the yard in two",
+      "property": "fewestSteps",
+      "input": {
+        "yard": [[0, 0, 0], [1, 1, 1], [0, 0, 0]]
+      },
+      "expected": -1
+    },
+    {
+      "uuid": "ec391159-2f4f-45aa-b1c6-284290d23e1b",
+      "description": "the mower starts on a flower bed",
+      "property": "fewestSteps",
+      "input": {
+        "yard": [[1, 0], [0, 0]]
+      },
+      "expected": -1
+    },
+    {
+      "uuid": "ef8ac4c0-165d-4e40-985a-d247b0e11efc",
+      "description": "the corner to reach is a flower bed",
+      "property": "fewestSteps",
+      "input": {
+        "yard": [[0, 0], [0, 1]]
+      },
+      "expected": -1
+    },
+    {
+      "uuid": "b564ec6a-b0ec-44b7-a560-3e381b3f9cd0",
+      "description": "a path that snakes back and forth",
+      "property": "fewestSteps",
+      "input": {
+        "yard": [
+          [0, 0, 0, 0, 0],
+          [1, 1, 1, 1, 0],
+          [0, 0, 0, 0, 0],
+          [0, 1, 1, 1, 1],
+          [0, 0, 0, 0, 0]
+        ]
+      },
+      "expected": 16
+    },
+    {
+      "uuid": "0e51e868-44b3-459d-a2a8-4d5520f3e8e5",
+      "description": "the path has to go up again",
+      "property": "fewestSteps",
+      "input": {
+        "yard": [[0, 1, 0, 0, 0], [0, 1, 0, 1, 0], [0, 0, 0, 1, 0]]
+      },
+      "expected": 10
+    },
+    {
+      "uuid": "49d3ff81-2aa6-4ab9-a00c-dada35851ed8",
+      "description": "a yard with scattered beds",
+      "property": "fewestSteps",
+      "input": {
+        "yard": [
+          [0, 0, 0, 1, 0, 1, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 1],
+          [0, 1, 0, 0, 0, 0, 0, 0],
+          [1, 0, 1, 1, 0, 0, 0, 1],
+          [0, 1, 0, 0, 0, 1, 0, 1],
+          [1, 0, 0, 1, 1, 0, 1, 0],
+          [0, 0, 0, 0, 1, 1, 0, 1],
+          [0, 0, 0, 0, 0, 0, 0, 0]
+        ]
+      },
+      "expected": 18
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "18706611-031a-4401-be15-314ffcc5db4d",
+          "description": "a yard of one grass cell",
+          "property": "fewestSteps",
+          "input": {
+            "yard": [[0]]
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "51d2d53b-c5a6-4d6d-b65a-25c4fe88e0df",
+          "description": "a yard of one flower bed",
+          "property": "fewestSteps",
+          "input": {
+            "yard": [[1]]
+          },
+          "expected": -1
+        },
+        {
+          "uuid": "ae42cb5f-e77b-4e80-9d6b-7d8831540293",
+          "description": "one row of grass",
+          "property": "fewestSteps",
+          "input": {
+            "yard": [[0, 0, 0, 0]]
+          },
+          "expected": 3
+        },
+        {
+          "uuid": "b3c0c956-5181-4f2b-b411-a1f6b50d89b0",
+          "description": "one column with a bed in the way",
+          "property": "fewestSteps",
+          "input": {
+            "yard": [[0], [1], [0]]
+          },
+          "expected": -1
+        }
+      ]
+    }
+  ]
+}

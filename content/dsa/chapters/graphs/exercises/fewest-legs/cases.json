@@ -1,0 +1,163 @@
+{
+  "exercise": "fewest-legs",
+  "cases": [
+    {
+      "uuid": "3d732f22-7d57-4749-9c33-01271c8526f2",
+      "description": "takes the route with fewer rides",
+      "property": "fewestRides",
+      "input": {
+        "n": 6,
+        "routes": [[0, 1], [1, 2], [2, 5], [0, 3], [3, 4], [4, 5], [0, 4]],
+        "start": 0,
+        "goal": 5
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "dd8d26e0-4d1e-4360-92e3-d2604a79d00a",
+      "description": "already on the right island",
+      "property": "fewestRides",
+      "input": {
+        "n": 3,
+        "routes": [[0, 1], [1, 2]],
+        "start": 1,
+        "goal": 1
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "75a00ade-d9d5-4fb4-9b85-db0ebead4246",
+      "description": "no ferry reaches the goal",
+      "property": "fewestRides",
+      "input": {
+        "n": 4,
+        "routes": [[0, 1], [2, 3]],
+        "start": 0,
+        "goal": 3
+      },
+      "expected": -1
+    },
+    {
+      "uuid": "1419b21f-f88f-4d82-9e55-dd12fbfa8fab",
+      "description": "a direct ferry",
+      "property": "fewestRides",
+      "input": {
+        "n": 3,
+        "routes": [[0, 1], [1, 2], [0, 2]],
+        "start": 0,
+        "goal": 2
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "adff785e-a78e-4a8e-9288-e98907038506",
+      "description": "a long way listed before a short one",
+      "property": "fewestRides",
+      "input": {
+        "n": 7,
+        "routes": [[0, 1], [1, 2], [2, 3], [3, 4], [4, 6], [0, 5], [5, 6]],
+        "start": 0,
+        "goal": 6
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "df9c4ec1-087d-4ecb-92e5-4eb9ac6c36cd",
+      "description": "the shorter way around a ring",
+      "property": "fewestRides",
+      "input": {
+        "n": 8,
+        "routes": [
+          [0, 1],
+          [1, 2],
+          [2, 3],
+          [3, 4],
+          [4, 5],
+          [5, 6],
+          [6, 7],
+          [7, 0]
+        ],
+        "start": 1,
+        "goal": 7
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "2603b7b4-ec45-4883-b65e-36a650db6a71",
+      "description": "ferries run both ways",
+      "property": "fewestRides",
+      "input": {
+        "n": 3,
+        "routes": [[2, 1], [1, 0]],
+        "start": 0,
+        "goal": 2
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "f806ea7b-0355-4f41-ac90-b97123f74869",
+      "description": "twenty islands",
+      "property": "fewestRides",
+      "input": {
+        "n": 20,
+        "routes": [
+          [12, 4],
+          [17, 10],
+          [4, 6],
+          [2, 0],
+          [10, 4],
+          [11, 12],
+          [6, 3],
+          [12, 0],
+          [19, 13],
+          [10, 13],
+          [5, 12],
+          [0, 6],
+          [7, 8],
+          [3, 15],
+          [19, 1],
+          [14, 5],
+          [3, 12],
+          [2, 8],
+          [5, 0],
+          [12, 8],
+          [9, 10],
+          [8, 1],
+          [14, 8]
+        ],
+        "start": 0,
+        "goal": 19
+      },
+      "expected": 4
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "24c3dbfd-c0a3-414c-bbd9-1d8cdfbb98f8",
+          "description": "one island",
+          "property": "fewestRides",
+          "input": {
+            "n": 1,
+            "routes": [],
+            "start": 0,
+            "goal": 0
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "a40f6f29-aa91-4013-95dd-1e422dba0fc3",
+          "description": "two islands with no ferry",
+          "property": "fewestRides",
+          "input": {
+            "n": 2,
+            "routes": [],
+            "start": 0,
+            "goal": 1
+          },
+          "expected": -1
+        }
+      ]
+    }
+  ]
+}

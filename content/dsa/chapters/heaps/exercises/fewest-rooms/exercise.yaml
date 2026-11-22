@@ -1,0 +1,17 @@
+id: fewest-rooms
+kind: coding
+title: Rooms for every tutoring session
+difficulty: medium
+skills:
+  - schedule-with-heap
+  - heap-or-sort
+sibling: orders-on-time
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: fewestRooms
+  params:
+    - name: sessions
+      type: int[][]
+  returns: int

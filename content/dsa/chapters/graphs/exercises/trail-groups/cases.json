@@ -1,0 +1,133 @@
+{
+  "exercise": "trail-groups",
+  "cases": [
+    {
+      "uuid": "c38ceec9-1bfe-4469-9c15-78b867357bdd",
+      "description": "counts three groups",
+      "property": "trailGroups",
+      "input": {
+        "n": 6,
+        "trails": [[0, 1], [1, 2], [3, 4]]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "84af7bae-8237-402f-9035-171b3766dd77",
+      "description": "a ring of trails joins everyone",
+      "property": "trailGroups",
+      "input": {
+        "n": 5,
+        "trails": [[0, 1], [1, 2], [2, 3], [3, 4], [4, 0]]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "02120a31-307e-41f3-90ca-d2188a78a66a",
+      "description": "no trails at all",
+      "property": "trailGroups",
+      "input": {
+        "n": 4,
+        "trails": []
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "3917f98b-e7dc-4061-99dd-48d2639f8d1d",
+      "description": "a trail listed twice",
+      "property": "trailGroups",
+      "input": {
+        "n": 3,
+        "trails": [[0, 1], [1, 0], [0, 1]]
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "a925e609-6a32-485d-9208-5d41729707ed",
+      "description": "one long chain",
+      "property": "trailGroups",
+      "input": {
+        "n": 8,
+        "trails": [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7]]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "9bba65ad-62bb-4b65-881d-6170b581414b",
+      "description": "every trail leads to the centre",
+      "property": "trailGroups",
+      "input": {
+        "n": 6,
+        "trails": [[0, 1], [0, 2], [0, 3], [0, 4], [0, 5]]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "411bf421-d046-41b5-8b95-ceaece28c43e",
+      "description": "groups joined late in the list",
+      "property": "trailGroups",
+      "input": {
+        "n": 6,
+        "trails": [[0, 1], [2, 3], [4, 5], [1, 2], [3, 4]]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "dd88d546-8f8a-4443-806a-d9bc64b841b2",
+      "description": "thirty campsites",
+      "property": "trailGroups",
+      "input": {
+        "n": 30,
+        "trails": [
+          [29, 27],
+          [29, 24],
+          [5, 24],
+          [17, 22],
+          [18, 8],
+          [15, 9],
+          [20, 17],
+          [11, 29],
+          [21, 26],
+          [7, 20],
+          [29, 7],
+          [6, 18],
+          [10, 26],
+          [2, 3],
+          [13, 17],
+          [25, 6],
+          [13, 4],
+          [6, 28],
+          [11, 20],
+          [15, 23],
+          [2, 9],
+          [26, 4]
+        ]
+      },
+      "expected": 9
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "680fc6a3-7cc2-4c73-8760-0ef7b6a9992d",
+          "description": "one campsite",
+          "property": "trailGroups",
+          "input": {
+            "n": 1,
+            "trails": []
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "b592e09f-c10e-438e-8e17-3219bb1cb2b6",
+          "description": "two joined campsites",
+          "property": "trailGroups",
+          "input": {
+            "n": 2,
+            "trails": [[1, 0]]
+          },
+          "expected": 1
+        }
+      ]
+    }
+  ]
+}

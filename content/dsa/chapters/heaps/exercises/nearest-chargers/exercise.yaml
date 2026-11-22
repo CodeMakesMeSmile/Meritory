@@ -1,0 +1,20 @@
+id: nearest-chargers
+kind: coding
+title: The nearest chargers to the van
+difficulty: medium
+skills:
+  - top-k
+  - heap-or-sort
+sibling: top-searches
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: nearestChargers
+  params:
+    - name: chargers
+      type: int[][]
+    - name: k
+      type: int
+  returns: int[][]
+  anyOrder: true

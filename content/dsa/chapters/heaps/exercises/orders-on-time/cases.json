@@ -1,0 +1,143 @@
+{
+  "exercise": "orders-on-time",
+  "cases": [
+    {
+      "uuid": "fa4664e9-612d-49c1-b141-cfd7e29fee7b",
+      "description": "drops the longest bake when time runs out",
+      "property": "mostOnTime",
+      "input": {
+        "orders": [[3, 5], [2, 4], [4, 7], [1, 8]]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "f439bb4e-619f-4889-ab83-f450f2817c41",
+      "description": "every order fits",
+      "property": "mostOnTime",
+      "input": {
+        "orders": [[1, 3], [2, 6], [3, 10]]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "545adad9-1955-45a7-846d-1b16604125e9",
+      "description": "an order that could never be ready",
+      "property": "mostOnTime",
+      "input": {
+        "orders": [[5, 3], [1, 2]]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "d8b368a7-85ac-4b25-a01d-2005088839e8",
+      "description": "two short orders beat one long one",
+      "property": "mostOnTime",
+      "input": {
+        "orders": [[5, 5], [2, 6], [2, 6]]
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "d488f569-8c48-4366-83ca-be4ef906fec0",
+      "description": "deadlines met to the minute",
+      "property": "mostOnTime",
+      "input": {
+        "orders": [[1, 1], [1, 2], [1, 3]]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "c14fb3bb-7bef-4b21-afb0-50f70709e6e4",
+      "description": "every order is due at once",
+      "property": "mostOnTime",
+      "input": {
+        "orders": [[3, 6], [2, 6], [4, 6], [1, 6]]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "cad61e3a-6936-44b2-8e62-2adc1afe9ee6",
+      "description": "orders in no particular order",
+      "property": "mostOnTime",
+      "input": {
+        "orders": [[2, 20], [9, 10], [4, 11], [6, 12], [5, 14]]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "bb992b36-7f1f-47cd-9467-94ce490b7d50",
+      "description": "ten mixed orders",
+      "property": "mostOnTime",
+      "input": {
+        "orders": [
+          [9, 16],
+          [2, 5],
+          [7, 21],
+          [7, 11],
+          [4, 24],
+          [9, 4],
+          [2, 22],
+          [4, 18],
+          [8, 6],
+          [8, 26]
+        ]
+      },
+      "expected": 5
+    },
+    {
+      "uuid": "2e2e246b-960c-4857-a1c9-ed1380117e80",
+      "description": "thirteen mixed orders",
+      "property": "mostOnTime",
+      "input": {
+        "orders": [
+          [12, 60],
+          [20, 33],
+          [11, 45],
+          [13, 53],
+          [9, 8],
+          [14, 43],
+          [3, 56],
+          [13, 17],
+          [1, 24],
+          [10, 16],
+          [18, 44],
+          [13, 6],
+          [15, 13]
+        ]
+      },
+      "expected": 6
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "7906f65d-c677-4be1-92c4-6fbebc75c181",
+          "description": "one order on time",
+          "property": "mostOnTime",
+          "input": {
+            "orders": [[2, 2]]
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "b37de9a6-9f16-4870-9ddb-f6a77f80ddd0",
+          "description": "one order too late",
+          "property": "mostOnTime",
+          "input": {
+            "orders": [[3, 2]]
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "4d58b2bf-331c-4532-a7da-c0aaa66f4c22",
+          "description": "no orders",
+          "property": "mostOnTime",
+          "input": {
+            "orders": []
+          },
+          "expected": 0
+        }
+      ]
+    }
+  ]
+}

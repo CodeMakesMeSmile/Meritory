@@ -1,0 +1,19 @@
+id: spare-cable
+kind: coding
+title: The first spare cable
+difficulty: medium
+skills:
+  - union-find
+  - graph-cycles
+sibling: rising-islands
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: spareCable
+  params:
+    - name: n
+      type: int
+    - name: cables
+      type: int[][]
+  returns: int[]

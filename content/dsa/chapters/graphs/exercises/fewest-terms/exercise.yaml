@@ -1,0 +1,19 @@
+id: fewest-terms
+kind: coding
+title: The fewest terms to finish a course
+difficulty: medium
+skills:
+  - topological-order
+  - adjacency-list
+sibling: circular-wait
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: fewestTerms
+  params:
+    - name: n
+      type: int
+    - name: prerequisites
+      type: int[][]
+  returns: int

@@ -1,0 +1,106 @@
+{
+  "exercise": "median-after-each",
+  "cases": [
+    {
+      "uuid": "d611b99d-bfce-4dc0-94ce-7cfcd752e50b",
+      "description": "the median after every delivery",
+      "property": "runningMedians",
+      "input": {
+        "times": [12, 4, 9, 30]
+      },
+      "expected": [12, 8, 9, 10.5]
+    },
+    {
+      "uuid": "9cbd280a-dfc1-49f1-933f-3914c04d982f",
+      "description": "times that only go up",
+      "property": "runningMedians",
+      "input": {
+        "times": [1, 2, 3, 4, 5]
+      },
+      "expected": [1, 1.5, 2, 2.5, 3]
+    },
+    {
+      "uuid": "d4dcbad7-6a41-4506-ac15-b3e4bde6e1d8",
+      "description": "times that only go down",
+      "property": "runningMedians",
+      "input": {
+        "times": [50, 40, 30, 20]
+      },
+      "expected": [50, 45, 40, 35]
+    },
+    {
+      "uuid": "e90b0a0b-f5ba-4e95-aa0a-2ce9df884c68",
+      "description": "the same time every delivery",
+      "property": "runningMedians",
+      "input": {
+        "times": [15, 15, 15]
+      },
+      "expected": [15, 15, 15]
+    },
+    {
+      "uuid": "14c0f0a5-36cf-42ef-a6c0-44d4c5d1f045",
+      "description": "short and long deliveries in turn",
+      "property": "runningMedians",
+      "input": {
+        "times": [1, 100, 2, 99, 3, 98]
+      },
+      "expected": [1, 50.5, 2, 50.5, 3, 50.5]
+    },
+    {
+      "uuid": "478bae06-f776-4dcf-a370-b5d899984ed9",
+      "description": "medians that land halfway",
+      "property": "runningMedians",
+      "input": {
+        "times": [10, 11, 20, 21]
+      },
+      "expected": [10, 10.5, 11, 15.5]
+    },
+    {
+      "uuid": "32d3b758-b89b-49af-a901-ccae3420a791",
+      "description": "the longest times allowed",
+      "property": "runningMedians",
+      "input": {
+        "times": [100000, 99999, 100000]
+      },
+      "expected": [100000, 99999.5, 100000]
+    },
+    {
+      "uuid": "29cd9990-595e-48b1-9707-bf3e79ddde3c",
+      "description": "a busy day",
+      "property": "runningMedians",
+      "input": {
+        "times": [
+          25, 59, 13, 57, 47, 37, 21, 22, 10, 31, 37, 22, 43, 57, 31, 33, 60, 4,
+          8, 44, 16, 6, 5, 41, 6
+        ]
+      },
+      "expected": [
+        25, 42, 25, 41, 47, 42, 37, 31, 25, 28, 31, 28, 31, 34, 31, 32, 33, 32,
+        31, 32, 31, 31, 31, 31, 31
+      ]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "9e8f5141-a7d3-471f-89af-0628c11f9768",
+          "description": "one delivery",
+          "property": "runningMedians",
+          "input": {
+            "times": [7]
+          },
+          "expected": [7]
+        },
+        {
+          "uuid": "6ff4722c-0965-4ad6-99cb-70b3e65b1ebc",
+          "description": "no deliveries",
+          "property": "runningMedians",
+          "input": {
+            "times": []
+          },
+          "expected": []
+        }
+      ]
+    }
+  ]
+}

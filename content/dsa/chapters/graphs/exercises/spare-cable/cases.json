@@ -1,0 +1,123 @@
+{
+  "exercise": "spare-cable",
+  "cases": [
+    {
+      "uuid": "84a79600-2fb8-449b-a41d-b1c300fedeb6",
+      "description": "finds the cable that closes a loop",
+      "property": "spareCable",
+      "input": {
+        "n": 4,
+        "cables": [[0, 1], [1, 2], [2, 0], [2, 3]]
+      },
+      "expected": [2, 0]
+    },
+    {
+      "uuid": "c6a7e745-ffb6-4208-9fc2-a59f7b4f6609",
+      "description": "every cable joins new buildings",
+      "property": "spareCable",
+      "input": {
+        "n": 4,
+        "cables": [[0, 1], [1, 2], [2, 3]]
+      },
+      "expected": []
+    },
+    {
+      "uuid": "99370558-68f5-44cc-8542-9808bb249222",
+      "description": "the first of two spare cables",
+      "property": "spareCable",
+      "input": {
+        "n": 3,
+        "cables": [[0, 1], [1, 2], [0, 2], [1, 0]]
+      },
+      "expected": [0, 2]
+    },
+    {
+      "uuid": "7ac6f545-385b-4b92-96ae-2ca47aec5901",
+      "description": "a cable laid twice",
+      "property": "spareCable",
+      "input": {
+        "n": 4,
+        "cables": [[0, 1], [2, 3], [1, 0]]
+      },
+      "expected": [1, 0]
+    },
+    {
+      "uuid": "35a2bc18-deaf-469a-9a7e-3e62698f5924",
+      "description": "joining two groups isn't spare",
+      "property": "spareCable",
+      "input": {
+        "n": 4,
+        "cables": [[0, 1], [2, 3], [1, 2], [3, 0]]
+      },
+      "expected": [3, 0]
+    },
+    {
+      "uuid": "86236227-f725-4084-9d05-7d45c4506bbf",
+      "description": "a long ring closes at the end",
+      "property": "spareCable",
+      "input": {
+        "n": 6,
+        "cables": [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0]]
+      },
+      "expected": [5, 0]
+    },
+    {
+      "uuid": "a484da5f-bd87-45b4-9e72-7015857bd3c2",
+      "description": "buildings left out of every cable",
+      "property": "spareCable",
+      "input": {
+        "n": 6,
+        "cables": [[1, 4], [4, 2], [2, 1]]
+      },
+      "expected": [2, 1]
+    },
+    {
+      "uuid": "2334ead1-f758-43d2-896f-c9192c4fa0b1",
+      "description": "twelve buildings",
+      "property": "spareCable",
+      "input": {
+        "n": 12,
+        "cables": [
+          [4, 8],
+          [11, 2],
+          [8, 6],
+          [1, 11],
+          [3, 2],
+          [9, 7],
+          [7, 3],
+          [6, 5],
+          [7, 0],
+          [5, 2],
+          [10, 6],
+          [0, 11]
+        ]
+      },
+      "expected": [0, 11]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "6acaf4cf-d93d-41ef-bfb5-9e44b0596e2e",
+          "description": "one building",
+          "property": "spareCable",
+          "input": {
+            "n": 1,
+            "cables": []
+          },
+          "expected": []
+        },
+        {
+          "uuid": "ece600d8-1900-439b-8afb-8903e4f11f03",
+          "description": "one cable",
+          "property": "spareCable",
+          "input": {
+            "n": 2,
+            "cables": [[0, 1]]
+          },
+          "expected": []
+        }
+      ]
+    }
+  ]
+}

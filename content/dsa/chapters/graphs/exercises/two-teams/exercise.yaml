@@ -1,0 +1,19 @@
+id: two-teams
+kind: coding
+title: Two teams with no rivals together
+difficulty: medium
+skills:
+  - adjacency-list
+  - graph-dfs
+sibling: rumour-reach
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: twoTeams
+  params:
+    - name: n
+      type: int
+    - name: rivals
+      type: int[][]
+  returns: boolean

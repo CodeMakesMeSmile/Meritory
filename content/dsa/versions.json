@@ -21,6 +21,9 @@
   "card/compact-steps": [
     "e3f65e42adafb56a0bee2499c81823fddb4919f0ad8f05ecf638576cca414dcc"
   ],
+  "card/count-parts-steps": [
+    "ae36062191193b9804af16ce98a9a93699cfd29933e06fe53cd88b2002326e00"
+  ],
   "card/deque-steps": [
     "fc63e9d6970bf8e1ef5d11dca056b5514f25318a58ed7f8871c961ba05090ba4"
   ],
@@ -35,6 +38,9 @@
   ],
   "card/gap-steps": [
     "fade2c51c9cee34b35b97236c44604fd5822bf13899335e03d002856f5b09199"
+  ],
+  "card/grid-bfs-steps": [
+    "32f2ff14fda109a7b465490ff4a9da8203b0400b2bf7879a186c082370f65a00"
   ],
   "card/grid-search-steps": [
     "c46107ae85291f8affbb6788dafdabc508d26081b2d8d9ee7d638be45735c7f2"
@@ -55,6 +61,18 @@
   "card/hash-lookup-steps": [
     "368d18e6b0a4d86ad7e7721468c94a0d499a6b01cd5dcf7a521a5735f88382fc"
   ],
+  "card/heap-child-index": [
+    "9b986486a43a1835f34f86b88b8f69cd8e3def4dd919547b75a37bb736885bea"
+  ],
+  "card/heap-per-language": [
+    "123163d5ecc662d2efbc138041b04ac4ac54c53670416692705383ab6d10a3c0"
+  ],
+  "card/heap-pop-steps": [
+    "bc1614cff30c7b63280a33d0bdbfe75ec1381cf5c0d80418c0fcfba98b80dbba"
+  ],
+  "card/kahn-steps": [
+    "41ebf23d646d45b200ab9d391f114404189fe1f6917f3b778e1e4bccaa7b8be6"
+  ],
   "card/last-copy-steps": [
     "c163870ec606809bfae7f8dd82dd7fd75761c5a983d88ecd4f7e7a7bed5abda9"
   ],
@@ -67,8 +85,14 @@
   "card/lis-tails-steps": [
     "59d11d3600aefd3072935073e74f6d465f21b5c35c92bffda570be01a73cb942"
   ],
+  "card/median-add-steps": [
+    "12b0052fd21d289bbd186a96177dd0772585caede4aa2051d3d21ced623a30fb"
+  ],
   "card/memo-top-down-steps": [
     "c5f7ef50e2170df13a2f0ec7330720e33368dd725f14629d6d97265230dae6f0"
+  ],
+  "card/merge-k-steps": [
+    "cc88e14c0508b1b4c5f9a7b375580f7139343244151c8852b94792ca266e9db6"
   ],
   "card/merge-lists-steps": [
     "2e34bc36f30cdea3cc4ffe4b8d2457165ff0a9fc7da7888bf9f650601ced3128"
@@ -111,6 +135,9 @@
   ],
   "card/rotated-search-steps": [
     "ae2d62475b766e5984354faa5a44034ed43c1d87be768a3188b90def8a60787f"
+  ],
+  "card/shared-list-trap": [
+    "ced5581ba2a65b0154f23b579fd43934480e1adeb7e0ead9df0ca33d94920928"
   ],
   "card/shortest-window-steps": [
     "6b5b152da4111ddf38565183bec0533fb34f3c10f6dc189e6ff9880305cb3da3"
@@ -172,6 +199,9 @@
   "card/when-deque-over-heap": [
     "ef8851c166921a6614387095780c210de24dd5c35aa986e12cc86ffeac43c824"
   ],
+  "card/when-dfs-path-wrong": [
+    "cc17e4d908d6deee258b92183c3b7c02ecf408e7b95e5e21999055ad5c8472cc"
+  ],
   "card/when-division-rounds": [
     "fb8f833b9ba724f2f3020bf5d7754c51620008e732e38a4616333c33f0b32d68"
   ],
@@ -180,6 +210,12 @@
   ],
   "card/when-each-order": [
     "40c67cab73fa1612865334b747eb1931b402521e709d067eac52c02b9add23a5"
+  ],
+  "card/when-edge-closes-loop": [
+    "12c9cc1a06cf3e252fe7a7f4e91fe4d86d686867a268db397516076ddd01693c"
+  ],
+  "card/when-edge-direction": [
+    "e1c6da6b16510afe5e42e3e75be700021169b8cdc8d1b93fcaaad9b9a8080dcc"
   ],
   "card/when-ends-need-sorting": [
     "3f6ed074a3f88818c8de29a68c0f372272cccf822d8ee231c911fa42ea062716"
@@ -190,11 +226,20 @@
   "card/when-grid-method": [
     "66a210633086000cfa57098a555cfb0c3a1121d33258f0bc7bea9f53b84da0d5"
   ],
+  "card/when-heap-or-sort": [
+    "b1cfc250da6761363241cb1d1e1da78956e9b03cbb41901cb43bd2a3b794f78e"
+  ],
   "card/when-is-a-leaf": [
     "dc0827c240deb3fcce5d7d52757b4324adba9817390870f5e4aee63b3379a005"
   ],
+  "card/when-k-nearest-heap": [
+    "252dbc2cb1830826c9f8483a210b786b0a5724f814d97b5dc608a01ef8e4ecc6"
+  ],
   "card/when-letter-count-check": [
     "cfb49df5ccc44f8431871304dace28174fc547b8431e9b186c14bf219f36e9a9"
+  ],
+  "card/when-list-or-matrix": [
+    "2e41c088632c8c5bb7325d853d711dc6326beb48f2ca69d5c4823ff52c72e68a"
   ],
   "card/when-longest-or-shortest": [
     "e24ea82c48ca7ed63eccbd66f8aeb34f4545b03988caf21aee0f6ac702282a5c"
@@ -212,6 +257,9 @@
   "card/when-markers": [
     "d335f23c1ba92ccbfb149860577d6958c939dfd75e2f71f7a28fd12edd709a23"
   ],
+  "card/when-median-is-mean": [
+    "1b06be3806f5550a77a4bfbb7e45d8a0005a388e9549465d40611fb9fcaa7db0"
+  ],
   "card/when-memo-helps": [
     "b6174ae1371fb5734bdd612f57a9f700437ba8cf79608a97947a05a1da7a736b"
   ],
@@ -221,6 +269,9 @@
   "card/when-min-changes": [
     "0fb99cd6985701961efe10aec0c6f9d4fed0e8c664d39765006dd81dfd5c8cca"
   ],
+  "card/when-multi-source": [
+    "87f3319f22df63b8eb37fb418771fece838f861446b48e500852412ec046770e"
+  ],
   "card/when-not-remove-one-by-one": [
     "dbefc7c1d84f98fca682a5b3e8c40df863a0489f62a26ee8f5ec13edc0e4e8fd"
   ],
@@ -229,6 +280,9 @@
   ],
   "card/when-one-pass": [
     "42109f828c821c36c4ed153858e040d997592183148c05a6800437b361421a13"
+  ],
+  "card/when-own-stack": [
+    "d6d26903ddfb7aa7139f633e75712ed0cf164a7b3e8d99d1eaf357956f94a8ec"
   ],
   "card/when-pair-up-lists": [
     "ba2f856640a91a17323efea75554e4643dc3f1b9000db045e290f2b5d254aa1b"
@@ -253,6 +307,9 @@
   ],
   "card/when-rolling-works": [
     "5214669863740d0b0e31a67898ab99ea08a44b93ad6ab18bc4055f3720d6f944"
+  ],
+  "card/when-room-frees": [
+    "c4700865b97ba54f11de798826a1ce1dab0f5d5ac92e5498a8a6b116683fc81b"
   ],
   "card/when-rotation-breaks": [
     "55fa1bf7ac19cbf855f605e096043b48a036830fb3d47c98960d926576e66e4f"
@@ -284,8 +341,14 @@
   "card/when-sort-height-down": [
     "e4a43e970d516490125fef254250acf62c7a71cab1b2624e47c377c6fde87975"
   ],
+  "card/when-spread-never-ends": [
+    "5693fcc126835dc80b1f84fbb34f45af78cc8dc6624ed6d300ffc2d9b9dcb6b4"
+  ],
   "card/when-start-at-i": [
     "c82bd377969d37c4c362838422b6d7148e8b7a2267325aafab085eccf854b524"
+  ],
+  "card/when-stop-merge-early": [
+    "b4df06d7cb88577f0ed243c548d9bf7502d17b653ecc92238fdc5f39c9be07f2"
   ],
   "card/when-store-extra": [
     "37b50472459b5c6ab88b1c7db568428a1006041b5251449d772a8c46993d645e"
@@ -299,20 +362,41 @@
   "card/when-top-down-or-bottom-up": [
     "b8f6ccea4afe8b5a522173d94c14147dd084b5d56ff302aeed674d9c3f5097e7"
   ],
+  "card/when-top-k-heap-pays": [
+    "92d8990ee0ec4657bde8f9226910ad8c410848a2e2cf511cdf49b9aa24eb1c6d"
+  ],
   "card/when-two-stacks": [
     "58f9636dfa63e121ceb74ed6f73ee4e87499d5d89288a220f945a7221d0787eb"
+  ],
+  "card/when-two-teams-fail": [
+    "4c21ca0cbbe14fc65f546625e1c02c1ed03f0791902a2affff0ed95f388c4c08"
+  ],
+  "card/when-union-find": [
+    "a674ed063127443f9d17cbdd9b7ea08260b87633f8a0a5209e7cb665461f8b7e"
   ],
   "card/when-window-fits": [
     "eae91cbe9c5aae2ae304717f9a41bdb3527d61b3ea50cab1f0c383ee2e895fa3"
   ],
+  "card/which-edge-is-a-cycle": [
+    "d30dfe11755447f043431b07e8667c21e6378d9470f946520ffde6c5addd2a49"
+  ],
   "card/why-add-window-length": [
     "d9b728d76c984bf78dd4294fc548b9798e02ac448b05a1293d88c19c88523c2c"
+  ],
+  "card/why-adjacency-list": [
+    "b5a2f581e09613e93c23afb4fe05551ffb63057e558a42e4871007460eef1504"
+  ],
+  "card/why-all-sources-first": [
+    "731c498101b4795854abf7c0b36f72e94a74e6264b31d9ab1c99083815c07c4b"
   ],
   "card/why-amortized": [
     "ab977fdf656b722aac74b189d583e146037596f726635e5a08ee8b9604b60348"
   ],
   "card/why-attach-the-rest": [
     "30cb09b4c31e631f7cb94765979abce50468a55a707f66adf9d5640cc5eb9d37"
+  ],
+  "card/why-bfs-not-weighted": [
+    "5734f071ce6d0bcf30b556c704e99714b62b89d967623f8855e3b1c815038e9f"
   ],
   "card/why-bounds-not-children": [
     "e87efa83fd2dface2bdbda910efc317d4cb2d205fb5d7107d40827afb0f6d52a"
@@ -335,6 +419,9 @@
   "card/why-compare-with-last": [
     "96064546f1280b6b9eec26cb1b6cae508cf7436dc195a90a36ba05c499af6868"
   ],
+  "card/why-compress-and-rank": [
+    "3817e5198295822442e0c4c0e41901c95405dd1d6796ddc36dc82a92db80da25"
+  ],
   "card/why-copy-the-path": [
     "39fefe21b39cd0c36f6cf12ee24c721b5071a4d9989091dfc7a39a73d6aea961"
   ],
@@ -353,8 +440,14 @@
   "card/why-diameter-variable": [
     "ec5630331485788c63e4c5b11ecab39488350ec84205030cffcd5c5334bef0fb"
   ],
+  "card/why-drop-longest": [
+    "6c5149419bb9939d758ebb6e085fae85aeb0e5619e7a3955c848a697d22da736"
+  ],
   "card/why-dummy-head": [
     "2228f0ca6b5161435d976a400d32a0ab4d333dc64d0efc70094d22639666d181"
+  ],
+  "card/why-end-times-heap": [
+    "d8abd230c75f7f3e33ff1ba6e35e1ad6dae35eaa1842880eab512959df68eba3"
   ],
   "card/why-exactly-not-direct": [
     "eb2e6326033a265ee5b6fa8a824fc3fe83f97e6044cbff809e050b3044ecb6af"
@@ -380,11 +473,20 @@
   "card/why-group-key-rules": [
     "75fdc6c45baa1ea8d4288b4bc46bf11ddb2f307ae63ced67c7e8cb17cf63fd27"
   ],
+  "card/why-heap-cant-search": [
+    "03d4a6eaed854db7fe52c74af85a9e64ca44e1aadc39a7da5ca50d8f1d11ec73"
+  ],
+  "card/why-heap-fits-array": [
+    "132c2ac642935187b331f4a5d4aaf9f18e151a9ce10371280f7f8d27fb788aec"
+  ],
   "card/why-inner-loop-linear": [
     "460e382476eb0a8a1044afd0f61996a1462ff050601ced43186692f2f2202bae"
   ],
   "card/why-insert-front-slow": [
     "57f18cd94a733ae538f9d0bd9d8b0a1cb38d7675be897553bc91b020bb3ae591"
+  ],
+  "card/why-kahn-leaves-cycles": [
+    "42859dd09aa9adf8aca0b21e7b93f0a978511fa58e40e5e5f90ca935134c533e"
   ],
   "card/why-left-never-back": [
     "de4a7757f93cee0dd4e48a17cf208d9ee5afedb3edd0927962498a7f4fb6819e"
@@ -392,11 +494,17 @@
   "card/why-lo-less-than-hi": [
     "243b7c8f4742cc1ae62cf18efc1de3a2df7ea2685e6b5ed198912bfb55c2c4a4"
   ],
+  "card/why-mark-seen-graph": [
+    "b2016c9defa54ab47050fdcaf43483ff7928b359d5e4a5db8675a07b4694f538"
+  ],
   "card/why-merge-linear": [
     "8f492a5b6d9794ff69df646d4a4c3c28a59faf4eb194f80f039d384079a02a98"
   ],
   "card/why-mid-stays-after-swap": [
     "27584cda4f1b07725b47086aaee73c4d25a9d7d66b26974897fe70e9bb68b84b"
+  ],
+  "card/why-min-heap-for-largest": [
+    "7f23bee12f66dc7445d76a080a983b060929ea55ce5a2c71779b960a45950680"
   ],
   "card/why-min-per-entry": [
     "e7613b01bc0a923fefcb39b5569b1a5c27f3afa2d0ffc3f80badfa5692ed9a57"
@@ -427,6 +535,9 @@
   ],
   "card/why-not-lo-equals-mid": [
     "e58245d9aee07f7f54ec14e4c49fc37bf7fe211feae0f0e337d5427bdb6b7cdc"
+  ],
+  "card/why-one-front-per-list": [
+    "80c78f2679b625eb66bc3100060de498fb996e7d3e81cf52294313f1e9d8ba05"
   ],
   "card/why-pass-sum-down": [
     "b8aa8ae48e817e0954f2e79a17ee6410f5fdcd2633e3f3f848fc72d67c1043d0"
@@ -476,6 +587,9 @@
   "card/why-seed-zero": [
     "355d6212c70dc2e824c827048afd5de9f49327e5bd2a03ba259e119b9122e849"
   ],
+  "card/why-seen-not-enough-directed": [
+    "ce04c2dc8e276d8fb47157374b07b6fd9893999811a6499d12315abd2ced5202"
+  ],
   "card/why-settle-lower-side": [
     "3324c5ee9262ace678ccc6e3e947f47638464094c85bd5dd3df580a1ec03710f"
   ],
@@ -485,11 +599,17 @@
   "card/why-slide-not-resum": [
     "3128d20dd3154c94378cd319c7f66a06b8783b23fdf51c5e2e2f739490c81433"
   ],
+  "card/why-smaller-child": [
+    "e8782ae9fd597947ce390405684c574026daee2632738a6bdefbf148f0dd140a"
+  ],
   "card/why-sort-before-skipping": [
     "fc5813aaad0d357ec732a3a6b28b7b50eb216295f5b9458753b4ad78ae6e2079"
   ],
   "card/why-sort-needs-compare": [
     "dfd957210028e0c5a6998ff2ea608655142568afb6357ea5073ae2553f38e712"
+  ],
+  "card/why-sort-not-enough": [
+    "c3f4e91aa86518349122919943b108ecf1f25b2e5ae702888c94b1008e0d7567"
   ],
   "card/why-stack-for-brackets": [
     "0bed5baaf054ac0d47f2c03ad2d055e76d32dcfec1172d51fa4c4df99e1793c0"
@@ -526,6 +646,9 @@
   ],
   "card/why-trust-smaller-call": [
     "aed6cafb4795e465caa87b99ac73feaf8d33655b6f4fa5dc00a68f173f1322ab"
+  ],
+  "card/why-two-heaps-median": [
+    "016ff5077c87578e228ceac6d6dde62b07a19192146bff76a862a3705426bc6f"
   ],
   "card/why-two-searches": [
     "6296b8cbcb059a4ce056dcf7a2532abada936c312c75eb3ccfe1292a87938fc9"
@@ -574,6 +697,12 @@
   ],
   "chapter/dp-1d": [
     "3772ab444136d5c821d900de04e1d49b4051f8188418af834530fa3383b3b48b"
+  ],
+  "chapter/graphs": [
+    "c78bc1fcbfd9c93e1bc44ca1c59ed98bf528a9a6333d64acb0947659b8894950"
+  ],
+  "chapter/heaps": [
+    "dd6c52fe16364026e9f51210bced081e0b23961d7fc41368b01cd526105bf8b3"
   ],
   "chapter/linked-lists": [
     "fd29cc63a98eef7f5eb0ed0e21ba435f7e4d8fb0061925ec300261eb870b9bf3"
@@ -644,6 +773,9 @@
   "exercise/change-ways": [
     "218ea9616b3d550bcb07223775cbe991f05a3e4314084e18fc00ae47984b306a"
   ],
+  "exercise/circular-wait": [
+    "598cbff3c99ed7139c8f307d877db7f8144abc12cdaf1acab2faa0f18599906c"
+  ],
   "exercise/coin-route": [
     "355d163872d13cfeb86cbab1409f5dc55642e4ed8de61bcd58975c683a6424e6"
   ],
@@ -653,11 +785,17 @@
   "exercise/count-in-range": [
     "7ace6133136d2b0c6cb3cbfd3d7d11d8b2fe731adbe5c20d1c8a228d1ff1c6ce"
   ],
+  "exercise/courtyard-path": [
+    "116d0330d00d4e4f6f3c0bab65ae477483dc8dbf4f5a7e444fc020540863f0e3"
+  ],
   "exercise/crate-stack": [
     "dcd72a305e719ef3e8cc0a954dbe37ab8e83d63e9ca1af773782cf13ab61df3e"
   ],
   "exercise/culture-growth": [
     "e781c433cf7436953558a3de10d37a543958197e78d0d8b2fdddae02ec819553"
+  ],
+  "exercise/cutoff-board": [
+    "0781d3b8da075849015b96bbb47398dccce0da59d580e78e5fa7b6cdd16c3c59"
   ],
   "exercise/east-view": [
     "d5cb1f9b2125da923c3e76c7de1daab83d4f787e8272d14c0fdd166642c5e17d"
@@ -683,6 +821,15 @@
   "exercise/fewest-hops": [
     "3877bd8e49f99b875f1d82286d06f063b74d683ef249e7fe4757cab552e4274a"
   ],
+  "exercise/fewest-legs": [
+    "50568bb64efc9ae56196202f9b26cfe2d2d086abad30db22bccfea7e98f30ee1"
+  ],
+  "exercise/fewest-rooms": [
+    "b0b5892914b1dbe09fbcede2481930efe39189b61a7ada51fd984053da3aa1f8"
+  ],
+  "exercise/fewest-terms": [
+    "e8638a7e02a1912fb549e478053d0a7ec67cc32dcfcafd3ebfa403cb66368f0a"
+  ],
   "exercise/fewest-tokens": [
     "f262b53d37633911c172e5b3fbfe2bf62f45ba6e34bf2155a4ae53aec20e4594"
   ],
@@ -698,6 +845,9 @@
   "exercise/free-on-both": [
     "e8479fde9ed3072c8aa5db908574381f8e66b2a0c0aa623a831a0c4c4bdf6d4f"
   ],
+  "exercise/frost-spread": [
+    "9fa8f35f0b3baecfd6fd1a16ec978f85d32e587e67d72bee008b7d3b5e215408"
+  ],
   "exercise/fullest-shelf": [
     "8a58b7b2fc0a96cbd89c11c6f4b1813d48f7f9c7974f99c43c95fd1d08a100a8"
   ],
@@ -712,6 +862,12 @@
   ],
   "exercise/hop-lengths": [
     "aeedef571c434bbf5ff007339cd78ac588cf45f46d2d7607fc31abea5598bbe2"
+  ],
+  "exercise/join-cables": [
+    "d915de9fd3ad41351914ab77d79d0c75d221a4f8b8569b7077725a5975ed7fe3"
+  ],
+  "exercise/kth-fresh-loaf": [
+    "43bab8c2be26d0c82bde9ae0eaec05f9bcf0f6c9f3174defb78f21a60cd17c98"
   ],
   "exercise/kth-lowest-height": [
     "586006e38573113a2e2864b2993d436ab77da0d82e332329fc2ad867572a50e9"
@@ -743,6 +899,12 @@
   "exercise/lost-spaces": [
     "edebeb45d89867c7b3122b6ce5e905d94927230d36811025fe06a869d8115ec0"
   ],
+  "exercise/median-after-each": [
+    "8d04b90a7b21ce8fa4820b482ab5ed49fdc16d573239249525bdaa54cac7c5af"
+  ],
+  "exercise/median-board": [
+    "48d37859878aa07a3495bc5a8ffd151bdb211e824ec853bdf91a0f16ad6c65d1"
+  ],
   "exercise/meeting-hub": [
     "08ba4180043978d9149e93c0c295d89466f8b0c7e29d9f440e47b6c8584f6e38"
   ],
@@ -755,6 +917,9 @@
   "exercise/merge-timetables": [
     "758cb91aa1c8c26abfa156e8c1cdccd8089a1c5775528f87c896e1972f403d0a"
   ],
+  "exercise/merge-waves": [
+    "322aa573bf15cb79aa6305bcff87a83c53cd956ed5311c961d7ee5a9649ee87c"
+  ],
   "exercise/middle-stop": [
     "2154fff36e15cfce848a9a1712b5b327c84ccadb2c1c18cf388fd625a6613c30"
   ],
@@ -766,6 +931,12 @@
   ],
   "exercise/move-the-crates": [
     "f814349a6246c3fbea20e9889454ade29b101ce40d7a9f1849304a6b3fe9acd3"
+  ],
+  "exercise/nearest-chargers": [
+    "917a65e7abad328df9623176f26f7b2ff99077a48307713980bc756a68de8f89"
+  ],
+  "exercise/nearest-exit": [
+    "a644e6e52f0f5bdac49cd8675ed23779705a741e276e84bfd8a25a39a1136c1b"
   ],
   "exercise/nesting-boxes": [
     "09ceee43c332adee7ec69d34f3b31708d6056e538fc76b5f33b623a2fe23c2cd"
@@ -785,6 +956,9 @@
   "exercise/odds-then-evens": [
     "af166f06ef1718b1ab0592b5c925b074e98a769c361be6a1b5a2e3af961f33db"
   ],
+  "exercise/orders-on-time": [
+    "02521a1c739df6e2ff12355a82c6a5cdc37f28cc50dc160a1a83dc652ad7634d"
+  ],
   "exercise/pack-choices": [
     "43b07b05eea974522b5c72e44b10290d70ee01c927cdb2e5281a14d24b2ff74d"
   ],
@@ -793,6 +967,9 @@
   ],
   "exercise/pairs-with-gap": [
     "c55a98a08e37e110da6c8421fe3238e60feabaac1e7843e341a62d5edeb60d94"
+  ],
+  "exercise/pond-count": [
+    "f134a9ef76cbcfe65225df5b9821a24e2156b95e1df3954fc012727f3a3c19f4"
   ],
   "exercise/pond-lanterns": [
     "9cba07488ab438cc801125f2b63dfe86a2163ccd1af8224669de2109d3856504"
@@ -815,6 +992,9 @@
   "exercise/print-rounds": [
     "18a622da679b28f28f325e1087fe0d8c8adcaf9885b924f9353bbd9033e1ffe1"
   ],
+  "exercise/priority-desk": [
+    "733210ec6ec4c8b0366a15ff71fcb03331e6410661765c792d704dd9bd0d64e6"
+  ],
   "exercise/product-of-others": [
     "02eb84dcf89f10d67d2ece04ff6dac683957856ed94ef2d3acd3df30beb19964"
   ],
@@ -836,11 +1016,17 @@
   "exercise/richest-route": [
     "0d39ccd393b31bc88e2702e3bb936587d21c56747a45dc9d6435e6d7723df880"
   ],
+  "exercise/rising-islands": [
+    "026902e4acad5f242cca4322f3c034cb141e1341013f909eb51084d26f73fb95"
+  ],
   "exercise/rising-streak": [
     "05e41c0896072f633fa255a889e3df73b8aff9253d200c69d5eb2b0b26742aab"
   ],
   "exercise/rotated-playlist": [
     "c1747b8295aef655e39f56ddcd1a07cac9134db391f9b57f4cc9edcdffdab9fa"
+  ],
+  "exercise/rumour-reach": [
+    "49caea51abe9252110e66d3eb5ed2a7a8e010bc0614a28ed374dbeca6f0512d1"
   ],
   "exercise/running-orders": [
     "197f8d3a7ce9609f6cf064d97ac1b0fb891047fcc174fabf56132fff3ef78351"
@@ -869,6 +1055,9 @@
   "exercise/space-readings": [
     "ccec0b8be91d337564bc2ba039b154a5fc0b6420bef7ef17d820cf47d0dae5c1"
   ],
+  "exercise/spare-cable": [
+    "d243fe3b73c20dd272119015a114799d1dac727a80285981c92dd968da8a7e6c"
+  ],
   "exercise/stack-machine": [
     "d658ffe360a4418a946c14dfc00940dfcea1b550b88f5412196518dcf7d98296"
   ],
@@ -893,8 +1082,20 @@
   "exercise/ticket-queue": [
     "5aa22cff60b09242dcc0434fa567b370b32ffe404196b16deb199340d580f13f"
   ],
+  "exercise/top-scores": [
+    "04a367ad03a7e20997243c22cf702915ccefb757d0641d2f63ed9386de4ec34d"
+  ],
+  "exercise/top-searches": [
+    "a7fd313adeafd77b55af1dee038933dc81bdc99b02df5467246afa381d501137"
+  ],
   "exercise/tower-tolls": [
     "817a49cb9b0b2774f5797ed548028b1e48e33254db3c58e92d1c4737f30ec47f"
+  ],
+  "exercise/trail-groups": [
+    "f82fef402e7dad08873d0033ec067c7058b5fa13c86593d6364dcca658c77fce"
+  ],
+  "exercise/two-teams": [
+    "8127b58a5dd3e9848a8973bbecda11cf2c7bdf6d456a8cbf684733ef0f78bc0b"
   ],
   "exercise/valid-catalogue": [
     "9ca20da70bf73c5773f139d5686f0568225c2d7d01e1829bcd0d67f4fc05c6d0"
