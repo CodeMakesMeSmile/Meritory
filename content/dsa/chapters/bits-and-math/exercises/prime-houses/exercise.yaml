@@ -1,0 +1,18 @@
+id: prime-houses
+kind: coding
+title: Prime house numbers on a long road
+difficulty: hard
+skills:
+  - prime-sieve
+sibling: prime-lockers
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: primeHouses
+  params:
+    - name: low
+      type: long
+    - name: high
+      type: long
+  returns: int

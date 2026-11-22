@@ -1,0 +1,112 @@
+{
+  "exercise": "fewest-volunteers",
+  "cases": [
+    {
+      "uuid": "b01dc58e-bd45-4cbb-8ba6-cc11c3af1ec1",
+      "description": "two volunteers cover three jobs",
+      "property": "fewestVolunteers",
+      "input": {
+        "skills": [3, 4, 6],
+        "needed": 7
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "f9193b26-36ce-46b4-9ec1-d99b2607b19f",
+      "description": "one volunteer can do everything",
+      "property": "fewestVolunteers",
+      "input": {
+        "skills": [1, 15, 6],
+        "needed": 15
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "7b2832aa-3d8c-4814-b24d-6efeea9d0a7b",
+      "description": "nobody can do one of the jobs",
+      "property": "fewestVolunteers",
+      "input": {
+        "skills": [1, 2, 4],
+        "needed": 9
+      },
+      "expected": -1
+    },
+    {
+      "uuid": "e0bac18d-d1da-4745-a0b4-2b6705f2db09",
+      "description": "skills beyond the needed jobs don't hurt",
+      "property": "fewestVolunteers",
+      "input": {
+        "skills": [12, 3, 48, 51],
+        "needed": 51
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "92cda0bc-5391-4e9b-9abc-5efeee76c7d9",
+      "description": "fifteen volunteers who each do one job",
+      "property": "fewestVolunteers",
+      "input": {
+        "skills": [
+          1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384
+        ],
+        "needed": 32767
+      },
+      "expected": 15
+    },
+    {
+      "uuid": "c3b4c428-5453-41a7-922e-e1cfd3ac617d",
+      "description": "a mix where the obvious first pick is wrong",
+      "property": "fewestVolunteers",
+      "input": {
+        "skills": [7, 9, 18, 36],
+        "needed": 63
+      },
+      "expected": 3
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "06847324-c77d-44d0-904a-c4cf73834bef",
+          "description": "no jobs needed",
+          "property": "fewestVolunteers",
+          "input": {
+            "skills": [5, 6],
+            "needed": 0
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "b38a27ef-ef4f-4e12-9d30-25c83e7ebb3c",
+          "description": "no volunteers and no jobs",
+          "property": "fewestVolunteers",
+          "input": {
+            "skills": [],
+            "needed": 0
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "0aaa9156-b4ce-47d7-9ef1-73c04b417594",
+          "description": "no volunteers but a job to do",
+          "property": "fewestVolunteers",
+          "input": {
+            "skills": [],
+            "needed": 1
+          },
+          "expected": -1
+        },
+        {
+          "uuid": "36388723-aa48-4a79-b5f4-88ce7e62b17f",
+          "description": "all twenty jobs from three volunteers",
+          "property": "fewestVolunteers",
+          "input": {
+            "skills": [255, 65280, 983040, 986895],
+            "needed": 1048575
+          },
+          "expected": 3
+        }
+      ]
+    }
+  ]
+}

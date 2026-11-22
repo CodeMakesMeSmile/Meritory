@@ -1,0 +1,20 @@
+id: dial-turns
+kind: coding
+title: Where the dial stops
+difficulty: medium
+skills:
+  - power-mod
+sibling: calculator-tail
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: dialPosition
+  params:
+    - name: factor
+      type: int
+    - name: turns
+      type: long
+    - name: size
+      type: int
+  returns: int

@@ -1,0 +1,17 @@
+id: flat-stretch
+kind: coding
+title: Longest flat stretch
+difficulty: easy
+skills:
+  - test-by-hand
+  - run-the-round
+sibling: longest-climb
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: flatStretch
+  params:
+    - name: levels
+      type: int[]
+  returns: int

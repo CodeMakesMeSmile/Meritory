@@ -1,0 +1,19 @@
+id: fewest-volunteers
+kind: coding
+title: Fewest volunteers for every job
+difficulty: medium
+skills:
+  - subset-masks
+  - bit-operators
+sibling: snack-combos
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: fewestVolunteers
+  params:
+    - name: skills
+      type: int[]
+    - name: needed
+      type: int
+  returns: int

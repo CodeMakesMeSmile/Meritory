@@ -1,0 +1,16 @@
+id: bus-meetup
+kind: coding
+title: When the buses line up
+difficulty: medium
+skills:
+  - gcd-euclid
+sibling: square-tiles
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: busMeetup
+  params:
+    - name: gaps
+      type: int[]
+  returns: long

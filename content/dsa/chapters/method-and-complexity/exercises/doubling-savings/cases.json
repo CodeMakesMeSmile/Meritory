@@ -1,0 +1,110 @@
+{
+  "exercise": "doubling-savings",
+  "cases": [
+    {
+      "uuid": "c9d5778a-166b-46e0-8d44-140b1dfad1b9",
+      "description": "doubles until it passes the goal",
+      "property": "doublingNights",
+      "input": {
+        "start": 3,
+        "goal": 20
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "79eeaf16-4a6e-4fe5-9110-f398cd500cf8",
+      "description": "lands exactly on the goal",
+      "property": "doublingNights",
+      "input": {
+        "start": 5,
+        "goal": 40
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "723e7101-5f87-41fc-aa2e-a1bdf9995ad9",
+      "description": "one coin up to a billion",
+      "property": "doublingNights",
+      "input": {
+        "start": 1,
+        "goal": 1000000000
+      },
+      "expected": 30
+    },
+    {
+      "uuid": "5bee72c3-8b32-4f9c-b2d8-3ef1cd6d4b8e",
+      "description": "one night is enough",
+      "property": "doublingNights",
+      "input": {
+        "start": 7,
+        "goal": 10
+      },
+      "expected": 1
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "f74b602a-94be-464a-9211-68cd07d54004",
+          "description": "already at the goal",
+          "property": "doublingNights",
+          "input": {
+            "start": 12,
+            "goal": 12
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "55869b5b-17ff-4746-8893-cccc7f2172cc",
+          "description": "already past the goal",
+          "property": "doublingNights",
+          "input": {
+            "start": 50,
+            "goal": 3
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "346a1413-82e1-48a2-a0e7-7848a36bed70",
+          "description": "one coin and a goal of one",
+          "property": "doublingNights",
+          "input": {
+            "start": 1,
+            "goal": 1
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "7f29e211-41c4-4c4a-8fb9-49462c0f4d2f",
+          "description": "the jar passes the largest 32-bit int on the last night",
+          "property": "doublingNights",
+          "input": {
+            "start": 1500000000,
+            "goal": 2147483647
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "1c776fb1-6151-4d66-bad5-91370c60ecb3",
+          "description": "one coin up to the largest 32-bit int",
+          "property": "doublingNights",
+          "input": {
+            "start": 1,
+            "goal": 2147483647
+          },
+          "expected": 31
+        },
+        {
+          "uuid": "42232aab-88f4-4dfd-9b59-7544865327a0",
+          "description": "a big jar one coin short of the goal",
+          "property": "doublingNights",
+          "input": {
+            "start": 2147483646,
+            "goal": 2147483647
+          },
+          "expected": 1
+        }
+      ]
+    }
+  ]
+}

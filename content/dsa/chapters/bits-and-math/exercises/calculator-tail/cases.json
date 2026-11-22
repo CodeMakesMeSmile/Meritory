@@ -1,0 +1,131 @@
+{
+  "exercise": "calculator-tail",
+  "cases": [
+    {
+      "uuid": "f477d9a9-aaad-49df-9202-9a8a1d2b5c38",
+      "description": "a leading zero on the screen is dropped",
+      "property": "lastDigits",
+      "input": {
+        "base": 2,
+        "exponent": 10,
+        "digits": 3
+      },
+      "expected": 24
+    },
+    {
+      "uuid": "c46b9963-b773-46f6-9986-189919b5e903",
+      "description": "a power that fits on the screen",
+      "property": "lastDigits",
+      "input": {
+        "base": 7,
+        "exponent": 3,
+        "digits": 4
+      },
+      "expected": 343
+    },
+    {
+      "uuid": "99ad894e-ac01-4e3b-8a78-7ce3544c0dc2",
+      "description": "powers of 5 always end in 25",
+      "property": "lastDigits",
+      "input": {
+        "base": 5,
+        "exponent": 123456789,
+        "digits": 2
+      },
+      "expected": 25
+    },
+    {
+      "uuid": "040174de-621f-4cd9-9fba-980f3fd0083a",
+      "description": "a huge exponent with nine digits on screen",
+      "property": "lastDigits",
+      "input": {
+        "base": 3,
+        "exponent": 1000000000000000,
+        "digits": 9
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "132bbc43-b1fb-4b14-ac53-a08826e55d4e",
+      "description": "a big base and a big exponent",
+      "property": "lastDigits",
+      "input": {
+        "base": 999999999,
+        "exponent": 987654321012345,
+        "digits": 9
+      },
+      "expected": 999999999
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "1f98337c-e8e9-400b-98dd-5165f0c9b8a4",
+          "description": "anything to the power 0 is 1",
+          "property": "lastDigits",
+          "input": {
+            "base": 12,
+            "exponent": 0,
+            "digits": 5
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "358436b8-cbad-4e59-96b8-c52f9c961d9d",
+          "description": "0 to the power 0 is 1",
+          "property": "lastDigits",
+          "input": {
+            "base": 0,
+            "exponent": 0,
+            "digits": 3
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "2e1456f4-c2b3-4b0c-809e-fc8ea6e42db1",
+          "description": "0 to a positive power is 0",
+          "property": "lastDigits",
+          "input": {
+            "base": 0,
+            "exponent": 9,
+            "digits": 3
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "0efa6fc0-fb3c-41f2-bae8-19d464e6ccd9",
+          "description": "a power of ten shows all zeros",
+          "property": "lastDigits",
+          "input": {
+            "base": 10,
+            "exponent": 12,
+            "digits": 6
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "329152c5-8901-4b06-a706-5bdb6713e9c6",
+          "description": "a base of a billion",
+          "property": "lastDigits",
+          "input": {
+            "base": 1000000000,
+            "exponent": 1,
+            "digits": 9
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "38d24f5f-2c83-43d8-8806-ce5ceac849ec",
+          "description": "one digit on screen",
+          "property": "lastDigits",
+          "input": {
+            "base": 2,
+            "exponent": 1099511627779,
+            "digits": 1
+          },
+          "expected": 8
+        }
+      ]
+    }
+  ]
+}

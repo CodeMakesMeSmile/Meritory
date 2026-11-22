@@ -1,0 +1,20 @@
+id: calculator-tail
+kind: coding
+title: The last digits of a huge power
+difficulty: medium
+skills:
+  - power-mod
+sibling: dial-turns
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: lastDigits
+  params:
+    - name: base
+      type: int
+    - name: exponent
+      type: long
+    - name: digits
+      type: int
+  returns: int

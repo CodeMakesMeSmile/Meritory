@@ -1,0 +1,16 @@
+id: prime-lockers
+kind: coding
+title: Stickers for prime lockers
+difficulty: medium
+skills:
+  - prime-sieve
+sibling: prime-houses
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: primeLockers
+  params:
+    - name: lockers
+      type: int
+  returns: int

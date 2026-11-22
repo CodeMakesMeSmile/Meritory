@@ -1,0 +1,131 @@
+{
+  "exercise": "dial-turns",
+  "cases": [
+    {
+      "uuid": "8c8065dd-853d-4522-b5cb-a716c2bea398",
+      "description": "turns a small dial four times",
+      "property": "dialPosition",
+      "input": {
+        "factor": 3,
+        "turns": 4,
+        "size": 7
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "bc893d7a-de4c-413c-9e27-7b08f802545e",
+      "description": "a factor of 1 never moves the dial",
+      "property": "dialPosition",
+      "input": {
+        "factor": 1,
+        "turns": 123456789,
+        "size": 1000
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "ea06401d-ec6d-4ea9-839e-7bff9f1ec68d",
+      "description": "a factor bigger than the dial",
+      "property": "dialPosition",
+      "input": {
+        "factor": 10,
+        "turns": 3,
+        "size": 7
+      },
+      "expected": 6
+    },
+    {
+      "uuid": "0e78a88c-9d20-428c-a048-8e31c6587ddd",
+      "description": "a huge number of turns",
+      "property": "dialPosition",
+      "input": {
+        "factor": 5,
+        "turns": 1000000000000000,
+        "size": 1000000007
+      },
+      "expected": 410143883
+    },
+    {
+      "uuid": "7dc3ffb5-38f3-487d-987b-eadcf3266786",
+      "description": "the largest factor and dial",
+      "property": "dialPosition",
+      "input": {
+        "factor": 2147483646,
+        "turns": 999999999999999,
+        "size": 2147483647
+      },
+      "expected": 2147483646
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "f49cbddd-2117-42d7-8e77-58b875a50f07",
+          "description": "no turns leaves the dial at 1",
+          "property": "dialPosition",
+          "input": {
+            "factor": 9,
+            "turns": 0,
+            "size": 5
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "6371beda-6dc8-4b2c-a270-0eeaed48460a",
+          "description": "a dial with one position",
+          "property": "dialPosition",
+          "input": {
+            "factor": 4,
+            "turns": 7,
+            "size": 1
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "6f6096d1-caef-42c5-a724-c80ba73b357a",
+          "description": "a dial with one position and no turns",
+          "property": "dialPosition",
+          "input": {
+            "factor": 4,
+            "turns": 0,
+            "size": 1
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "86a07046-ee22-4f9d-ad1f-f8316e96bd7c",
+          "description": "a factor of 0 sends the dial to 0",
+          "property": "dialPosition",
+          "input": {
+            "factor": 0,
+            "turns": 3,
+            "size": 11
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "db7a8dd9-7677-4018-852d-3dd028cccdde",
+          "description": "a factor that wraps to 0",
+          "property": "dialPosition",
+          "input": {
+            "factor": 14,
+            "turns": 2,
+            "size": 7
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "35f7fef1-b6f5-4521-8086-5184272ed96e",
+          "description": "an odd number of turns past 2 to the 32nd",
+          "property": "dialPosition",
+          "input": {
+            "factor": 2,
+            "turns": 4294967297,
+            "size": 1000000009
+          },
+          "expected": 650591338
+        }
+      ]
+    }
+  ]
+}

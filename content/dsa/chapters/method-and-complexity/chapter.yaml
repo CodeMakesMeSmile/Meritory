@@ -1,0 +1,18 @@
+id: method-and-complexity
+title: Method and complexity
+order: 1
+skills:
+  - id: run-the-round
+    name: Work through a coding round in order, from questions to a test by hand
+  - id: big-o-basics
+    name: State the time and space in Big O, dropping constants and smaller terms
+  - id: read-loop-costs
+    name: Read the cost from the loops, including loops that halve
+  - id: growth-and-limits
+    name: Match each growth rate to the input sizes it allows in about a second
+  - id: amortized-cost
+    name: Explain amortized cost, like adding to the end of a growing list
+  - id: recursion-cost
+    name: Count a recursion's depth for space and its repeated calls for time
+  - id: test-by-hand
+    name: Test code by hand on a small example and the edge cases

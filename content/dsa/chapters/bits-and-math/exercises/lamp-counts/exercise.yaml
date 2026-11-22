@@ -1,0 +1,17 @@
+id: lamp-counts
+kind: coding
+title: Lamps lit for every number
+difficulty: medium
+skills:
+  - count-set-bits
+  - twos-complement
+sibling: signal-mismatch
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: lampCounts
+  params:
+    - name: n
+      type: int
+  returns: int[]
