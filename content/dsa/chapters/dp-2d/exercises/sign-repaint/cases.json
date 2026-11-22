@@ -1,0 +1,179 @@
+{
+  "exercise": "sign-repaint",
+  "cases": [
+    {
+      "uuid": "4053e3a7-33b5-443d-bd58-08af0d1db485",
+      "description": "painting over is cheapest",
+      "property": "cheapestRepaint",
+      "input": {
+        "current": "bakes",
+        "wanted": "bikes",
+        "addCost": 3,
+        "removeCost": 2,
+        "repaintCost": 4
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "8fb9987a-e455-464e-9ae3-8d2347be2d2a",
+      "description": "painting out and in is cheaper",
+      "property": "cheapestRepaint",
+      "input": {
+        "current": "bakes",
+        "wanted": "bikes",
+        "addCost": 3,
+        "removeCost": 2,
+        "repaintCost": 6
+      },
+      "expected": 5
+    },
+    {
+      "uuid": "20b21dc5-e6bd-469b-8010-dc23adc71b2f",
+      "description": "a longer new name",
+      "property": "cheapestRepaint",
+      "input": {
+        "current": "deli",
+        "wanted": "delights",
+        "addCost": 5,
+        "removeCost": 1,
+        "repaintCost": 1
+      },
+      "expected": 20
+    },
+    {
+      "uuid": "b6a4d76a-df82-4bc0-8fe8-6e47ba776b3c",
+      "description": "a shorter new name",
+      "property": "cheapestRepaint",
+      "input": {
+        "current": "bakery",
+        "wanted": "bake",
+        "addCost": 1,
+        "removeCost": 7,
+        "repaintCost": 1
+      },
+      "expected": 14
+    },
+    {
+      "uuid": "6d43d3eb-8738-4cfd-bbc1-0254645a3909",
+      "description": "removing and adding beats repainting every letter",
+      "property": "cheapestRepaint",
+      "input": {
+        "current": "stall",
+        "wanted": "talls",
+        "addCost": 1,
+        "removeCost": 1,
+        "repaintCost": 3
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "0ab7d64d-ee0d-44aa-bd35-2b8ffda27eba",
+      "description": "nothing in common",
+      "property": "cheapestRepaint",
+      "input": {
+        "current": "flowers",
+        "wanted": "tea",
+        "addCost": 2,
+        "removeCost": 3,
+        "repaintCost": 4
+      },
+      "expected": 20
+    },
+    {
+      "uuid": "09c8a1c8-1777-4c63-8568-76fa74d7d890",
+      "description": "costs that are all the same",
+      "property": "cheapestRepaint",
+      "input": {
+        "current": "kitchen",
+        "wanted": "chicken",
+        "addCost": 1,
+        "removeCost": 1,
+        "repaintCost": 1
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "c0ab8e87-2490-4bd5-bc67-2fbf6bdb205e",
+      "description": "long names",
+      "property": "cheapestRepaint",
+      "input": {
+        "current": "bcbecaabebdaaaedceeceddbccdbbddeecabaddabcaecbbecdbdbadddededdcadbbacbbddbbbebcacecaeddbecdacbddedabcbdddccebcdbccaaedacecdeebcddebdaeecabccdebecdcadb",
+        "wanted": "ebbccbbdecaedebaacdadbcbebdebddcaaacdeeceedcdbeaeaaadcbdaeabebeaddbbaeceeebadbccbbcaccceebbeccbdbcedcaceccbaaebddecaadabbedcaababcabddeeccebadbacaabecdeaddcdcbcceccecdadb",
+        "addCost": 7,
+        "removeCost": 4,
+        "repaintCost": 9
+      },
+      "expected": 642
+    },
+    {
+      "uuid": "558303e3-0af9-46f7-9afc-b1b11135fcc9",
+      "description": "the longest names at the top price",
+      "property": "cheapestRepaint",
+      "input": {
+        "current": "abaaaabbbaabbbaaabbabbabbabaabbababbbababbbbbbbbabbbaaaaaabbaabaaabbbbbabababbbababbabaabababbaababbababaaababbaaaabbbabbbaaabbaaabbbaaabaabaaabaaabbbbababaababbbbbaaabaabbabaaaaaabbabbabaababaabbaaabbbabaaabbbaaaabbaaababababababbababbaaaabbbababaabbabaababbbbaaabbaababaabbaabbabaabbbaabaaaaabbbaabbbbabbaabaaaaabbbbaaaaaababbbabaababaabaaaaabaabaaabbaabbabbbbbbaaabbabaaabaabbbbaaababbaaabbbbaaaaaababbbbababaaabbbbbabbabbbbbbbaaaabbbaabbabbbbaabbbbabaaaabbabbbbababaababbababbbbababbabaaabbabaabb",
+        "wanted": "ccccccdccdddcccddccccccddddddcdcccddcddcccdcdddcddcccccccccdccccdccdcccdccdcdcdddddccddcdccdddcccccdccdcccdcdccdcddccccdddddccdccdddccccdddcccdcddddccdddccddcccddcccdccdccdcdcdccccccddddccdcddcdcdcdcddddddddddccdcdcddddccddcdddcccddcddcddcddcdcdcdcccdddccccddddddcccddddccccccdcccdccccdccdcccdcccdccccccdccddcddccdccdccdccdcccdddddcdccccddcdcccdcdddccddcdddccccccdcddcccdddddccdcccddddccccdcddcdddcddddcccdcdcdcdcccdcccccddcdcdcdddcccdccdcccdcdddccccddcddccdcdccdccdcdcdddcdcdddcdcddcddccccdcccccdccc",
+        "addCost": 1000,
+        "removeCost": 1000,
+        "repaintCost": 1000
+      },
+      "expected": 500000
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "ccb46827-2db8-4c71-b8c6-434d2cd5d38e",
+          "description": "the names already match",
+          "property": "cheapestRepaint",
+          "input": {
+            "current": "cafe",
+            "wanted": "cafe",
+            "addCost": 5,
+            "removeCost": 5,
+            "repaintCost": 5
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "8bd80e6c-6df6-4f90-87c2-8aee4bfe0200",
+          "description": "a blank sign",
+          "property": "cheapestRepaint",
+          "input": {
+            "current": "",
+            "wanted": "inn",
+            "addCost": 4,
+            "removeCost": 1,
+            "repaintCost": 1
+          },
+          "expected": 12
+        },
+        {
+          "uuid": "562b84c3-11d4-423a-a07f-7106d80f50f5",
+          "description": "painting the whole sign out",
+          "property": "cheapestRepaint",
+          "input": {
+            "current": "inn",
+            "wanted": "",
+            "addCost": 1,
+            "removeCost": 4,
+            "repaintCost": 1
+          },
+          "expected": 12
+        },
+        {
+          "uuid": "c6f751f0-8349-419d-985f-520558807c5b",
+          "description": "both blank",
+          "property": "cheapestRepaint",
+          "input": {
+            "current": "",
+            "wanted": "",
+            "addCost": 1,
+            "removeCost": 1,
+            "repaintCost": 1
+          },
+          "expected": 0
+        }
+      ]
+    }
+  ]
+}

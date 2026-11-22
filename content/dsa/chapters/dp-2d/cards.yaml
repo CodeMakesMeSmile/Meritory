@@ -1,0 +1,355 @@
+- id: why-empty-prefix-row
+  skill: two-index-state
+  asks: why
+  type: pick-one
+  prompt: Comparing a string of n letters with one of m letters, why does the table have n + 1 rows and m + 1 columns?
+  reworded: In a two string DP table, what are the extra first row and first column for?
+  options:
+    - text: They stand for an empty prefix, which gives easy base cases the recurrence can read
+      correct: true
+      reason: Row 0 and column 0 answer the question for no letters at all, so every entry from row 1 on has something above and to its left.
+    - text: They hold the letters of the two strings
+      reason: The letters stay in the strings. The table holds answers.
+    - text: They stop the loop from running past the end
+      reason: Bounds checks do that. The extra row and column mean something.
+  lesson:
+    title: The empty prefix is a real question
+    explanation: "`table[i][j]` is about the first i letters and the first j letters, so i and j run from 0. The answers for 0 letters, like 0 shared letters or j inserts, are the base cases."
+- id: when-fill-order-2d
+  skill: two-index-state
+  asks: when
+  type: matching
+  prompt: Match each recurrence to a fill order that has every input ready.
+  reworded: For each of these, in what order should the table be filled?
+  matchHeading: Fill order
+  matchName: an order
+  pairs:
+    - item: An entry reads the entries above, to the left, and up and to the left
+      match: Row by row from the top, each row left to right
+    - item: A range from i to j reads shorter ranges inside it
+      match: By range length, shortest first
+    - item: An entry reads the entries below and to the right
+      match: Row by row from the bottom, each row right to left
+  extraMatches:
+    - Any order, since each entry is worked out once
+  lesson:
+    title: Follow what each entry reads
+    explanation: Look at which entries the recurrence reads, then pick the order that fills them first. Reading an empty entry gives a wrong answer with no error.
+- id: two-index-plan-steps
+  skill: two-index-state
+  asks: what
+  type: ordering
+  prompt: Put the steps for planning a DP answer over two strings in order.
+  reworded: In what order do you work out a two string DP before writing it?
+  steps:
+    - Say what `table[i][j]` means for the first i letters of one and the first j letters of the other.
+    - Name the choices about the last letter of each prefix.
+    - Write the recurrence from those choices.
+    - Fill row 0 and column 0, the empty prefixes.
+    - Fill the rest row by row and read the answer at the bottom right.
+  terms:
+    - term: Prefix
+      definition: The first few letters of a string, from none up to all of them.
+  lesson:
+    title: The same plan, with two indexes
+    explanation: It's the plan from one dimension, state, recurrence, base cases, order, and answer, with the state naming a prefix of each string.
+- id: why-walls-break-shortcut
+  skill: grid-paths
+  asks: why
+  type: prompt
+  prompt: Counting right and down paths in a grid with walls, why is it a bug to set the whole top row to 1 before the loop?
+  reworded: With blocked cells in a grid, what goes wrong if the first row starts as all 1s?
+  points:
+    - A wall in the top row blocks every cell to its right, since they can only be reached from the left.
+    - Setting the row to 1 says those cells each have a path when they have none.
+    - Running the same recurrence on every cell, with off-grid cells as 0, gets the edges right.
+  misconception: That the edges of the grid always have exactly one path in.
+  lesson:
+    title: Let the recurrence do the edges
+    explanation: Only the start needs a base case. Every other cell, edges included, adds the cell above and the cell to its left, with 0 for a wall or a cell off the grid.
+- id: grid-cheapest-recurrence
+  skill: grid-paths
+  asks: what
+  type: pick-one
+  prompt: A path moves right or down and pays the cost of every cell it stands on. What is `cheapest[r][c]`?
+  reworded: For the cheapest right and down path that pays for each cell, how is the entry for cell (r, c) built?
+  options:
+    - text: The cell's cost plus the smaller of `cheapest[r - 1][c]` and `cheapest[r][c - 1]`
+      correct: true
+      reason: The path came from above or from the left, so it takes the cheaper of the two and pays for this cell.
+    - text: The smaller of the cell's cost and the cost of the cell above
+      reason: That forgets everything paid before the cell above.
+    - text: The sum of `cheapest[r - 1][c]` and `cheapest[r][c - 1]`
+      reason: Adding them counts paths. The cheapest path picks one way in.
+  lesson:
+    title: Pick one way in, pay for the cell
+    explanation: Counting adds the two ways in. The cheapest path keeps the smaller one, with cells off the grid as infinity.
+- id: when-grid-dp-fails
+  skill: grid-paths
+  asks: when
+  type: pick-one
+  prompt: When does filling a grid row by row stop working for the cheapest path?
+  reworded: In what case can't a grid table find the cheapest path from the top left to the bottom right?
+  options:
+    - text: When moves can go up and left as well, so cells depend on each other in circles
+      correct: true
+      reason: No fill order has every input ready, so use a shortest path search from the graphs chapter.
+    - text: When some cells cost 0
+      reason: A cost of 0 is fine. The table just adds 0.
+    - text: When the grid isn't square
+      reason: Any number of rows and columns works the same way.
+  lesson:
+    title: Right and down means no circles
+    explanation: When every move goes right or down, a path can never come back to a cell, so each cell only reads cells already filled.
+- id: why-lcs-match-diagonal
+  skill: common-subsequence
+  asks: why
+  type: prompt
+  prompt: In the longest common subsequence, why is `lcs[i][j]` equal to `lcs[i - 1][j - 1] + 1` when `a[i - 1]` and `b[j - 1]` are the same letter?
+  reworded: When the last letters of both prefixes match, why add 1 to the entry up and to the left?
+  points:
+    - The two matching letters can end a common subsequence together.
+    - Using them takes both letters away, which leaves the first i - 1 and the first j - 1 letters.
+    - Pairing them never does worse than leaving one of them out.
+  misconception: That a match should also add 1 to the entry above or to the left.
+  lesson:
+    title: A match uses up both letters
+    explanation: Once the last letters are paired, neither can be used again, so the rest of the answer comes from both shorter prefixes.
+- id: lcs-cases-match
+  skill: common-subsequence
+  asks: what
+  type: matching
+  prompt: Match each case to its entry in the longest common subsequence table.
+  reworded: For each situation, what is `lcs[i][j]`?
+  matchHeading: Entry
+  matchName: an entry
+  pairs:
+    - item: The last letters match
+      match: "`lcs[i - 1][j - 1] + 1`"
+    - item: The last letters differ
+      match: "`max(lcs[i - 1][j], lcs[i][j - 1])`"
+    - item: Either prefix is empty
+      match: "0"
+  extraMatches:
+    - "`lcs[i - 1][j] + lcs[i][j - 1]`"
+  lesson:
+    title: Pair them, or drop one
+    explanation: Equal last letters are paired. Different ones mean one of them isn't used, so try dropping each and keep the better.
+- id: when-lcs-in-disguise
+  skill: common-subsequence
+  asks: when
+  type: matching
+  prompt: Strings `a` and `b` have n and m letters, and their longest common subsequence has L letters. Match each question to its answer.
+  reworded: Given L, the longest common subsequence of strings of n and m letters, what answers each of these?
+  matchHeading: Answer
+  matchName: an answer
+  pairs:
+    - item: The fewest letters to delete from both so they read the same
+      match: n + m - 2L
+    - item: The fewest letters to delete from a so it's a subsequence of b
+      match: n - L
+    - item: The most letters both can keep
+      match: L
+  extraMatches:
+    - n × m - L
+  lesson:
+    title: Everything outside the shared part goes
+    explanation: The letters both strings keep are a common subsequence, so keeping the longest one means deleting the fewest.
+- id: edit-choices-match
+  skill: edit-distance
+  asks: what
+  type: matching
+  prompt: When the last letters differ, match each entry the edit distance reads to the edit it stands for.
+  reworded: In the edit distance recurrence, which edit does each earlier entry mean?
+  matchHeading: Edit
+  matchName: an edit
+  pairs:
+    - item: "`edits[i - 1][j - 1]`"
+      match: Replace a's last letter with b's
+    - item: "`edits[i - 1][j]`"
+      match: Delete a's last letter
+    - item: "`edits[i][j - 1]`"
+      match: Insert b's last letter
+  extraMatches:
+    - Swap two letters
+  lesson:
+    title: Three ways to fix the end
+    explanation: A replace uses up a letter of each. A delete uses up one of a's. An insert supplies one of b's. Each costs 1, and the smallest wins.
+- id: why-edit-base-row
+  skill: edit-distance
+  asks: why
+  type: pick-one
+  prompt: Why is `edits[i][0]` equal to i in the edit distance table?
+  reworded: What makes the first column of the edit distance table count up 0, 1, 2, and so on?
+  options:
+    - text: Turning i letters into an empty string takes exactly i deletes
+      correct: true
+      reason: There's nothing to match or replace, so every letter has to go.
+    - text: Each row adds one replace
+      reason: A replace needs a letter on both sides, and the target is empty.
+    - text: It's a placeholder that the loop overwrites
+      reason: The loop reads it. It's a real answer and must be right.
+  lesson:
+    title: Empty on one side
+    explanation: From nothing to j letters is j inserts, and from i letters to nothing is i deletes. Those are the base cases the rest builds on.
+- id: when-edit-costs-differ
+  skill: edit-distance
+  asks: when
+  type: prompt
+  prompt: An insert costs 2, a delete costs 2, and a replace costs 5. How does the edit distance table change, and when does it skip replacing?
+  reworded: If the three edits have different prices, what changes in the edit distance table, and when won't it replace a letter?
+  points:
+    - Each 1 in the recurrence becomes the cost of that edit.
+    - The base cases change too, to i deletes and j inserts at their own costs.
+    - The table takes the smallest of the three, so when a replace costs more than a delete plus an insert, it never replaces.
+  lesson:
+    title: Costs in place of ones
+    explanation: The recurrence is the same, with each choice priced. Taking the minimum already handles a replace that's dearer than deleting and inserting.
+- id: why-knapsack-reads-row-before
+  skill: knapsack-once
+  asks: why
+  type: prompt
+  prompt: In 0/1 knapsack, why does taking crate i - 1 read `best[i - 1][w - weight]` and not `best[i][w - weight]`?
+  reworded: Why must the take choice in 0/1 knapsack read from the row before the current crate?
+  points:
+    - Row i - 1 is the best from the crates before this one, so it can't include this crate.
+    - Reading row i instead could include this crate already, so it would be packed twice.
+    - Reading the same row is exactly the unlimited coins problem, where reuse is allowed.
+  misconception: That the row only matters for how much memory the table uses.
+  lesson:
+    title: The row before means once
+    explanation: Each crate's decision reads a world where it hasn't been considered yet. That's all it takes to stop it going in twice.
+- id: when-capacity-too-big
+  skill: knapsack-once
+  asks: when
+  type: pick-one
+  prompt: When is the O(n × capacity) knapsack table a poor choice?
+  reworded: The knapsack table takes O(n × capacity) time. In what case is that too slow?
+  options:
+    - text: When the capacity is huge, like a billion, even if there are only 20 items
+      correct: true
+      reason: The table has a column for every weight up to the capacity. With 20 items, trying all 2²⁰ subsets is faster.
+    - text: When there are more than 100 items
+      reason: More items only add rows. With a small capacity, thousands of items are fine.
+    - text: When some items weigh the same
+      reason: Equal weights don't change the table at all.
+  lesson:
+    title: The capacity sets the width
+    explanation: The time grows with the capacity's value, not its number of digits. A small capacity makes the table quick, and a huge one makes it useless.
+- id: why-odd-total-no
+  skill: knapsack-once
+  asks: why
+  type: pick-one
+  prompt: Splitting whole numbers into two groups with equal totals, why is an odd total a quick no?
+  reworded: Before filling any table, why can you refuse an even split when the numbers add up to an odd total?
+  options:
+    - text: Two equal whole number totals add up to an even number
+      correct: true
+      reason: Each group would need half of an odd number, which isn't a whole number.
+    - text: An odd total means one number is too big
+      reason: Size has nothing to do with it. The parity decides.
+    - text: The table only works for even totals
+      reason: It works for any target. Half an odd total just isn't a target it can hit.
+  lesson:
+    title: Check the total first
+    explanation: An even split asks whether some subset makes half the total. If the total is odd, there's no such half.
+- id: why-fill-by-length
+  skill: interval-ranges
+  asks: why
+  type: pick-one
+  prompt: Why does the table for the cheapest way to cut a beam fill by range length instead of row by row?
+  reworded: In range DP, what goes wrong if you fill `cost[i][j]` row by row from the top?
+  options:
+    - text: Each range reads the shorter ranges inside it, and row by row reaches some ranges before the ones they read
+      correct: true
+      reason: "`cost[0][4]` reads `cost[1][4]`, which is in a later row. By length, every shorter range is done first."
+    - text: Filling by length uses less memory
+      reason: The table is the same size either way.
+    - text: Row by row would count each cut twice
+      reason: The problem is reading entries that are still empty.
+  lesson:
+    title: Short ranges first
+    explanation: A range is built from smaller ranges, so the order is all ranges of length 2, then 3, and so on, up to the whole list.
+- id: range-dp-steps
+  skill: interval-ranges
+  asks: what
+  type: ordering
+  prompt: Put the steps for finding the cheapest way to cut a beam at its marks in order.
+  reworded: In what order does the range DP for cutting a beam work?
+  steps:
+    - Sort the marks and add both ends of the beam as points.
+    - Set every range of two neighbouring points to cost 0.
+    - Go through the range lengths from shortest to longest.
+    - For each range, try every point inside it as the first cut and keep the cheapest pair of pieces.
+    - Add the range's length, and read the answer for the whole beam.
+  lesson:
+    title: Every first cut, every range
+    explanation: Whichever cut comes first in a piece costs the whole piece's length, and leaves two smaller pieces whose best costs are already known.
+- id: when-range-dp
+  skill: interval-ranges
+  asks: when
+  type: matching
+  prompt: Match each problem to the state that fits it.
+  reworded: Which DP state suits each of these problems?
+  matchHeading: State
+  matchName: a state
+  pairs:
+    - item: The cheapest way to join a row of piles, two neighbours at a time
+      match: A range of piles, from i to j
+    - item: The longest subsequence two strings share
+      match: A prefix of each string
+    - item: The most value in a van from some crates
+      match: The first i crates and a weight limit
+  extraMatches:
+    - One index into the list
+  lesson:
+    title: Splits and joins mean ranges
+    explanation: When the last step splits a stretch in two or joins two neighbouring stretches, the natural question is about a range, and the answer comes from the smaller ranges inside.
+- id: why-backwards-one-row
+  skill: one-row
+  asks: why
+  type: prompt
+  prompt: In 0/1 knapsack with one row, why does the inner loop run from the capacity down to the item's weight?
+  reworded: When the knapsack table shrinks to one row, why must the weights loop go backwards?
+  points:
+    - The update reads `best[w - weight]`, which must still hold the value from before this item.
+    - Going down, the smaller entries haven't been updated for this item yet.
+    - Going up would read an entry that already includes this item, so it could be taken twice.
+  misconception: That the direction only changes speed, not the answer.
+  lesson:
+    title: Backwards keeps the old values
+    explanation: With a crate of weight 2, value 3, and a capacity of 4, going up sets `best[2]` to 3, then `best[4]` to 6, as if the crate went in twice. Going down gives 3.
+- id: why-save-diagonal
+  skill: one-row
+  asks: why
+  type: pick-one
+  prompt: Shrinking the edit distance table to one row, why keep the old `row[j - 1]` in a variable before updating it?
+  reworded: In a one row edit distance, what is lost when `row[j - 1]` is overwritten, and why does it matter?
+  options:
+    - text: The next entry needs the old value, which is the entry up and to the left
+      correct: true
+      reason: After the update, `row[j - 1]` is this row's value, but a replace or a match reads the row before.
+    - text: Variables are faster than array reads
+      reason: The speed is about the same. It's about which value is read.
+    - text: It stops the loop from going out of bounds
+      reason: Bounds have nothing to do with it.
+  lesson:
+    title: The diagonal gets overwritten
+    explanation: Above is still in `row[j]` and left is the new `row[j - 1]`, but up and to the left is gone unless you saved it. Two rows avoid the problem too.
+- id: when-keep-full-table
+  skill: one-row
+  asks: when
+  type: pick-one
+  prompt: When should you keep the whole 2-D table instead of shrinking it to one row?
+  reworded: In what case is a single row not enough for a 2-D DP?
+  options:
+    - text: When you need the actual path or subsequence, not just its length or cost
+      correct: true
+      reason: Rebuilding it means walking back through the table, and one row has thrown the rest away.
+    - text: Whenever the answer is a count
+      reason: Counts shrink to one row fine, like grid paths.
+    - text: Never, one row is always better
+      reason: Range tables can't shrink this way, and rebuilding an answer needs the whole table.
+  lesson:
+    title: One row keeps the number, not the route
+    explanation: Shrinking saves memory and leaves the time the same. Keep the table when you'll walk back through it.

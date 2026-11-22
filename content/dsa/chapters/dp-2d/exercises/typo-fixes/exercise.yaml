@@ -1,0 +1,19 @@
+id: typo-fixes
+kind: coding
+title: How far a typo is from the word
+difficulty: medium
+skills:
+  - edit-distance
+  - two-index-state
+sibling: sign-repaint
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: fewestEdits
+  params:
+    - name: typed
+      type: string
+    - name: word
+      type: string
+  returns: int

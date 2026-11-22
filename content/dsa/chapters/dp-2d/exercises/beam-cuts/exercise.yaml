@@ -1,0 +1,19 @@
+id: beam-cuts
+kind: coding
+title: Cutting the beam at the sawmill
+difficulty: hard
+skills:
+  - interval-ranges
+  - two-index-state
+sibling: sand-piles
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: cheapestCuts
+  params:
+    - name: length
+      type: int
+    - name: marks
+      type: int[]
+  returns: long

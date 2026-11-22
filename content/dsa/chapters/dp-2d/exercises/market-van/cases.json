@@ -1,0 +1,150 @@
+{
+  "exercise": "market-van",
+  "cases": [
+    {
+      "uuid": "4f5d32e7-e202-4fc0-9336-a4c10cf3e4d6",
+      "description": "packs the best crates",
+      "property": "bestTakings",
+      "input": {
+        "weights": [4, 3, 2, 5],
+        "takings": [50, 40, 25, 60],
+        "capacity": 9
+      },
+      "expected": 115
+    },
+    {
+      "uuid": "3683597a-17f6-4d41-8733-c00547fe6e58",
+      "description": "the heaviest crate is the best",
+      "property": "bestTakings",
+      "input": {
+        "weights": [1, 2, 8],
+        "takings": [10, 15, 40],
+        "capacity": 8
+      },
+      "expected": 40
+    },
+    {
+      "uuid": "73928613-934c-49da-853a-eed62e7052cf",
+      "description": "every crate fits",
+      "property": "bestTakings",
+      "input": {
+        "weights": [2, 3, 4],
+        "takings": [5, 6, 7],
+        "capacity": 20
+      },
+      "expected": 18
+    },
+    {
+      "uuid": "85cee031-06e4-43a7-8d73-5e1eea9a82c8",
+      "description": "each crate packed once",
+      "property": "bestTakings",
+      "input": {
+        "weights": [3],
+        "takings": [10],
+        "capacity": 9
+      },
+      "expected": 10
+    },
+    {
+      "uuid": "5f035b09-4b7a-4b06-94c5-0fee0815d591",
+      "description": "crates that bring nothing",
+      "property": "bestTakings",
+      "input": {
+        "weights": [2, 2, 3],
+        "takings": [0, 9, 0],
+        "capacity": 7
+      },
+      "expected": 9
+    },
+    {
+      "uuid": "6d9f56ac-345a-47e2-84cb-523170983e8a",
+      "description": "light crates beat one heavy crate",
+      "property": "bestTakings",
+      "input": {
+        "weights": [5, 2, 2, 2],
+        "takings": [30, 11, 11, 11],
+        "capacity": 6
+      },
+      "expected": 33
+    },
+    {
+      "uuid": "697e0ae7-aad8-42d2-95d6-ac50e0ea7366",
+      "description": "a dozen crates",
+      "property": "bestTakings",
+      "input": {
+        "weights": [10, 5, 23, 5, 18, 6, 1, 17, 16, 20, 16, 23],
+        "takings": [47, 47, 66, 77, 3, 35, 49, 73, 33, 20, 90, 13],
+        "capacity": 60
+      },
+      "expected": 418
+    },
+    {
+      "uuid": "445dfdae-6bdb-4438-abe5-6724cc5f998c",
+      "description": "the most crates and the biggest van",
+      "property": "bestTakings",
+      "input": {
+        "weights": [
+          72, 423, 432, 514, 228, 70, 20, 116, 346, 971, 110, 435, 471, 524,
+          682, 454, 288, 221, 404, 414, 534, 756, 653, 373, 836, 507, 338, 979,
+          686, 797, 407, 827, 284, 268, 455, 338, 119, 281, 888, 924, 490, 822,
+          859, 216, 655, 11, 233, 779, 817, 548, 288, 985, 406, 861, 116, 211,
+          113, 9, 33, 292, 674, 780, 624, 597, 860, 20, 270, 966, 161, 814, 136,
+          44, 515, 201, 77, 585, 871, 360, 519, 89, 826, 1000, 608, 712, 684,
+          391, 459, 122, 501, 315, 719, 591, 22, 909, 234, 517, 771, 644, 613,
+          183
+        ],
+        "takings": [
+          4446, 5959, 3724, 3191, 4818, 9162, 2471, 4175, 1576, 1504, 3225, 170,
+          8815, 7748, 4064, 6672, 8459, 1652, 4733, 8071, 6546, 4791, 4865,
+          5521, 497, 683, 3071, 7740, 7325, 4069, 7907, 2468, 7359, 6959, 4484,
+          7494, 9545, 3184, 8315, 4470, 4191, 841, 996, 2219, 7680, 4149, 2047,
+          7222, 3551, 2697, 6425, 4309, 4367, 9607, 8117, 3360, 5985, 595, 4598,
+          2588, 1626, 9768, 1611, 7546, 394, 5733, 9911, 6567, 1981, 1082, 7496,
+          4268, 550, 515, 7095, 9599, 9900, 8013, 5931, 3482, 2809, 5732, 895,
+          6396, 4214, 1611, 7969, 8938, 5408, 6440, 782, 3183, 7925, 1190, 6203,
+          787, 3299, 6745, 2748, 1498
+        ],
+        "capacity": 10000
+      },
+      "expected": 263402
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "7ec3711c-afaa-4be6-8874-7eb310b08519",
+          "description": "a van that holds nothing",
+          "property": "bestTakings",
+          "input": {
+            "weights": [1, 2],
+            "takings": [5, 6],
+            "capacity": 0
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "e62bd662-a223-47e1-a4f5-ffdfbab76ebe",
+          "description": "no crate fits",
+          "property": "bestTakings",
+          "input": {
+            "weights": [5, 6],
+            "takings": [5, 6],
+            "capacity": 4
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "f06538b6-b0df-4b17-b36d-87ef47c169d5",
+          "description": "one crate that just fits",
+          "property": "bestTakings",
+          "input": {
+            "weights": [7],
+            "takings": [70],
+            "capacity": 7
+          },
+          "expected": 70
+        }
+      ]
+    }
+  ]
+}

@@ -33,6 +33,9 @@
   "card/dp-plan-steps": [
     "57e12fdf1c8f4ced2d12a0403e122ae29719c271d1e52997b0df4bb0a694e264"
   ],
+  "card/edit-choices-match": [
+    "e08060599b795d4b7aedf9f7e23f2c180c2b7c01e6d1ee5d399d5057a7a11e74"
+  ],
   "card/ends-search-steps": [
     "7adf57ceffa29b2c15fed3e8dadf732d1297528850d9ac3ab42cf446d8c662ca"
   ],
@@ -59,6 +62,9 @@
   ],
   "card/grid-bfs-steps": [
     "32f2ff14fda109a7b465490ff4a9da8203b0400b2bf7879a186c082370f65a00"
+  ],
+  "card/grid-cheapest-recurrence": [
+    "7a5663575fd70d5119aeaa4efa4042e6cdc6c0375aab4a8e8aad877a3e437921"
   ],
   "card/grid-search-steps": [
     "c46107ae85291f8affbb6788dafdabc508d26081b2d8d9ee7d638be45735c7f2"
@@ -105,6 +111,9 @@
   ],
   "card/lca-plain-steps": [
     "5132357a8f4be9b8e68bc51e50acaa085dd7238b7ac40372a5001d563b7abfe4"
+  ],
+  "card/lcs-cases-match": [
+    "de99904239ee339425d6da618455b1dcc985f1b151e9a6ca5907bdd529142fd0"
   ],
   "card/level-order-steps": [
     "67883b541fdc292cbd0ec621fd0a75d4a0025f29f54f7bf3d0f8dc1959d89566"
@@ -157,6 +166,9 @@
   "card/proof-before-moving": [
     "1e6704f5060013b301850d7b0a5e6e4e0336ef34f0a3a8b79b7dac8cccfe70db"
   ],
+  "card/range-dp-steps": [
+    "b3c9abebaea26128d904e6ecd5fa3f4b74bf550d90554af4c8cb89d551beff97"
+  ],
   "card/rebuild-steps": [
     "27bce07cbd1ea3ac4dbf7226efcaea04769d99dcfa9a6af1ab346df294efd121"
   ],
@@ -193,6 +205,9 @@
   "card/triple-search-steps": [
     "69de4d5de7877e7725dcac54d56e76a8fef5adcf0fd350bfe93d1d960d987dc6"
   ],
+  "card/two-index-plan-steps": [
+    "93e6caab1ccfe32b8a1f267189753b510fa2e11cd616a805f0f87722668ea6af"
+  ],
   "card/two-pass-steps": [
     "e40c09dd05ce91902a1021a7326438b78ee600894c0fbf056850c8f8d543616a"
   ],
@@ -219,6 +234,9 @@
   ],
   "card/when-bst-or-plain": [
     "22696ee6137fbafb6e2f774bc29d7647896d526ae07bac86e791bd6d19a7dfcf"
+  ],
+  "card/when-capacity-too-big": [
+    "df9f9a5474e6484e23e21b75d32d0241c898496ab50817982aba14cf6785a8ee"
   ],
   "card/when-circle-twice": [
     "6b6b43000a194e0f0c9705add13d9601eaa300a9eca08f4a4cabd729f63bb7ef"
@@ -265,14 +283,23 @@
   "card/when-edge-direction": [
     "e1c6da6b16510afe5e42e3e75be700021169b8cdc8d1b93fcaaad9b9a8080dcc"
   ],
+  "card/when-edit-costs-differ": [
+    "f41caaae29b3e6ea2a76deceb1777f2f1d7687b9f3548e23f4e63de41a5ae157"
+  ],
   "card/when-ends-need-sorting": [
     "3f6ed074a3f88818c8de29a68c0f372272cccf822d8ee231c911fa42ea062716"
+  ],
+  "card/when-fill-order-2d": [
+    "5883f7b1ea52491ba93716e21b6ffa60ae0315c6d4434905b3d77a2e9af9f823"
   ],
   "card/when-first-middle": [
     "a031f3df783a4730dcec0eebd3dbdbafe0d3d801a5ea43a7ee1ac863d4b107e6"
   ],
   "card/when-greedy-works": [
     "4221dd9a4471bba7870e578077a71beb3b8a3a70ce85d711c71826f0b5097d1f"
+  ],
+  "card/when-grid-dp-fails": [
+    "d8109df43ca64bba804aed3720df8b82f61e774766edb598ad593b3d0e84e157"
   ],
   "card/when-grid-method": [
     "66a210633086000cfa57098a555cfb0c3a1121d33258f0bc7bea9f53b84da0d5"
@@ -288,6 +315,12 @@
   ],
   "card/when-k-nearest-heap": [
     "252dbc2cb1830826c9f8483a210b786b0a5724f814d97b5dc608a01ef8e4ecc6"
+  ],
+  "card/when-keep-full-table": [
+    "4520070b6459b9a9ba348d7f0856c0d12765a5adaaff2a6ec39267f2909d272a"
+  ],
+  "card/when-lcs-in-disguise": [
+    "19b402b8903a9b450219442326f2d5de62e31462853784267808e69f548ca537"
   ],
   "card/when-letter-count-check": [
     "cfb49df5ccc44f8431871304dace28174fc547b8431e9b186c14bf219f36e9a9"
@@ -361,6 +394,9 @@
   ],
   "card/when-queue-or-stack": [
     "c5a70674b8f712152e5fd0bc7584ba1be5f30ae05ac662c40ae6d9cce582abc3"
+  ],
+  "card/when-range-dp": [
+    "0727e24b275fbfa9bc53804fb442907a48f491e826fda79e2cf71edace2f5184"
   ],
   "card/when-reverse-ends": [
     "9e368da785d34841b5ae75dfde5ad0023ffdec09d1d412b08a38232cfeec782a"
@@ -476,6 +512,9 @@
   "card/why-attach-the-rest": [
     "30cb09b4c31e631f7cb94765979abce50468a55a707f66adf9d5640cc5eb9d37"
   ],
+  "card/why-backwards-one-row": [
+    "37202fc6d18ac3bd113cf21e5297287098d14c385cf91fed89208bb85d656204"
+  ],
   "card/why-bfs-not-weighted": [
     "5734f071ce6d0bcf30b556c704e99714b62b89d967623f8855e3b1c815038e9f"
   ],
@@ -536,6 +575,12 @@
   "card/why-earliest-end-safe": [
     "323fe60fbe05f12569d975a8d2ad48b1f50edd8fc06e76d76a993a8fd32d4192"
   ],
+  "card/why-edit-base-row": [
+    "2ca3470a2fa2c22481e1f01c982030facfaa899299d0392a7a31c18d45d68bb5"
+  ],
+  "card/why-empty-prefix-row": [
+    "b4f78383921968e082f4c88cc58931accd2ceb5fb7bdbcc57b60116465f8d816"
+  ],
   "card/why-end-times-heap": [
     "d8abd230c75f7f3e33ff1ba6e35e1ad6dae35eaa1842880eab512959df68eba3"
   ],
@@ -553,6 +598,9 @@
   ],
   "card/why-fast-slow-middle": [
     "4a2ea2d50251a87638da52d1e7bb58a01c30be6c4358c3ac8352bc81d15a0e61"
+  ],
+  "card/why-fill-by-length": [
+    "a4c50e3fdfbfeefce39cb3186a44638ba82d9ff0f4d129c4d603f6204c8a84be"
   ],
   "card/why-fill-order": [
     "ad22ca821988c1a7bc8a20f122d9fd9ae5bd3f4191e9b32053d7bc9c18653b02"
@@ -593,8 +641,14 @@
   "card/why-keep-larger-end": [
     "8b6991f3f3af7bc0e0e5f27dcd3bcec03363543febf25c4ffbed1168f5309081"
   ],
+  "card/why-knapsack-reads-row-before": [
+    "45bde69b4baf8a779a23968681173537dad0695995cfcb1cb1dc93637cc5d4d4"
+  ],
   "card/why-last-position": [
     "867fa73cb791c8f3b1a9c14b3530aa2ad5a1d6ac30707d9900e6a689f6a34fd7"
+  ],
+  "card/why-lcs-match-diagonal": [
+    "8d97265ffc008fee6e97b64b32d605096d28b72015adfa4b3e01eac4328c6496"
   ],
   "card/why-left-never-back": [
     "de4a7757f93cee0dd4e48a17cf208d9ee5afedb3edd0927962498a7f4fb6819e"
@@ -647,6 +701,9 @@
   "card/why-not-lo-equals-mid": [
     "e58245d9aee07f7f54ec14e4c49fc37bf7fe211feae0f0e337d5427bdb6b7cdc"
   ],
+  "card/why-odd-total-no": [
+    "4563e143df6f068b606fe26d3b10438c52f8e7fa9c5ca9f9dc7a4f70445990f5"
+  ],
   "card/why-one-front-per-list": [
     "80c78f2679b625eb66bc3100060de498fb996e7d3e81cf52294313f1e9d8ba05"
   ],
@@ -694,6 +751,9 @@
   ],
   "card/why-rolling-order": [
     "7d25e76e7783ad07893ed9cfa9fa5209cbe0d3b8aa359aff0059570dd59cc250"
+  ],
+  "card/why-save-diagonal": [
+    "49f7928ca87e5c612487a3d95c64103ac396957c7bca8aef99f3e48259293080"
   ],
   "card/why-save-next-first": [
     "a0e3112ad6fe8105df23bf8f5fae3cb29b853b6211b8ff917474ea50a0f50c97"
@@ -794,6 +854,9 @@
   "card/why-used-list": [
     "2c0e4add949688110c71fac5fe54de1d767da4f53c093aa781281bdd902b66a2"
   ],
+  "card/why-walls-break-shortcut": [
+    "8531f2531aac117d146a18e7b143a76f2b925a90ad4959104e7d07ab9420d21a"
+  ],
   "card/why-word-split-overlap": [
     "655108058bedd8db5acd4db4062fad7bcb3698dc23814fc8675697d3fa8cef6d"
   ],
@@ -823,6 +886,9 @@
   ],
   "chapter/dp-1d": [
     "3772ab444136d5c821d900de04e1d49b4051f8188418af834530fa3383b3b48b"
+  ],
+  "chapter/dp-2d": [
+    "ad237ecc938f4322dba5b757b02a9557d95a57c5c9fae89f522550f8095ded38"
   ],
   "chapter/graphs": [
     "c78bc1fcbfd9c93e1bc44ca1c59ed98bf528a9a6333d64acb0947659b8894950"
@@ -872,6 +938,9 @@
   "exercise/bead-patterns": [
     "a4d192b9927b25815586791e4b6cbb13984bf74efc78bab58f70098c5a9b58c2"
   ],
+  "exercise/beam-cuts": [
+    "b3e50992779fae70a19660d96765dd54eb5d4a8fd940ba8feeac7b9742f01e31"
+  ],
   "exercise/berry-maze": [
     "0e5d3025d826ae223a25c43a12f68317773d9234f53c89bec41cb82b7c5daec6"
   ],
@@ -886,6 +955,9 @@
   ],
   "exercise/biggest-tile-square": [
     "2503a270f0f934c6109b765b02bff1812419df933a1ef27b32a76ee456d6cb2d"
+  ],
+  "exercise/bird-calls": [
+    "aab7b828dd6ad078da3c0e3a21c7c543030f8f672718ef89c864a363b24ed08c"
   ],
   "exercise/booking-range": [
     "ba67ad5b1ac5a7166bb4cb9e4f0b3e6c8b094b3f748bbc8f33780d4760edd6ff"
@@ -952,6 +1024,9 @@
   ],
   "exercise/enough-tiles": [
     "a2f9e4e59451fa6b0b8fb0593601d9abd71840f33c6934750b3a70e1e59cad8b"
+  ],
+  "exercise/even-loads": [
+    "2c9500c87cdc801602a5bb0802f8e9975a09f20cf5f5f205ae32dddda5aee8ac"
   ],
   "exercise/even-stretch": [
     "d215e309a07adfe79872290ef956daf226b3209e9fc2521d6eb73cf090a652e3"
@@ -1064,6 +1139,9 @@
   "exercise/lost-spaces": [
     "edebeb45d89867c7b3122b6ce5e905d94927230d36811025fe06a869d8115ec0"
   ],
+  "exercise/market-van": [
+    "09c99b6b722998c6ba4f7d2baffea57bdacb34c854333eca0d10f5ce27e32e82"
+  ],
   "exercise/median-after-each": [
     "8d04b90a7b21ce8fa4820b482ab5ed49fdc16d573239249525bdaa54cac7c5af"
   ],
@@ -1087,6 +1165,9 @@
   ],
   "exercise/merge-waves": [
     "322aa573bf15cb79aa6305bcff87a83c53cd956ed5311c961d7ee5a9649ee87c"
+  ],
+  "exercise/merged-tickers": [
+    "22675e5ee59248c9fb815d48ab262d4f9beed53be417c9c2c3ac1b9a0b1bc041"
   ],
   "exercise/middle-stop": [
     "2154fff36e15cfce848a9a1712b5b327c84ccadb2c1c18cf388fd625a6613c30"
@@ -1126,6 +1207,9 @@
   ],
   "exercise/odds-then-evens": [
     "af166f06ef1718b1ab0592b5c925b074e98a769c361be6a1b5a2e3af961f33db"
+  ],
+  "exercise/orchard-paths": [
+    "f0fe5755e31b50d690a6f30ccaed887d3872af49e837824b71f59126850f2237"
   ],
   "exercise/orders-on-time": [
     "02521a1c739df6e2ff12355a82c6a5cdc37f28cc50dc160a1a83dc652ad7634d"
@@ -1226,11 +1310,17 @@
   "exercise/same-letters": [
     "e998b9dc62400e1e9c84b0ed64ee8b38519caa0a2adbef661944be8567736dc2"
   ],
+  "exercise/sand-piles": [
+    "ec7a4c0c716c9246e387f9b7106f42d500c4048b20cadcb6654c1d2f3829bb84"
+  ],
   "exercise/scooter-loop": [
     "5432889d2fb259996ed0d080ae2a3a0521e3c795e7f6ef1efa2b7f31737ec9a9"
   ],
   "exercise/shared-airtime": [
     "549039dcf7460f8d9baff0d517b004ed3f96c3db338771f8d08499ea93feb338"
+  ],
+  "exercise/shared-landmarks": [
+    "ff96993806607fb9a1f470a53ec7d431bdfc677e1f6c1b67dc737c2ca9a88120"
   ],
   "exercise/shelf-runs": [
     "d197285a876bad0c61df032792e1f55fe864f0f81b884a073593403a96d5b4b9"
@@ -1244,6 +1334,9 @@
   "exercise/shift-pay": [
     "95d6fa76247c36d1728d258456e152277e74cc9cd4c03f699e96df7aa6b2c5df"
   ],
+  "exercise/sign-repaint": [
+    "5862bd2d04084ad0a8c3addfc25477edc998d0142800cbc969a62370543b7bbc"
+  ],
   "exercise/slowest-pace": [
     "bc7d6e173acf9a97581788edd166f7b76d6b42fa0b61822daeb430e6e4e8f535"
   ],
@@ -1252,6 +1345,9 @@
   ],
   "exercise/smallest-window": [
     "5eed9fd14da1054048c0d051917efbfb099d35915320e3e31a762ca54dae08c9"
+  ],
+  "exercise/snow-plough": [
+    "8b3805839be31f743f0f23f98fb5692743eb65c3a9931e4f519eb13692a54d5e"
   ],
   "exercise/space-readings": [
     "ccec0b8be91d337564bc2ba039b154a5fc0b6420bef7ef17d820cf47d0dae5c1"
@@ -1298,8 +1394,14 @@
   "exercise/trail-groups": [
     "f82fef402e7dad08873d0033ec067c7058b5fa13c86593d6364dcca658c77fce"
   ],
+  "exercise/two-drafts": [
+    "59276e6e54f7cc680c43edd1532c9c49e65d8c2651c4f031122678c779fc7a1f"
+  ],
   "exercise/two-teams": [
     "8127b58a5dd3e9848a8973bbecda11cf2c7bdf6d456a8cbf684733ef0f78bc0b"
+  ],
+  "exercise/typo-fixes": [
+    "38c06af83097001c5a9a0dda080005c30f31a59362c6990d17f1cd64abdd7541"
   ],
   "exercise/valid-catalogue": [
     "9ca20da70bf73c5773f139d5686f0568225c2d7d01e1829bcd0d67f4fc05c6d0"

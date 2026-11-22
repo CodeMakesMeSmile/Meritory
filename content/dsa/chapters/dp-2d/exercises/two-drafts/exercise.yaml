@@ -1,0 +1,19 @@
+id: two-drafts
+kind: coding
+title: Trimming two drafts to match
+difficulty: medium
+skills:
+  - common-subsequence
+  - one-row
+sibling: shared-landmarks
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: fewestDeletions
+  params:
+    - name: first
+      type: string
+    - name: second
+      type: string
+  returns: int

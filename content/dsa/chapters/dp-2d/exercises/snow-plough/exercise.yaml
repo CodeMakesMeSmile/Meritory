@@ -1,0 +1,17 @@
+id: snow-plough
+kind: coding
+title: Ploughing across the car park
+difficulty: easy
+skills:
+  - grid-paths
+  - two-index-state
+sibling: orchard-paths
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: fewestMinutes
+  params:
+    - name: snow
+      type: int[][]
+  returns: int

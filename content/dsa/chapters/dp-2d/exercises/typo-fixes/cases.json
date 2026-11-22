@@ -1,0 +1,140 @@
+{
+  "exercise": "typo-fixes",
+  "cases": [
+    {
+      "uuid": "0de6c94d-a8f1-4a83-b0ec-25a64dafc4eb",
+      "description": "two swapped letters",
+      "property": "fewestEdits",
+      "input": {
+        "typed": "recieve",
+        "word": "receive"
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "4790a58a-e00a-4246-80b6-a5d93ad48022",
+      "description": "a missing letter",
+      "property": "fewestEdits",
+      "input": {
+        "typed": "hapy",
+        "word": "happy"
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "620bff09-e987-4aa2-b35c-c3781065350f",
+      "description": "an extra letter",
+      "property": "fewestEdits",
+      "input": {
+        "typed": "bannana",
+        "word": "banana"
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "a7ace804-86b5-4ccc-beac-eb00953fb377",
+      "description": "one wrong letter",
+      "property": "fewestEdits",
+      "input": {
+        "typed": "cot",
+        "word": "cat"
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "c91984b4-e75a-4638-9b48-7c309b861e97",
+      "description": "several kinds of edit",
+      "property": "fewestEdits",
+      "input": {
+        "typed": "sunday",
+        "word": "saturday"
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "10917504-a4c3-4347-96b2-735112fb1ac3",
+      "description": "nothing in common",
+      "property": "fewestEdits",
+      "input": {
+        "typed": "abc",
+        "word": "xyz"
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "f6efa63c-035d-488a-9fd7-eef5033ba66c",
+      "description": "already right",
+      "property": "fewestEdits",
+      "input": {
+        "typed": "garden",
+        "word": "garden"
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "71029de1-8d6b-4128-be2f-74f47a66e25e",
+      "description": "long words",
+      "property": "fewestEdits",
+      "input": {
+        "typed": "bcbabbddcdacadaaaaddbabaccddbcbcacbdcacdcabdcadbccbbbaddddbcbcddacabbcdcddabcdacdbbddbddbbadcbcdcbadccbacccdbbcaaaabacbbdaabbbadcabdbbdadabcbabdbabbcaccddabdaddddbddaccaabcccbbabbdaacbbbdcabccaadabbda",
+        "word": "cdcbabacabdcbdbbbcccadbddaacbbccaaccbbbdcdaddbddccbddbbbdcddcddaccbccadacbbdaaacbadcacddabbaaadbdddcddcdbcadbdaadaabbbccadcccddabcaabcdcddbadaccccbcadacdbbdcadbdcadcccaaabdcdccaada"
+      },
+      "expected": 107
+    },
+    {
+      "uuid": "600fb243-7b89-46fb-992b-71376558e944",
+      "description": "the longest words",
+      "property": "fewestEdits",
+      "input": {
+        "typed": "acahfcfcbeebchcbacdagdahafbbhdbhcbfeebhgchddfcffbghdeeghdceahgedgdgedecbdhaefdfdaaegfacehacgcgfdccaachdabeahhcfhfccabhffaafahcaaedgbfeechfggacaacdegcfdfbfcgggbgehadadfdfhgggdebccgbcecfbcchaefbgebhghbgchbfachcagbadcbfadehefheahfbhdebeebfdedgdfaddfehedagccdccfhaafdcfcfchdagbbhacebhhebcffggfbddaegcedbbdffcbgfcabdaaacfceafghhdbbfbgcehhggahedaedbceecggheeaehabaedgcgfagcagbedbcbgdbaafgchdbbefbeedcfbhcbghfdbahfeabbaagggddebeehbhcecchhagebchdbccecfggfccgbhdfgbacfhdhdfcgfgbcdcdebeggheffbebfcaccfceaeaffdf",
+        "word": "caaeedbhgbdedcfgdfegeaffagffbefcdhhdbhdhhdadhghbabhccefaehhgdhggbeeehcgbagahbhaagdccfhefdacgecfagffdbaffbabbfabeafgfhfdcbdafaebeeeaceehbdgbedhfedfdchebehebbcadhgafbbadbcggbafcchgegdgaacaggdbhgfcecahhdchheeegcghehghecagcdechggaeabcchcffddghfabhedgfbffcbedgdedhdgabadabhccbdadeghcfgecccfefgffbhhbeeaghfegbhcffacdbgfbddafhgdfccadaeafhfacabgghadebghbdhcfedbefaffafdhfhedagffbfeghbegccffahgedebgfcebgadabbedhbaahdhacefdbagcbhaheedbeaacedfaeecfbefhgafeccbfcehfegghehfdbagabehabgahdbfgdcdgbccecdfbacgfhcccbb"
+      },
+      "expected": 347
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "95e807b5-2b55-492c-8cf9-8d6afb68ab89",
+          "description": "nothing typed",
+          "property": "fewestEdits",
+          "input": {
+            "typed": "",
+            "word": "tea"
+          },
+          "expected": 3
+        },
+        {
+          "uuid": "3ffe2e91-9162-49af-83bc-74559197b957",
+          "description": "an empty word",
+          "property": "fewestEdits",
+          "input": {
+            "typed": "tea",
+            "word": ""
+          },
+          "expected": 3
+        },
+        {
+          "uuid": "0a6df621-cbb0-45b8-9783-57f9bf1274f7",
+          "description": "both empty",
+          "property": "fewestEdits",
+          "input": {
+            "typed": "",
+            "word": ""
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "40ceb14f-56a3-462e-90ed-3c0c780e0332",
+          "description": "one letter each",
+          "property": "fewestEdits",
+          "input": {
+            "typed": "a",
+            "word": "b"
+          },
+          "expected": 1
+        }
+      ]
+    }
+  ]
+}

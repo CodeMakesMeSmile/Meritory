@@ -1,0 +1,17 @@
+id: sand-piles
+kind: coding
+title: Joining the sand piles
+difficulty: medium
+skills:
+  - interval-ranges
+  - two-index-state
+sibling: beam-cuts
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: cheapestJoin
+  params:
+    - name: piles
+      type: int[]
+  returns: long

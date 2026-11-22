@@ -1,0 +1,25 @@
+id: sign-repaint
+kind: coding
+title: Repainting the shop sign
+difficulty: medium
+skills:
+  - edit-distance
+  - one-row
+sibling: typo-fixes
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: cheapestRepaint
+  params:
+    - name: current
+      type: string
+    - name: wanted
+      type: string
+    - name: addCost
+      type: int
+    - name: removeCost
+      type: int
+    - name: repaintCost
+      type: int
+  returns: int

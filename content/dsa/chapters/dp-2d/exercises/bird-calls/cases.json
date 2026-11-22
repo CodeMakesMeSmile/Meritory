@@ -1,0 +1,130 @@
+{
+  "exercise": "bird-calls",
+  "cases": [
+    {
+      "uuid": "cb9b72fd-a38b-4a47-b13f-9ab3d38f4f3b",
+      "description": "counts the ways to hear the song",
+      "property": "songCount",
+      "input": {
+        "calls": "abcbc",
+        "song": "abc"
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "5049b8ac-1f3c-4e37-afce-abad91ec952f",
+      "description": "a song heard once",
+      "property": "songCount",
+      "input": {
+        "calls": "xaybzc",
+        "song": "abc"
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "95b89c56-df65-4553-a592-b3846c43a88d",
+      "description": "a song never heard",
+      "property": "songCount",
+      "input": {
+        "calls": "cba",
+        "song": "abc"
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "27ac3f13-0e0e-438c-9b77-8775a232bcc6",
+      "description": "repeated calls in the song",
+      "property": "songCount",
+      "input": {
+        "calls": "aabbaabb",
+        "song": "ab"
+      },
+      "expected": 12
+    },
+    {
+      "uuid": "805508b0-4df9-403d-ac52-84f0cfa11596",
+      "description": "a song of one call",
+      "property": "songCount",
+      "input": {
+        "calls": "kakadu",
+        "song": "a"
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "69474ace-be4c-48b2-afca-648bf799b78a",
+      "description": "a song with the same call twice",
+      "property": "songCount",
+      "input": {
+        "calls": "aaa",
+        "song": "aa"
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "11295811-71fa-4d4f-b2a6-a7b19d9a8ea2",
+      "description": "a song as long as the calls",
+      "property": "songCount",
+      "input": {
+        "calls": "tweet",
+        "song": "tweet"
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "c598adae-e41d-411a-916f-b57f0311760a",
+      "description": "a count past the modulus",
+      "property": "songCount",
+      "input": {
+        "calls": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "song": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "expected": 407336795
+    },
+    {
+      "uuid": "5400105e-1edf-471f-ac0f-0e71f7f912a3",
+      "description": "long recordings",
+      "property": "songCount",
+      "input": {
+        "calls": "aaabaaababbbbabbabaababaabaaaabbbbbbababbbbaabaaaaabbbbaababbbbbbababaaabbbbbbabaaabbbbaaabababaabbabbaaaabbaaabaabbbbaaabbabbabbbabbbbbbbabbabbbbbaabaababbabbbbabaabbbabaabbbbbabbabaaaabbaaaabbbababbbbaabaabbaaaabaababbaabbabaabbaaabbaabaaaaaaabbbbbaababbbbbbababbbabababbbbaababaabbbabaabbababaabaaaaabbbaababaaaababbbbaabbbaaaaabbaababbbbbababababbaabbbbbbabbbaaabaababaabbabbbbbbbbbaabaabbbbbbaaaaababbabbbaababbbbabbaaaaababaabbaaababbbbbaabaabaababababbbbabaaaaaabaabaabbbabbabbbbaabaaaaabaababbbbbbbbababbaababbabababbabbaaaabaabbbaabbbbbabaababbbbaababaaaabbbbaaaabbabaabbbabaaaabaabaabaabbabaaabbabbabbaabbaabaaabbbabaaaabaabaababbabbabbbaabbaaabaababaaaaabaabbabaaaabababaaababbaaabbbbabababaabaabaaaaabbaaaabaaabbbbbbabababbbbaabbaabbabaaaabbaabbbaaabbabbababbabaabbaabaaabbababaaababbaabbaaabbbaaaaabaaabaaaaabaabbaabbabaaaaabaabbababaaabbaaaaaaaaaaabababbabababbbbbbbbbbbaabbbbbbbbbabaaabbbbabbaabaaaabbbbbbbabbbbabbabbbbbababbbaaabbabaabaabababbbbaaabbbbabababbbabbaaabaaaabaabaababbabb",
+        "song": "babababbabaaabaaabaaababaabaabbbaabbabababbbabbabbbbaaaaabba"
+      },
+      "expected": 493942620
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "77d2e3ff-d44c-485f-93f2-16f9aa728d19",
+          "description": "a song longer than the calls",
+          "property": "songCount",
+          "input": {
+            "calls": "ab",
+            "song": "abc"
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "08fca69f-f413-46ac-924a-8cd3abb05611",
+          "description": "one call that is the song",
+          "property": "songCount",
+          "input": {
+            "calls": "q",
+            "song": "q"
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "9167bef0-62d9-4f88-93e0-28c032be6a47",
+          "description": "one call that isn't",
+          "property": "songCount",
+          "input": {
+            "calls": "q",
+            "song": "p"
+          },
+          "expected": 0
+        }
+      ]
+    }
+  ]
+}
