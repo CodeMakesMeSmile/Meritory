@@ -162,7 +162,7 @@ export function OrderingCard({
               onClick={() => setPlaced((list) => list.slice(0, -1))}
               className={`${linkClass} h-control self-start px-5`}
             >
-              Undo
+              Undo last step
             </button>
           </div>
         )}

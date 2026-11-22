@@ -172,11 +172,19 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
   const cardStart = useRef(Date.now());
   // Set before the first await, so a second press in the same frame waits too
   const inFlight = useRef(false);
+  const failedBox = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setShortcuts(shortcutsOn());
     setBefore(readStoppedAt()?.done ?? 0);
   }, []);
+
+  // The box can open below the fold, so it scrolls in with Save again
+  useEffect(() => {
+    if (saving.state === "failed") {
+      failedBox.current?.scrollIntoView({ block: "nearest" });
+    }
+  }, [saving.state]);
 
   const item = items[index];
   const offset = before ?? 0;
@@ -336,6 +344,7 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
     <>
       {failed && (
         <div
+          ref={failedBox}
           role="alert"
           className="flex flex-col gap-3 border border-danger bg-card p-4"
         >
