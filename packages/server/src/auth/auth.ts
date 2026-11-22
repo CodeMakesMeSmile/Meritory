@@ -819,7 +819,7 @@ export function createAuth(config: AuthConfig) {
     },
   });
 
-  // Opening the reset link sets the password and confirms the email
+  // Drops the unconfirmed password and emails a link to choose one, which also confirms the email
   sendFinishLink = (user) => {
     config.db
       .delete(schema.accounts)

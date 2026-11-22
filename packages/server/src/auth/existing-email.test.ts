@@ -208,7 +208,7 @@ describe.skipIf(!url)("signing up with an email that has an account", () => {
 
     expect((await signIn(email, first)).status).toBe(401);
     expect((await signIn(email, chosen)).status).toBe(200);
-    // No password was changed, so nothing says one was
+    // A first password isn't a change, so no changed email goes out
     await new Promise((resolve) => setTimeout(resolve, 300));
     expect(mailTo(email).map((mail) => mail.subject)).not.toContain(
       "Your Meritory password was changed",
