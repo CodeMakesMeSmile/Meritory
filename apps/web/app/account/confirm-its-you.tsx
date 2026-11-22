@@ -16,6 +16,7 @@ import { ShowButton } from "@/components/show-button";
 import { TextField } from "@/components/text-field";
 import { confirmPassword } from "@/lib/account-api";
 import { daysAgo } from "@/lib/activity";
+import { clearPendingActions } from "@/lib/pending-action";
 
 interface ConfirmItsYouProps {
   open: boolean;
@@ -50,7 +51,14 @@ export function ConfirmItsYou({
     setPassword("");
     setError(undefined);
     setFormError(null);
+    clearPendingActions();
     onCancel();
+  }
+
+  // Only the action this dialog asked about waits for the provider
+  function leave() {
+    clearPendingActions();
+    onLeave?.();
   }
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -103,12 +111,13 @@ export function ConfirmItsYou({
             providers={[provider]}
             callbackURL="/account?confirmed=1"
             errorPage="/account"
-            onLeave={onLeave}
-            onFailed={() =>
+            onLeave={leave}
+            onFailed={() => {
+              clearPendingActions();
               setFormError(
                 "Something went wrong. Check your connection and try again.",
-              )
-            }
+              );
+            }}
           />
         </div>
       </Dialog>

@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  clearPendingActions,
   savePendingAction,
   savePendingDelete,
   savePendingEmail,
@@ -42,6 +43,16 @@ describe("pending sign-out", () => {
   ])("ignores a malformed waiting link %j", (saved) => {
     store.set("meritory.pending-method-action", JSON.stringify(saved));
     expect(takePendingMethod()).toBeNull();
+  });
+
+  it("forgets every waiting action once a confirm is cancelled or fails", () => {
+    savePendingAction({ kind: "others" });
+    savePendingMethod({ kind: "unlink", provider: "github" });
+    savePendingDelete();
+    savePendingEmail("rowan@meritory.test");
+    clearPendingActions();
+    expect(store.size).toBe(0);
+    expect(takePendingDelete()).toBe(false);
   });
 
   it("comes back once, then is gone", () => {
