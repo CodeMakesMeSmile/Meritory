@@ -141,6 +141,7 @@ export const CODE_RUN_ERRORS = {
   runnerOffline: "runner_offline",
   runnerBusy: "runner_busy",
   runnerFailed: "runner_failed",
+  codeTooLarge: "code_too_large",
 } as const;
 
 export type RunOutcome =
@@ -160,6 +161,8 @@ export function runProblem(outcome: Exclude<RunOutcome, { ok: true }>): string {
       return "The code runner isn't running. Start it in Ubuntu, then run it again.";
     case CODE_RUN_ERRORS.runnerBusy:
       return "The runner is checking another answer. Try again in a moment.";
+    case CODE_RUN_ERRORS.codeTooLarge:
+      return "Your code is over 64 KB. Shorten it, then run it again.";
     case "too_many":
       return "That's a lot of runs in one minute. Wait a moment, then try again.";
     default:

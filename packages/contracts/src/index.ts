@@ -17,6 +17,7 @@ export {
   type CodeLanguage,
   CodeRunBody,
   CodeRunResponse,
+  MAX_CODE_BYTES,
   MAX_CODE_LENGTH,
 } from "./code.ts";
 export {

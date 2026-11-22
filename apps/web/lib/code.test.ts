@@ -116,6 +116,10 @@ describe("runCode", () => {
     answer(429, { statusCode: 429, message: "Too many runs." });
     const limited = await runCode(body);
     expect(runProblem(limited as never)).toContain("a lot of runs");
+    answer(413, { code: "code_too_large" });
+    expect(runProblem((await runCode(body)) as never)).toBe(
+      "Your code is over 64 KB. Shorten it, then run it again.",
+    );
     vi.stubGlobal(
       "fetch",
       vi.fn(async () => {
