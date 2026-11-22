@@ -1,0 +1,19 @@
+id: fewest-days
+kind: coding
+title: Fewest days to the goal
+difficulty: medium
+skills:
+  - grow-shrink-window
+  - shortest-valid-window
+sibling: smallest-window
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: fewestDays
+  params:
+    - name: savings
+      type: int[]
+    - name: goal
+      type: int
+  returns: int

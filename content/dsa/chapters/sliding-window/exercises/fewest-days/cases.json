@@ -1,0 +1,110 @@
+{
+  "exercise": "fewest-days",
+  "cases": [
+    {
+      "uuid": "bf27bef3-faac-4496-a634-fcf34e1d09a1",
+      "description": "finds the shortest stretch that reaches the goal",
+      "property": "fewestDays",
+      "input": {
+        "savings": [2, 1, 5, 2, 3, 2],
+        "goal": 7
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "70f0b13a-dae6-4ce4-b44b-19a6ba183f3f",
+      "description": "one big day is enough",
+      "property": "fewestDays",
+      "input": {
+        "savings": [1, 9, 1],
+        "goal": 8
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "ef13aa12-b9df-47f6-9447-173fb0e699c5",
+      "description": "it takes every day",
+      "property": "fewestDays",
+      "input": {
+        "savings": [1, 2, 3],
+        "goal": 6
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "95056b9d-deb4-4756-abb9-190e264a7338",
+      "description": "trims several days from the left at once",
+      "property": "fewestDays",
+      "input": {
+        "savings": [5, 1, 1, 1, 8],
+        "goal": 9
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "e1b3f54d-458b-46de-9a68-d96a08a84e93",
+      "description": "going over the goal counts",
+      "property": "fewestDays",
+      "input": {
+        "savings": [3, 3, 3],
+        "goal": 5
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "19d0fdf0-b82d-4f42-a494-8a841d1f10fb",
+      "description": "the shortest stretch is at the end",
+      "property": "fewestDays",
+      "input": {
+        "savings": [1, 1, 1, 4],
+        "goal": 5
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "d9ab0b25-1777-42a5-add9-8c4cee61fd31",
+      "description": "the goal is never reached",
+      "property": "fewestDays",
+      "input": {
+        "savings": [1, 1, 1],
+        "goal": 5
+      },
+      "expected": 0
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "a375c7ed-1c6f-4ba1-8d2f-154f1b82d1f7",
+          "description": "no days",
+          "property": "fewestDays",
+          "input": {
+            "savings": [],
+            "goal": 1
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "d02ef0bd-9bef-49b4-8a5b-9560a089ab6e",
+          "description": "one day that reaches the goal",
+          "property": "fewestDays",
+          "input": {
+            "savings": [4],
+            "goal": 4
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "95c70791-d3ee-4935-8446-e58f7bc76f7b",
+          "description": "handles the largest savings",
+          "property": "fewestDays",
+          "input": {
+            "savings": [10000, 10000, 10000],
+            "goal": 30000
+          },
+          "expected": 3
+        }
+      ]
+    }
+  ]
+}

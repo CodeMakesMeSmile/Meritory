@@ -1,0 +1,19 @@
+id: hidden-rearrangements
+kind: coding
+title: Hidden rearrangements
+difficulty: medium
+skills:
+  - fixed-window
+  - window-counts
+sibling: no-repeat-dinners
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: hiddenRearrangements
+  params:
+    - name: text
+      type: string
+    - name: word
+      type: string
+  returns: int[]

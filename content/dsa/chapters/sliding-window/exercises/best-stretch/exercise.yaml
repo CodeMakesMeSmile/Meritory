@@ -1,0 +1,18 @@
+id: best-stretch
+kind: coding
+title: Best stretch of sales
+difficulty: easy
+skills:
+  - fixed-window
+sibling: warm-stretches
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: bestStretch
+  params:
+    - name: sales
+      type: int[]
+    - name: k
+      type: int
+  returns: int

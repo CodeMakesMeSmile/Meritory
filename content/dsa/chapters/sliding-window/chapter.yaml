@@ -1,0 +1,18 @@
+id: sliding-window
+title: Sliding window
+order: 4
+skills:
+  - id: fixed-window
+    name: Slide a window of a fixed size
+  - id: grow-shrink-window
+    name: Grow a window on the right and shrink it on the left
+  - id: window-counts
+    name: Keep counts of what's inside the window
+  - id: longest-valid-window
+    name: Find the longest window that stays valid
+  - id: shortest-valid-window
+    name: Find the shortest window that meets a goal
+  - id: at-most-twice
+    name: Count windows with exactly k by counting at most k twice
+  - id: monotonic-deque
+    name: Track the window's maximum with a monotonic deque

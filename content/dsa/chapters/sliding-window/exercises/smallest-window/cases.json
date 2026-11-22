@@ -1,0 +1,120 @@
+{
+  "exercise": "smallest-window",
+  "cases": [
+    {
+      "uuid": "8fcad515-1a63-46a2-9ffe-811b33ea1453",
+      "description": "finds the shortest stretch with every needed letter",
+      "property": "smallestWindow",
+      "input": {
+        "text": "pineappletart",
+        "needed": "tap"
+      },
+      "expected": "pleta"
+    },
+    {
+      "uuid": "a005da7d-50f1-41c9-828c-3065ec9f2901",
+      "description": "repeated needed letters must all be there",
+      "property": "smallestWindow",
+      "input": {
+        "text": "abaab",
+        "needed": "aab"
+      },
+      "expected": "aba"
+    },
+    {
+      "uuid": "74fabfae-1cac-4924-a10e-fd97119abcef",
+      "description": "ties go to the stretch that starts first",
+      "property": "smallestWindow",
+      "input": {
+        "text": "abxba",
+        "needed": "ab"
+      },
+      "expected": "ab"
+    },
+    {
+      "uuid": "6749f1ee-08bd-422d-bb77-3f3de0f81673",
+      "description": "the needed letters are at the end",
+      "property": "smallestWindow",
+      "input": {
+        "text": "thequickbrownfox",
+        "needed": "fox"
+      },
+      "expected": "fox"
+    },
+    {
+      "uuid": "5c92ede7-381a-48fd-ac86-df7f47435b80",
+      "description": "one needed letter",
+      "property": "smallestWindow",
+      "input": {
+        "text": "banana",
+        "needed": "n"
+      },
+      "expected": "n"
+    },
+    {
+      "uuid": "2f1fa090-1770-40d3-b085-c5ca9514cd42",
+      "description": "the whole text is needed",
+      "property": "smallestWindow",
+      "input": {
+        "text": "abc",
+        "needed": "cba"
+      },
+      "expected": "abc"
+    },
+    {
+      "uuid": "4696162d-0f39-4001-ac60-49ef6018f8b9",
+      "description": "not enough copies of a letter",
+      "property": "smallestWindow",
+      "input": {
+        "text": "ab",
+        "needed": "aab"
+      },
+      "expected": ""
+    },
+    {
+      "uuid": "7315efd9-f344-4cdd-af25-e4393a566ac8",
+      "description": "a needed letter is missing from the text",
+      "property": "smallestWindow",
+      "input": {
+        "text": "xyz",
+        "needed": "a"
+      },
+      "expected": ""
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "26c21286-df2f-49cc-b833-271fc050f460",
+          "description": "more needed letters than the text has",
+          "property": "smallestWindow",
+          "input": {
+            "text": "a",
+            "needed": "ab"
+          },
+          "expected": ""
+        },
+        {
+          "uuid": "dd414f0a-d849-474f-9e87-adeedf7748a6",
+          "description": "an empty text",
+          "property": "smallestWindow",
+          "input": {
+            "text": "",
+            "needed": "a"
+          },
+          "expected": ""
+        },
+        {
+          "uuid": "0a24e94d-b465-4768-9b49-56589e00ff51",
+          "description": "the text is one needed letter",
+          "property": "smallestWindow",
+          "input": {
+            "text": "q",
+            "needed": "q"
+          },
+          "expected": "q"
+        }
+      ]
+    }
+  ]
+}

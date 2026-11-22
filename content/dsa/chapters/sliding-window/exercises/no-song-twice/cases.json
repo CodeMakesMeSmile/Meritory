@@ -1,0 +1,100 @@
+{
+  "exercise": "no-song-twice",
+  "cases": [
+    {
+      "uuid": "1eac9813-7205-40a9-86ba-aef0ad49508b",
+      "description": "finds the longest stretch with no repeats",
+      "property": "noSongTwice",
+      "input": {
+        "songs": [4, 7, 4, 2, 9, 7, 2]
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "ce8ae269-2e39-42d0-9a56-24d11ba260bc",
+      "description": "the stretch restarts just past a repeat",
+      "property": "noSongTwice",
+      "input": {
+        "songs": [1, 2, 3, 1, 4]
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "d2dfe1ab-7194-4a64-926c-d6e8c0a8e9bc",
+      "description": "a repeat from before the stretch doesn't move it back",
+      "property": "noSongTwice",
+      "input": {
+        "songs": [2, 5, 5, 2, 1]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "b520071b-95b8-4544-b9c9-afa3b912f04b",
+      "description": "a song repeated right away",
+      "property": "noSongTwice",
+      "input": {
+        "songs": [1, 1, 2, 3]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "2ddf9e96-9204-40e1-833e-4c2e02c37d1d",
+      "description": "no song repeats",
+      "property": "noSongTwice",
+      "input": {
+        "songs": [1, 2, 3]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "444fb8e4-18f8-4d8a-b2ee-cedeb525a2ee",
+      "description": "the same song all day",
+      "property": "noSongTwice",
+      "input": {
+        "songs": [5, 5, 5]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "ed14e072-3477-420e-9edd-f5505344e16e",
+      "description": "two songs taking turns",
+      "property": "noSongTwice",
+      "input": {
+        "songs": [8, 9, 8, 9, 8]
+      },
+      "expected": 2
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "4eed307c-0995-4d88-9676-5cbe02b97b86",
+          "description": "an empty log",
+          "property": "noSongTwice",
+          "input": {
+            "songs": []
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "3195a5cc-f3af-465e-a13c-0fe94eb6680c",
+          "description": "one song",
+          "property": "noSongTwice",
+          "input": {
+            "songs": [3]
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "416887bd-48ce-4ba3-802d-e8a8f1f3ca72",
+          "description": "handles the largest song numbers",
+          "property": "noSongTwice",
+          "input": {
+            "songs": [100000, 1, 100000]
+          },
+          "expected": 2
+        }
+      ]
+    }
+  ]
+}

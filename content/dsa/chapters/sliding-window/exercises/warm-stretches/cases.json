@@ -1,0 +1,120 @@
+{
+  "exercise": "warm-stretches",
+  "cases": [
+    {
+      "uuid": "6dc8a7cf-69e9-43b4-8da7-389ee5608f3d",
+      "description": "counts the stretches warm enough on average",
+      "property": "warmStretches",
+      "input": {
+        "temperatures": [18, 22, 25, 19, 30, 14],
+        "k": 3,
+        "limit": 22
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "13e6e1c7-c6d4-4bc0-9987-f41d2376cbc6",
+      "description": "an average exactly at the limit counts",
+      "property": "warmStretches",
+      "input": {
+        "temperatures": [20, 20, 19],
+        "k": 2,
+        "limit": 20
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "6cdaa0fc-aaaf-4320-9db3-b316a7c74aef",
+      "description": "an average just under the limit doesn't count",
+      "property": "warmStretches",
+      "input": {
+        "temperatures": [21, 22, 22],
+        "k": 3,
+        "limit": 22
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "7c34ff0a-c2aa-4292-b5bd-6c5a257ac69c",
+      "description": "every stretch is warm enough",
+      "property": "warmStretches",
+      "input": {
+        "temperatures": [30, 30, 30],
+        "k": 2,
+        "limit": 20
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "b1e2fa3c-efd5-4625-85e8-bcd2b7ebcb7f",
+      "description": "below freezing",
+      "property": "warmStretches",
+      "input": {
+        "temperatures": [-5, -3, -10, -1],
+        "k": 2,
+        "limit": -6
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "c329298f-76ce-408d-98a5-1e7028da4257",
+      "description": "stretches of one day count single days",
+      "property": "warmStretches",
+      "input": {
+        "temperatures": [5, 1, 7],
+        "k": 1,
+        "limit": 5
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "32801b6e-05e0-4247-8209-499044ba0ac7",
+      "description": "one stretch covers every day",
+      "property": "warmStretches",
+      "input": {
+        "temperatures": [21, 23],
+        "k": 2,
+        "limit": 22
+      },
+      "expected": 1
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "e6fb834d-6ff2-447d-9879-fd1b43cd6e8c",
+          "description": "one day at the limit",
+          "property": "warmStretches",
+          "input": {
+            "temperatures": [15],
+            "k": 1,
+            "limit": 15
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "7965b180-766b-4437-a7c2-df32d2e6097f",
+          "description": "no stretch is warm enough",
+          "property": "warmStretches",
+          "input": {
+            "temperatures": [10, 10, 10],
+            "k": 2,
+            "limit": 11
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "edde42b8-fe53-4aa4-86cd-2f746d18a064",
+          "description": "the hottest and coldest days",
+          "property": "warmStretches",
+          "input": {
+            "temperatures": [50, -50, 50, -50],
+            "k": 2,
+            "limit": 0
+          },
+          "expected": 3
+        }
+      ]
+    }
+  ]
+}

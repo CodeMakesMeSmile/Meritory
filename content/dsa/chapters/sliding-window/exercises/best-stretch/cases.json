@@ -1,0 +1,110 @@
+{
+  "exercise": "best-stretch",
+  "cases": [
+    {
+      "uuid": "a2bb295a-49a7-4e09-a626-b5252a582cfe",
+      "description": "finds the best three days in a row",
+      "property": "bestStretch",
+      "input": {
+        "sales": [4, 2, 7, 1, 8, 3],
+        "k": 3
+      },
+      "expected": 16
+    },
+    {
+      "uuid": "5a693e27-056b-4c17-97e0-37e1a24e30d8",
+      "description": "the best stretch is at the start",
+      "property": "bestStretch",
+      "input": {
+        "sales": [9, 9, 1, 1, 1],
+        "k": 2
+      },
+      "expected": 18
+    },
+    {
+      "uuid": "07500361-6485-45c9-8d48-39b5be47c688",
+      "description": "the best stretch is at the end",
+      "property": "bestStretch",
+      "input": {
+        "sales": [1, 1, 1, 9, 9],
+        "k": 2
+      },
+      "expected": 18
+    },
+    {
+      "uuid": "714dbccb-d08d-44f5-bb40-624f82ee7948",
+      "description": "a window of one day is the best single day",
+      "property": "bestStretch",
+      "input": {
+        "sales": [4, 2, 7, 1, 8, 3],
+        "k": 1
+      },
+      "expected": 8
+    },
+    {
+      "uuid": "1b69319c-5b49-46fc-b02b-601faa752c6e",
+      "description": "a window of every day is the whole total",
+      "property": "bestStretch",
+      "input": {
+        "sales": [4, 2, 7],
+        "k": 3
+      },
+      "expected": 13
+    },
+    {
+      "uuid": "35747ba1-a426-40a5-83a1-1a57485a46ce",
+      "description": "the best stretch isn't the one with the best day",
+      "property": "bestStretch",
+      "input": {
+        "sales": [1, 10, 1, 6, 6, 1],
+        "k": 2
+      },
+      "expected": 12
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "97d52241-957b-4c5c-81b0-13aef9710fa3",
+          "description": "one day",
+          "property": "bestStretch",
+          "input": {
+            "sales": [5],
+            "k": 1
+          },
+          "expected": 5
+        },
+        {
+          "uuid": "f55149e7-416b-43c1-acd0-26d5053f6897",
+          "description": "days with no sales",
+          "property": "bestStretch",
+          "input": {
+            "sales": [0, 0, 0],
+            "k": 2
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "7bd05a58-d9d1-48b5-aba2-7c0b2e0e0ff8",
+          "description": "every stretch ties",
+          "property": "bestStretch",
+          "input": {
+            "sales": [2, 2, 2, 2],
+            "k": 2
+          },
+          "expected": 4
+        },
+        {
+          "uuid": "d613e457-57d9-4040-865d-ecbb72f50cfd",
+          "description": "handles the largest sales",
+          "property": "bestStretch",
+          "input": {
+            "sales": [10000, 10000, 10000, 10000],
+            "k": 4
+          },
+          "expected": 40000
+        }
+      ]
+    }
+  ]
+}

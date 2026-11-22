@@ -1,0 +1,110 @@
+{
+  "exercise": "window-highs",
+  "cases": [
+    {
+      "uuid": "ab18a9ac-04c2-4978-8e54-1e1f6f13f251",
+      "description": "finds the highest price in each stretch",
+      "property": "windowHighs",
+      "input": {
+        "prices": [4, 2, 12, 3, 8, 6],
+        "k": 3
+      },
+      "expected": [12, 12, 12, 8]
+    },
+    {
+      "uuid": "e4b95f22-cfae-48ca-93a0-8ab062b8308d",
+      "description": "the high leaves and a lower one takes over",
+      "property": "windowHighs",
+      "input": {
+        "prices": [10, 1, 1, 1, 2],
+        "k": 3
+      },
+      "expected": [10, 1, 2]
+    },
+    {
+      "uuid": "a058be03-e407-487a-acb5-b5f3bc2ad109",
+      "description": "falling prices",
+      "property": "windowHighs",
+      "input": {
+        "prices": [9, 7, 5, 3],
+        "k": 2
+      },
+      "expected": [9, 7, 5]
+    },
+    {
+      "uuid": "196c5876-158b-44d3-ac00-1bb1211eb042",
+      "description": "rising prices",
+      "property": "windowHighs",
+      "input": {
+        "prices": [1, 3, 5, 7],
+        "k": 2
+      },
+      "expected": [3, 5, 7]
+    },
+    {
+      "uuid": "92fd5e6d-4ef8-4e51-908a-e9ded256414b",
+      "description": "repeated prices",
+      "property": "windowHighs",
+      "input": {
+        "prices": [5, 5, 5],
+        "k": 2
+      },
+      "expected": [5, 5]
+    },
+    {
+      "uuid": "40a13727-06e3-4377-aace-05df44c70315",
+      "description": "negative prices",
+      "property": "windowHighs",
+      "input": {
+        "prices": [-4, -2, -8, -1],
+        "k": 2
+      },
+      "expected": [-2, -2, -1]
+    },
+    {
+      "uuid": "1b468735-4b41-49f3-a227-4e49ec6fc4b2",
+      "description": "a stretch of one day is that day",
+      "property": "windowHighs",
+      "input": {
+        "prices": [3, 1, 2],
+        "k": 1
+      },
+      "expected": [3, 1, 2]
+    },
+    {
+      "uuid": "07087305-8b5d-4ba0-bdfb-b2dcc6ee6e32",
+      "description": "one stretch covers every day",
+      "property": "windowHighs",
+      "input": {
+        "prices": [3, 1, 2],
+        "k": 3
+      },
+      "expected": [3]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "d32304f8-e341-425c-b207-17a3b44763ef",
+          "description": "one day",
+          "property": "windowHighs",
+          "input": {
+            "prices": [7],
+            "k": 1
+          },
+          "expected": [7]
+        },
+        {
+          "uuid": "65c42809-456f-4098-8e12-9be7798dd3df",
+          "description": "handles the highest and lowest prices",
+          "property": "windowHighs",
+          "input": {
+            "prices": [-1000000000, 1000000000, -1000000000],
+            "k": 2
+          },
+          "expected": [1000000000, 1000000000]
+        }
+      ]
+    }
+  ]
+}

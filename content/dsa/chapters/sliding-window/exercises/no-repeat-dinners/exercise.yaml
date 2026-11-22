@@ -1,0 +1,19 @@
+id: no-repeat-dinners
+kind: coding
+title: Weeks with no repeated dinner
+difficulty: medium
+skills:
+  - fixed-window
+  - window-counts
+sibling: hidden-rearrangements
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: noRepeatDinners
+  params:
+    - name: dinners
+      type: int[]
+    - name: k
+      type: int
+  returns: int

@@ -1,0 +1,20 @@
+id: few-kinds
+kind: coding
+title: At most k kinds of jar
+difficulty: medium
+skills:
+  - grow-shrink-window
+  - window-counts
+  - longest-valid-window
+sibling: no-song-twice
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: fewKinds
+  params:
+    - name: jars
+      type: int[]
+    - name: k
+      type: int
+  returns: int

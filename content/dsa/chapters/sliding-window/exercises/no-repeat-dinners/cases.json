@@ -1,0 +1,110 @@
+{
+  "exercise": "no-repeat-dinners",
+  "cases": [
+    {
+      "uuid": "61df5ec4-88e1-4984-8060-28f5e7a200be",
+      "description": "counts the stretches with no repeated dish",
+      "property": "noRepeatDinners",
+      "input": {
+        "dinners": [1, 2, 1, 3, 4, 3],
+        "k": 3
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "b97a0643-4d07-43de-aa3a-a97411f0a8a2",
+      "description": "a dish repeated just outside the stretch doesn't count",
+      "property": "noRepeatDinners",
+      "input": {
+        "dinners": [7, 1, 2, 7],
+        "k": 3
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "bc0898a3-14b1-45bf-bf43-8faf29661ded",
+      "description": "a repeat at both ends of the stretch counts",
+      "property": "noRepeatDinners",
+      "input": {
+        "dinners": [7, 1, 2, 7],
+        "k": 4
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "5bb3d770-7b79-4636-9857-216297297442",
+      "description": "every dish is different",
+      "property": "noRepeatDinners",
+      "input": {
+        "dinners": [1, 2, 3, 4],
+        "k": 4
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "d329714c-4414-4038-ae7d-74aabe7ebd29",
+      "description": "the same dish every night",
+      "property": "noRepeatDinners",
+      "input": {
+        "dinners": [5, 5, 5],
+        "k": 2
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "3e52577d-35ca-4604-a9d8-25377c82ed7c",
+      "description": "a repeat that leaves the stretch stops counting",
+      "property": "noRepeatDinners",
+      "input": {
+        "dinners": [4, 4, 1, 2, 3, 3],
+        "k": 3
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "8be4f27d-a99c-40fd-bca4-769fdfbc66df",
+      "description": "stretches of one night never repeat",
+      "property": "noRepeatDinners",
+      "input": {
+        "dinners": [5, 5, 5],
+        "k": 1
+      },
+      "expected": 3
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "a2cc6a6a-2195-4273-abfd-83220f19a305",
+          "description": "k is more than the number of nights",
+          "property": "noRepeatDinners",
+          "input": {
+            "dinners": [1, 2],
+            "k": 3
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "bb079c38-0696-499f-973d-483a4f91d3f5",
+          "description": "no nights",
+          "property": "noRepeatDinners",
+          "input": {
+            "dinners": [],
+            "k": 1
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "ca8faaf4-c7b5-4812-8e90-bf48d9b4be23",
+          "description": "handles the largest dish numbers",
+          "property": "noRepeatDinners",
+          "input": {
+            "dinners": [100000, 1, 100000],
+            "k": 2
+          },
+          "expected": 2
+        }
+      ]
+    }
+  ]
+}

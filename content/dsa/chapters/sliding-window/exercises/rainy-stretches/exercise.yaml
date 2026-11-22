@@ -1,0 +1,19 @@
+id: rainy-stretches
+kind: coding
+title: Stretches with k rainy days
+difficulty: medium
+skills:
+  - at-most-twice
+  - window-counts
+sibling: exact-kinds
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: rainyStretches
+  params:
+    - name: rainy
+      type: boolean[]
+    - name: k
+      type: int
+  returns: long
