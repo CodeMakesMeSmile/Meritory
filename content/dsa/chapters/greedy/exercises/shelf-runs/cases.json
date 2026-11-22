@@ -1,0 +1,94 @@
+{
+  "exercise": "shelf-runs",
+  "cases": [
+    {
+      "uuid": "1459df73-2f40-49b7-8a83-0a4e78adaf09",
+      "description": "cuts where every book so far belongs before the cut",
+      "property": "mostRuns",
+      "input": {
+        "books": [1, 0, 2, 4, 3]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "133f7356-665d-498f-8dbe-567c4e4ee549",
+      "description": "already sorted",
+      "property": "mostRuns",
+      "input": {
+        "books": [0, 1, 2, 3]
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "d3ffd3bd-fea5-41fc-9eda-7e508b3c924d",
+      "description": "in reverse",
+      "property": "mostRuns",
+      "input": {
+        "books": [3, 2, 1, 0]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "32844ca3-cb4b-4d5c-82b4-d15043de6dc5",
+      "description": "the last book first",
+      "property": "mostRuns",
+      "input": {
+        "books": [4, 0, 1, 2, 3]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "e81ad749-1905-4ba0-9106-0c30f526f588",
+      "description": "the first book last",
+      "property": "mostRuns",
+      "input": {
+        "books": [1, 2, 3, 0]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "0adb90ff-800e-4279-b028-395a96ae4bc1",
+      "description": "pairs swapped",
+      "property": "mostRuns",
+      "input": {
+        "books": [1, 0, 3, 2, 5, 4]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "61a584f8-c935-4724-83d5-4961d2a62be3",
+      "description": "thirty books",
+      "property": "mostRuns",
+      "input": {
+        "books": [
+          0, 3, 8, 9, 1, 6, 4, 5, 2, 7, 10, 11, 12, 13, 16, 17, 15, 21, 20, 19,
+          18, 14, 22, 23, 24, 25, 26, 27, 28, 29
+        ]
+      },
+      "expected": 15
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "259c3184-1296-4e56-a1a3-cb37bf8a71d0",
+          "description": "one book",
+          "property": "mostRuns",
+          "input": {
+            "books": [0]
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "01a62b3e-cafa-40c7-9921-78cb754cad00",
+          "description": "two books swapped",
+          "property": "mostRuns",
+          "input": {
+            "books": [1, 0]
+          },
+          "expected": 1
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+id: intervals
+title: Intervals
+order: 12
+skills:
+  - id: start-or-end
+    name: Choose to sort intervals by start or by end, and say why the choice matters
+  - id: merge-overlaps
+    name: Merge overlapping intervals in one pass after sorting by start
+  - id: insert-interval
+    name: Add an interval to a sorted list, or take one out, in one pass
+  - id: fewest-removals
+    name: Remove the fewest intervals so none overlap, by keeping the earliest end
+  - id: sweep-events
+    name: Count the most intervals open at once with a sweep of start and end events, ordering ties on purpose
+  - id: intersect-lists
+    name: Intersect two sorted lists of intervals with two pointers
+  - id: free-time
+    name: Find the free time across several calendars from their merged busy times

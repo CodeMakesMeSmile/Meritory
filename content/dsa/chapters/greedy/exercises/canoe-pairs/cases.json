@@ -1,0 +1,100 @@
+{
+  "exercise": "canoe-pairs",
+  "cases": [
+    {
+      "uuid": "43b3f6d2-b775-4e32-af9b-5757efec88d8",
+      "description": "pairs the heaviest with the lightest",
+      "property": "fewestCanoes",
+      "input": {
+        "weights": [70, 50, 80, 40, 60],
+        "limit": 120
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "5c3af21f-224e-4b58-80f7-c8f6bf9dbafb",
+      "description": "everyone pairs up",
+      "property": "fewestCanoes",
+      "input": {
+        "weights": [50, 50, 50, 50],
+        "limit": 100
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "4ab14bf4-0686-406a-bacf-60fada4a83a6",
+      "description": "nobody can share",
+      "property": "fewestCanoes",
+      "input": {
+        "weights": [80, 90, 70],
+        "limit": 100
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "c7b3376a-944e-4ccb-84d3-671e0657cda5",
+      "description": "the heaviest goes alone",
+      "property": "fewestCanoes",
+      "input": {
+        "weights": [100, 20, 30],
+        "limit": 100
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "7fb6bf83-a9a0-4370-965f-337fc1692f66",
+      "description": "one camper left over",
+      "property": "fewestCanoes",
+      "input": {
+        "weights": [30, 40, 50],
+        "limit": 80
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "e3976792-1aa2-4699-a7ac-c25914d7f01f",
+      "description": "pairs that fit exactly",
+      "property": "fewestCanoes",
+      "input": {
+        "weights": [60, 61, 39, 40],
+        "limit": 100
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "11210079-6470-4daa-82a8-7f78f676c5c8",
+      "description": "twelve campers",
+      "property": "fewestCanoes",
+      "input": {
+        "weights": [81, 43, 71, 37, 88, 61, 56, 44, 42, 79, 87, 45],
+        "limit": 100
+      },
+      "expected": 9
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "b85ca6ae-e7a6-4c9e-9fe8-5c433de67aba",
+          "description": "one camper",
+          "property": "fewestCanoes",
+          "input": {
+            "weights": [70],
+            "limit": 100
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "a203f36f-e874-452a-9ab4-f1085948f099",
+          "description": "everyone weighs the limit",
+          "property": "fewestCanoes",
+          "input": {
+            "weights": [100, 100],
+            "limit": 100
+          },
+          "expected": 2
+        }
+      ]
+    }
+  ]
+}

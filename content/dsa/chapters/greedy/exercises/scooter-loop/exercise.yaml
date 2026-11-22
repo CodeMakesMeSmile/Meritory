@@ -1,0 +1,19 @@
+id: scooter-loop
+kind: coding
+title: Where to start the scooter tour
+difficulty: medium
+skills:
+  - fuel-circuit
+  - safe-greedy-choice
+sibling: every-start
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: firstStart
+  params:
+    - name: charge
+      type: int[]
+    - name: drain
+      type: int[]
+  returns: int

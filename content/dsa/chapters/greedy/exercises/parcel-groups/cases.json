@@ -1,0 +1,85 @@
+{
+  "exercise": "parcel-groups",
+  "cases": [
+    {
+      "uuid": "a332d2d5-a859-4c27-a4e5-276d037444da",
+      "description": "cuts after the last parcel of every van in the group",
+      "property": "groupSizes",
+      "input": {
+        "labels": "abacdcdeffe"
+      },
+      "expected": [3, 4, 4]
+    },
+    {
+      "uuid": "39607c63-2776-4e61-abaa-8e35d85d0403",
+      "description": "every parcel in its own group",
+      "property": "groupSizes",
+      "input": {
+        "labels": "abcd"
+      },
+      "expected": [1, 1, 1, 1]
+    },
+    {
+      "uuid": "4623709e-0678-4c15-9e25-d72a8b56718e",
+      "description": "one van",
+      "property": "groupSizes",
+      "input": {
+        "labels": "aaaa"
+      },
+      "expected": [4]
+    },
+    {
+      "uuid": "f5c2a418-e897-4b03-ab3c-814dd415a306",
+      "description": "a van at both ends",
+      "property": "groupSizes",
+      "input": {
+        "labels": "abcda"
+      },
+      "expected": [5]
+    },
+    {
+      "uuid": "8d5edb72-8d23-446f-8ec3-490c3ca92131",
+      "description": "groups that close up inside",
+      "property": "groupSizes",
+      "input": {
+        "labels": "abbacddc"
+      },
+      "expected": [4, 4]
+    },
+    {
+      "uuid": "56b3aa67-44ca-4c03-9efe-186e939fc368",
+      "description": "a long line",
+      "property": "groupSizes",
+      "input": {
+        "labels": "bcchbfbabdeaikijkiiiijqrmuuyuovslqpotlnmzp"
+      },
+      "expected": [12, 10, 20]
+    },
+    {
+      "uuid": "d6e53827-afa1-4faf-a49f-da02e49bded6",
+      "description": "every letter of the alphabet",
+      "property": "groupSizes",
+      "input": {
+        "labels": "thequickbrownfxjmpsvlazydg"
+      },
+      "expected": [
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1
+      ]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "d3f384f5-4cfc-4d6c-a532-0d285a550f50",
+          "description": "one parcel",
+          "property": "groupSizes",
+          "input": {
+            "labels": "z"
+          },
+          "expected": [1]
+        }
+      ]
+    }
+  ]
+}

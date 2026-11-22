@@ -1,0 +1,122 @@
+{
+  "exercise": "gauge-trips",
+  "cases": [
+    {
+      "uuid": "e57b5254-a71c-4da8-9195-31e8f0e17553",
+      "description": "two trips read four gauges",
+      "property": "fewestTrips",
+      "input": {
+        "windows": [[1, 6], [2, 8], [7, 12], [10, 16]]
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "cc7d3bf8-87ae-48d9-b280-0c5b81935d34",
+      "description": "windows that touch share a trip",
+      "property": "fewestTrips",
+      "input": {
+        "windows": [[10, 20], [20, 30]]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "fa4bc11f-2de4-4ed7-a2c8-54375fb8a29b",
+      "description": "windows far apart",
+      "property": "fewestTrips",
+      "input": {
+        "windows": [[0, 5], [10, 15], [20, 25]]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "d7eb000a-39d7-49a8-b9b2-6e296e616137",
+      "description": "one window inside another",
+      "property": "fewestTrips",
+      "input": {
+        "windows": [[0, 100], [40, 45]]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "8a1a053e-f097-4893-9cc9-fe9d25a69464",
+      "description": "a window of a single minute",
+      "property": "fewestTrips",
+      "input": {
+        "windows": [[5, 5], [0, 10], [6, 9]]
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "f9725d44-1a11-4a33-b7f9-2a17e90b4f2a",
+      "description": "every window shares one minute",
+      "property": "fewestTrips",
+      "input": {
+        "windows": [[1, 9], [3, 7], [5, 5], [4, 12]]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "a47242bf-f30d-4e75-9325-eed7f7e9662e",
+      "description": "windows in no particular order",
+      "property": "fewestTrips",
+      "input": {
+        "windows": [[20, 30], [0, 8], [25, 40], [5, 21]]
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "b8d90b63-9c9c-49a7-92a9-6d1b8f93cb83",
+      "description": "a long canal of gauges",
+      "property": "fewestTrips",
+      "input": {
+        "windows": [
+          [42, 51],
+          [27, 31],
+          [4, 7],
+          [18, 19],
+          [7, 13],
+          [15, 18],
+          [49, 58],
+          [29, 32],
+          [44, 49],
+          [41, 50],
+          [48, 50],
+          [41, 50]
+        ]
+      },
+      "expected": 4
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "96c0da93-bee7-427c-82cf-89c4f410bf65",
+          "description": "no gauges",
+          "property": "fewestTrips",
+          "input": {
+            "windows": []
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "e99bb69a-3b24-4754-908b-06cfbf07cd31",
+          "description": "one gauge",
+          "property": "fewestTrips",
+          "input": {
+            "windows": [[3, 8]]
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "ddb87a6a-16d5-4ada-a740-ad3dc375fa78",
+          "description": "the same window twice",
+          "property": "fewestTrips",
+          "input": {
+            "windows": [[3, 8], [3, 8]]
+          },
+          "expected": 1
+        }
+      ]
+    }
+  ]
+}

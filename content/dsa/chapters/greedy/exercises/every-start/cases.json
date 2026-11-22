@@ -1,0 +1,115 @@
+{
+  "exercise": "every-start",
+  "cases": [
+    {
+      "uuid": "b69b13bd-82fe-4180-90c4-44976a9fc79f",
+      "description": "two depots work",
+      "property": "everyStart",
+      "input": {
+        "depots": [[3, 1], [0, 2], [2, 1], [1, 2]]
+      },
+      "expected": [0, 2]
+    },
+    {
+      "uuid": "aab97e27-6691-4420-b955-f416510fce8a",
+      "description": "no depot works",
+      "property": "everyStart",
+      "input": {
+        "depots": [[1, 2], [1, 1]]
+      },
+      "expected": []
+    },
+    {
+      "uuid": "94c78ce8-2c11-460e-9931-60248f45585e",
+      "description": "every depot works",
+      "property": "everyStart",
+      "input": {
+        "depots": [[2, 1], [2, 1], [2, 1]]
+      },
+      "expected": [0, 1, 2]
+    },
+    {
+      "uuid": "84a60846-0c87-4738-bdc9-96b4b92f4d77",
+      "description": "only one depot works",
+      "property": "everyStart",
+      "input": {
+        "depots": [[0, 1], [0, 1], [5, 2]]
+      },
+      "expected": [2]
+    },
+    {
+      "uuid": "92c70e74-387e-4366-860c-7bd0afca99f7",
+      "description": "the salt runs to exactly zero",
+      "property": "everyStart",
+      "input": {
+        "depots": [[2, 2], [3, 3]]
+      },
+      "expected": [0, 1]
+    },
+    {
+      "uuid": "970c6545-548a-4868-b405-d9e1e40985a1",
+      "description": "twelve depots with salt to spare",
+      "property": "everyStart",
+      "input": {
+        "depots": [
+          [9, 3],
+          [6, 7],
+          [5, 7],
+          [5, 1],
+          [0, 7],
+          [7, 0],
+          [1, 5],
+          [7, 5],
+          [9, 2],
+          [2, 5],
+          [6, 4],
+          [6, 9]
+        ]
+      },
+      "expected": [0, 5, 7, 8]
+    },
+    {
+      "uuid": "c7ee2ef1-db88-43b9-a3b7-056ae0ad2e78",
+      "description": "ten depots with just enough salt",
+      "property": "everyStart",
+      "input": {
+        "depots": [
+          [6, 10],
+          [6, 2],
+          [1, 1],
+          [1, 3],
+          [1, 0],
+          [2, 4],
+          [5, 6],
+          [5, 5],
+          [1, 0],
+          [4, 1]
+        ]
+      },
+      "expected": [1, 7, 8]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "2a193bf6-7edd-4476-b993-0b747ab654ef",
+          "description": "one depot with nothing to do",
+          "property": "everyStart",
+          "input": {
+            "depots": [[0, 0]]
+          },
+          "expected": [0]
+        },
+        {
+          "uuid": "001ca3bb-122e-42c9-8b84-9b238b8ec35f",
+          "description": "one depot without enough",
+          "property": "everyStart",
+          "input": {
+            "depots": [[1, 2]]
+          },
+          "expected": []
+        }
+      ]
+    }
+  ]
+}

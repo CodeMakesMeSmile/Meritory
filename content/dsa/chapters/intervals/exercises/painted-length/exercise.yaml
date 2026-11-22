@@ -1,0 +1,17 @@
+id: painted-length
+kind: coding
+title: How much of the fence is painted
+difficulty: easy
+skills:
+  - merge-overlaps
+  - start-or-end
+sibling: merge-bookings
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: paintedLength
+  params:
+    - name: stretches
+      type: int[][]
+  returns: int

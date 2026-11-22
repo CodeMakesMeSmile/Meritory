@@ -1,0 +1,120 @@
+{
+  "exercise": "add-booking",
+  "cases": [
+    {
+      "uuid": "cb02c267-dcb5-4319-ad27-5b21e2fcdb68",
+      "description": "joins a busy time it overlaps and one it touches",
+      "property": "addBooking",
+      "input": {
+        "diary": [[540, 570], [600, 660], [720, 750], [800, 830]],
+        "booking": [650, 720]
+      },
+      "expected": [[540, 570], [600, 750], [800, 830]]
+    },
+    {
+      "uuid": "bfcde03c-c341-4b90-9341-74631e607cd8",
+      "description": "fits in a gap without touching",
+      "property": "addBooking",
+      "input": {
+        "diary": [[540, 570], [720, 750]],
+        "booking": [600, 660]
+      },
+      "expected": [[540, 570], [600, 660], [720, 750]]
+    },
+    {
+      "uuid": "e83cd875-63e4-4b48-bec8-44999548febc",
+      "description": "goes before every busy time",
+      "property": "addBooking",
+      "input": {
+        "diary": [[600, 660], [720, 780]],
+        "booking": [480, 540]
+      },
+      "expected": [[480, 540], [600, 660], [720, 780]]
+    },
+    {
+      "uuid": "ec0516f0-eacd-411f-a5d1-399882bdf2c5",
+      "description": "goes after every busy time",
+      "property": "addBooking",
+      "input": {
+        "diary": [[480, 540], [600, 660]],
+        "booking": [1200, 1260]
+      },
+      "expected": [[480, 540], [600, 660], [1200, 1260]]
+    },
+    {
+      "uuid": "40e4f38b-e1db-4d6c-a7af-e0617ca98998",
+      "description": "covers the whole diary",
+      "property": "addBooking",
+      "input": {
+        "diary": [[500, 520], [540, 560], [600, 620]],
+        "booking": [450, 700]
+      },
+      "expected": [[450, 700]]
+    },
+    {
+      "uuid": "e1f9f285-40f7-4127-ba6a-964296cffec9",
+      "description": "sits inside a busy time",
+      "property": "addBooking",
+      "input": {
+        "diary": [[480, 600]],
+        "booking": [500, 550]
+      },
+      "expected": [[480, 600]]
+    },
+    {
+      "uuid": "9de791a7-ec73-40de-baa9-56df5b7049df",
+      "description": "fills a gap exactly and joins both sides",
+      "property": "addBooking",
+      "input": {
+        "diary": [[480, 540], [600, 660]],
+        "booking": [540, 600]
+      },
+      "expected": [[480, 660]]
+    },
+    {
+      "uuid": "bedac536-b88b-473b-8a6e-c7299e52afb4",
+      "description": "touches the busy time before it",
+      "property": "addBooking",
+      "input": {
+        "diary": [[480, 540], [700, 760]],
+        "booking": [540, 560]
+      },
+      "expected": [[480, 560], [700, 760]]
+    },
+    {
+      "uuid": "24710a77-6a81-4fb2-9ad8-1edddc4b7696",
+      "description": "touches the busy time after it",
+      "property": "addBooking",
+      "input": {
+        "diary": [[480, 540], [700, 760]],
+        "booking": [650, 700]
+      },
+      "expected": [[480, 540], [650, 760]]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "dd307cba-da8a-4e6a-9e20-f1d8721b48a8",
+          "description": "an empty diary",
+          "property": "addBooking",
+          "input": {
+            "diary": [],
+            "booking": [60, 90]
+          },
+          "expected": [[60, 90]]
+        },
+        {
+          "uuid": "9c895e02-41ee-4075-a39d-4d79261cbf91",
+          "description": "a booking for the whole day",
+          "property": "addBooking",
+          "input": {
+            "diary": [[0, 60], [1380, 1440]],
+            "booking": [0, 1440]
+          },
+          "expected": [[0, 1440]]
+        }
+      ]
+    }
+  ]
+}

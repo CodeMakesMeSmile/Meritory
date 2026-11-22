@@ -1,0 +1,18 @@
+id: shared-airtime
+kind: coding
+title: Minutes both stations were on air
+difficulty: easy
+skills:
+  - intersect-lists
+sibling: both-free
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: sharedAirtime
+  params:
+    - name: first
+      type: int[][]
+    - name: second
+      type: int[][]
+  returns: int

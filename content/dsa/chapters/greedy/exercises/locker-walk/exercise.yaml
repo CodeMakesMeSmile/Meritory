@@ -1,0 +1,19 @@
+id: locker-walk
+kind: coding
+title: Lockers for the runners
+difficulty: medium
+skills:
+  - match-sorted-lists
+  - exchange-argument
+sibling: potting-bench
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: leastWalking
+  params:
+    - name: runners
+      type: int[]
+    - name: lockers
+      type: int[]
+  returns: long

@@ -1,0 +1,127 @@
+{
+  "exercise": "longest-quiet",
+  "cases": [
+    {
+      "uuid": "f9fec241-b5f6-4c79-b643-0c3d6b7a02a4",
+      "description": "finds the longest gap between sessions",
+      "property": "longestQuiet",
+      "input": {
+        "rooms": [[60, 120, 180, 200], [100, 150], [300, 360]],
+        "opensAt": 0,
+        "closesAt": 400
+      },
+      "expected": 100
+    },
+    {
+      "uuid": "d73690ec-d359-407f-8026-6021dbf8dec2",
+      "description": "sessions that touch leave no gap",
+      "property": "longestQuiet",
+      "input": {
+        "rooms": [[0, 100], [100, 200]],
+        "opensAt": 0,
+        "closesAt": 200
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "10fa6b3b-68a8-4255-8968-afbe32c44fd2",
+      "description": "quiet at the start of the day",
+      "property": "longestQuiet",
+      "input": {
+        "rooms": [[300, 400]],
+        "opensAt": 0,
+        "closesAt": 400
+      },
+      "expected": 300
+    },
+    {
+      "uuid": "a6841710-bf83-4025-b8a9-62f5f8dd75ea",
+      "description": "quiet at the end of the day",
+      "property": "longestQuiet",
+      "input": {
+        "rooms": [[0, 100]],
+        "opensAt": 0,
+        "closesAt": 400
+      },
+      "expected": 300
+    },
+    {
+      "uuid": "b55080f2-987c-4c06-bc2f-0804feefe154",
+      "description": "sessions outside opening hours",
+      "property": "longestQuiet",
+      "input": {
+        "rooms": [[0, 500, 1000, 1440]],
+        "opensAt": 600,
+        "closesAt": 900
+      },
+      "expected": 300
+    },
+    {
+      "uuid": "0afeb42c-e94c-4f3b-b43e-07b80a8ece45",
+      "description": "a room with no sessions",
+      "property": "longestQuiet",
+      "input": {
+        "rooms": [[], [200, 210]],
+        "opensAt": 0,
+        "closesAt": 1000
+      },
+      "expected": 790
+    },
+    {
+      "uuid": "dbb46210-480b-4d7c-b178-bc2c9df29407",
+      "description": "rooms busy all day between them",
+      "property": "longestQuiet",
+      "input": {
+        "rooms": [[0, 720], [700, 1440]],
+        "opensAt": 0,
+        "closesAt": 1440
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "f41c3d0b-31d9-428b-9140-de702d2ca1fe",
+      "description": "six rooms",
+      "property": "longestQuiet",
+      "input": {
+        "rooms": [
+          [526, 570, 570, 900, 900, 1032, 1056, 1111],
+          [170, 287, 287, 568, 568, 1273, 1340, 1403],
+          [137, 173, 272, 467, 467, 1093, 1155, 1435],
+          [135, 331, 332, 408, 715, 719, 719, 1415],
+          [450, 520, 520, 1107, 1120, 1411],
+          [216, 950]
+        ],
+        "opensAt": 0,
+        "closesAt": 1440
+      },
+      "expected": 135
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "4ead9e3f-d6d0-4554-83f9-b1df7ba3966c",
+          "description": "no rooms",
+          "property": "longestQuiet",
+          "input": {
+            "rooms": [],
+            "opensAt": 480,
+            "closesAt": 1320
+          },
+          "expected": 840
+        },
+        {
+          "uuid": "f6d943e6-3bd6-4c41-bd41-3fe4889470ac",
+          "description": "open for one minute",
+          "property": "longestQuiet",
+          "input": {
+            "rooms": [[5, 10]],
+            "opensAt": 10,
+            "closesAt": 11
+          },
+          "expected": 1
+        }
+      ]
+    }
+  ]
+}

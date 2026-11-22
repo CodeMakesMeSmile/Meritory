@@ -1,0 +1,21 @@
+id: team-free
+kind: coding
+title: When the whole team is free
+difficulty: hard
+skills:
+  - free-time
+  - merge-overlaps
+sibling: longest-quiet
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: teamFree
+  params:
+    - name: calendars
+      type: int[][]
+    - name: dayStart
+      type: int
+    - name: dayEnd
+      type: int
+  returns: int[][]

@@ -1,0 +1,104 @@
+{
+  "exercise": "loop-trail",
+  "cases": [
+    {
+      "uuid": "6e7c61c7-2def-4546-9c69-2c495847f91e",
+      "description": "the best stretch wraps past the last point",
+      "property": "bestLoopStretch",
+      "input": {
+        "views": [5, -3, -4, 6, 2]
+      },
+      "expected": 13
+    },
+    {
+      "uuid": "52956807-f1d3-4975-bf2a-0c43c6b59fb7",
+      "description": "no need to wrap",
+      "property": "bestLoopStretch",
+      "input": {
+        "views": [-2, 7, 3, -5]
+      },
+      "expected": 10
+    },
+    {
+      "uuid": "cd571502-daca-4e6f-8b82-ad624d886f8d",
+      "description": "every view is blocked",
+      "property": "bestLoopStretch",
+      "input": {
+        "views": [-3, -1, -2]
+      },
+      "expected": -1
+    },
+    {
+      "uuid": "5cdec7d5-535d-4914-95e1-7f0289671856",
+      "description": "every view is clear",
+      "property": "bestLoopStretch",
+      "input": {
+        "views": [1, 2, 3]
+      },
+      "expected": 6
+    },
+    {
+      "uuid": "975a6470-8d3f-4847-a389-074566f8b159",
+      "description": "wraps around a big drop",
+      "property": "bestLoopStretch",
+      "input": {
+        "views": [4, -10, 3, 2]
+      },
+      "expected": 9
+    },
+    {
+      "uuid": "5211f982-73c4-42a3-8436-b922122708e9",
+      "description": "skips the one blocked view",
+      "property": "bestLoopStretch",
+      "input": {
+        "views": [3, -1, 3]
+      },
+      "expected": 6
+    },
+    {
+      "uuid": "a0cecc5c-d742-4c3e-b4fe-3ded5af283cb",
+      "description": "forty points",
+      "property": "bestLoopStretch",
+      "input": {
+        "views": [
+          49, -13, 26, -32, -18, -43, -40, -48, -45, -6, -3, -10, -37, -43, 20,
+          13, -13, -18, 48, -30, 6, 10, -34, 31, -48, -39, -11, 31, -27, 19, 20,
+          26, 12, 37, -8, -5, 44, -13, -17, 11
+        ]
+      },
+      "expected": 192
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "c32699b8-b034-482a-a62a-1ee0bdb4dd00",
+          "description": "one clear point",
+          "property": "bestLoopStretch",
+          "input": {
+            "views": [8]
+          },
+          "expected": 8
+        },
+        {
+          "uuid": "bdc3c922-7c6f-447d-8004-a2ed75874afe",
+          "description": "one blocked point",
+          "property": "bestLoopStretch",
+          "input": {
+            "views": [-8]
+          },
+          "expected": -8
+        },
+        {
+          "uuid": "5aa60502-c767-46de-a6f4-eaafbbb12e46",
+          "description": "a zero beside a blocked view",
+          "property": "bestLoopStretch",
+          "input": {
+            "views": [0, -5]
+          },
+          "expected": 0
+        }
+      ]
+    }
+  ]
+}

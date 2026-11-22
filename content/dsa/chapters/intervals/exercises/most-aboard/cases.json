@@ -1,0 +1,121 @@
+{
+  "exercise": "most-aboard",
+  "cases": [
+    {
+      "uuid": "a65f922e-cccc-4bc3-926c-58a1e3bdcfa9",
+      "description": "riders get off before others get on",
+      "property": "mostAboard",
+      "input": {
+        "riders": [[0, 4], [1, 3], [3, 6], [4, 7], [2, 5]]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "66901785-c491-4507-9180-383c3c5554a1",
+      "description": "a rider leaving makes room for one boarding",
+      "property": "mostAboard",
+      "input": {
+        "riders": [[0, 5], [5, 9]]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "5b4acfb6-eddb-451b-9cce-a58c14f8a220",
+      "description": "everyone rides the whole way",
+      "property": "mostAboard",
+      "input": {
+        "riders": [[0, 10], [0, 10], [0, 10]]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "4a9cd6eb-6b83-488b-89bc-1736db2f9c3b",
+      "description": "riders who never meet",
+      "property": "mostAboard",
+      "input": {
+        "riders": [[0, 1], [2, 3], [4, 5]]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "24b14874-f5a4-480e-9c6a-859bdc4bad6c",
+      "description": "short rides inside a long one",
+      "property": "mostAboard",
+      "input": {
+        "riders": [[0, 20], [2, 4], [3, 6], [10, 12]]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "61b76b25-8feb-4b79-b27e-2aeefdc1242d",
+      "description": "many board at the same stop",
+      "property": "mostAboard",
+      "input": {
+        "riders": [[3, 8], [3, 5], [3, 9], [8, 10]]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "c9e907d0-f583-4f8f-bb51-8892d1f725fa",
+      "description": "twenty riders in no particular order",
+      "property": "mostAboard",
+      "input": {
+        "riders": [
+          [26, 40],
+          [3, 7],
+          [30, 40],
+          [20, 35],
+          [4, 18],
+          [39, 40],
+          [27, 39],
+          [17, 18],
+          [30, 34],
+          [21, 25],
+          [29, 30],
+          [13, 22],
+          [34, 40],
+          [15, 29],
+          [25, 35],
+          [37, 40],
+          [2, 9],
+          [36, 40],
+          [36, 39],
+          [38, 40]
+        ]
+      },
+      "expected": 8
+    },
+    {
+      "uuid": "6a9d72a4-64a0-4a5e-8b9f-dbcc1d6f6ae8",
+      "description": "a long route",
+      "property": "mostAboard",
+      "input": {
+        "riders": [[0, 1000000], [500000, 1000000], [999999, 1000000]]
+      },
+      "expected": 3
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "54309390-0828-4bec-aba7-967d8db9e108",
+          "description": "an empty bus",
+          "property": "mostAboard",
+          "input": {
+            "riders": []
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "58d39b0b-a82e-479e-82bb-c4bb0f249262",
+          "description": "one rider",
+          "property": "mostAboard",
+          "input": {
+            "riders": [[2, 7]]
+          },
+          "expected": 1
+        }
+      ]
+    }
+  ]
+}

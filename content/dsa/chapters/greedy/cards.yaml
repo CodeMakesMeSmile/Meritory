@@ -1,0 +1,336 @@
+- id: why-biggest-coin-fails
+  skill: safe-greedy-choice
+  asks: why
+  type: pick-one
+  prompt: With coins worth 1, 3, and 4, why does taking the biggest coin that fits give the wrong answer for 6?
+  reworded: Making 6 from coins worth 1, 3, and 4, the biggest coin first uses three coins. Why isn't that the fewest?
+  options:
+    - text: 3 and 3 makes 6 with two coins, and no best answer uses the 4
+      correct: true
+      reason: The greedy choice isn't part of any best answer, so it isn't safe.
+    - text: The coins have to be sorted from smallest to largest first
+      reason: Sorting doesn't change which coin the greedy rule picks.
+    - text: Greedy only fails when a coin worth 2 is missing
+      reason: The trouble is the values as a set, not one missing coin.
+  lesson:
+    title: Safe means some best answer agrees
+    explanation: A greedy choice is only safe when some best answer starts with it. Here none does, so the fewest coins needs dynamic programming.
+- id: when-greedy-works
+  skill: safe-greedy-choice
+  asks: when
+  type: matching
+  prompt: Match each problem to what solves it.
+  reworded: Which approach fits each of these problems?
+  matchHeading: Approach
+  matchName: an approach
+  pairs:
+    - item: Fewest coins for an amount, with coins worth 1, 3, and 4
+      match: Dynamic programming over the amounts
+    - item: Most talks on one stage with no clashes
+      match: Greedy, earliest end first
+    - item: Most value in a bag when items can be cut
+      match: Greedy, best value per kilogram first
+    - item: Most value in a bag when items are taken whole
+      match: Dynamic programming over items and weight
+  extraMatches:
+    - Greedy, heaviest item first
+  lesson:
+    title: Look for a case that breaks it
+    explanation: When a small case breaks the greedy choice and no exchange argument holds, reach for dynamic programming.
+- id: greedy-check-steps
+  skill: safe-greedy-choice
+  asks: what
+  type: ordering
+  prompt: Put the steps for checking a greedy idea in order.
+  reworded: In what order do you test whether a greedy choice can be trusted?
+  steps:
+    - Say the greedy choice in one sentence.
+    - Try to build a small case where it looks good but blocks something better.
+    - Compare it with a brute force answer on small inputs.
+    - Write down why some best answer can always start with it.
+  terms:
+    - term: Greedy choice
+      definition: The one decision taken at each step, like the earliest end or the shortest job.
+  lesson:
+    title: Break it before you trust it
+    explanation: A wrong greedy answer still looks reasonable, so try to break it first, then give the reason it can't be broken.
+- id: why-exchange-works
+  skill: exchange-argument
+  asks: why
+  type: prompt
+  prompt: What does an exchange argument show, and why is that enough to trust a greedy answer?
+  reworded: In plain words, how does an exchange argument prove a greedy choice is right?
+  points:
+    - Start from any best answer, without knowing what it looks like.
+    - If it doesn't make the greedy choice, swap the greedy choice in.
+    - Show the swap makes the answer no worse, so a best answer that agrees with the greedy choice exists.
+    - Repeat for each step, so the whole greedy answer is as good as the best.
+  misconception: That trying a few cases that pass is enough.
+  lesson:
+    title: Swap in and compare
+    explanation: You never need to find the best answer. You only need to show that agreeing with the greedy choice never costs anything.
+- id: shortest-first-swap
+  skill: exchange-argument
+  asks: why
+  type: pick-one
+  prompt: "Two repairs side by side in a queue start at minute 0: one takes 10 minutes, then one takes 3. How much does swapping them cut from the total wait?"
+  reworded: "A 10 minute repair is done before a 3 minute repair, both starting at minute 0. What does swapping their order save in total waiting time?"
+  options:
+    - text: "7 minutes, the difference between the two"
+      correct: true
+      reason: "Before, they finish at 10 and 13. After, at 3 and 13. The second finish is the same, and the first is 7 sooner."
+    - text: "Nothing, the last one finishes at 13 either way"
+      reason: The total wait counts both finish times, not only the last.
+    - text: "13 minutes, the whole time"
+      reason: Only the first finish time changes.
+  lesson:
+    title: The short one moves up, the end stays put
+    explanation: Swapping a longer repair with a shorter one after it always saves the difference, so the best order is shortest first.
+- id: exchange-steps
+  skill: exchange-argument
+  asks: what
+  type: ordering
+  prompt: Put the steps of an exchange argument in order.
+  reworded: In what order does an exchange argument for a greedy choice go?
+  steps:
+    - Take any best answer.
+    - Find the first place it differs from the greedy choice.
+    - Swap the greedy choice in at that place.
+    - Show the answer is still valid and no worse.
+    - Repeat until it matches the greedy answer.
+  lesson:
+    title: One swap at a time
+    explanation: Each swap keeps the answer at its best, so after every difference is swapped away, the greedy answer is a best one.
+- id: why-farthest-only
+  skill: reach-and-jumps
+  asks: why
+  type: prompt
+  prompt: To decide whether you can reach the last post, why is the farthest reach so far enough, without tracking which posts you can stand on?
+  reworded: In the reach problem, why does one number, the farthest post reachable, replace a list of reachable posts?
+  points:
+    - Every post up to the farthest reach can be reached, since a jump can stop short.
+    - So the reachable posts are always one unbroken stretch from the start.
+    - Only the end of that stretch matters, and each post can push it further.
+  lesson:
+    title: Reachable posts have no gaps
+    explanation: Because you can stop anywhere within a jump, the posts you can reach always start at 0 and run to the farthest reach, with nothing missing.
+- id: when-stuck
+  skill: reach-and-jumps
+  asks: when
+  type: pick-one
+  prompt: Walking the posts and keeping the farthest reach, when do you know the last post can't be reached?
+  reworded: In the one pass reach check, what tells you the end is out of reach?
+  options:
+    - text: When the post you're on is past the farthest reach so far
+      correct: true
+      reason: No earlier post can get you there, so nothing beyond it can be reached either.
+    - text: When you step on a post with a jump of 0
+      reason: An earlier post may still reach past it.
+    - text: When the farthest reach stops growing for one post
+      reason: The next posts inside the reach may still push it further.
+  lesson:
+    title: Standing past the reach
+    explanation: A post with a jump of 0 only matters if nothing reaches past it. The walk finds that out when it runs past the farthest reach.
+- id: fewest-jumps-answer
+  skill: reach-and-jumps
+  asks: what
+  type: pick-one
+  prompt: "From post `i` you can move up to `jump[i]` posts forward. With `jump = [1, 4, 1, 1, 1, 1]`, what's the fewest jumps to reach the last post?"
+  reworded: "Posts have jumps of `[1, 4, 1, 1, 1, 1]`, and from each you can move forward up to its jump. How few jumps reach the end?"
+  options:
+    - text: "2"
+      correct: true
+      reason: "Round one reaches post 1. Post 1 reaches post 5, the last, in round two."
+    - text: "5"
+      reason: That moves one post at a time and never uses the jump of 4.
+    - text: "1"
+      reason: The first post only reaches post 1.
+  lesson:
+    title: Count rounds, not posts
+    explanation: Each round ends at the farthest post the current round can reach. The number of rounds until the last post is covered is the answer.
+- id: why-start-fresh
+  skill: best-running-total
+  asks: why
+  type: prompt
+  prompt: In the best running total, why start a new run when the run so far adds up to less than zero?
+  reworded: Kadane's algorithm drops the run it's building when its total goes negative. Why is that right?
+  points:
+    - Any run that continues from here would be better without that negative start.
+    - The value alone beats the value plus a negative total.
+    - So the best run ending here is the larger of this value alone and this value plus the run before.
+  misconception: That a run should be dropped as soon as it meets a negative value.
+  lesson:
+    title: A negative start only drags you down
+    explanation: A single bad value can be worth crossing if the run before it is big enough. Only a negative total so far is worth dropping.
+- id: when-all-negative
+  skill: best-running-total
+  asks: when
+  type: pick-one
+  prompt: "If the best running total starts with `best = 0` instead of the first value, when does it give the wrong answer?"
+  reworded: "Starting the best total at 0 rather than at the first value breaks the answer in which case?"
+  options:
+    - text: When every value is negative, since it answers 0, the total of an empty run
+      correct: true
+      reason: The best run of one or more values is the largest single value, which is below 0.
+    - text: When the list has only one value
+      reason: A single positive value still works. A single negative one fails, for the same reason as all negatives.
+    - text: Never, 0 is always a safe start
+      reason: It's only safe when an empty run is allowed.
+  lesson:
+    title: Ask whether an empty run counts
+    explanation: Start from the first value when the run must hold at least one value. Start from 0 only when an empty run is allowed.
+- id: why-circle-total-minus-worst
+  skill: best-running-total
+  asks: why
+  type: prompt
+  prompt: For values in a ring, why is the best run that wraps past the end equal to the grand total minus the worst run?
+  reworded: In a circle of values, how does the worst run in the middle give the best run that wraps around?
+  points:
+    - A run that wraps covers everything except one run in the middle.
+    - So making it as big as possible means leaving out the smallest middle run.
+    - When every value is negative, the worst run is the whole ring, and nothing would be left, so use the run that doesn't wrap.
+  lesson:
+    title: Leave out the worst
+    explanation: Find the best run that doesn't wrap and the worst run with the same pass, then take the better of the best and the total minus the worst.
+- id: why-skip-past-failure
+  skill: fuel-circuit
+  asks: why
+  type: prompt
+  prompt: In the fuel circuit, when the tank runs dry on the way to stop j, why can every stop from the current start up to j be skipped?
+  reworded: Starting at stop s, the tank goes below zero before stop j. Why is no stop between s and j worth trying as a start?
+  points:
+    - From s, the vehicle reached each of those stops with zero or more in the tank.
+    - Starting at one of them with nothing can only arrive at j with the same or less.
+    - So each of them runs dry by j too, and the next start worth trying is j + 1.
+  lesson:
+    title: Arriving with something beats starting with nothing
+    explanation: That's what makes the search one pass instead of n separate trips round the loop.
+- id: when-no-start
+  skill: fuel-circuit
+  asks: when
+  type: pick-one
+  prompt: When does no stop work as a start for the circuit?
+  reworded: In the fuel circuit, what tells you every start fails?
+  options:
+    - text: When the total fuel picked up is less than the total used
+      correct: true
+      reason: Any full loop picks up and uses everything once, so the tank would end below zero.
+    - text: When one stop costs more than it gives
+      reason: Other stops can make up for it.
+    - text: When the first stop costs more than it gives
+      reason: Then the start is just somewhere else.
+  lesson:
+    title: Check the total first
+    explanation: If the total is enough, some start works, and the one pass finds the first one.
+- id: circuit-steps
+  skill: fuel-circuit
+  asks: what
+  type: ordering
+  prompt: Put the steps for finding where to start the fuel circuit in order.
+  reworded: In what order does the one pass search for a starting stop work?
+  steps:
+    - Start with the candidate at stop 0 and an empty tank.
+    - At each stop, add what it gives minus what the next trip uses, to the tank and to a total.
+    - If the tank is below zero, move the candidate to the next stop and empty the tank.
+    - After the last stop, return the candidate if the total is zero or more, and -1 if not.
+  lesson:
+    title: One tank, one total
+    explanation: The tank tests the current candidate. The total decides whether any candidate could work at all.
+- id: why-last-position
+  skill: partition-by-last
+  asks: why
+  type: prompt
+  prompt: When cutting a string into the most pieces so each letter is in only one piece, why track each letter's last position?
+  reworded: To split letters into as many pieces as possible with no letter in two pieces, what does each letter's last position tell you?
+  points:
+    - A piece that holds a letter has to reach that letter's last position.
+    - So the current piece must stretch to the farthest last position of any letter in it.
+    - When the walk reaches that point, nothing in the piece appears later, so you can cut.
+  misconception: That a piece can end at the next repeat of its first letter.
+  lesson:
+    title: Each letter sets a minimum reach
+    explanation: Cutting at the first point where every letter so far is finished gives the most pieces, since an early cut never blocks a later one.
+- id: partition-answer
+  skill: partition-by-last
+  asks: what
+  type: pick-one
+  prompt: 'What are the piece sizes when `"xyxzzw"` is cut into the most pieces, with each letter in only one piece?'
+  reworded: 'Cut `"xyxzzw"` into as many pieces as you can so no letter is in two pieces. What sizes come out?'
+  options:
+    - text: "3, 2, and 1"
+      correct: true
+      reason: "The x at 2 makes the first piece reach index 2, the z's fill the next two, and w stands alone."
+    - text: "1, 1, 1, 2, and 1"
+      reason: The first x and the second x would be in different pieces.
+    - text: "6"
+      reason: Cuts after index 2 and index 4 are both allowed, so one piece is too few.
+  lesson:
+    title: Reach, then cut
+    explanation: Walk the letters, stretching the piece to each letter's last position, and cut when you reach the end of the stretch.
+- id: when-cut
+  skill: partition-by-last
+  asks: when
+  type: pick-one
+  prompt: Walking a list of books numbered 0 to n - 1, each once, you want the most runs that can each be sorted alone to sort the whole shelf. When can a run end at position i?
+  reworded: Books numbered from 0 sit on a shelf in a jumble. Splitting it into runs to sort one at a time, when may a run end at place i?
+  options:
+    - text: When the largest number so far is i, so every book so far belongs at or before i
+      correct: true
+      reason: Each book's number is how far its run has to reach, just like a letter's last position.
+    - text: When the book at i is the number i
+      reason: Books before it might still belong after it.
+    - text: When the book at i is smaller than the one before it
+      reason: That only shows the run isn't sorted yet.
+  lesson:
+    title: The same reach, with numbers
+    explanation: Each book has to end up at its own number, so the run must reach the largest number in it before it can end.
+- id: why-smallest-pot
+  skill: match-sorted-lists
+  asks: why
+  type: pick-one
+  prompt: When potting the most seedlings, why give the smallest seedling the smallest pot that fits it?
+  reworded: Matching pots to seedlings for the most matches, what's wrong with giving the smallest seedling a bigger pot?
+  options:
+    - text: Any seedling that fits the small pot fits the big one too, so the big pot is worth more saved
+      correct: true
+      reason: Saving the big pot can only help a larger seedling later.
+    - text: Small pots are cheaper
+      reason: Cost isn't part of the question. The count of matches is.
+    - text: It keeps the pots in sorted order
+      reason: Both lists are sorted already. The question is which pot to spend.
+  lesson:
+    title: Spend the least you can
+    explanation: This is an exchange argument. Swapping a bigger pot for the smallest one that fits never loses a match.
+- id: when-sort-both
+  skill: match-sorted-lists
+  asks: when
+  type: matching
+  prompt: Match each task to the pairing rule that solves it.
+  reworded: Which way of pairing two sorted lists fits each of these tasks?
+  matchHeading: Pairing rule
+  matchName: a rule
+  pairs:
+    - item: Pots for seedlings, as many potted as possible
+      match: Smallest pot that fits the smallest seedling
+    - item: Lockers for runners, least total walking
+      match: Pair both lists in sorted order
+    - item: Two to a canoe under a weight limit, fewest canoes
+      match: Heaviest with the lightest, if they fit
+  extraMatches:
+    - Largest with largest, always
+  lesson:
+    title: Sort both, then walk
+    explanation: Each rule comes from an exchange argument that shows swapping into that pairing never makes things worse.
+- id: why-no-crossing
+  skill: match-sorted-lists
+  asks: why
+  type: prompt
+  prompt: Pairing runners with lockers along a corridor for the least total walking, why does pairing both sorted lists in order work?
+  reworded: Why is matching the k-th leftmost runner with the k-th leftmost locker the least total distance?
+  points:
+    - If two pairs cross, the left runner goes to the right locker and the right runner to the left one.
+    - Uncrossing them, so each goes to the nearer side, never adds to the total distance.
+    - With no crossings left, the pairs are exactly the sorted order.
+  lesson:
+    title: Never cross two walks
+    explanation: That's the exchange argument. Sorting both lists and pairing them in order is the only way to have no crossings.

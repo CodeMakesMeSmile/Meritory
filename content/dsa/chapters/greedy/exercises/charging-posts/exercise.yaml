@@ -1,0 +1,17 @@
+id: charging-posts
+kind: coding
+title: Charge to the last post
+difficulty: easy
+skills:
+  - reach-and-jumps
+  - safe-greedy-choice
+sibling: relay-towers
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: canReachLast
+  params:
+    - name: charge
+      type: int[]
+  returns: boolean

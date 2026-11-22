@@ -1,0 +1,121 @@
+{
+  "exercise": "painted-length",
+  "cases": [
+    {
+      "uuid": "58f11684-fec2-4c7b-be02-240fcfe8b590",
+      "description": "counts paint that overlaps once",
+      "property": "paintedLength",
+      "input": {
+        "stretches": [[0, 4], [2, 6], [10, 12], [11, 15]]
+      },
+      "expected": 11
+    },
+    {
+      "uuid": "6baca2c5-7c1a-468e-afac-67a16b54366e",
+      "description": "touching stretches neither overlap nor leave a gap",
+      "property": "paintedLength",
+      "input": {
+        "stretches": [[2, 5], [5, 8]]
+      },
+      "expected": 6
+    },
+    {
+      "uuid": "4250a0d2-e691-4dc5-bd27-29c4bcb81d3e",
+      "description": "the same stretch painted twice",
+      "property": "paintedLength",
+      "input": {
+        "stretches": [[3, 9], [3, 9]]
+      },
+      "expected": 6
+    },
+    {
+      "uuid": "eb75b25d-2abd-4e6b-acec-28726190787d",
+      "description": "a short stretch inside a long one",
+      "property": "paintedLength",
+      "input": {
+        "stretches": [[0, 100], [40, 60]]
+      },
+      "expected": 100
+    },
+    {
+      "uuid": "7316733c-5246-4080-becf-1ebb1f55cb0b",
+      "description": "stretches far apart",
+      "property": "paintedLength",
+      "input": {
+        "stretches": [[0, 1], [500, 502], [1000, 1003]]
+      },
+      "expected": 6
+    },
+    {
+      "uuid": "0bc51a95-37c8-4738-ab60-10a8ce6de514",
+      "description": "stretches out of order",
+      "property": "paintedLength",
+      "input": {
+        "stretches": [[50, 60], [10, 20], [15, 55]]
+      },
+      "expected": 50
+    },
+    {
+      "uuid": "905e220c-ac3c-4e78-ac48-8bdbc694dd9a",
+      "description": "twenty volunteers on one fence",
+      "property": "paintedLength",
+      "input": {
+        "stretches": [
+          [298, 300],
+          [254, 282],
+          [108, 133],
+          [206, 215],
+          [30, 34],
+          [230, 255],
+          [176, 191],
+          [95, 101],
+          [283, 293],
+          [201, 210],
+          [94, 112],
+          [290, 295],
+          [217, 236],
+          [111, 126],
+          [42, 61],
+          [173, 184],
+          [208, 213],
+          [234, 254],
+          [288, 300],
+          [185, 208]
+        ]
+      },
+      "expected": 186
+    },
+    {
+      "uuid": "23965396-d7a9-4afe-a9be-0d77678a8437",
+      "description": "the whole fence in two halves that overlap",
+      "property": "paintedLength",
+      "input": {
+        "stretches": [[0, 600000], [400000, 1000000]]
+      },
+      "expected": 1000000
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "fbad259f-d6b2-4156-a19b-9bb1db74221c",
+          "description": "no stretches",
+          "property": "paintedLength",
+          "input": {
+            "stretches": []
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "47efeeeb-9d3b-4ce3-8889-b0bc7dc87cd3",
+          "description": "one metre",
+          "property": "paintedLength",
+          "input": {
+            "stretches": [[7, 8]]
+          },
+          "expected": 1
+        }
+      ]
+    }
+  ]
+}

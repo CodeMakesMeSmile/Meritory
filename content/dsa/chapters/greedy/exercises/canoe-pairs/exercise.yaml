@@ -1,0 +1,19 @@
+id: canoe-pairs
+kind: coding
+title: Canoes for the camp trip
+difficulty: medium
+skills:
+  - exchange-argument
+  - safe-greedy-choice
+sibling: repair-queue
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: fewestCanoes
+  params:
+    - name: weights
+      type: int[]
+    - name: limit
+      type: int
+  returns: int

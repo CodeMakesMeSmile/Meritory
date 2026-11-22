@@ -1,0 +1,90 @@
+{
+  "exercise": "potting-bench",
+  "cases": [
+    {
+      "uuid": "7be5c0e6-79cf-42d2-80b8-5416353aaaa8",
+      "description": "gives each seedling the smallest pot that fits",
+      "property": "mostPotted",
+      "input": {
+        "seedlings": [4, 9, 6, 12],
+        "pots": [5, 10, 6, 3, 7]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "ce40b6ef-d9df-495f-9aca-ea67e6e5c964",
+      "description": "every pot is too small",
+      "property": "mostPotted",
+      "input": {
+        "seedlings": [5, 6],
+        "pots": [1, 2, 3]
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "23f84dfc-ba80-4ce8-b557-a03bd1b58476",
+      "description": "more pots than seedlings",
+      "property": "mostPotted",
+      "input": {
+        "seedlings": [2, 3],
+        "pots": [1, 2, 3, 4, 5]
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "ac8bbb63-b835-4574-a5ed-fbf69a403c98",
+      "description": "an exact fit for each",
+      "property": "mostPotted",
+      "input": {
+        "seedlings": [3, 3, 3],
+        "pots": [3, 3, 3]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "1a8d9ef6-ad61-41ed-b51a-a632f8c75a1c",
+      "description": "a big pot saved for a big seedling",
+      "property": "mostPotted",
+      "input": {
+        "seedlings": [1, 9],
+        "pots": [10, 2]
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "d1c19a9b-0929-45cb-bc77-708fd26c5d0e",
+      "description": "twelve of each",
+      "property": "mostPotted",
+      "input": {
+        "seedlings": [26, 7, 15, 22, 18, 21, 16, 10, 26, 24, 20, 4],
+        "pots": [10, 5, 7, 30, 30, 6, 27, 23, 6, 8, 24, 25]
+      },
+      "expected": 9
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "e0ac158a-f8bf-4fa7-ad67-48a33945f977",
+          "description": "no seedlings",
+          "property": "mostPotted",
+          "input": {
+            "seedlings": [],
+            "pots": [1, 2]
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "ce3ec463-4704-41da-87f6-7c639bb53b52",
+          "description": "no pots",
+          "property": "mostPotted",
+          "input": {
+            "seedlings": [1],
+            "pots": []
+          },
+          "expected": 0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+id: parcel-groups
+kind: coding
+title: Split the parcel line into groups
+difficulty: medium
+skills:
+  - partition-by-last
+sibling: shelf-runs
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: groupSizes
+  params:
+    - name: labels
+      type: string
+  returns: int[]

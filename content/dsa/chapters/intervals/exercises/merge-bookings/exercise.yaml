@@ -1,0 +1,17 @@
+id: merge-bookings
+kind: coding
+title: Busy stretches at the sports hall
+difficulty: easy
+skills:
+  - merge-overlaps
+  - start-or-end
+sibling: painted-length
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: mergeBookings
+  params:
+    - name: bookings
+      type: int[][]
+  returns: int[][]

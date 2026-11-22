@@ -1,0 +1,17 @@
+id: gauge-trips
+kind: coding
+title: The fewest trips to read the gauges
+difficulty: medium
+skills:
+  - fewest-removals
+  - start-or-end
+sibling: fewest-cancellations
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: fewestTrips
+  params:
+    - name: windows
+      type: int[][]
+  returns: int
