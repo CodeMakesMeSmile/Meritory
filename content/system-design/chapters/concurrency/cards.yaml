@@ -1,0 +1,489 @@
+- id: where-node-work-runs
+  skill: use-the-event-loop
+  asks: what
+  type: matching
+  prompt: Match each piece of work in a Node.js sync worker to where it runs.
+  reworded: In a Node process, which of these runs on the event loop thread, which on the threadpool, and which is left to the operating system?
+  matchHeading: Where it runs
+  matchName: a place
+  pairs:
+    - item: JSON.parse on a 40 MB provider response
+      match: On the event loop thread, blocking it
+    - item: An asynchronous crypto.scrypt call
+      match: On the libuv threadpool
+    - item: Waiting for a provider's HTTP response to arrive
+      match: In the operating system, with no thread tied up
+  extraMatches:
+    - In a new process started for each call
+  lesson:
+    title: One thread for JavaScript, a few for the rest
+    explanation: Node offloads network I/O to the operating system where it can. File system calls, dns.lookup, some crypto, and zlib run on the threadpool. Your own JavaScript, including JSON.parse, runs on the one event loop thread.
+    source:
+      url: https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop
+      title: Don't Block the Event Loop (or the Worker Pool), Node.js
+- id: why-threadpool-stalls
+  skill: use-the-event-loop
+  asks: why
+  type: pick-one
+  prompt: A Node service hashes API keys with async crypto.scrypt. Under load, its file reads and dns.lookup calls get slow too, though the event loop isn't blocked. Why?
+  reworded: Why can heavy async crypto in Node slow down unrelated file and DNS calls?
+  options:
+    - text: They all share the libuv threadpool, which has 4 threads by default
+      correct: true
+      reason: Slow scrypt calls hold the pool's threads, so file and DNS work waits in line behind them.
+    - text: Async crypto blocks the event loop
+      reason: The async version runs on the threadpool. Only the Sync versions block the loop.
+    - text: Node runs every async call on its own new thread
+      reason: Node uses a small fixed pool, which is why the calls compete.
+    - text: DNS lookups always go through the network stack slowly
+      reason: dns.lookup uses the threadpool, so it waits for a free thread like the rest.
+  lesson:
+    title: The threadpool is small and shared
+    explanation: UV_THREADPOOL_SIZE sets the pool's size, 4 by default, and it only takes effect if set before the process starts. Keep long tasks off the shared pool, or size it for the work.
+    source:
+      url: https://nodejs.org/api/cli.html#uv_threadpool_sizesize
+      title: Command-line API, Node.js
+- id: when-worker-threads
+  skill: use-the-event-loop
+  asks: when
+  type: pick-one
+  prompt: When does moving work to Node's worker_threads help?
+  reworded: Which kind of work is worth handing to a worker thread in Node?
+  options:
+    - text: CPU-heavy JavaScript, like mapping a huge provider payload into the common model
+      correct: true
+      reason: It runs on another thread, so the event loop stays free to serve other requests.
+    - text: Calling many provider APIs at once
+      reason: Network calls already don't block the loop. Workers add overhead without helping.
+    - text: Reading many small files
+      reason: Async file calls already run on the threadpool.
+    - text: Any work at all, since more threads are always faster
+      reason: Workers cost memory and startup time, and they only pay off for CPU-bound JavaScript.
+  lesson:
+    title: Workers are for CPU, not I/O
+    explanation: The Node docs say workers are useful for CPU-intensive JavaScript and don't help much with I/O, since Node's built-in async I/O is more efficient.
+    source:
+      url: https://nodejs.org/api/worker_threads.html
+      title: Worker threads, Node.js
+- id: check-then-act-steps
+  skill: spot-races
+  asks: what
+  type: ordering
+  prompt: Put the steps of a check-then-act race between two requests in order, ending with two syncs for one connection.
+  reworded: In what order do events unfold when two requests both start a sync for the same connection?
+  steps:
+    - Request A checks for a running sync and finds none.
+    - Request B checks for a running sync and finds none.
+    - Request A inserts a running sync.
+    - Request B inserts a running sync.
+    - Two syncs fetch the same pages and use double the provider's rate limit.
+  terms:
+    - term: Check-then-act
+      definition: Code that decides based on a check, when the checked condition can change before it acts.
+  lesson:
+    title: The gap between check and act
+    explanation: Each request was correct alone. The bug is the gap between reading and writing, where another request can act. Close it by making the check part of the write, like a unique constraint on running syncs.
+- id: why-await-races
+  skill: spot-races
+  asks: why
+  type: pick-one
+  prompt: Node runs JavaScript on one thread. Why can a check-then-act race still happen inside a single Node process?
+  reworded: How can two requests in one single-threaded Node process interleave in the middle of a check and a write?
+  options:
+    - text: Every await hands control back to the event loop, so another request can run between the check and the write
+      correct: true
+      reason: One thread means one callback at a time, not one request at a time.
+    - text: Node secretly runs JavaScript on several threads
+      reason: Your JavaScript runs on one thread. The interleaving happens at await points.
+    - text: Races only happen across processes
+      reason: Across processes is common too, but await points are enough within one.
+    - text: The database runs queries out of order
+      reason: The queries run as sent. The trouble is what runs between them.
+  lesson:
+    title: Await is a yield point
+    explanation: Code between two awaits runs without interruption, but anything can happen at each await. Treat every await between a check and its action as a gap, and remember that real deployments run many processes anyway.
+- id: race-fix-fit
+  skill: spot-races
+  asks: when
+  type: matching
+  prompt: Match each race to the cheapest fix that closes it.
+  reworded: For each of these concurrency bugs, which tool closes the gap most simply?
+  matchHeading: Fix
+  matchName: a fix
+  pairs:
+    - item: Two workers each read a counter, add one, and write it back
+      match: One atomic UPDATE that adds to the current value
+    - item: A scheduled sync and an on-demand refresh both start a sync for one connection
+      match: A unique constraint on running syncs per connection
+    - item: Two teammates save different changes to the same webhook settings
+      match: A version check that rejects the stale save
+    - item: Every update for one connection must apply in order
+      match: Route that connection's work to one queue partition
+  extraMatches:
+    - A longer timeout
+  lesson:
+    title: Pick the cheapest tool that closes the gap
+    explanation: Atomic statements and constraints are cheapest, because the database does the work. Version checks detect conflicts without locking. Routing by key removes concurrency for that key altogether.
+- id: why-refresh-token-race
+  skill: spot-races
+  asks: why
+  type: prompt
+  prompt: A provider rotates OAuth refresh tokens. Two workers notice a connection's access token has expired and both refresh it at once. Why can this disconnect the customer, and how do you prevent it?
+  reworded: What goes wrong when two workers refresh the same rotating refresh token at the same time, and what stops it?
+  points:
+    - With rotation, each refresh returns a new refresh token and invalidates the old one.
+    - The slower worker presents a token the provider already invalidated.
+    - RFC 9700 has the server revoke the active refresh token when an invalidated one is used, so the connection can be cut off.
+    - Let only one worker refresh a connection at a time, with a short lease, and have others re-read the stored token instead.
+    - Refresh before expiry, so the refresh isn't triggered by many workers at the same moment.
+  misconception: That refreshing a token twice is harmless because it's only a read.
+  lesson:
+    title: Races reach outside your system
+    explanation: A provider can't check your fencing tokens, so coordinate before the call. RFC 9700 describes rotation and revocation as a defense against stolen tokens, which also punishes a client that races itself.
+    source:
+      url: https://datatracker.ietf.org/doc/html/rfc9700
+      title: RFC 9700, Best Current Practice for OAuth 2.0 Security
+- id: why-locks-cost
+  skill: weigh-locks
+  asks: why
+  type: prompt
+  prompt: Why should you reach for a lock only after cheaper tools, and what does a lock cost when you do use one?
+  reworded: What are the costs of guarding work with a lock?
+  points:
+    - Work under one lock runs one at a time, so the hold time caps throughput for that key.
+    - Waiting for the lock adds latency that callers see.
+    - Locks taken in different orders can deadlock, and PostgreSQL then aborts one transaction.
+    - Holding a lock across a slow call, like a provider request, turns a slow dependency into a queue of blocked work.
+    - A lock outside the process needs an expiry for when its holder dies, which creates its own gap.
+  misconception: That a lock is the default way to make code safe under concurrency.
+  lesson:
+    title: Locks trade throughput for safety
+    explanation: The PostgreSQL docs warn against holding transactions open for long periods. Lock the smallest thing that keeps the rule, keep slow work outside the lock, and prefer atomic writes or version checks where they fit.
+    source:
+      url: https://www.postgresql.org/docs/current/explicit-locking.html
+      title: Explicit Locking, PostgreSQL Documentation
+- id: deadlock-fix
+  skill: weigh-locks
+  asks: what
+  type: pick-one
+  prompt: One transaction updates connection 7 and then connection 9. Another updates 9 and then 7. Sometimes one fails with a deadlock error. What's the best fix?
+  reworded: Two transactions lock the same two rows in opposite orders and occasionally deadlock. How do you stop it?
+  options:
+    - text: Always lock rows in the same order, like by id, and retry any transaction that still fails with a deadlock
+      correct: true
+      reason: With one order, neither transaction can hold what the other needs while waiting for what it holds.
+    - text: Raise the lock timeout
+      reason: A deadlock never resolves by waiting. PostgreSQL detects it and aborts one transaction.
+    - text: Read the rows from a replica first
+      reason: Replicas don't take part in the writers' locks.
+    - text: Count on PostgreSQL to always abort the newer transaction
+      reason: The docs say which one is aborted is hard to predict and shouldn't be relied on.
+  lesson:
+    title: One lock order everywhere
+    explanation: PostgreSQL resolves a deadlock by aborting one of the transactions. Acquiring locks in a consistent order prevents it, and retrying handles the cases you can't rule out.
+    source:
+      url: https://www.postgresql.org/docs/current/explicit-locking.html
+      title: Explicit Locking, PostgreSQL Documentation
+- id: when-not-hold-lock
+  skill: weigh-locks
+  asks: when
+  type: pick-one
+  prompt: A sync worker opens a transaction, locks the connection row with SELECT FOR UPDATE, calls the provider for the next page, and then saves the cursor. When the provider slows down, the whole platform slows. What's the mistake?
+  reworded: What goes wrong when a worker holds a row lock while it waits on an outside API?
+  options:
+    - text: It holds a lock and a database connection for as long as the provider takes, so slow calls pile up blocked transactions
+      correct: true
+      reason: Do the provider call outside the transaction, then take the lock briefly to save the result, guarded by a version or lease token.
+    - text: SELECT FOR UPDATE blocks every reader of the row
+      reason: Row locks block other writers and lockers, not plain reads.
+    - text: The provider sees the database lock and slows down
+      reason: The provider knows nothing about your locks. Your own transactions are the ones waiting.
+    - text: Row locks only work under Serializable isolation
+      reason: Row locks work at every isolation level.
+  lesson:
+    title: Never wait on the outside world while holding a lock
+    explanation: Long transactions hold locks and connections, and the PostgreSQL docs call it a bad idea to keep them open for long periods. Keep slow work outside, and keep locked sections short.
+    source:
+      url: https://www.postgresql.org/docs/current/explicit-locking.html
+      title: Explicit Locking, PostgreSQL Documentation
+- id: version-check-steps
+  skill: update-optimistically
+  asks: what
+  type: ordering
+  prompt: Put the steps of an optimistic update with a version number in order.
+  reworded: In what order does a writer change a row safely using a version column?
+  steps:
+    - Read the row along with its current version.
+    - Compute the change in memory.
+    - Write the change only where the version still matches, and add one to the version.
+    - If no row was updated, re-read and retry, or report a conflict.
+  terms:
+    - term: Optimistic concurrency
+      definition: Checking for conflicting changes at write time instead of locking before reading.
+  lesson:
+    title: Detect the conflict at write time
+    explanation: The version check turns a silent lost update into a visible conflict. Automatic changes can retry, and edits made by people can show what changed.
+- id: when-optimistic
+  skill: update-optimistically
+  asks: when
+  type: pick-one
+  prompt: When does optimistic concurrency with version checks fit better than locking the row first?
+  reworded: In which situation is a version check a better choice than SELECT FOR UPDATE?
+  options:
+    - text: When conflicts are rare and the change involves slow work, like a person editing settings in a form
+      correct: true
+      reason: Nothing is held while the person thinks, and the rare conflict is caught when they save.
+    - text: When hundreds of workers update the same counter row every second
+      reason: Most attempts would fail and retry. A hot row needs an atomic update, a split, or a queue.
+    - text: When the write must never fail
+      reason: Optimistic writes fail on conflict by design. The caller must handle that.
+    - text: When the database doesn't support transactions
+      reason: Version checks need an atomic conditional write, which is the core of a transaction or a conditional update.
+  lesson:
+    title: Optimism suits rare conflicts
+    explanation: Version checks cost nothing until a conflict happens. Under heavy contention, the retries become the load, and a lock, a queue, or splitting the row works better.
+- id: dynamodb-condition-fails
+  skill: update-optimistically
+  asks: what
+  type: pick-one
+  prompt: A DynamoDB UpdateItem has a ConditionExpression on the item's version, and another writer got there first. What happens?
+  reworded: What does DynamoDB do when a conditional write's condition is false?
+  options:
+    - text: The write fails with ConditionalCheckFailedException and still consumes write capacity
+      correct: true
+      reason: The condition is checked against the latest version of the item, and a failed check still uses write units.
+    - text: DynamoDB queues the write until the condition becomes true
+      reason: It doesn't wait. The write fails right away.
+    - text: The write succeeds and the version is ignored
+      reason: The whole condition must be true, or the write doesn't happen.
+    - text: The write fails and costs nothing
+      reason: A failed conditional write still consumes write capacity.
+  lesson:
+    title: Conditional writes are DynamoDB's version check
+    explanation: Setting ReturnValuesOnConditionCheckFailure to ALL_OLD returns the current item with the error, so you can retry without a separate read.
+    source:
+      url: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithItems.html
+      title: Working with items and attributes in DynamoDB
+- id: lease-pause-steps
+  skill: fence-distributed-locks
+  asks: what
+  type: ordering
+  prompt: Put the steps of Kleppmann's lease failure in order, ending with corrupted data.
+  reworded: In what order do events unfold when a paused lock holder writes after its lease has expired?
+  steps:
+    - Client 1 takes the lease and starts its work.
+    - Client 1 pauses, for example in a long garbage collection.
+    - The lease expires while client 1 is paused.
+    - Client 2 takes the lease and writes.
+    - Client 1 wakes up, still believing it holds the lease, and writes too.
+  terms:
+    - term: Lease
+      definition: A lock that expires on its own after a set time.
+  lesson:
+    title: A paused holder can't know it lost the lease
+    explanation: Checking the lease before writing doesn't help, because the pause can come after the check. Kleppmann's fix is a fencing token that the protected resource checks.
+    source:
+      url: https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html
+      title: How to do distributed locking, Martin Kleppmann
+- id: why-fencing-token
+  skill: fence-distributed-locks
+  asks: why
+  type: pick-one
+  prompt: Why does a fencing token make a lease-based lock safe when the lock alone isn't?
+  reworded: How does a number that rises with each lock grant stop a stale lock holder from corrupting data?
+  options:
+    - text: The resource remembers the highest token it has seen and rejects writes with a lower one, so a stale holder's late write fails
+      correct: true
+      reason: The check happens where the data lives, so it works even when the old holder doesn't know it lost the lock.
+    - text: The token makes the lease last longer
+      reason: Lease length doesn't matter. Any pause can outlast any lease.
+    - text: The lock service cancels the old holder's process
+      reason: The lock service can't reach into a paused process. The resource has to refuse its writes.
+    - text: A random token is harder to guess
+      reason: Fencing needs order, not secrecy. A random value can't tell old from new.
+  lesson:
+    title: The resource does the checking
+    explanation: In Kleppmann's example, client 1 holds token 33 and client 2 holds 34, so storage refuses client 1's late write. Redlock's random values can't do this, since they aren't ordered.
+    source:
+      url: https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html
+      title: How to do distributed locking, Martin Kleppmann
+- id: when-simple-lock-enough
+  skill: fence-distributed-locks
+  asks: when
+  type: pick-one
+  prompt: When is a single Redis SET NX PX lock, with no fencing, good enough?
+  reworded: For which job is a simple Redis lease lock acceptable as it is?
+  options:
+    - text: Stopping two hosts from rebuilding the same cache entry, where a rare double rebuild only wastes a little work
+      correct: true
+      reason: The lock is for efficiency. If it occasionally fails, nothing is corrupted.
+    - text: Stopping two workers from writing a connection's sync cursor
+      reason: Two writers could skip or repeat data, so this needs fencing tokens checked by the store.
+    - text: Making sure a customer is charged only once
+      reason: Correctness matters here, so use idempotency or a fenced, transactional design.
+    - text: Any job, as long as Redis has a replica
+      reason: Replication is asynchronous, so a failover can hand the same lock to a second client.
+  lesson:
+    title: Efficiency or correctness
+    explanation: Kleppmann's rule is to ask what the lock protects. For efficiency, one Redis lock is fine. For correctness, use fencing tokens and a store built for consistency. The Redis docs also say to implement fencing tokens when correctness matters.
+    source:
+      url: https://redis.io/docs/latest/develop/clients/patterns/distributed-locks/
+      title: Distributed Locks with Redis
+- id: why-two-leaders
+  skill: elect-leaders
+  asks: why
+  type: prompt
+  prompt: Why can a lease-based leader election briefly have two leaders, and how do you keep that from causing harm?
+  reworded: What lets two processes both act as leader for a moment, and what makes the overlap safe?
+  points:
+    - The old leader can pause or lose its network, and its lease expires without it knowing.
+    - A new leader takes over while the old one still believes it leads.
+    - Check the remaining lease often, with a margin, before work with side effects.
+    - Make the work idempotent and durable before announcing it done, so a new leader can redo it safely.
+    - Fence writes with a token the resource checks, where you can.
+  misconception: That leader election guarantees exactly one leader at all times.
+  lesson:
+    title: Plan for zero or two leaders
+    explanation: The Builders' Library says it's not possible to guarantee exactly one leader. Leases, margins, idempotent work, and fencing keep the brief overlap from doing damage.
+    source:
+      url: https://builder.aws.com/content/3Ev0vH0hfkcUizISUWYTvHibtcp/leader-election-in-distributed-systems
+      title: Leader election in distributed systems, Amazon Builders' Library
+- id: when-skip-leader
+  skill: elect-leaders
+  asks: when
+  type: pick-one
+  prompt: Several scheduler instances must enqueue syncs for connections that are due, without two of them enqueuing the same one. What's the simplest design?
+  reworded: How can many scheduler instances share the work of finding due connections without electing a leader?
+  options:
+    - text: Each instance claims a batch of due rows with FOR UPDATE SKIP LOCKED and moves their next sync time forward in the same transaction
+      correct: true
+      reason: Each instance gets a different batch, any can die without a handover, and adding instances adds throughput.
+    - text: Elect a leader that does all the scheduling
+      reason: That works, but it adds a single point of failure and lease handling the row claim doesn't need.
+    - text: Let every instance enqueue every due connection and rely on luck
+      reason: Duplicates would double provider calls. A row claim prevents them cheaply.
+    - text: Run one scheduler instance only
+      reason: That's a single point of failure with no takeover at all.
+  lesson:
+    title: Consider other options first
+    explanation: The Builders' Library advises considering idempotent APIs, optimistic locking, and other patterns before a leader. PostgreSQL's SKIP LOCKED skips rows other transactions have locked, which suits queue-like tables.
+    source:
+      url: https://www.postgresql.org/docs/current/sql-select.html
+      title: SELECT, PostgreSQL Documentation
+- id: why-heartbeat-with-work
+  skill: elect-leaders
+  asks: why
+  type: pick-one
+  prompt: Why shouldn't a leader renew its lease from a background thread, or a Node timer, that runs separately from the leader's actual work?
+  reworded: What goes wrong when lease heartbeats keep going independently of the work they stand for?
+  options:
+    - text: The heartbeat can keep the lease alive after the work has stuck or died, so leadership is held and nothing gets done
+      correct: true
+      reason: The lease should mean the leader is doing its job, so renew it from the work itself.
+    - text: Background threads can't reach the lease store
+      reason: They can. The trouble is that they keep renewing when they shouldn't.
+    - text: Heartbeats from timers are always late
+      reason: Timing isn't the issue. A healthy timer for a stuck worker is.
+    - text: Two heartbeats would create two leaders
+      reason: Renewals extend one lease. The risk is a lease that never expires for a dead worker.
+  lesson:
+    title: Renew from the work
+    explanation: The Builders' Library warns against heartbeating in a background thread, since it can hold a lease after the worker thread has died. Tie each renewal to real progress.
+    source:
+      url: https://builder.aws.com/content/3Ev0vH0hfkcUizISUWYTvHibtcp/leader-election-in-distributed-systems
+      title: Leader election in distributed systems, Amazon Builders' Library
+- id: littles-law-pool
+  skill: size-worker-pools
+  asks: what
+  type: pick-one
+  prompt: A provider allows 10 concurrent requests per account, and each request takes about 400 ms. What's the most throughput you can get, and what does a pool of 50 workers for that account add?
+  reworded: Using Little's law, how fast can you call a provider that allows 10 requests in flight at 400 ms each, and is a bigger pool worth it?
+  options:
+    - text: About 25 requests a second, and the extra 40 workers only wait or collect 429s
+      correct: true
+      reason: In flight equals throughput times latency, so 10 divided by 0.4 seconds is 25 a second.
+    - text: About 125 requests a second, since 50 workers each make 2.5 calls a second
+      reason: The provider only lets 10 run at once, so the other 40 can't call it.
+    - text: About 4 requests a second
+      reason: That divides the wrong way. Ten in flight at 0.4 seconds each finish 25 a second.
+    - text: There's no limit, because Node handles concurrency with one thread
+      reason: The limit is the provider's, not your thread count.
+  lesson:
+    title: Size the pool from the dependency
+    explanation: Little's law says requests in flight equal throughput times latency. A pool larger than what the dependency allows only adds waiting and wasted retries.
+- id: why-bulkheads
+  skill: size-worker-pools
+  asks: why
+  type: prompt
+  prompt: Why give each provider its own concurrency limit, instead of one shared pool of sync workers for all providers?
+  reworded: What happens to a shared worker pool when one provider slows down, and how do separate limits help?
+  points:
+    - By Little's law, if a provider's latency rises tenfold, keeping its throughput needs ten times as many requests in flight.
+    - In a shared pool, the slow provider soaks up every worker and syncs for healthy providers stall.
+    - A limit per provider confines the slowdown to that provider's syncs.
+    - The limit should match what the provider allows, so extra workers don't just collect 429s.
+    - The same math applies to database connections, where processes times pool size must stay under the database's limit.
+  misconception: That more workers always means more throughput.
+  lesson:
+    title: Bulkheads contain a slow dependency
+    explanation: Separate limits keep one dependency's trouble from spreading to work that doesn't need it, like compartments in a ship.
+- id: why-atomic-bucket
+  skill: share-token-buckets
+  asks: why
+  type: pick-one
+  prompt: Workers share one token bucket per provider account in Redis. Why must taking a token happen in one Lua script instead of a GET, a calculation in the worker, and a SET?
+  reworded: What goes wrong when each worker reads the bucket, computes the refill, and writes it back as separate steps?
+  options:
+    - text: Two workers can read the same last token and both take it, since read, compute, and write is a check-then-act race
+      correct: true
+      reason: Redis runs a script atomically, blocking other commands, so no worker sees a half-finished update.
+    - text: Lua scripts are faster than any other way to call Redis
+      reason: Fewer round trips help, but the real reason is atomicity.
+    - text: Redis can't store fractional token counts
+      reason: The bucket can store fractions. The danger is two workers changing it at once.
+    - text: GET and SET don't work on the same key twice in a row
+      reason: They do. The trouble is another worker's commands landing between them.
+  lesson:
+    title: The whole step runs in one place
+    explanation: Redis guarantees a script's atomic execution and blocks other activity while it runs, so keep the script short. Reading the time with TIME inside the script also avoids differences between workers' clocks.
+    source:
+      url: https://redis.io/docs/latest/develop/programmability/eval-intro/
+      title: Scripting with Lua, Redis
+- id: fleet-quota-trade-offs
+  skill: share-token-buckets
+  asks: what
+  type: matching
+  prompt: Match each way of enforcing one quota across a fleet of servers to its trade-off.
+  reworded: What do you gain and give up with each approach to a fleet-wide rate limit?
+  matchHeading: Trade-off
+  matchName: a trade-off
+  pairs:
+    - item: Each server enforces the quota divided by the number of servers
+      match: Cheap, but wrong when traffic isn't spread evenly
+    - item: Every request takes a token from one shared bucket in Redis
+      match: Exact, but adds a network hop to every request
+    - item: Each key is hashed to a dedicated rate-tracking server
+      match: Accurate per key, but busy keys can create hot spots
+    - item: Servers share the rates they've seen every so often
+      match: Scales well, but enforcement lags between updates
+  lesson:
+    title: Accuracy costs coordination
+    explanation: The Builders' Library describes these approaches to quotas across a fleet. For provider limits, where going over means 429s or worse, a shared bucket is usually worth its hop.
+    source:
+      url: https://builder.aws.com/content/3Eupj3d2bo4fEvlzYbICMZNhQ3B/fairness-in-multi-tenant-systems
+      title: Fairness in multi-tenant systems, Amazon Builders' Library
+- id: when-bucket-and-pool
+  skill: share-token-buckets
+  asks: when
+  type: prompt
+  prompt: A provider allows 20 requests a second and 10 in flight per account. When do you need both a shared token bucket and a concurrency limit, and what does each one do?
+  reworded: Why might calls to one provider need a rate limit and a cap on requests in flight at the same time?
+  points:
+    - The token bucket controls how often requests start, which enforces the per-second limit.
+    - The concurrency limit controls how many run at once, which enforces the in-flight limit.
+    - If the provider slows down, the bucket alone would let requests pile up past 10 in flight.
+    - A per-process limiter caps one process, so a fleet-wide in-flight limit needs shared state too.
+    - When a 429 arrives anyway, back off and respect Retry-After.
+  lesson:
+    title: Rate and concurrency are different limits
+    explanation: A rate limit bounds starts per second, and a concurrency limit bounds work in progress. When a provider states both, enforce both, since a slow provider can break the second while you obey the first.

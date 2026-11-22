@@ -1,0 +1,510 @@
+- id: fan-out-tail-math
+  skill: measure-latency
+  asks: what
+  type: pick-one
+  prompt: Each server answers in 10 ms most of the time, but 1 request in 100 takes a full second. A user request has to wait for 100 of these servers in parallel. About how many user requests take a second or more?
+  reworded: If one server is slow 1% of the time, how often is a request that waits on 100 such servers slow?
+  options:
+    - text: About 63 in 100
+      correct: true
+      reason: All 100 servers are fast only 0.99 to the 100th power of the time, about 37%, so about 63% of requests wait on at least one slow server.
+    - text: About 1 in 100
+      reason: That's the rate for a request to one server. Waiting on 100 makes a slow one far more likely.
+    - text: About 10 in 100
+      reason: The chances don't add up that slowly. Each extra server is another chance to be slow.
+    - text: Every request
+      reason: Most still finish fast, just far fewer than with one server.
+  lesson:
+    title: Fan-out turns the tail into the common case
+    explanation: A request is only as fast as the slowest call it waits for. Dean and Barroso show that rare slowness on each server becomes common once a request fans out, which is why the tail needs design attention.
+    source:
+      url: https://www.barroso.org/publications/TheTailAtScale.pdf
+      title: The Tail at Scale, Dean and Barroso
+- id: why-percentiles-not-average
+  skill: measure-latency
+  asks: why
+  type: prompt
+  prompt: Why should a latency requirement name a percentile like p99 instead of an average?
+  reworded: What does an average latency hide that p50 and p99 show?
+  points:
+    - A few very slow requests barely move the average, so it can stay flat while the tail gets much worse.
+    - p50 describes the typical request, and p99 a plausible worst case for one request.
+    - Requests that fan out to many calls feel the tail of each call, so the tail decides their speed.
+    - A number like "p99 under 300 ms" tells you where to spend design effort.
+  misconception: That a low average means users have a fast experience.
+  lesson:
+    title: Latency is a distribution
+    explanation: If 99 requests take 20 ms and one takes 2 seconds, the average is about 40 ms, which describes no request at all. Watching percentiles shows what users actually feel and catches changes in the tail.
+    source:
+      url: https://sre.google/sre-book/service-level-objectives/
+      title: Service Level Objectives, Site Reliability Engineering
+- id: why-latency-climbs-near-full
+  skill: measure-latency
+  asks: why
+  type: pick-one
+  prompt: An API fleet goes from 50% to 90% busy. Throughput rises a little, but p99 latency jumps. Why?
+  reworded: Why does latency climb steeply as a server gets close to full use, even though it finishes only slightly more work?
+  options:
+    - text: Requests spend more and more time waiting in line, and the wait grows steeply as the server nears full use
+      correct: true
+      reason: In the simplest queueing model, the average wait is the service time times busy over one minus busy, which is 1 at 50% and 9 at 90%.
+    - text: Each request does more work when the server is busy
+      reason: The work per request is the same. The time spent waiting for a turn is what grows.
+    - text: The load balancer slows down under load
+      reason: The waiting happens at the busy servers, not in the balancer.
+    - text: Throughput and latency always move in opposite directions
+      reason: They're linked through queueing, not by a fixed rule. At low load both can be good.
+  lesson:
+    title: Queues turn load into latency
+    explanation: Once requests arrive close to the rate a server can finish them, they wait for a turn, and the wait grows steeply near full use. Size services to run well below full use at peak.
+- id: nines-downtime
+  skill: budget-downtime
+  asks: what
+  type: matching
+  prompt: Match each availability target to the downtime it allows in a year.
+  reworded: How much downtime per year does each number of nines leave you?
+  matchHeading: Downtime per year
+  matchName: a downtime
+  pairs:
+    - item: 99%
+      match: About 3.65 days
+    - item: 99.9%
+      match: About 8.8 hours
+    - item: 99.99%
+      match: About 53 minutes
+    - item: 99.999%
+      match: About 5 minutes
+  extraMatches:
+    - About 30 seconds
+  lesson:
+    title: Each nine divides the budget by ten
+    explanation: A year has 8,760 hours, so 0.1% of it is about 8.8 hours. At 99.99%, the whole year allows less time than one slow manual rollback, so recovery has to be automatic.
+    source:
+      url: https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/availability.html
+      title: Availability, AWS Well-Architected Reliability Pillar
+- id: hard-dependency-math
+  skill: budget-downtime
+  asks: what
+  type: pick-one
+  prompt: A service is built for 99.99% availability and has two independent hard dependencies, each also at 99.99%. What can the whole thing reach, in theory?
+  reworded: What availability can you expect when a 99.99% service can't work without two other 99.99% services?
+  options:
+    - text: About 99.97%
+      correct: true
+      reason: With hard dependencies, the availabilities multiply, and 0.9999 cubed is about 0.9997.
+    - text: 99.99%, since every part meets it
+      reason: Each part can fail on its own, so the chances of an outage add up.
+    - text: About 99.9999%
+      reason: That's what redundant copies give. Hard dependencies in a chain lower availability.
+    - text: It depends only on the least available part
+      reason: The least available part sets a ceiling, but every hard dependency lowers the total further.
+  lesson:
+    title: Hard dependencies multiply
+    explanation: When a failure in any dependency means a failure for you, your availability is at most the product of theirs. Make dependencies soft where you can, so their outages degrade the service instead of stopping it.
+    source:
+      url: https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/availability.html
+      title: Availability, AWS Well-Architected Reliability Pillar
+- id: when-provider-soft-dependency
+  skill: budget-downtime
+  asks: when
+  type: pick-one
+  prompt: Your API unifies data from hundreds of providers, and some providers are only up 99.5% of the time. You promise customers 99.9% for reads. Which design can keep that promise?
+  reworded: How can an API offer higher read availability than the outside providers its data comes from?
+  options:
+    - text: Serve reads from your own stored copy and refresh it from providers in the background
+      correct: true
+      reason: The provider becomes a soft dependency. When it's down, reads still work and only freshness suffers.
+    - text: Call the provider live on every read, with retries
+      reason: Retries help with brief errors, but a provider that's down for hours caps your reads at its availability.
+    - text: Add more API servers
+      reason: More servers don't help when the provider they call is down.
+    - text: Promise 99.5%, since you can't beat your providers
+      reason: You can, for reads, by not depending on the provider at read time.
+  lesson:
+    title: Move important paths onto soft dependencies
+    explanation: A hard dependency's outage is your outage. Storing data you've already fetched turns provider outages into stale data instead of failed reads, which also protects you from providers' slow tails.
+    source:
+      url: https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/availability.html
+      title: Availability, AWS Well-Architected Reliability Pillar
+- id: what-cap-forbids
+  skill: apply-cap-pacelc
+  asks: what
+  type: pick-one
+  prompt: What does the CAP theorem actually rule out?
+  reworded: Stated carefully, which combination does CAP say a replicated system can't have?
+  options:
+    - text: Answering every request and keeping every answer up to date, while a network partition separates replicas
+      correct: true
+      reason: CAP only forces a choice during a partition. The rest of the time a system can have both.
+    - text: Being consistent and available at the same time, ever
+      reason: Brewer calls the "two of three" reading misleading. Without a partition, both are possible.
+    - text: Running in more than one region
+      reason: Many systems run in several regions. CAP is about what they do when regions can't talk.
+    - text: Using a relational database at scale
+      reason: CAP says nothing about data models.
+  lesson:
+    title: CAP is about partitions
+    explanation: Brewer wrote that CAP prohibits only a small part of the design space, perfect availability and consistency during a partition. Partitions are rare, so the choice is about how you behave when one happens.
+    source:
+      url: https://www.infoq.com/articles/cap-twelve-years-later-how-the-rules-have-changed/
+      title: CAP Twelve Years Later, Eric Brewer
+- id: pacelc-classes
+  skill: apply-cap-pacelc
+  asks: what
+  type: matching
+  prompt: Match each replicated store's behavior to its PACELC class.
+  reworded: Which PACELC class describes each of these replicated stores?
+  matchHeading: PACELC class
+  matchName: a class
+  pairs:
+    - item: Stays available when replicas are cut off, and reads the nearest replica normally, possibly stale
+      match: PA/EL
+    - item: Refuses requests rather than let replicas diverge, and waits for replicas to agree normally
+      match: PC/EC
+    - item: Blocks updates when an item's master is cut off, but normally reads any replica, possibly stale
+      match: PC/EL
+  extraMatches:
+    - CA/EL
+  lesson:
+    title: Two choices, not one
+    explanation: PACELC asks what a system gives up during a partition, availability or consistency, and what it gives up the rest of the time, latency or consistency. Abadi classes the default setups of Dynamo and Cassandra as PA/EL, fully ACID systems as PC/EC, and PNUTS as PC/EL.
+    source:
+      url: https://www.cs.umd.edu/~abadi/papers/abadi-pacelc.pdf
+      title: Consistency Tradeoffs in Modern Distributed Database System Design, Abadi
+- id: why-pacelc-else
+  skill: apply-cap-pacelc
+  asks: why
+  type: prompt
+  prompt: Why does Abadi argue that the "else" half of PACELC, latency against consistency, matters more day to day than CAP?
+  reworded: What trade-off do replicated databases make on every request, even when the network is fine?
+  points:
+    - CAP only applies during a partition, which is rare.
+    - Keeping replicas in step means waiting for them, so stronger consistency costs latency on every request.
+    - The cost grows when replicas are far apart, like across regions.
+    - Many stores let you choose per request, like DynamoDB's eventually consistent default and its ConsistentRead option.
+  misconception: That systems give up consistency only because of CAP.
+  lesson:
+    title: Consistency costs latency all the time
+    explanation: Abadi writes that the consistency and latency trade-off is present whenever a system replicates data, while CAP only matters during a partition. State both halves for each part of a design.
+    source:
+      url: https://www.cs.umd.edu/~abadi/papers/abadi-pacelc.pdf
+      title: Consistency Tradeoffs in Modern Distributed Database System Design, Abadi
+- id: when-refuse-in-partition
+  skill: apply-cap-pacelc
+  asks: when
+  type: pick-one
+  prompt: Your API runs in two regions, and a partition separates them. Which operation should wait or refuse instead of answering from the local region?
+  reworded: During a partition between regions, which of these operations should give up availability to stay consistent?
+  options:
+    - text: Approving a backfill that must keep a tenant inside its plan limit
+      correct: true
+      reason: Two regions could each approve one, breaking a rule that's hard to repair afterwards.
+    - text: Listing records the customer already synced
+      reason: A slightly stale list is fine, so answering from the local copy keeps the service up.
+    - text: Showing the list of supported providers
+      reason: That data changes rarely, so a local copy is safe.
+    - text: Returning a connection's last known health status
+      reason: A status a little behind is acceptable, and it can say when it was last checked.
+  lesson:
+    title: Choose per operation
+    explanation: Brewer describes the CAP decision as made at a timeout, per operation. Operations that protect a rule you can't repair later should wait. Reads that tolerate staleness should keep answering.
+    source:
+      url: https://www.infoq.com/articles/cap-twelve-years-later-how-the-rules-have-changed/
+      title: CAP Twelve Years Later, Eric Brewer
+- id: why-stateless
+  skill: scale-stateless
+  asks: why
+  type: pick-one
+  prompt: Why keep sessions and job state out of an API server's memory and in a shared store?
+  reworded: What do you gain when no request depends on state held by one particular server?
+  options:
+    - text: Any instance can serve any request, so you can add, replace, or lose instances without losing anyone's work
+      correct: true
+      reason: That's what makes scaling out, rolling deploys, and crash recovery simple.
+    - text: Shared stores are always faster than local memory
+      reason: Local memory is faster. Statelessness trades a network hop for flexibility.
+    - text: It removes the need for a load balancer
+      reason: Stateless services are usually behind a load balancer. Statelessness lets it send requests anywhere.
+    - text: Sticky sessions are not supported by load balancers
+      reason: Many balancers support them. The twelve-factor guidance says not to rely on them.
+  lesson:
+    title: State goes to backing services
+    explanation: The twelve-factor app treats processes as stateless and share-nothing, with lasting data in a backing service like a database or Redis. Local memory can still be a cache that's allowed to be empty.
+    source:
+      url: https://12factor.net/processes
+      title: VI. Processes, The Twelve-Factor App
+- id: scale-up-or-out
+  skill: scale-stateless
+  asks: when
+  type: matching
+  prompt: Match each bottleneck to the change that fits it best.
+  reworded: For each of these limits, would you scale up, scale out, or do something else?
+  matchHeading: Change
+  matchName: a change
+  pairs:
+    - item: A stateless API fleet runs at 80% CPU at peak
+      match: Add more instances
+    - item: A single PostgreSQL primary is short on CPU, and its transactions need one node
+      match: Move to a bigger machine first
+    - item: Sync workers for one provider account sit waiting on that provider's rate limit
+      match: Neither, since the provider's limit sets the pace
+  extraMatches:
+    - Turn on sticky sessions
+  lesson:
+    title: Scale the part that's actually limited
+    explanation: Stateless services scale out easily. A stateful part like a single database usually scales up first, since that needs no redesign. A limit outside your system, like a provider's rate limit, doesn't move with either.
+- id: lb-algorithm-fit
+  skill: balance-load
+  asks: when
+  type: matching
+  prompt: Match each situation to the ALB routing setting that fits it.
+  reworded: Which load balancing setting suits each of these workloads?
+  matchHeading: Routing setting
+  matchName: a setting
+  pairs:
+    - item: Requests of similar cost, sent to identical instances
+      match: Round robin
+    - item: A quick record lookup next to a large export, sent to the same targets
+      match: Least outstanding requests
+    - item: New instances are slow until their caches warm up
+      match: Round robin with slow start
+    - item: You want traffic turned down on targets whose error rate stands out
+      match: Weighted random with anomaly mitigation
+  lesson:
+    title: Fit the algorithm to the requests
+    explanation: Round robin is ALB's default and suits even requests. Least outstanding requests suits uneven ones. Slow start only works with round robin, and anomaly mitigation only with weighted random.
+    source:
+      url: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/edit-target-group-attributes.html
+      title: Edit target group attributes for your Application Load Balancer
+- id: black-hole-least-requests
+  skill: balance-load
+  asks: why
+  type: pick-one
+  prompt: One instance starts failing every request within a millisecond. With least outstanding requests balancing, why does it make things worse?
+  reworded: How can a broken instance attract more traffic than healthy ones under least-requests balancing?
+  options:
+    - text: It finishes requests fastest, so it always has the fewest in progress and gets picked most
+      correct: true
+      reason: The balancer counts requests in progress, not successes, so fast failures look like spare capacity.
+    - text: It stops answering health checks, so the balancer fails open
+      reason: Failing open needs every target to be unhealthy. Here one target is the problem.
+    - text: Least outstanding requests ignores health checks
+      reason: It only routes to healthy targets. The trouble is that a fast-failing target can still pass a shallow check.
+    - text: Clients retry against the same instance
+      reason: Retries go through the balancer, which picks again, and it keeps picking the broken one.
+  lesson:
+    title: Fast failures look like spare capacity
+    explanation: The Builders' Library calls this a black hole in the fleet. Catch it with health checks that test what requests need locally and with error-rate detection, not only with request counts.
+    source:
+      url: https://builder.aws.com/content/3Ev53O39izHCtWLzp4XU6t8PC1O/implementing-health-checks
+      title: Implementing health checks, Amazon Builders' Library
+- id: alb-health-steps
+  skill: balance-load
+  asks: what
+  type: ordering
+  prompt: Put the life of an ALB target through its health checks in order, using the default settings.
+  reworded: With default settings, in what order does an ALB target move into and out of service?
+  steps:
+    - The target is registered with a target group.
+    - It passes one health check and starts getting requests.
+    - It fails two health checks in a row and is taken out of service.
+    - It passes five health checks in a row and is put back in service.
+  terms:
+    - term: Fail open
+      definition: When every target is unhealthy, ALB sends traffic to all of them anyway.
+  lesson:
+    title: Quick to remove, slow to return
+    explanation: By default, ALB checks instance and IP targets every 30 seconds. Two failures take a target out and five successes bring it back. If every target fails at once, ALB fails open.
+    source:
+      url: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-health-checks.html
+      title: Health checks for Application Load Balancer target groups
+- id: why-local-health-checks
+  skill: balance-load
+  asks: why
+  type: prompt
+  prompt: Why shouldn't an API server's load balancer health check fail when one of your providers, or the shared database, is down?
+  reworded: What goes wrong when load balancer health checks test shared dependencies?
+  points:
+    - A shared dependency failing makes every instance fail its check at the same moment.
+    - The balancer then removes the whole fleet, or fails open, so the check stops protecting anything.
+    - A provider outage would become a full outage of your API, even for reads that don't need that provider.
+    - Keep fast balancer checks to liveness and local health, and watch dependencies in systems that react more carefully.
+  misconception: That a deeper health check is always a safer one.
+  lesson:
+    title: Keep balancer checks local
+    explanation: The Builders' Library separates liveness, local health, and dependency health. Dependency checks can cascade a single failure across the fleet, so teams keep load balancer checks local and handle dependency health more carefully elsewhere.
+    source:
+      url: https://builder.aws.com/content/3Ev53O39izHCtWLzp4XU6t8PC1O/implementing-health-checks
+      title: Implementing health checks, Amazon Builders' Library
+- id: static-stability-capacity
+  skill: remove-single-points
+  asks: what
+  type: pick-one
+  prompt: A service runs in three Availability Zones and must survive losing one without launching anything new. How much should it over-provision?
+  reworded: To ride out the loss of one zone out of three with no new capacity, how much extra should you run?
+  options:
+    - text: About 50%, so each zone runs at about two thirds of its tested capacity
+      correct: true
+      reason: If one zone goes, the other two already hold enough capacity for the full load.
+    - text: None, since autoscaling will replace the lost zone
+      reason: Launching capacity during an outage depends on systems that may be impaired at the same time.
+    - text: 300%, a full copy in each zone
+      reason: That survives losing two zones, at three times the cost. Losing one zone needs much less.
+    - text: About 10%, for spikes
+      reason: Losing a zone removes a third of capacity, which 10% can't cover.
+  lesson:
+    title: Have the spare before you need it
+    explanation: The Builders' Library calls this static stability. Its three-zone example over-provisions by 50%, so each zone runs at about 66% of the level it was load-tested for.
+    source:
+      url: https://builder.aws.com/content/3K9SiqiJ369TGkkGzqPM95BuYWI/static-stability-using-availability-zones
+      title: Static stability using Availability Zones, Amazon Builders' Library
+- id: why-redundancy-correlated
+  skill: remove-single-points
+  asks: why
+  type: pick-one
+  prompt: Two copies of a service, each 99.9% available, should give about 99.9999% together. Why does that often fall far short in practice?
+  reworded: What stops two redundant copies from reaching the availability the math promises?
+  options:
+    - text: The math assumes independent failures, but copies often share a zone, a deploy, a config, or a certificate and fail together
+      correct: true
+      reason: When the same cause hits both copies, the pair is barely better than one.
+    - text: Load balancers can only use one copy at a time
+      reason: Balancers spread traffic across copies routinely.
+    - text: Redundant copies always slow each other down
+      reason: They don't have to. The issue is that they can fail for the same reason.
+    - text: Availability math only works for databases
+      reason: The math is general. Its assumption of independence is what breaks.
+  lesson:
+    title: Redundancy needs independence
+    explanation: AWS's reliability guidance computes redundant availability as 100% minus the product of the failure rates, for independent components. Spread copies across zones and roll changes out one zone at a time to keep failures independent.
+    source:
+      url: https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/availability.html
+      title: Availability, AWS Well-Architected Reliability Pillar
+- id: overload-collapse-steps
+  skill: shed-load
+  asks: what
+  type: ordering
+  prompt: Put the steps of an overload that feeds itself in order.
+  reworded: In what order does an unprotected service slide from too much traffic to almost no useful work?
+  steps:
+    - Requests arrive faster than the service can finish them.
+    - Queues grow, so latency grows.
+    - Latency passes the callers' timeouts.
+    - The service keeps working on requests whose callers already gave up.
+    - Callers retry, adding more load.
+    - Goodput falls toward zero while the service stays busy.
+  terms:
+    - term: Goodput
+      definition: The work finished in time to be useful, without errors.
+  lesson:
+    title: Wasted work is the danger
+    explanation: The Builders' Library says the last thing an overloaded system should do is waste work. Shedding excess early keeps the accepted work fast enough to count.
+    source:
+      url: https://builder.aws.com/content/3Eun1EEyX6p2e3VYNyRLSJzLuMV/using-load-shedding-to-avoid-overload
+      title: Using load shedding to avoid overload, Amazon Builders' Library
+- id: why-shed-early
+  skill: shed-load
+  asks: why
+  type: pick-one
+  prompt: Near its limit, an API server can reject extra requests at the door, or accept them all and let them wait. Why is rejecting at the door better?
+  reworded: What does an overloaded server gain by turning some requests away early instead of queueing everything?
+  options:
+    - text: A rejection costs almost nothing, and the requests it accepts stay fast enough to finish within their callers' timeouts
+      correct: true
+      reason: Queueing everything makes every request slow, so many time out and the work is wasted.
+    - text: Rejected requests never come back
+      reason: Callers usually retry, so a cheap, clear rejection with Retry-After is what you want.
+    - text: Queues can't hold more than a few requests
+      reason: Queues can grow very large. That's the problem, since they hide overload as latency.
+    - text: Rejecting requests raises throughput past the server's capacity
+      reason: Nothing raises capacity. Shedding keeps goodput near it.
+  lesson:
+    title: Fail some fast to serve the rest
+    explanation: Load shedding drops the excess where it's cheapest, before any work is done, so goodput stays near capacity as offered load keeps rising.
+    source:
+      url: https://builder.aws.com/content/3Eun1EEyX6p2e3VYNyRLSJzLuMV/using-load-shedding-to-avoid-overload
+      title: Using load shedding to avoid overload, Amazon Builders' Library
+- id: when-drop-queued
+  skill: shed-load
+  asks: when
+  type: pick-one
+  prompt: A request reaches the front of a worker's queue. When should the worker drop it without doing the work?
+  reworded: Which queued request is no longer worth processing?
+  options:
+    - text: When it has waited longer than its caller was willing to wait
+      correct: true
+      reason: The caller has already given up, so the answer would go nowhere and the work would be wasted.
+    - text: When it's the oldest request in the queue
+      reason: Oldest isn't the test. What matters is whether anyone is still waiting for the answer.
+    - text: When the queue has more than ten requests
+      reason: Length alone doesn't tell you which requests are still useful.
+    - text: Never, since dropping work loses data
+      reason: For a request whose caller timed out, the work has no one to deliver to. Durable jobs are a different case.
+  lesson:
+    title: Bound time in the queue
+    explanation: The Builders' Library suggests bounding how long a request can sit in a queue and passing deadlines along, so servers skip work whose caller has already gone.
+    source:
+      url: https://builder.aws.com/content/3Eun1EEyX6p2e3VYNyRLSJzLuMV/using-load-shedding-to-avoid-overload
+      title: Using load shedding to avoid overload, Amazon Builders' Library
+- id: backpressure-in-sync
+  skill: shed-load
+  asks: what
+  type: prompt
+  prompt: A provider comes back after a long outage, and every waiting sync fires at once while customers also ask for on-demand refreshes. How do back-pressure and load shedding keep the platform healthy?
+  reworded: Describe how a sync platform should push back and shed load when a burst of work arrives after a provider recovers.
+  points:
+    - Bounded queues between stages, so a full stage slows its producers instead of growing without limit.
+    - Workers take only the messages they can finish, and the API answers 429 with Retry-After when it's full.
+    - Requests carry a priority, so on-demand refreshes go first and backfills pause first.
+    - Degrade before failing, like serving stored data instead of a live provider call.
+    - Test past the breaking point, so goodput levels off instead of collapsing.
+  lesson:
+    title: Push back, then shed by priority
+    explanation: The SRE book tags requests with a criticality and sheds the lowest first, and it serves degraded answers before errors. Back-pressure keeps each stage within what it can finish.
+    source:
+      url: https://sre.google/sre-book/handling-overload/
+      title: Handling Overload, Site Reliability Engineering
+- id: what-each-choice-costs
+  skill: weigh-cost
+  asks: what
+  type: matching
+  prompt: Match each design choice to what it costs.
+  reworded: What price do you pay for each of these design choices?
+  matchHeading: What it costs
+  matchName: a cost
+  pairs:
+    - item: Over-provisioning by 50% across three zones
+      match: Capacity that sits idle most of the time
+    - item: Hedging slow reads after the 95th percentile
+      match: A few percent more load on the store
+    - item: Strongly consistent DynamoDB reads
+      match: More read capacity and more latency
+    - item: Keeping every raw provider payload in object storage
+      match: Storage that grows with every fetch
+  extraMatches:
+    - Nothing, once it's built
+  lesson:
+    title: Every technique has a price
+    explanation: Name the price next to the benefit. A strongly consistent DynamoDB read, for example, uses more read capacity than the eventually consistent default.
+    source:
+      url: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithItems.html
+      title: Working with items and attributes in DynamoDB
+- id: why-each-nine-costs
+  skill: weigh-cost
+  asks: why
+  type: prompt
+  prompt: Why does each extra nine of availability cost much more than the last, and how should that shape the target you set?
+  reworded: What makes 99.99% so much more expensive than 99.9%, and how do you pick a target?
+  points:
+    - The downtime budget shrinks tenfold, until people can't respond in time and recovery has to be automatic.
+    - Higher targets need more testing of failure cases, and slower, more careful releases.
+    - Every change, like adding capacity or migrating data, has to meet the same standard.
+    - Fewer dependencies are good enough to rely on, so choices narrow.
+    - Set the target each path needs, like higher for customer reads than for a nightly report.
+  misconception: That more nines are always worth having.
+  lesson:
+    title: Buy the nines the business needs
+    explanation: AWS's reliability guidance notes that higher availability goals raise costs in testing, automation, release speed, and the choice of dependencies, so identify the real need before designing.
+    source:
+      url: https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/availability.html
+      title: Availability, AWS Well-Architected Reliability Pillar

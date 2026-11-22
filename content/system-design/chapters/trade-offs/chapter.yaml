@@ -1,0 +1,20 @@
+id: trade-offs
+title: Trade-off fundamentals
+order: 2
+skills:
+  - id: measure-latency
+    name: Tell latency from throughput and read p50, p99, and the tail
+  - id: budget-downtime
+    name: Turn availability nines into a downtime budget
+  - id: apply-cap-pacelc
+    name: State CAP and PACELC carefully and use them in a design
+  - id: scale-stateless
+    name: Keep services stateless and choose horizontal or vertical scaling
+  - id: balance-load
+    name: Spread load with round robin, least connections, and health checks
+  - id: remove-single-points
+    name: Find single points of failure and add redundancy across zones
+  - id: shed-load
+    name: Push back and shed load when demand passes capacity
+  - id: weigh-cost
+    name: Treat cost as a design constraint
