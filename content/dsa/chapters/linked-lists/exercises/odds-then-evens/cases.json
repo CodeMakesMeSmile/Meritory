@@ -1,0 +1,82 @@
+{
+  "exercise": "odds-then-evens",
+  "cases": [
+    {
+      "uuid": "90f014be-669f-43bb-b2a0-9bd918f274c9",
+      "description": "an odd number of guests",
+      "property": "oddsThenEvens",
+      "input": {
+        "guests": [1, 2, 3, 4, 5]
+      },
+      "expected": [1, 3, 5, 2, 4]
+    },
+    {
+      "uuid": "49c753ca-fd97-494a-829f-638e3628cf4f",
+      "description": "an even number of guests",
+      "property": "oddsThenEvens",
+      "input": {
+        "guests": [10, 20, 30, 40, 50, 60]
+      },
+      "expected": [10, 30, 50, 20, 40, 60]
+    },
+    {
+      "uuid": "5771c07a-36af-4c78-b721-59f94f516701",
+      "description": "three guests",
+      "property": "oddsThenEvens",
+      "input": {
+        "guests": [5, 6, 7]
+      },
+      "expected": [5, 7, 6]
+    },
+    {
+      "uuid": "f62aa012-5110-49d0-a1e4-c1ac15baeba8",
+      "description": "the groups come from positions, not values",
+      "property": "oddsThenEvens",
+      "input": {
+        "guests": [9, 3, 8, 1, 7]
+      },
+      "expected": [9, 8, 7, 3, 1]
+    },
+    {
+      "uuid": "45d65563-f504-44c6-a44d-86f36ffe9b2a",
+      "description": "repeated guest numbers",
+      "property": "oddsThenEvens",
+      "input": {
+        "guests": [2, 1, 2, 1, 2, 1]
+      },
+      "expected": [2, 2, 2, 1, 1, 1]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "a207157e-f7ed-4fa2-95fa-5f33a2f534d7",
+          "description": "no guests",
+          "property": "oddsThenEvens",
+          "input": {
+            "guests": []
+          },
+          "expected": []
+        },
+        {
+          "uuid": "75d03f81-23b5-433b-b958-9a788181bcb7",
+          "description": "one guest",
+          "property": "oddsThenEvens",
+          "input": {
+            "guests": [5]
+          },
+          "expected": [5]
+        },
+        {
+          "uuid": "aee07875-5d7e-49e8-b3b5-ca649b9fd99f",
+          "description": "two guests stay as they are",
+          "property": "oddsThenEvens",
+          "input": {
+            "guests": [5, 6]
+          },
+          "expected": [5, 6]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "exercise": "richest-route",
+  "cases": [
+    {
+      "uuid": "15ab9ebb-18b0-4469-9f09-8bfa5549c71f",
+      "description": "the best route bends below the entrance",
+      "property": "richestRoute",
+      "input": {
+        "mine": [-20, 4, 30, null, null, 12, 9]
+      },
+      "expected": 51
+    },
+    {
+      "uuid": "03437b4a-2612-44a9-9870-bfadd7f0fecb",
+      "description": "the best route goes through the entrance",
+      "property": "richestRoute",
+      "input": {
+        "mine": [1, 2, 3]
+      },
+      "expected": 6
+    },
+    {
+      "uuid": "18f23a9e-f967-444c-92de-f4ea127baeb5",
+      "description": "every chamber costs, so one chamber is best",
+      "property": "richestRoute",
+      "input": {
+        "mine": [-3, -1, -4]
+      },
+      "expected": -1
+    },
+    {
+      "uuid": "a3f61d97-5dcf-49e7-9f47-a6b9dde96365",
+      "description": "a costly chamber is worth crossing",
+      "property": "richestRoute",
+      "input": {
+        "mine": [5, 6, -2, null, null, null, 8]
+      },
+      "expected": 17
+    },
+    {
+      "uuid": "3356a803-5189-485f-80e1-69602c2eb50e",
+      "description": "a costly chamber is not worth crossing",
+      "property": "richestRoute",
+      "input": {
+        "mine": [5, 6, -20, null, null, null, 8]
+      },
+      "expected": 11
+    },
+    {
+      "uuid": "ef4b0b67-7c2b-4678-8a3a-8037386f2ac1",
+      "description": "the best route runs straight down",
+      "property": "richestRoute",
+      "input": {
+        "mine": [2, null, 3, null, -1, null, 4]
+      },
+      "expected": 8
+    },
+    {
+      "uuid": "af8f440c-51fc-4151-b8e2-23af5561ddc7",
+      "description": "chambers worth nothing",
+      "property": "richestRoute",
+      "input": {
+        "mine": [0, 0, 0]
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "1e2b671b-c5ff-4b2d-bcdd-d37d98578ee0",
+      "description": "a mix of ore and costs",
+      "property": "richestRoute",
+      "input": {
+        "mine": [10, 2, 10, 20, 1, null, -25, null, null, null, null, 3, 4]
+      },
+      "expected": 42
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "c90cb6d6-ab8f-4439-9fc7-16078fb76515",
+          "description": "one costly chamber",
+          "property": "richestRoute",
+          "input": {
+            "mine": [-7]
+          },
+          "expected": -7
+        },
+        {
+          "uuid": "8a348878-a6fe-44da-aaa8-e7ed72d78481",
+          "description": "one chamber with ore",
+          "property": "richestRoute",
+          "input": {
+            "mine": [7]
+          },
+          "expected": 7
+        }
+      ]
+    }
+  ]
+}

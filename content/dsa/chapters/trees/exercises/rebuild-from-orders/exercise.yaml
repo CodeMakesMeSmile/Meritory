@@ -1,0 +1,19 @@
+id: rebuild-from-orders
+kind: coding
+title: Rebuild the pipe plan
+difficulty: medium
+skills:
+  - dfs-orders
+  - build-and-serialize
+sibling: pack-the-tree
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: rebuildTree
+  params:
+    - name: preorder
+      type: int[]
+    - name: inorder
+      type: int[]
+  returns: TreeNode

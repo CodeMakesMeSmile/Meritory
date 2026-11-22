@@ -1,0 +1,100 @@
+{
+  "exercise": "last-to-front",
+  "cases": [
+    {
+      "uuid": "feab26c5-295d-4f22-aee2-96a1370831c8",
+      "description": "moves the last two cards",
+      "property": "lastToFront",
+      "input": {
+        "cards": [1, 2, 3, 4, 5],
+        "k": 2
+      },
+      "expected": [4, 5, 1, 2, 3]
+    },
+    {
+      "uuid": "6e2ce05e-0ed1-4e9d-98e5-fcbc9683daa7",
+      "description": "moves the last card",
+      "property": "lastToFront",
+      "input": {
+        "cards": [1, 2, 3, 4, 5],
+        "k": 1
+      },
+      "expected": [5, 1, 2, 3, 4]
+    },
+    {
+      "uuid": "503180b0-7528-4784-b8d4-78b3c1b83def",
+      "description": "moves all but the first card",
+      "property": "lastToFront",
+      "input": {
+        "cards": [1, 2, 3, 4, 5],
+        "k": 4
+      },
+      "expected": [2, 3, 4, 5, 1]
+    },
+    {
+      "uuid": "1b8fbb8d-9b1f-4e26-8cf2-902e87b4a5b6",
+      "description": "moving no cards changes nothing",
+      "property": "lastToFront",
+      "input": {
+        "cards": [1, 2, 3, 4, 5],
+        "k": 0
+      },
+      "expected": [1, 2, 3, 4, 5]
+    },
+    {
+      "uuid": "06ad9382-bff5-4a68-b2ff-e6b653dc60cf",
+      "description": "moving every card changes nothing",
+      "property": "lastToFront",
+      "input": {
+        "cards": [1, 2, 3, 4, 5],
+        "k": 5
+      },
+      "expected": [1, 2, 3, 4, 5]
+    },
+    {
+      "uuid": "94ba7ad2-dae7-4194-8f6d-d8c45212741c",
+      "description": "repeated card numbers",
+      "property": "lastToFront",
+      "input": {
+        "cards": [2, 2, 7, 2],
+        "k": 2
+      },
+      "expected": [7, 2, 2, 2]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "2c005dcc-19eb-460b-8658-eeb4371afaee",
+          "description": "an empty deck",
+          "property": "lastToFront",
+          "input": {
+            "cards": [],
+            "k": 0
+          },
+          "expected": []
+        },
+        {
+          "uuid": "92cfb73f-f3ac-40af-b6d3-dd5de5e45377",
+          "description": "one card",
+          "property": "lastToFront",
+          "input": {
+            "cards": [8],
+            "k": 1
+          },
+          "expected": [8]
+        },
+        {
+          "uuid": "9a40ea93-5cc3-4ef8-b80c-26e57d900d35",
+          "description": "two cards swap",
+          "property": "lastToFront",
+          "input": {
+            "cards": [8, 3],
+            "k": 1
+          },
+          "expected": [3, 8]
+        }
+      ]
+    }
+  ]
+}

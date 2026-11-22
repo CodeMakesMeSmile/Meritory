@@ -1,0 +1,19 @@
+id: loop-entry
+kind: coding
+title: Where the robot starts looping
+difficulty: medium
+skills:
+  - detect-cycle
+sibling: endless-hunt
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: loopEntry
+  params:
+    - name: route
+      type: ListNode
+    - name: loopsTo
+      type: int
+      hidden: true
+  returns: int

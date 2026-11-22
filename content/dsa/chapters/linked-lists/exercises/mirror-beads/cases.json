@@ -1,0 +1,100 @@
+{
+  "exercise": "mirror-beads",
+  "cases": [
+    {
+      "uuid": "6e65f6cf-4c46-4c2c-910b-26656f623cb5",
+      "description": "an even strand that mirrors",
+      "property": "readsBothWays",
+      "input": {
+        "beads": [1, 2, 2, 1]
+      },
+      "expected": true
+    },
+    {
+      "uuid": "275da794-6918-40b2-b236-d0d429004aa7",
+      "description": "an odd strand that mirrors",
+      "property": "readsBothWays",
+      "input": {
+        "beads": [3, 1, 4, 1, 3]
+      },
+      "expected": true
+    },
+    {
+      "uuid": "2e752bc0-7688-4133-84fe-3dc379959783",
+      "description": "the ends match but the middle doesn't",
+      "property": "readsBothWays",
+      "input": {
+        "beads": [1, 2, 3, 1]
+      },
+      "expected": false
+    },
+    {
+      "uuid": "6c0d699a-f920-4688-abdc-d6e23331a8d2",
+      "description": "a pattern that repeats but doesn't mirror",
+      "property": "readsBothWays",
+      "input": {
+        "beads": [1, 2, 1, 2]
+      },
+      "expected": false
+    },
+    {
+      "uuid": "e6cd6b06-d427-4081-811b-db11e4dc967c",
+      "description": "only the last bead differs",
+      "property": "readsBothWays",
+      "input": {
+        "beads": [9, 8, 7, 8, 8]
+      },
+      "expected": false
+    },
+    {
+      "uuid": "f2cd3d1a-8285-4bd1-8c64-13904d885c55",
+      "description": "a longer strand that mirrors",
+      "property": "readsBothWays",
+      "input": {
+        "beads": [1, 2, 3, 4, 5, 4, 3, 2, 1]
+      },
+      "expected": true
+    },
+    {
+      "uuid": "c02f37cf-8b2c-4dd0-8ee5-106a25bcd8e0",
+      "description": "a longer even strand that mirrors",
+      "property": "readsBothWays",
+      "input": {
+        "beads": [5, 4, 3, 3, 4, 5]
+      },
+      "expected": true
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "24d13a5d-d867-4c87-9967-68b7cd449a19",
+          "description": "one bead",
+          "property": "readsBothWays",
+          "input": {
+            "beads": [1]
+          },
+          "expected": true
+        },
+        {
+          "uuid": "f903f38d-56e0-499b-ab03-9c33a9aadcf8",
+          "description": "two matching beads",
+          "property": "readsBothWays",
+          "input": {
+            "beads": [6, 6]
+          },
+          "expected": true
+        },
+        {
+          "uuid": "2851f18c-2b17-4b68-b44e-cedee5377747",
+          "description": "two different beads",
+          "property": "readsBothWays",
+          "input": {
+            "beads": [6, 7]
+          },
+          "expected": false
+        }
+      ]
+    }
+  ]
+}

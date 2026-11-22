@@ -1,0 +1,16 @@
+id: odds-then-evens
+kind: coding
+title: Odd seats first
+difficulty: medium
+skills:
+  - reorder-in-place
+sibling: alternate-courses
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: oddsThenEvens
+  params:
+    - name: guests
+      type: ListNode
+  returns: ListNode

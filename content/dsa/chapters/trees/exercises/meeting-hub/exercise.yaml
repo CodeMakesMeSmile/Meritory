@@ -1,0 +1,21 @@
+id: meeting-hub
+kind: coding
+title: Where two parcel routes split
+difficulty: easy
+skills:
+  - lowest-ancestor
+  - bst-rules
+sibling: common-lead
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: meetingHub
+  params:
+    - name: hubs
+      type: TreeNode
+    - name: a
+      type: int
+    - name: b
+      type: int
+  returns: int

@@ -1,0 +1,16 @@
+id: middle-stop
+kind: coding
+title: The middle stop
+difficulty: easy
+skills:
+  - find-middle
+sibling: mirror-beads
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: middleStop
+  params:
+    - name: stops
+      type: ListNode
+  returns: int

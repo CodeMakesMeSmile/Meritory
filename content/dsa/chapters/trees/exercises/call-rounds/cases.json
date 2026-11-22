@@ -1,0 +1,82 @@
+{
+  "exercise": "call-rounds",
+  "cases": [
+    {
+      "uuid": "2cea1925-54d7-4f0c-94f0-a0845dac533a",
+      "description": "lists each round of calls",
+      "property": "callRounds",
+      "input": {
+        "tree": [1, 2, 3, 4, null, 5, 6]
+      },
+      "expected": [[1], [2, 3], [4, 5, 6]]
+    },
+    {
+      "uuid": "fb8fe365-0cc9-4187-82c3-a731330a0cae",
+      "description": "a full tree of four levels",
+      "property": "callRounds",
+      "input": {
+        "tree": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+      },
+      "expected": [[1], [2, 3], [4, 5, 6, 7], [8, 9, 10, 11, 12, 13, 14, 15]]
+    },
+    {
+      "uuid": "40a99175-88d0-45a2-a0fc-968aadbe35e2",
+      "description": "one call in each round",
+      "property": "callRounds",
+      "input": {
+        "tree": [3, 2, null, 1]
+      },
+      "expected": [[3], [2], [1]]
+    },
+    {
+      "uuid": "963091b1-75d1-4520-8bd8-944058cac1dc",
+      "description": "rounds of different sizes",
+      "property": "callRounds",
+      "input": {
+        "tree": [1, 2, 3, null, 4, null, 5, 6]
+      },
+      "expected": [[1], [2, 3], [4, 5], [6]]
+    },
+    {
+      "uuid": "e7295654-d651-432f-b0ca-4f0439011eb0",
+      "description": "repeated numbers",
+      "property": "callRounds",
+      "input": {
+        "tree": [2, 2, 2]
+      },
+      "expected": [[2], [2, 2]]
+    },
+    {
+      "uuid": "5a11d6cd-4bd6-4473-8d7b-faaebba070c4",
+      "description": "negative numbers",
+      "property": "callRounds",
+      "input": {
+        "tree": [0, -1, 1, -2]
+      },
+      "expected": [[0], [-1, 1], [-2]]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "23d056d2-485e-4c82-a86a-6ea09b1943fd",
+          "description": "nobody to call",
+          "property": "callRounds",
+          "input": {
+            "tree": []
+          },
+          "expected": []
+        },
+        {
+          "uuid": "27a0af17-81d6-4232-a480-e069593b4561",
+          "description": "one person",
+          "property": "callRounds",
+          "input": {
+            "tree": [7]
+          },
+          "expected": [[7]]
+        }
+      ]
+    }
+  ]
+}

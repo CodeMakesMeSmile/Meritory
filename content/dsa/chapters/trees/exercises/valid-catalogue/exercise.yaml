@@ -1,0 +1,16 @@
+id: valid-catalogue
+kind: coding
+title: Is the catalogue still in order?
+difficulty: medium
+skills:
+  - bst-rules
+sibling: price-band-total
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: isSearchTree
+  params:
+    - name: index
+      type: TreeNode
+  returns: boolean

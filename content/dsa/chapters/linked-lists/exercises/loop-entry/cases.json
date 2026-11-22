@@ -1,0 +1,124 @@
+{
+  "exercise": "loop-entry",
+  "cases": [
+    {
+      "uuid": "c70d8445-a085-43f8-b799-f0ddb5173989",
+      "description": "the robot loops back to the third stop",
+      "property": "loopEntry",
+      "input": {
+        "route": [12, 7, 30, 7, 18, 25],
+        "loopsTo": 2
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "7f22c9a7-caf1-4462-b74e-0c6c89672194",
+      "description": "the route has no loop",
+      "property": "loopEntry",
+      "input": {
+        "route": [12, 7, 30, 7, 18, 25],
+        "loopsTo": -1
+      },
+      "expected": -1
+    },
+    {
+      "uuid": "20a6f553-962b-480e-9486-bb34949fb093",
+      "description": "the loop is the whole route",
+      "property": "loopEntry",
+      "input": {
+        "route": [12, 7, 30, 7, 18, 25],
+        "loopsTo": 0
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "6fb218ee-d64d-42e6-9fdb-82cc40e4c188",
+      "description": "the last stop sends the robot to itself",
+      "property": "loopEntry",
+      "input": {
+        "route": [12, 7, 30, 7, 18, 25],
+        "loopsTo": 5
+      },
+      "expected": 5
+    },
+    {
+      "uuid": "f9001ab0-0569-4ec2-b3cd-36943d35cd02",
+      "description": "every stop holds the same shelf number",
+      "property": "loopEntry",
+      "input": {
+        "route": [4, 4, 4, 4, 4, 4],
+        "loopsTo": 3
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "b216830f-04a9-4e7f-88ce-f2f8057ffc94",
+      "description": "a long lead in and a short loop",
+      "property": "loopEntry",
+      "input": {
+        "route": [
+          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20
+        ],
+        "loopsTo": 17
+      },
+      "expected": 17
+    },
+    {
+      "uuid": "45c0de46-3e5a-4e59-86c2-854c5c7bc52d",
+      "description": "a short lead in and a long loop",
+      "property": "loopEntry",
+      "input": {
+        "route": [
+          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20
+        ],
+        "loopsTo": 1
+      },
+      "expected": 1
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "6c336e63-e229-4e44-bd7b-51de41c5d7e3",
+          "description": "no stops",
+          "property": "loopEntry",
+          "input": {
+            "route": [],
+            "loopsTo": -1
+          },
+          "expected": -1
+        },
+        {
+          "uuid": "617d1659-8f2d-4523-99c3-34f518ddda79",
+          "description": "one stop with no loop",
+          "property": "loopEntry",
+          "input": {
+            "route": [9],
+            "loopsTo": -1
+          },
+          "expected": -1
+        },
+        {
+          "uuid": "4b9d22ac-6794-478e-bc23-c2cb6742f0a5",
+          "description": "one stop that sends the robot to itself",
+          "property": "loopEntry",
+          "input": {
+            "route": [9],
+            "loopsTo": 0
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "c77025d9-cdf4-4838-b0b5-f929d2a36057",
+          "description": "two stops where the second loops to itself",
+          "property": "loopEntry",
+          "input": {
+            "route": [1, 2],
+            "loopsTo": 1
+          },
+          "expected": 1
+        }
+      ]
+    }
+  ]
+}

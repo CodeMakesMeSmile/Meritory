@@ -1,0 +1,82 @@
+{
+  "exercise": "longest-trail",
+  "cases": [
+    {
+      "uuid": "b65e58ed-6dc7-4369-97c9-528742faa403",
+      "description": "the longest walk passes the entrance",
+      "property": "longestTrail",
+      "input": {
+        "trails": [1, 2, 3, 4, 5]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "07e906d4-259a-47bb-a5b8-cf5b0cc20f9b",
+      "description": "the longest walk stays on one side",
+      "property": "longestTrail",
+      "input": {
+        "trails": [1, 2, null, 3, 4, 5, null, null, 6, 7, null, null, 8]
+      },
+      "expected": 6
+    },
+    {
+      "uuid": "ca6e642f-6657-4d3a-8c3e-48ae26b12829",
+      "description": "a full tree of three levels",
+      "property": "longestTrail",
+      "input": {
+        "trails": [1, 2, 3, 4, 5, 6, 7]
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "0d3c0b69-f512-4504-b561-eeee0c01ff01",
+      "description": "one long trail",
+      "property": "longestTrail",
+      "input": {
+        "trails": [1, 2, null, 3, null, 4]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "22067967-59ff-4a4b-a3e7-c3af8d2c1fcb",
+      "description": "one deep side and one short side",
+      "property": "longestTrail",
+      "input": {
+        "trails": [1, 2, 3, 4, null, null, null, 5, null, 6]
+      },
+      "expected": 5
+    },
+    {
+      "uuid": "178f6e73-277e-4054-8f16-3c87c702f8c5",
+      "description": "junction numbers don't matter",
+      "property": "longestTrail",
+      "input": {
+        "trails": [-1, -1, -1]
+      },
+      "expected": 2
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "b156a779-03e7-414d-a057-af5af35b6fc8",
+          "description": "one junction",
+          "property": "longestTrail",
+          "input": {
+            "trails": [9]
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "9b6ded8d-3d4b-4f72-be72-0ec811e4947b",
+          "description": "two junctions",
+          "property": "longestTrail",
+          "input": {
+            "trails": [9, 4]
+          },
+          "expected": 1
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+id: mirror-beads
+kind: coding
+title: A strand that mirrors
+difficulty: medium
+skills:
+  - find-middle
+  - reverse-pointers
+sibling: middle-stop
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: readsBothWays
+  params:
+    - name: beads
+      type: ListNode
+  returns: boolean

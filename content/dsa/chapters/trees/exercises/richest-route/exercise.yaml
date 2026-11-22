@@ -1,0 +1,17 @@
+id: richest-route
+kind: coding
+title: The richest route through the mine
+difficulty: hard
+skills:
+  - values-up
+  - state-down
+sibling: longest-trail
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: richestRoute
+  params:
+    - name: mine
+      type: TreeNode
+  returns: int

@@ -1,0 +1,16 @@
+id: backwards-playlist
+kind: coding
+title: Play it backwards
+difficulty: easy
+skills:
+  - reverse-pointers
+sibling: flip-a-stretch
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: reversePlaylist
+  params:
+    - name: songs
+      type: ListNode
+  returns: ListNode

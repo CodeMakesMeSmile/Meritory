@@ -1,0 +1,17 @@
+id: merge-all-gates
+kind: coding
+title: Every gate in one list
+difficulty: hard
+skills:
+  - merge-sorted-lists
+  - dummy-head
+sibling: merge-deliveries
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: mergeGates
+  params:
+    - name: gates
+      type: ListNode[]
+  returns: ListNode

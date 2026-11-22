@@ -1,0 +1,109 @@
+{
+  "exercise": "valid-catalogue",
+  "cases": [
+    {
+      "uuid": "d91d3583-9945-45ea-890c-5b9024c3ad4a",
+      "description": "every number is on the right side",
+      "property": "isSearchTree",
+      "input": {
+        "index": [8, 4, 12, 2, 6, 10, 14]
+      },
+      "expected": true
+    },
+    {
+      "uuid": "3e67b0d7-950a-4128-a9d9-8cd53af3068b",
+      "description": "a number deep in the left branch is too big",
+      "property": "isSearchTree",
+      "input": {
+        "index": [8, 4, 12, 2, 9, 10, 14]
+      },
+      "expected": false
+    },
+    {
+      "uuid": "1a5929b6-3d12-4c38-8af5-ee217442343f",
+      "description": "a number deep in the right branch is too small",
+      "property": "isSearchTree",
+      "input": {
+        "index": [10, null, 15, 8, 20]
+      },
+      "expected": false
+    },
+    {
+      "uuid": "a7c83911-9c62-485d-9747-851f93644c34",
+      "description": "a valid tree that leans right",
+      "property": "isSearchTree",
+      "input": {
+        "index": [10, null, 15, 12, 20]
+      },
+      "expected": true
+    },
+    {
+      "uuid": "cf0831dc-ea97-48e1-ad9f-cab030e5b1c6",
+      "description": "a repeated number on the left",
+      "property": "isSearchTree",
+      "input": {
+        "index": [5, 5]
+      },
+      "expected": false
+    },
+    {
+      "uuid": "c946710b-80c7-463d-a0eb-26e6070f6e58",
+      "description": "a repeated number on the right",
+      "property": "isSearchTree",
+      "input": {
+        "index": [5, null, 5]
+      },
+      "expected": false
+    },
+    {
+      "uuid": "8cdc8918-a7d6-4033-9395-0efcc33f992c",
+      "description": "a child out of order with its parent",
+      "property": "isSearchTree",
+      "input": {
+        "index": [5, 7, 9]
+      },
+      "expected": false
+    },
+    {
+      "uuid": "9ebf2c0b-df5c-4d4e-8023-b8d3f83c75a7",
+      "description": "the smallest and largest numbers",
+      "property": "isSearchTree",
+      "input": {
+        "index": [-2147483648, null, 2147483647]
+      },
+      "expected": true
+    },
+    {
+      "uuid": "9e9f9872-ea2c-4357-83fb-a0656707c965",
+      "description": "the largest number at the top",
+      "property": "isSearchTree",
+      "input": {
+        "index": [2147483647, -2147483648]
+      },
+      "expected": true
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "ee372da7-e623-4a20-8675-b2e714fb39ea",
+          "description": "an empty index",
+          "property": "isSearchTree",
+          "input": {
+            "index": []
+          },
+          "expected": true
+        },
+        {
+          "uuid": "fbffba96-7c4b-40ab-8327-2f2ab3a97dae",
+          "description": "one number",
+          "property": "isSearchTree",
+          "input": {
+            "index": [1]
+          },
+          "expected": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "exercise": "lookout-count",
+  "cases": [
+    {
+      "uuid": "deb3c8fa-6845-4083-b37a-348c20fff7ab",
+      "description": "counts stations at least as high as all before them",
+      "property": "countLookouts",
+      "input": {
+        "stations": [5, 3, 8, 6, 1, 7, 9]
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "025d3245-ecaa-432b-8ad9-ce86b5e32f25",
+      "description": "stations at the same height all count",
+      "property": "countLookouts",
+      "input": {
+        "stations": [2, 2, 2, 2]
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "55a5dc6b-ec25-49a1-a054-c70b3a6882e0",
+      "description": "heights that only fall",
+      "property": "countLookouts",
+      "input": {
+        "stations": [5, 4, null, 3]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "9c30c059-465f-4ce0-9a9f-753068014296",
+      "description": "heights that only rise",
+      "property": "countLookouts",
+      "input": {
+        "stations": [1, null, 2, null, 3]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "0cc2f117-772f-431e-9321-a2e72ff3288e",
+      "description": "a dip and then a rise",
+      "property": "countLookouts",
+      "input": {
+        "stations": [10, 2, null, 11, null, 10]
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "e300c1b3-0da3-4235-8ff3-44dc60264184",
+      "description": "heights below sea level",
+      "property": "countLookouts",
+      "input": {
+        "stations": [-1, -5, -1]
+      },
+      "expected": 2
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "56a1b751-8474-49bf-b057-781265889e8e",
+          "description": "one station",
+          "property": "countLookouts",
+          "input": {
+            "stations": [3]
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "8d992527-af0c-4946-80d2-07208bbd6469",
+          "description": "a lower second station",
+          "property": "countLookouts",
+          "input": {
+            "stations": [3, 1]
+          },
+          "expected": 1
+        }
+      ]
+    }
+  ]
+}

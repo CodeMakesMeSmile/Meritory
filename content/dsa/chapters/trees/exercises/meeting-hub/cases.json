@@ -1,0 +1,109 @@
+{
+  "exercise": "meeting-hub",
+  "cases": [
+    {
+      "uuid": "5ad305cf-9ce2-4e0b-b259-6b89f59424ce",
+      "description": "the routes split below the main hub",
+      "property": "meetingHub",
+      "input": {
+        "hubs": [40, 20, 60, 10, 30, 50, 70],
+        "a": 10,
+        "b": 30
+      },
+      "expected": 20
+    },
+    {
+      "uuid": "46635420-5a89-45d0-b618-2e41e5e64747",
+      "description": "the routes split at the main hub",
+      "property": "meetingHub",
+      "input": {
+        "hubs": [40, 20, 60, 10, 30, 50, 70],
+        "a": 10,
+        "b": 70
+      },
+      "expected": 40
+    },
+    {
+      "uuid": "8c7e8954-f5b6-4ab9-bb7f-78944ffd45cb",
+      "description": "one hub is above the other",
+      "property": "meetingHub",
+      "input": {
+        "hubs": [40, 20, 60, 10, 30, 50, 70],
+        "a": 20,
+        "b": 10
+      },
+      "expected": 20
+    },
+    {
+      "uuid": "4314b09d-11a5-4fd2-8a86-d7ee00b26ade",
+      "description": "the same hub twice",
+      "property": "meetingHub",
+      "input": {
+        "hubs": [40, 20, 60, 10, 30, 50, 70],
+        "a": 50,
+        "b": 50
+      },
+      "expected": 50
+    },
+    {
+      "uuid": "e2c8a303-17f7-4f17-bf68-b62362dd6ca4",
+      "description": "two leaves far down",
+      "property": "meetingHub",
+      "input": {
+        "hubs": [50, 30, 70, 20, 40, null, null, 10, 25, 35, 45],
+        "a": 25,
+        "b": 35
+      },
+      "expected": 30
+    },
+    {
+      "uuid": "edb2d77d-6640-4d3b-a555-8d7e313bb806",
+      "description": "two hubs that share a parent deep down",
+      "property": "meetingHub",
+      "input": {
+        "hubs": [50, 30, 70, 20, 40, null, null, 10, 25, 35, 45],
+        "a": 10,
+        "b": 25
+      },
+      "expected": 20
+    },
+    {
+      "uuid": "70ab5233-029b-4f3b-b468-8d76a47dd210",
+      "description": "across the main hub from deep down",
+      "property": "meetingHub",
+      "input": {
+        "hubs": [50, 30, 70, 20, 40, null, null, 10, 25, 35, 45],
+        "a": 45,
+        "b": 70
+      },
+      "expected": 50
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "677d216e-5648-4010-a613-e558c9b50c0c",
+          "description": "one hub",
+          "property": "meetingHub",
+          "input": {
+            "hubs": [1],
+            "a": 1,
+            "b": 1
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "bde7a378-f26b-4c23-9a4e-c491d85a5b53",
+          "description": "the main hub and its child",
+          "property": "meetingHub",
+          "input": {
+            "hubs": [2, 1],
+            "a": 1,
+            "b": 2
+          },
+          "expected": 2
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+id: east-view
+kind: coding
+title: Lanterns seen from the east
+difficulty: medium
+skills:
+  - level-order
+sibling: call-rounds
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: seenFromEast
+  params:
+    - name: lanterns
+      type: TreeNode
+  returns: int[]

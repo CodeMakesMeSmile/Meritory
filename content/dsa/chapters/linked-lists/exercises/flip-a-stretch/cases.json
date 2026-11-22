@@ -1,0 +1,109 @@
+{
+  "exercise": "flip-a-stretch",
+  "cases": [
+    {
+      "uuid": "0a142bcd-75f0-4851-a738-6518ad67af63",
+      "description": "turns a run in the middle",
+      "property": "turnCars",
+      "input": {
+        "train": [10, 20, 30, 40, 50],
+        "first": 2,
+        "last": 4
+      },
+      "expected": [10, 40, 30, 20, 50]
+    },
+    {
+      "uuid": "9d8b4489-34aa-411a-91f8-464504c0af1e",
+      "description": "the run starts with the first car",
+      "property": "turnCars",
+      "input": {
+        "train": [10, 20, 30, 40, 50],
+        "first": 1,
+        "last": 3
+      },
+      "expected": [30, 20, 10, 40, 50]
+    },
+    {
+      "uuid": "c89a410d-6c66-4965-ad3c-45e403e27ddc",
+      "description": "the run ends with the last car",
+      "property": "turnCars",
+      "input": {
+        "train": [10, 20, 30, 40, 50],
+        "first": 3,
+        "last": 5
+      },
+      "expected": [10, 20, 50, 40, 30]
+    },
+    {
+      "uuid": "8b06793f-34c0-4236-8e1e-4c94d2b4cfc1",
+      "description": "the run is the whole train",
+      "property": "turnCars",
+      "input": {
+        "train": [10, 20, 30, 40, 50],
+        "first": 1,
+        "last": 5
+      },
+      "expected": [50, 40, 30, 20, 10]
+    },
+    {
+      "uuid": "1e02ff24-297d-4427-9cd8-f7dabda1af41",
+      "description": "a run of two cars",
+      "property": "turnCars",
+      "input": {
+        "train": [10, 20, 30, 40, 50],
+        "first": 2,
+        "last": 3
+      },
+      "expected": [10, 30, 20, 40, 50]
+    },
+    {
+      "uuid": "97cadb67-a44b-4591-ac30-4645da30b0e7",
+      "description": "a run of one car changes nothing",
+      "property": "turnCars",
+      "input": {
+        "train": [10, 20, 30, 40, 50],
+        "first": 3,
+        "last": 3
+      },
+      "expected": [10, 20, 30, 40, 50]
+    },
+    {
+      "uuid": "4385e55f-36cc-4edf-b216-129bd8dc83d5",
+      "description": "repeated car numbers",
+      "property": "turnCars",
+      "input": {
+        "train": [4, 9, 9, 1, 4],
+        "first": 1,
+        "last": 4
+      },
+      "expected": [1, 9, 9, 4, 4]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "77cec88b-208b-4b0f-8752-417dfef8b85a",
+          "description": "one car",
+          "property": "turnCars",
+          "input": {
+            "train": [7],
+            "first": 1,
+            "last": 1
+          },
+          "expected": [7]
+        },
+        {
+          "uuid": "2c0a30cf-ba4b-40ab-bd79-e21db8fa4986",
+          "description": "two cars swap",
+          "property": "turnCars",
+          "input": {
+            "train": [7, 8],
+            "first": 1,
+            "last": 2
+          },
+          "expected": [8, 7]
+        }
+      ]
+    }
+  ]
+}

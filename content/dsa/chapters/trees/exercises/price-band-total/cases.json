@@ -1,0 +1,120 @@
+{
+  "exercise": "price-band-total",
+  "cases": [
+    {
+      "uuid": "8ce0ec64-d550-40e5-99aa-d311fc219544",
+      "description": "adds the prices inside the band",
+      "property": "bandTotal",
+      "input": {
+        "prices": [40, 20, 60, 10, 30, 50, 70],
+        "low": 25,
+        "high": 55
+      },
+      "expected": 120
+    },
+    {
+      "uuid": "c8b9108f-3d51-419e-8849-2c25959f4ee5",
+      "description": "the band covers every price",
+      "property": "bandTotal",
+      "input": {
+        "prices": [40, 20, 60, 10, 30, 50, 70],
+        "low": 1,
+        "high": 100
+      },
+      "expected": 280
+    },
+    {
+      "uuid": "bc523344-baee-427f-b6a5-666f273f746f",
+      "description": "the band is below every price",
+      "property": "bandTotal",
+      "input": {
+        "prices": [40, 20, 60, 10, 30, 50, 70],
+        "low": 1,
+        "high": 5
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "16915ce5-566c-4c62-80dc-fbb8a53bcf1e",
+      "description": "the band is above every price",
+      "property": "bandTotal",
+      "input": {
+        "prices": [40, 20, 60, 10, 30, 50, 70],
+        "low": 75,
+        "high": 90
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "9e79ad76-cac7-4eee-bf3c-9f9ae59479c8",
+      "description": "the band holds one exact price",
+      "property": "bandTotal",
+      "input": {
+        "prices": [40, 20, 60, 10, 30, 50, 70],
+        "low": 30,
+        "high": 30
+      },
+      "expected": 30
+    },
+    {
+      "uuid": "f5dd1f88-d2dd-4261-a26d-cb2e9f6bc190",
+      "description": "the band ends fall between prices",
+      "property": "bandTotal",
+      "input": {
+        "prices": [40, 20, 60, 10, 30, 50, 70],
+        "low": 15,
+        "high": 45
+      },
+      "expected": 90
+    },
+    {
+      "uuid": "d16f41d2-3a28-4d7b-9db2-83af19e42381",
+      "description": "a deeper tree",
+      "property": "bandTotal",
+      "input": {
+        "prices": [50, 30, 70, 20, 40, null, null, 10, 25, 35, 45],
+        "low": 22,
+        "high": 47
+      },
+      "expected": 175
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "223c840c-d8dd-407e-aacc-71a1cf3acaeb",
+          "description": "no prices",
+          "property": "bandTotal",
+          "input": {
+            "prices": [],
+            "low": 1,
+            "high": 10
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "b2027b54-e68d-420f-a892-fbaad2715a83",
+          "description": "one price inside the band",
+          "property": "bandTotal",
+          "input": {
+            "prices": [5],
+            "low": 1,
+            "high": 10
+          },
+          "expected": 5
+        },
+        {
+          "uuid": "0842b47c-93fe-40df-b539-62c66b6fffb9",
+          "description": "one price outside the band",
+          "property": "bandTotal",
+          "input": {
+            "prices": [50],
+            "low": 1,
+            "high": 10
+          },
+          "expected": 0
+        }
+      ]
+    }
+  ]
+}

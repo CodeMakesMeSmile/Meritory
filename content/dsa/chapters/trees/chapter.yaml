@@ -1,0 +1,18 @@
+id: trees
+title: Trees and binary search trees
+order: 9
+skills:
+  - id: dfs-orders
+    name: Walk a tree in preorder, inorder, and postorder, and know what each order is for
+  - id: values-up
+    name: Return values up the recursion, like height, balance, and diameter
+  - id: state-down
+    name: Pass state down the recursion, like a running sum or the best value on the path
+  - id: level-order
+    name: Visit a tree level by level with a queue
+  - id: bst-rules
+    name: Check a binary search tree with bounds, and use its order to skip branches
+  - id: lowest-ancestor
+    name: Find the lowest common ancestor in a binary search tree and in a plain binary tree
+  - id: build-and-serialize
+    name: Build a tree from its traversals, and write a tree out as text

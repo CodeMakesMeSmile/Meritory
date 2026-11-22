@@ -1,0 +1,110 @@
+{
+  "exercise": "rebuild-from-orders",
+  "cases": [
+    {
+      "uuid": "ff1cd9fa-9015-4d9c-b5e5-aea12de9aece",
+      "description": "rebuilds a plan from both walks",
+      "property": "rebuildTree",
+      "input": {
+        "preorder": [8, 4, 2, 6, 12, 14],
+        "inorder": [2, 4, 6, 8, 12, 14]
+      },
+      "expected": [8, 4, 12, 2, 6, null, 14]
+    },
+    {
+      "uuid": "790c7e85-5cd2-406e-93f9-dcd90f6577e8",
+      "description": "a full tree of three levels",
+      "property": "rebuildTree",
+      "input": {
+        "preorder": [1, 2, 4, 5, 3, 6, 7],
+        "inorder": [4, 2, 5, 1, 6, 3, 7]
+      },
+      "expected": [1, 2, 3, 4, 5, 6, 7]
+    },
+    {
+      "uuid": "7732fe69-a1de-45e7-a3e6-2185c0c3aba3",
+      "description": "every joint branches only to the left",
+      "property": "rebuildTree",
+      "input": {
+        "preorder": [4, 3, 2, 1],
+        "inorder": [1, 2, 3, 4]
+      },
+      "expected": [4, 3, null, 2, null, 1]
+    },
+    {
+      "uuid": "eeb82040-1972-4d2a-9f24-487598e88e2d",
+      "description": "every joint branches only to the right",
+      "property": "rebuildTree",
+      "input": {
+        "preorder": [1, 2, 3, 4],
+        "inorder": [1, 2, 3, 4]
+      },
+      "expected": [1, null, 2, null, 3, null, 4]
+    },
+    {
+      "uuid": "ca0cb40d-9c59-438d-971e-df61dd69f1af",
+      "description": "branches that zigzag",
+      "property": "rebuildTree",
+      "input": {
+        "preorder": [1, 2, 3, 4],
+        "inorder": [2, 4, 3, 1]
+      },
+      "expected": [1, 2, null, null, 3, 4]
+    },
+    {
+      "uuid": "d5e75c6c-26ee-4146-8849-494ea0f33aad",
+      "description": "joint numbers in no particular order",
+      "property": "rebuildTree",
+      "input": {
+        "preorder": [7, 1, 4, 9, 3],
+        "inorder": [1, 4, 7, 3, 9]
+      },
+      "expected": [7, 1, 9, null, 4, 3]
+    },
+    {
+      "uuid": "bd948fef-3dd5-4e9e-87da-ba90fc37e147",
+      "description": "negative joint numbers",
+      "property": "rebuildTree",
+      "input": {
+        "preorder": [0, -5, -8, -2, 5, 2, 8],
+        "inorder": [-8, -5, -2, 0, 2, 5, 8]
+      },
+      "expected": [0, -5, 5, -8, -2, 2, 8]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "9b1a5019-bf88-43ba-bc56-129e1452a444",
+          "description": "no joints",
+          "property": "rebuildTree",
+          "input": {
+            "preorder": [],
+            "inorder": []
+          },
+          "expected": []
+        },
+        {
+          "uuid": "c62d59f5-d3ae-4860-bf55-6a9cbaf99ef4",
+          "description": "one joint",
+          "property": "rebuildTree",
+          "input": {
+            "preorder": [5],
+            "inorder": [5]
+          },
+          "expected": [5]
+        },
+        {
+          "uuid": "ea4a1bb6-b9ca-4316-8c85-3b7494d31092",
+          "description": "two joints",
+          "property": "rebuildTree",
+          "input": {
+            "preorder": [5, 6],
+            "inorder": [5, 6]
+          },
+          "expected": [5, null, 6]
+        }
+      ]
+    }
+  ]
+}

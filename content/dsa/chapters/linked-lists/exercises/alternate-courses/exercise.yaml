@@ -1,0 +1,19 @@
+id: alternate-courses
+kind: coding
+title: Light, rich, light, rich
+difficulty: medium
+skills:
+  - reorder-in-place
+  - find-middle
+  - reverse-pointers
+sibling: odds-then-evens
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: alternateCourses
+  params:
+    - name: courses
+      type: ListNode
+  returns: void
+  checks: courses

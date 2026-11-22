@@ -1,0 +1,20 @@
+id: common-lead
+kind: coding
+title: The closest shared lead
+difficulty: medium
+skills:
+  - lowest-ancestor
+sibling: meeting-hub
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: commonLead
+  params:
+    - name: team
+      type: TreeNode
+    - name: a
+      type: int
+    - name: b
+      type: int
+  returns: int

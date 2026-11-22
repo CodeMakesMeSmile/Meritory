@@ -1,0 +1,18 @@
+id: last-to-front
+kind: coding
+title: The last cards to the front
+difficulty: medium
+skills:
+  - gap-pointers
+sibling: cancel-from-end
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: lastToFront
+  params:
+    - name: cards
+      type: ListNode
+    - name: k
+      type: int
+  returns: ListNode

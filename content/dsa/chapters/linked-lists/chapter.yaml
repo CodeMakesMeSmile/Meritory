@@ -1,0 +1,18 @@
+id: linked-lists
+title: Linked lists
+order: 7
+skills:
+  - id: reverse-pointers
+    name: Reverse a list, or one stretch of it, by turning each pointer around
+  - id: dummy-head
+    name: Use a dummy head so changes at the front need no special case
+  - id: find-middle
+    name: Find the middle of a list with fast and slow pointers
+  - id: detect-cycle
+    name: Detect a cycle and find where it starts with fast and slow pointers
+  - id: merge-sorted-lists
+    name: Merge sorted lists by relinking their nodes
+  - id: gap-pointers
+    name: Reach the nth node from the end in one pass with two pointers a fixed gap apart
+  - id: reorder-in-place
+    name: Rearrange a list in place by splitting, reversing, and weaving its parts

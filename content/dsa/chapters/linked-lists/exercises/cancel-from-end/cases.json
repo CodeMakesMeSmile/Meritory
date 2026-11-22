@@ -1,0 +1,90 @@
+{
+  "exercise": "cancel-from-end",
+  "cases": [
+    {
+      "uuid": "826da1f4-08c2-4b2f-b533-0ae9052b5c1a",
+      "description": "cancels the second job from the end",
+      "property": "cancelFromEnd",
+      "input": {
+        "jobs": [11, 22, 33, 44, 55],
+        "n": 2
+      },
+      "expected": [11, 22, 33, 55]
+    },
+    {
+      "uuid": "4454b282-ccca-43f0-a438-2809cdf3a714",
+      "description": "cancels the last job",
+      "property": "cancelFromEnd",
+      "input": {
+        "jobs": [11, 22, 33, 44, 55],
+        "n": 1
+      },
+      "expected": [11, 22, 33, 44]
+    },
+    {
+      "uuid": "e853bfb6-32ad-4153-a1bd-19fb18927389",
+      "description": "cancels the first job",
+      "property": "cancelFromEnd",
+      "input": {
+        "jobs": [11, 22, 33, 44, 55],
+        "n": 5
+      },
+      "expected": [22, 33, 44, 55]
+    },
+    {
+      "uuid": "92986530-f3d5-4c47-a13b-9a31f7c15777",
+      "description": "cancels the middle job",
+      "property": "cancelFromEnd",
+      "input": {
+        "jobs": [1, 2, 3, 4, 5, 6, 7],
+        "n": 4
+      },
+      "expected": [1, 2, 3, 5, 6, 7]
+    },
+    {
+      "uuid": "d17a8da7-eb88-42db-bd12-2eb477bd80b0",
+      "description": "repeated job numbers",
+      "property": "cancelFromEnd",
+      "input": {
+        "jobs": [6, 7, 6, 7],
+        "n": 3
+      },
+      "expected": [6, 6, 7]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "1f9b5952-8b04-42b1-ad18-c5a355006398",
+          "description": "one job",
+          "property": "cancelFromEnd",
+          "input": {
+            "jobs": [9],
+            "n": 1
+          },
+          "expected": []
+        },
+        {
+          "uuid": "f886460c-7e15-49c0-b873-182234777391",
+          "description": "two jobs, cancel the first",
+          "property": "cancelFromEnd",
+          "input": {
+            "jobs": [9, 8],
+            "n": 2
+          },
+          "expected": [8]
+        },
+        {
+          "uuid": "bb4c77ce-2188-41e8-af4c-2b1f6193d428",
+          "description": "two jobs, cancel the last",
+          "property": "cancelFromEnd",
+          "input": {
+            "jobs": [9, 8],
+            "n": 1
+          },
+          "expected": [9]
+        }
+      ]
+    }
+  ]
+}
