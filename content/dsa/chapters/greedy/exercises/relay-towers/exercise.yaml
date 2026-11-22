@@ -1,0 +1,16 @@
+id: relay-towers
+kind: coding
+title: The fewest relays to the far tower
+difficulty: medium
+skills:
+  - reach-and-jumps
+sibling: charging-posts
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: fewestRelays
+  params:
+    - name: power
+      type: int[]
+  returns: int

@@ -1,0 +1,16 @@
+id: best-run
+kind: coding
+title: The best run at the market stall
+difficulty: easy
+skills:
+  - best-running-total
+sibling: loop-trail
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: bestRun
+  params:
+    - name: profit
+      type: int[]
+  returns: int

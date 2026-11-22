@@ -1,0 +1,16 @@
+id: loop-trail
+kind: coding
+title: The best stretch of the loop trail
+difficulty: medium
+skills:
+  - best-running-total
+sibling: best-run
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: bestLoopStretch
+  params:
+    - name: views
+      type: int[]
+  returns: int

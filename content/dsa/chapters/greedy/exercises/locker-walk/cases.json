@@ -1,0 +1,90 @@
+{
+  "exercise": "locker-walk",
+  "cases": [
+    {
+      "uuid": "77481715-9be3-4b8f-8c69-6d5389df2ac5",
+      "description": "pairs runners and lockers in order",
+      "property": "leastWalking",
+      "input": {
+        "runners": [8, 1, 15],
+        "lockers": [10, 3, 4]
+      },
+      "expected": 11
+    },
+    {
+      "uuid": "3364d0ff-8420-4e54-9a9e-95022df199e7",
+      "description": "everyone already at a locker",
+      "property": "leastWalking",
+      "input": {
+        "runners": [5, 2, 9],
+        "lockers": [9, 5, 2]
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "ec5ec70f-e9e1-4f37-86a5-c81e448c780d",
+      "description": "every locker past every runner",
+      "property": "leastWalking",
+      "input": {
+        "runners": [1, 2, 3],
+        "lockers": [10, 11, 12]
+      },
+      "expected": 27
+    },
+    {
+      "uuid": "cc34dc27-afc9-4c91-a368-77a8a51f97c4",
+      "description": "runners on the same spot",
+      "property": "leastWalking",
+      "input": {
+        "runners": [4, 4, 4],
+        "lockers": [1, 4, 7]
+      },
+      "expected": 6
+    },
+    {
+      "uuid": "571ceff8-0150-4b41-a570-12bc67298a65",
+      "description": "ten runners",
+      "property": "leastWalking",
+      "input": {
+        "runners": [18, 28, 68, 66, 55, 19, 10, 40, 27, 90],
+        "lockers": [21, 64, 20, 94, 65, 40, 54, 37, 98, 71]
+      },
+      "expected": 143
+    },
+    {
+      "uuid": "9647164e-99aa-449f-ba87-ca2251c121c7",
+      "description": "a walk too long for 32 bits",
+      "property": "leastWalking",
+      "input": {
+        "runners": [0, 0, 0],
+        "lockers": [1000000000, 1000000000, 1000000000]
+      },
+      "expected": 3000000000
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "5933d651-b98d-40d8-be0a-5369f11c14cd",
+          "description": "no runners",
+          "property": "leastWalking",
+          "input": {
+            "runners": [],
+            "lockers": []
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "4f9e7d1f-9b90-4935-bc6c-cc5d4dbae49f",
+          "description": "one runner",
+          "property": "leastWalking",
+          "input": {
+            "runners": [7],
+            "lockers": [2]
+          },
+          "expected": 5
+        }
+      ]
+    }
+  ]
+}

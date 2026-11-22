@@ -1,0 +1,18 @@
+id: greedy
+title: Greedy algorithms
+order: 13
+skills:
+  - id: safe-greedy-choice
+    name: Say what makes a greedy choice safe, and find a small case where it isn't
+  - id: exchange-argument
+    name: Show a greedy choice is right with an exchange argument in plain words
+  - id: reach-and-jumps
+    name: Track the farthest reach to decide if the end can be reached, and in the fewest jumps
+  - id: best-running-total
+    name: Find the best total of a run of values with a running total, in a row and in a circle
+  - id: fuel-circuit
+    name: Find where to start a circuit of fuel stops in one pass
+  - id: partition-by-last
+    name: Cut a list into the most parts using how far each item's group must reach
+  - id: match-sorted-lists
+    name: Assign items to people by sorting both lists and walking them together

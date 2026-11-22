@@ -1,0 +1,117 @@
+{
+  "exercise": "best-run",
+  "cases": [
+    {
+      "uuid": "8030c1c4-9d63-4b3b-b040-9fb7bc272b97",
+      "description": "crosses a bad day for a better run",
+      "property": "bestRun",
+      "input": {
+        "profit": [3, -5, 4, -1, 2, 6, -8, 3]
+      },
+      "expected": 11
+    },
+    {
+      "uuid": "a34a90ef-df5b-4aab-b777-e789c4de9cf1",
+      "description": "every day makes money",
+      "property": "bestRun",
+      "input": {
+        "profit": [2, 4, 1]
+      },
+      "expected": 7
+    },
+    {
+      "uuid": "f91760f7-f3ed-4744-be19-9c0ac33ae71a",
+      "description": "every day loses money",
+      "property": "bestRun",
+      "input": {
+        "profit": [-6, -2, -9]
+      },
+      "expected": -2
+    },
+    {
+      "uuid": "8d79c51d-2988-4f57-95a2-f7060d8b173a",
+      "description": "a small loss worth keeping",
+      "property": "bestRun",
+      "input": {
+        "profit": [5, -2, 5]
+      },
+      "expected": 8
+    },
+    {
+      "uuid": "6271520c-b03f-4df9-9e24-9d56041cfe8d",
+      "description": "a big loss that splits the run",
+      "property": "bestRun",
+      "input": {
+        "profit": [5, -9, 6]
+      },
+      "expected": 6
+    },
+    {
+      "uuid": "218fee40-dfb1-48c4-892c-e6fe9b00997f",
+      "description": "days with no profit",
+      "property": "bestRun",
+      "input": {
+        "profit": [0, -1, 0]
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "b243e0d0-144f-45cd-bf7f-84e28a63da93",
+      "description": "forty days",
+      "property": "bestRun",
+      "input": {
+        "profit": [
+          -27, -18, -15, 11, -23, -44, -42, 6, 31, 49, 46, 43, 43, -26, 19, -48,
+          -10, 21, -24, 15, 17, -28, 25, 5, -32, 43, -16, 9, -34, 43, 18, 27,
+          21, -42, 47, -41, -13, 22, 50, 0
+        ]
+      },
+      "expected": 286
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "45d33ca8-5aaa-4d94-8bc1-9a261731a007",
+          "description": "one good day",
+          "property": "bestRun",
+          "input": {
+            "profit": [7]
+          },
+          "expected": 7
+        },
+        {
+          "uuid": "908b6e70-f0e7-440f-a68a-d42d67b12235",
+          "description": "one bad day",
+          "property": "bestRun",
+          "input": {
+            "profit": [-4]
+          },
+          "expected": -4
+        },
+        {
+          "uuid": "042ca00a-8f93-4a76-a43f-91a10bc20380",
+          "description": "large daily profits",
+          "property": "bestRun",
+          "input": {
+            "profit": [
+              10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000,
+              10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000,
+              10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000,
+              10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000,
+              10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000,
+              10000, 10000, 10000, 10000, 10000, -10000, 10000, 10000, 10000,
+              10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000,
+              10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000,
+              10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000,
+              10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000,
+              10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000,
+              10000, 10000
+            ]
+          },
+          "expected": 990000
+        }
+      ]
+    }
+  ]
+}

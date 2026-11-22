@@ -1,0 +1,17 @@
+id: repair-queue
+kind: coding
+title: The shortest wait at the bike shop
+difficulty: easy
+skills:
+  - exchange-argument
+  - safe-greedy-choice
+sibling: canoe-pairs
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: leastWaiting
+  params:
+    - name: repairs
+      type: int[]
+  returns: long

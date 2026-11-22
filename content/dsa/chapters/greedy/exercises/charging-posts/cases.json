@@ -1,0 +1,112 @@
+{
+  "exercise": "charging-posts",
+  "cases": [
+    {
+      "uuid": "99476e45-1a40-4d9d-9003-ce725b2cad1d",
+      "description": "charges past a broken post",
+      "property": "canReachLast",
+      "input": {
+        "charge": [2, 0, 3, 0, 0, 1]
+      },
+      "expected": true
+    },
+    {
+      "uuid": "e682b0b5-f7c5-4df8-8342-88ed55dd0f5f",
+      "description": "stuck between broken posts",
+      "property": "canReachLast",
+      "input": {
+        "charge": [1, 2, 0, 0, 3]
+      },
+      "expected": false
+    },
+    {
+      "uuid": "b114bd82-c696-4f3b-8673-364fddde0503",
+      "description": "one charge covers the whole row",
+      "property": "canReachLast",
+      "input": {
+        "charge": [9, 0, 0, 0, 0]
+      },
+      "expected": true
+    },
+    {
+      "uuid": "010fa8af-85bb-4ba7-945b-cf4f7ce5b93c",
+      "description": "a broken post blocks the way",
+      "property": "canReachLast",
+      "input": {
+        "charge": [1, 1, 0, 1]
+      },
+      "expected": false
+    },
+    {
+      "uuid": "65a23960-4295-4409-9e5b-c3e0c3872b64",
+      "description": "every post moves one along",
+      "property": "canReachLast",
+      "input": {
+        "charge": [1, 1, 1, 1, 1]
+      },
+      "expected": true
+    },
+    {
+      "uuid": "0415917b-56b2-4cae-8768-7c28ef06eef2",
+      "description": "a broken last post doesn't matter",
+      "property": "canReachLast",
+      "input": {
+        "charge": [3, 0, 0, 0]
+      },
+      "expected": true
+    },
+    {
+      "uuid": "3a866ed8-e212-451f-866c-ba645b5bbf87",
+      "description": "hops over broken posts",
+      "property": "canReachLast",
+      "input": {
+        "charge": [2, 0, 2, 0, 1]
+      },
+      "expected": true
+    },
+    {
+      "uuid": "699f00fd-09af-48d8-96fb-66ffd8430975",
+      "description": "a long row of posts",
+      "property": "canReachLast",
+      "input": {
+        "charge": [
+          3, 0, 0, 2, 0, 1, 0, 0, 2, 1, 3, 1, 3, 2, 2, 0, 1, 2, 3, 2, 0, 2, 0,
+          0, 2, 1, 2, 3, 1, 3
+        ]
+      },
+      "expected": false
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "4c8884df-7f71-4518-b23a-503b2acd3178",
+          "description": "only one post",
+          "property": "canReachLast",
+          "input": {
+            "charge": [0]
+          },
+          "expected": true
+        },
+        {
+          "uuid": "23d1c0b5-1df0-4cf8-96ef-3b79ac40e548",
+          "description": "a broken first post",
+          "property": "canReachLast",
+          "input": {
+            "charge": [0, 1]
+          },
+          "expected": false
+        },
+        {
+          "uuid": "162c3ba9-646b-4bee-a5f4-957b8432894d",
+          "description": "a charge far bigger than the row",
+          "property": "canReachLast",
+          "input": {
+            "charge": [100000, 0]
+          },
+          "expected": true
+        }
+      ]
+    }
+  ]
+}

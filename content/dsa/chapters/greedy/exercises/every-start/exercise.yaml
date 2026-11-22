@@ -1,0 +1,16 @@
+id: every-start
+kind: coding
+title: Every depot the plough can start from
+difficulty: hard
+skills:
+  - fuel-circuit
+sibling: scooter-loop
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: everyStart
+  params:
+    - name: depots
+      type: int[][]
+  returns: int[]

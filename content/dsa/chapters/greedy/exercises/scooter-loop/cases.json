@@ -1,0 +1,110 @@
+{
+  "exercise": "scooter-loop",
+  "cases": [
+    {
+      "uuid": "73a338d3-b5a8-4462-8949-da492dba927a",
+      "description": "starts at the first dock that works",
+      "property": "firstStart",
+      "input": {
+        "charge": [1, 5, 2, 3],
+        "drain": [3, 2, 4, 1]
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "bc4bd9b6-1410-4f64-afcf-92f396ed7077",
+      "description": "not enough charge around the loop",
+      "property": "firstStart",
+      "input": {
+        "charge": [1, 2, 3],
+        "drain": [2, 2, 3]
+      },
+      "expected": -1
+    },
+    {
+      "uuid": "7e260b28-adf8-4016-810d-36f49454703c",
+      "description": "dock 0 works",
+      "property": "firstStart",
+      "input": {
+        "charge": [4, 1, 1],
+        "drain": [1, 2, 2]
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "38cd8081-8c1e-4ba2-8e9f-d5c4a44b4b02",
+      "description": "only the last dock works",
+      "property": "firstStart",
+      "input": {
+        "charge": [0, 0, 5],
+        "drain": [1, 1, 2]
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "d853c9fb-8016-425b-a35f-205823280425",
+      "description": "the battery runs to exactly empty",
+      "property": "firstStart",
+      "input": {
+        "charge": [2, 2],
+        "drain": [2, 2]
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "14e0f63a-c82c-4d7d-abf6-d6bd72d5fcad",
+      "description": "every dock works",
+      "property": "firstStart",
+      "input": {
+        "charge": [3, 3, 3],
+        "drain": [1, 1, 1]
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "1cef319a-97d8-47fc-bfab-f27780b51643",
+      "description": "twelve docks",
+      "property": "firstStart",
+      "input": {
+        "charge": [9, 0, 12, 1, 5, 0, 5, 7, 2, 8, 6, 4],
+        "drain": [8, 3, 9, 1, 5, 7, 5, 3, 2, 7, 3, 4]
+      },
+      "expected": 6
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "562a99f0-84de-4191-84fb-7637f0084790",
+          "description": "one dock with enough",
+          "property": "firstStart",
+          "input": {
+            "charge": [3],
+            "drain": [3]
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "0a321cb6-688b-4c80-ad7f-a6d6be4954da",
+          "description": "one dock without enough",
+          "property": "firstStart",
+          "input": {
+            "charge": [2],
+            "drain": [3]
+          },
+          "expected": -1
+        },
+        {
+          "uuid": "3e0122fb-e91b-4bac-a396-7a27406a5097",
+          "description": "nothing to pick up and nothing to use",
+          "property": "firstStart",
+          "input": {
+            "charge": [0, 0],
+            "drain": [0, 0]
+          },
+          "expected": 0
+        }
+      ]
+    }
+  ]
+}

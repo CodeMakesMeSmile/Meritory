@@ -1,0 +1,19 @@
+id: potting-bench
+kind: coding
+title: Pots for the seedlings
+difficulty: easy
+skills:
+  - match-sorted-lists
+  - exchange-argument
+sibling: locker-walk
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: mostPotted
+  params:
+    - name: seedlings
+      type: int[]
+    - name: pots
+      type: int[]
+  returns: int

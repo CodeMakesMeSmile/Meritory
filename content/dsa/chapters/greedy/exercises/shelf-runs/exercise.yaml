@@ -1,0 +1,16 @@
+id: shelf-runs
+kind: coding
+title: The most runs to sort the shelf
+difficulty: medium
+skills:
+  - partition-by-last
+sibling: parcel-groups
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: mostRuns
+  params:
+    - name: books
+      type: int[]
+  returns: int
