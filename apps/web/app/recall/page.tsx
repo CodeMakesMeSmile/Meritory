@@ -35,11 +35,14 @@ function Message({
 
 /** A recall sitting, without the rail so the card has the page */
 export default async function RecallPage() {
-  const [me, content] = await Promise.all([requireMe(PATH), getContent(PATH)]);
-  const session = await getSession(PATH).catch((error: unknown) => {
-    unstable_rethrow(error);
-    return null;
-  });
+  const [me, content, session] = await Promise.all([
+    requireMe(PATH),
+    getContent(PATH),
+    getSession(PATH).catch((error: unknown) => {
+      unstable_rethrow(error);
+      return null;
+    }),
+  ]);
   const items = session ? sittingCards(content, session) : [];
   const home = (
     <Link href="/" className={`${buttonClass()} w-full sm:w-50`}>

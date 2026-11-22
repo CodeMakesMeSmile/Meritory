@@ -66,12 +66,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 const DIFFICULTY = { easy: "Easy", medium: "Medium", hard: "Hard" } as const;
 
 export default async function ExercisePage({ params, searchParams }: Props) {
-  const [{ path, found }, query] = await Promise.all([
+  const { trackId, chapterId, exerciseId } = await params;
+  const [{ path, found }, query, me] = await Promise.all([
     load(params),
     searchParams,
+    requireMe(exercisePath(trackId, chapterId, exerciseId)),
   ]);
   if (!found) notFound();
-  const me = await requireMe(path);
   const { track, chapter, exercise, rubric } = found;
   const minutes =
     exercise.kind === "design" && rubric ? rehearsalMinutes(rubric.id) : null;

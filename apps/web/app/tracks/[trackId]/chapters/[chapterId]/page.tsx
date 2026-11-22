@@ -30,9 +30,12 @@ function plural(count: number, one: string) {
 }
 
 export default async function ChapterPage({ params }: Props) {
-  const { path, found } = await load(params);
+  const { trackId, chapterId } = await params;
+  const [{ path, found }, me] = await Promise.all([
+    load(params),
+    requireMe(chapterPath(trackId, chapterId)),
+  ]);
   if (!found) notFound();
-  const me = await requireMe(path);
   const { track, chapter } = found;
   const headings = markdownHeadings(chapter.explanation);
   const start = (className?: string) => (
