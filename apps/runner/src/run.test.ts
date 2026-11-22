@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url";
 import type { BundleCodingExercise } from "@meritory/content";
 import { buildBundle } from "@meritory/content/node";
 import { beforeAll, describe, expect, it } from "vitest";
+import { readLine } from "./judge.ts";
 import {
   type BundleCase,
   casesToRun,
@@ -107,6 +108,30 @@ const BROKEN: Record<Language, string> = {
   typescript: "export function pricePair( {",
   python: "class Solution:\n    def pricePair(self\n",
 };
+// Writes a passing result for every case, then quits before the harness runs
+const FORGED: Record<Language, string> = {
+  typescript: [
+    'import { appendFileSync, readFileSync } from "node:fs";',
+    'const cases = JSON.parse(readFileSync("cases.json", "utf8"));',
+    "for (const c of cases) {",
+    '  for (const status of ["started", "pass", "done"]) {',
+    '    appendFileSync("results.jsonl", JSON.stringify({ name: c.name, status, actual: c.expected ?? null }) + String.fromCharCode(10));',
+    "  }",
+    "}",
+    "process.exit(0);",
+    "export function pricePair(): number[] { return []; }",
+  ].join("\n"),
+  python: [
+    "import json, os",
+    'with open("cases.json") as f:',
+    "    cases = json.load(f)",
+    'with open("results.jsonl", "a") as out:',
+    "    for c in cases:",
+    '        for status in ("started", "pass", "done"):',
+    '            out.write(json.dumps({"name": c["name"], "status": status, "actual": c.get("expected")}) + chr(10))',
+    "os._exit(0)",
+  ].join("\n"),
+};
 const MISNAMED: Record<Language, string> = {
   typescript: "export function somethingElse() { return []; }",
   python: "class Solution:\n    def somethingElse(self):\n        return []\n",
@@ -155,6 +180,18 @@ describe.each(["typescript", "python"] as const)(
       expect(result.message).toMatch(/SyntaxError/);
     });
 
+    it("can't pass by writing its own results", async () => {
+      const result = await runCode(
+        request(pricePair(), language, FORGED[language]),
+        sandbox,
+      );
+      expect(result.status).toBe("fail");
+      expect(result.tests.filter((t) => t.status === "pass")).toEqual([]);
+      expect(result.tests[0]?.message).toMatch(
+        /^Expected \[.*\] but got null$/,
+      );
+    });
+
     it("says when the function is missing", async () => {
       const result = await runCode(
         request(pricePair(), language, MISNAMED[language]),
@@ -186,21 +223,28 @@ describe("casesToRun", () => {
 });
 
 describe("collectResults", () => {
+  const signature = { function: "f", params: [], returns: "int" };
+  const one = [{ name: "one", input: {}, expected: 1 }];
+  const two = [...one, { name: "two", input: {}, expected: 2 }];
+  const line = (value: object) => JSON.stringify(value);
+
   it("caps long messages and ignores lines that aren't results", () => {
-    const long = "x".repeat(800);
     const lines = [
       "not json",
-      JSON.stringify({ name: "one", status: "started" }),
-      JSON.stringify({ name: "one", status: "fail", message: long }),
+      line({ name: "one", status: "started" }),
+      line({ name: "one", status: "done", actual: "x".repeat(800) }),
     ].join("\n");
-    const result = collectResults(["one"], lines, { kind: "ok", stderr: "" });
+    const result = collectResults(one, signature, "typescript", lines, {
+      kind: "ok",
+      stderr: "",
+    });
     expect(result.tests[0]?.message).toHaveLength(500);
     expect(result.status).toBe("fail");
   });
 
   it("names the memory limit for the case that hit it", () => {
-    const lines = JSON.stringify({ name: "one", status: "started" });
-    const result = collectResults(["one", "two"], lines, {
+    const lines = line({ name: "one", status: "started" });
+    const result = collectResults(two, signature, "typescript", lines, {
       kind: "memory",
       stderr: "",
     });
@@ -208,5 +252,118 @@ describe("collectResults", () => {
       "Used too much memory, so it was stopped.",
       "Didn't run, because an earlier case stopped the run.",
     ]);
+  });
+
+  it("ignores old-style verdicts and anything written before a case starts", () => {
+    const lines = [
+      line({ name: "one", status: "pass" }),
+      line({ name: "one", status: "started" }),
+      line({ name: "one", status: "pass" }),
+    ].join("\n");
+    const result = collectResults(one, signature, "typescript", lines, {
+      kind: "ok",
+      stderr: "",
+    });
+    expect(result.tests[0]?.status).toBe("error");
+  });
+
+  it("keeps Python's 2.0 apart from 2 unless the type is a double", () => {
+    const lines = (actual: string) =>
+      [
+        line({ name: "one", status: "started" }),
+        `{"name": "one", "status": "done", "actual": ${actual}}`,
+      ].join("\n");
+    const ok = { kind: "ok", stderr: "" } as const;
+    const int = [{ name: "one", input: {}, expected: 2 }];
+    expect(
+      collectResults(int, signature, "python", lines("2.0"), ok).tests[0],
+    ).toEqual({
+      name: "one",
+      status: "fail",
+      message: "Expected 2 but got 2.0",
+    });
+    expect(
+      collectResults(int, signature, "python", lines("2"), ok).status,
+    ).toBe("pass");
+    const double = { ...signature, returns: "double" };
+    expect(
+      collectResults(int, double, "python", lines("2.000001"), ok).status,
+    ).toBe("pass");
+    expect(readLine("[1e2]", false)).toEqual([100]);
+  });
+
+  it("passes a case that should throw only when it throws", () => {
+    const refuse = [{ name: "one", input: {}, expected: { error: "bad" } }];
+    const ending = (end: object) =>
+      [
+        line({ name: "one", status: "started" }),
+        line({ name: "one", ...end }),
+      ].join("\n");
+    const ok = { kind: "ok", stderr: "" } as const;
+    const threw = ending({ status: "threw", message: "RangeError: bad" });
+    expect(
+      collectResults(refuse, signature, "typescript", threw, ok).status,
+    ).toBe("pass");
+    expect(collectResults(one, signature, "typescript", threw, ok).status).toBe(
+      "error",
+    );
+    const done = ending({ status: "done", actual: 5 });
+    expect(
+      collectResults(refuse, signature, "typescript", done, ok).tests[0]
+        ?.message,
+    ).toBe("Expected an error, but got 5");
+  });
+
+  describe("class cases", () => {
+    const counter = {
+      class: "Counter",
+      params: [],
+      methods: [
+        { name: "add", params: [], returns: "void" },
+        { name: "count", params: [], returns: "int" },
+      ],
+    };
+    const cases = [
+      {
+        name: "one",
+        input: { calls: ["Counter", "add", "count"], args: [[], [], []] },
+        expected: [null, null, 1],
+      },
+    ];
+    const run = (lines: object[], exit = "ok" as "ok" | "timeout") =>
+      collectResults(cases, counter, "typescript", lines.map(line).join("\n"), {
+        kind: exit,
+        stderr: "",
+      }).tests[0];
+    const started = { name: "one", status: "started" };
+    const call = (actual: unknown) => ({ name: "one", status: "call", actual });
+
+    it("passes only when every call came back right", () => {
+      expect(
+        run([
+          started,
+          call(null),
+          call(null),
+          call(1),
+          { name: "one", status: "done" },
+        ]),
+      ).toEqual({ name: "one", status: "pass" });
+      expect(run([started, { name: "one", status: "done" }])?.status).toBe(
+        "error",
+      );
+    });
+
+    it("fails on the first wrong call, even if a later one never finished", () => {
+      expect(
+        run([started, call(null), call(null), call(7)], "timeout"),
+      ).toEqual({
+        name: "one",
+        status: "fail",
+        message: "Call 3, count: expected 1 but got 7",
+      });
+      expect(run([started, call(null)], "timeout")?.message).toMatch(
+        /Took too long/,
+      );
+    });
   });
 });

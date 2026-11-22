@@ -1,5 +1,13 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
+import {
+  type Ending,
+  judgeClass,
+  judgeFunction,
+  type Returned,
+  readLine,
+  type Signature,
+} from "./judge.ts";
 import type { Sandbox, SandboxExit } from "./sandbox.ts";
 
 export const LANGUAGES = ["typescript", "python"] as const;
@@ -55,7 +63,7 @@ function cap(text: string): string {
 }
 
 /** The cases to run, leaving out any a later case replaces */
-export function casesToRun(cases: BundleCase[]) {
+export function casesToRun(cases: BundleCase[]): RunCase[] {
   const replaced = new Set(cases.flatMap((c) => c.reimplements ?? []));
   const seen = new Map<string, number>();
   return cases
@@ -82,53 +90,86 @@ function stopMessage(exit: SandboxExit): string {
   }
 }
 
-/** Reads the harness's lines and fills in what a stopped run never reached */
+/** A case ready to run, with the name results come back under */
+export interface RunCase {
+  name: string;
+  input: Record<string, unknown>;
+  expected: unknown;
+}
+
+interface Seen {
+  returned: Returned[];
+  ending: Ending | null;
+}
+
+function readReturned(line: Record<string, unknown>): Returned | undefined {
+  if ("actual" in line) return { actual: line.actual };
+  if (typeof line.shown === "string") return { shown: cap(line.shown) };
+  return undefined;
+}
+
+/**
+ * Reads what the harness wrote, judges each case outside the box, and fills in
+ * what a stopped run never reached
+ */
 export function collectResults(
-  names: string[],
+  cases: RunCase[],
+  signature: Signature,
+  language: Language,
   lines: string,
   exit: SandboxExit,
 ): RunResult {
-  const finished = new Map<string, TestResult>();
+  const seen = new Map<string, Seen>();
   let running: string | null = null;
-  for (const line of lines.split("\n")) {
-    if (!line.trim()) continue;
-    let parsed: { name?: unknown; status?: unknown; message?: unknown };
+  let ended = 0;
+  for (const text of lines.split("\n")) {
+    if (!text.trim()) continue;
+    let line: Record<string, unknown>;
     try {
-      parsed = JSON.parse(line);
+      const parsed = readLine(text, language === "python");
+      if (typeof parsed !== "object" || parsed === null) continue;
+      line = parsed as Record<string, unknown>;
     } catch {
       continue;
     }
-    if (parsed.status === "broken") {
+    if (line.status === "broken") {
       // The learner's file didn't load, so no case ran
       return {
         version: 3,
         status: "error",
-        message: cap(String(parsed.message ?? "The code didn't load.")),
+        message: cap(String(line.message ?? "The code didn't load.")),
         tests: [],
       };
     }
-    if (typeof parsed.name !== "string") continue;
-    if (parsed.status === "started") {
-      running = parsed.name;
+    if (typeof line.name !== "string") continue;
+    if (line.status === "started") {
+      // A fresh start drops anything written under this name before it
+      seen.set(line.name, { returned: [], ending: null });
+      running = line.name;
       continue;
     }
-    if (
-      parsed.status === "pass" ||
-      parsed.status === "fail" ||
-      parsed.status === "error"
-    ) {
-      finished.set(parsed.name, {
-        name: parsed.name,
-        status: parsed.status,
-        ...(typeof parsed.message === "string"
-          ? { message: cap(parsed.message) }
-          : {}),
-      });
-      running = null;
+    const at = seen.get(line.name);
+    if (!at || at.ending) continue;
+    if (line.status === "call") {
+      const returned = readReturned(line);
+      if (returned) at.returned.push(returned);
+      continue;
     }
+    if (line.status === "done") {
+      at.ending = { status: "done", returned: readReturned(line) };
+    } else if (line.status === "threw" || line.status === "error") {
+      at.ending = {
+        status: line.status,
+        message: cap(String(line.message ?? "")),
+      };
+    } else {
+      continue;
+    }
+    ended += 1;
+    running = null;
   }
 
-  if (finished.size === 0 && running === null && exit.kind !== "ok") {
+  if (ended === 0 && running === null && exit.kind !== "ok") {
     // It stopped before the first case, so the code itself didn't load
     return {
       version: 3,
@@ -138,9 +179,29 @@ export function collectResults(
     };
   }
 
-  const tests = names.map((name): TestResult => {
-    const done = finished.get(name);
-    if (done) return done;
+  const tests = cases.map((test): TestResult => {
+    const name = test.name;
+    const at = seen.get(name);
+    const verdict = !at
+      ? null
+      : signature.class
+        ? judgeClass(
+            signature,
+            test.input,
+            test.expected,
+            at.returned,
+            at.ending,
+          )
+        : at.ending
+          ? judgeFunction(signature, test.expected, at.ending)
+          : null;
+    if (verdict) {
+      return {
+        name,
+        status: verdict.status,
+        ...(verdict.message ? { message: cap(verdict.message) } : {}),
+      };
+    }
     if (name === running) {
       return { name, status: "error", message: stopMessage(exit) };
     }
@@ -175,14 +236,20 @@ export async function runCode(
         join(box.dir, "signature.json"),
         JSON.stringify(request.signature),
       ),
-      writeFile(join(box.dir, "cases.json"), JSON.stringify(cases)),
+      // Inputs only, so nothing in the box knows the right answers
+      writeFile(
+        join(box.dir, "cases.json"),
+        JSON.stringify(cases.map(({ name, input }) => ({ name, input }))),
+      ),
     ]);
     const exit = await box.run(request.language, files.harness);
     const lines = await readFile(join(box.dir, "results.jsonl"), "utf8").catch(
       () => "",
     );
     return collectResults(
-      cases.map((c) => c.name),
+      cases,
+      request.signature as unknown as Signature,
+      request.language,
       lines,
       exit,
     );

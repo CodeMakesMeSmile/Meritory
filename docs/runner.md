@@ -104,7 +104,7 @@ It prints the port it listens on. From PowerShell, `curl.exe http://localhost:41
 
 Each run gets its own box with no network, up to 16 processes and threads (Node needs a few), 5 seconds of CPU time, 10 seconds of wall time, 256 MB of memory, and 2 MB per file it writes. Code over 64 KB is refused before it reaches the box.
 
-The test code runs in the same box as the answer, so an answer could fake its own results. That only fools the person who wrote it, so it's fine while the runner checks your own practice. Anything shared, like staging, needs the checks in a separate process first.
+The box gets each case's inputs but never its expected values. The harness inside only writes down what the answer returned, and the runner compares that with the expected values outside the box. So an answer can't read the right answers or write its own verdict.
 
 ## Sources (read 2026-11-21)
 

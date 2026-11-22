@@ -1,10 +1,10 @@
 # Runs inside the sandbox next to solution.py, signature.json, and cases.json
+# It only reports what came back. The runner judges it, since nothing here knows the answers.
 import builtins
 import importlib.util
 import json
 
 RESULTS = "results.jsonl"
-TOLERANCE = 1e-5
 MAX_NODES = 100000
 
 
@@ -109,48 +109,17 @@ def back(kind, value):
     return value
 
 
-def is_number(value):
-    return isinstance(value, (int, float)) and not isinstance(value, bool)
-
-
-def same(actual, expected, loose):
-    if is_number(actual) and is_number(expected):
-        if loose:
-            return abs(actual - expected) <= TOLERANCE
-        return type(actual) is type(expected) and actual == expected
-    if isinstance(actual, list) and isinstance(expected, list):
-        return len(actual) == len(expected) and all(
-            same(a, e, loose) for a, e in zip(actual, expected)
-        )
-    return show(actual) == show(expected)
-
-
-def sorted_copy(value):
-    if isinstance(value, list):
-        return sorted(value, key=show)
-    return value
-
-
-def matches(kind, actual, expected, any_order=False):
-    loose = kind.startswith("double")
-    if any_order:
-        return same(sorted_copy(actual), sorted_copy(expected), loose)
-    return same(actual, expected, loose)
-
-
-def show(value):
-    try:
-        return json.dumps(value, separators=(",", ":"))
-    except (TypeError, ValueError):
-        return repr(value)
-
-
 def describe(error):
     return f"{type(error).__name__}: {error}"
 
 
-def is_refusal(expected):
-    return isinstance(expected, dict) and "error" in expected
+def carry(line, value):
+    """Adds what came back, or how it looks when JSON can't carry it"""
+    try:
+        json.dumps(value, allow_nan=False)
+        return {**line, "actual": value}
+    except (TypeError, ValueError, RecursionError):
+        return {**line, "shown": repr(value)}
 
 
 def run_function(fn, signature, test):
@@ -175,28 +144,19 @@ def run_function(fn, signature, test):
             node = node.next
             i += 1
     passed = [p for p in signature["params"] if not p.get("hidden")]
-    refusal = is_refusal(test["expected"])
     try:
         value = fn(*[args[p["name"]] for p in passed])
     except Exception as error:
-        if refusal:
-            return {"status": "pass"}
-        return {"status": "error", "message": describe(error)}
-    if refusal:
-        return {"status": "fail", "message": f"Expected an error, but got {show(value)}"}
+        return {"status": "threw", "message": describe(error)}
     checks = signature.get("checks")
     checked = next((p for p in signature["params"] if p["name"] == checks), None) if checks else None
     kind = checked["type"] if checked else signature["returns"]
-    actual = back(kind, args[checked["name"]] if checked else value)
-    if matches(kind, actual, test["expected"], signature.get("anyOrder", False)):
-        return {"status": "pass"}
-    return {"status": "fail", "message": f"Expected {show(test['expected'])} but got {show(actual)}"}
+    return carry({"status": "done"}, back(kind, args[checked["name"]] if checked else value))
 
 
-def run_class(made, signature, test):
+def run_class(made, signature, test, note):
     calls = test["input"]["calls"]
     arg_lists = test["input"]["args"]
-    expected = test["expected"]
     obj = None
     for i, name in enumerate(calls):
         method = None if i == 0 else next((m for m in signature["methods"] if m["name"] == name), None)
@@ -206,22 +166,17 @@ def run_class(made, signature, test):
         try:
             if i == 0:
                 obj = made(*args)
+                note({"status": "call", "actual": None})
                 continue
             fn = getattr(obj, name, None)
             if not callable(fn):
                 return {"status": "error", "message": f"{signature['class']} has no method {name}"}
             value = fn(*args)
         except Exception as error:
-            return {"status": "error", "message": f"Call {i + 1}, {name}: {describe(error)}"}
+            return {"status": "threw", "message": f"Call {i + 1}, {name}: {describe(error)}"}
         returns = method["returns"] if method else "void"
-        actual = None if returns == "void" else back(returns, value)
-        want = None if returns == "void" else expected[i]
-        if not matches(returns, actual, want):
-            return {
-                "status": "fail",
-                "message": f"Call {i + 1}, {name}: expected {show(want)} but got {show(actual)}",
-            }
-    return {"status": "pass"}
+        note(carry({"status": "call"}, None if returns == "void" else back(returns, value)))
+    return {"status": "done"}
 
 
 def main():
@@ -252,7 +207,10 @@ def main():
             kind = "a class" if is_class else "a Solution method"
             record({"name": test["name"], "status": "error", "message": f"solution.py doesn't define {kind} named {name}"})
             continue
-        result = run_class(target, signature, test) if is_class else run_function(target, signature, test)
+        if is_class:
+            result = run_class(target, signature, test, lambda line: record({"name": test["name"], **line}))
+        else:
+            result = run_function(target, signature, test)
         record({"name": test["name"], **result})
 
 
