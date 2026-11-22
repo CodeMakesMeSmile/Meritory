@@ -1,0 +1,20 @@
+id: rising-islands
+kind: coding
+title: Islands rising from the sea
+difficulty: hard
+skills:
+  - union-find
+sibling: spare-cable
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: islandsAfterEach
+  params:
+    - name: rows
+      type: int
+    - name: cols
+      type: int
+    - name: raised
+      type: int[][]
+  returns: int[]

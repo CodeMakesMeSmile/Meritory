@@ -1,0 +1,19 @@
+id: circular-wait
+kind: coding
+title: Build steps that wait in a circle
+difficulty: medium
+skills:
+  - topological-order
+  - graph-cycles
+sibling: fewest-terms
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: hasCircularWait
+  params:
+    - name: n
+      type: int
+    - name: waits
+      type: int[][]
+  returns: boolean

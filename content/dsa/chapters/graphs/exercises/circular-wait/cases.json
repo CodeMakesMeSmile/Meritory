@@ -1,0 +1,203 @@
+{
+  "exercise": "circular-wait",
+  "cases": [
+    {
+      "uuid": "03bad494-1442-487a-bdbc-ed1b0bfbaa31",
+      "description": "three steps wait in a circle",
+      "property": "hasCircularWait",
+      "input": {
+        "n": 4,
+        "waits": [[0, 1], [1, 2], [2, 0], [3, 2]]
+      },
+      "expected": true
+    },
+    {
+      "uuid": "64e12ca2-f35e-4832-b3a5-5ac0ab41000e",
+      "description": "a chain of waits ends",
+      "property": "hasCircularWait",
+      "input": {
+        "n": 4,
+        "waits": [[0, 1], [1, 2], [2, 3]]
+      },
+      "expected": false
+    },
+    {
+      "uuid": "afd61ad9-42ed-4691-9891-cd9d95716ad4",
+      "description": "two ways to the same step isn't a circle",
+      "property": "hasCircularWait",
+      "input": {
+        "n": 4,
+        "waits": [[0, 1], [0, 2], [1, 3], [2, 3]]
+      },
+      "expected": false
+    },
+    {
+      "uuid": "a5077570-2059-4fd3-aa73-21181988dbab",
+      "description": "a step that waits on itself",
+      "property": "hasCircularWait",
+      "input": {
+        "n": 3,
+        "waits": [[0, 1], [2, 2]]
+      },
+      "expected": true
+    },
+    {
+      "uuid": "fcbe9a3b-1654-4d61-8dd6-3a1987456a03",
+      "description": "two steps wait on each other",
+      "property": "hasCircularWait",
+      "input": {
+        "n": 2,
+        "waits": [[0, 1], [1, 0]]
+      },
+      "expected": true
+    },
+    {
+      "uuid": "f4a13ba2-9179-47ef-83c1-11c2a62ec005",
+      "description": "no waits at all",
+      "property": "hasCircularWait",
+      "input": {
+        "n": 3,
+        "waits": []
+      },
+      "expected": false
+    },
+    {
+      "uuid": "dfe31c45-c3df-488c-b00b-9ebeb8928a73",
+      "description": "a circle away from step 0",
+      "property": "hasCircularWait",
+      "input": {
+        "n": 6,
+        "waits": [[0, 1], [2, 3], [3, 4], [4, 5], [5, 3]]
+      },
+      "expected": true
+    },
+    {
+      "uuid": "91faf1fd-55e1-4d46-91d3-6f0316dd9bb4",
+      "description": "thirty steps with no circle",
+      "property": "hasCircularWait",
+      "input": {
+        "n": 30,
+        "waits": [
+          [29, 23],
+          [21, 26],
+          [21, 8],
+          [7, 22],
+          [10, 25],
+          [28, 13],
+          [0, 4],
+          [7, 8],
+          [29, 19],
+          [14, 24],
+          [9, 13],
+          [29, 2],
+          [18, 10],
+          [29, 12],
+          [18, 10],
+          [28, 8],
+          [3, 9],
+          [19, 6],
+          [15, 16],
+          [1, 6],
+          [28, 22],
+          [27, 10],
+          [29, 15],
+          [9, 12],
+          [18, 10],
+          [7, 6],
+          [3, 8],
+          [7, 4],
+          [20, 16],
+          [21, 4],
+          [15, 26],
+          [21, 4],
+          [23, 10],
+          [12, 27],
+          [3, 8],
+          [29, 20],
+          [18, 13],
+          [15, 24],
+          [1, 0],
+          [4, 6],
+          [3, 11],
+          [28, 2],
+          [26, 23],
+          [24, 10],
+          [25, 6]
+        ]
+      },
+      "expected": false
+    },
+    {
+      "uuid": "95e38472-f284-40b6-a205-4e1373dfb825",
+      "description": "thirty steps with a circle",
+      "property": "hasCircularWait",
+      "input": {
+        "n": 30,
+        "waits": [
+          [29, 23],
+          [21, 26],
+          [21, 8],
+          [7, 22],
+          [10, 25],
+          [28, 13],
+          [0, 4],
+          [7, 8],
+          [29, 19],
+          [14, 24],
+          [9, 13],
+          [29, 2],
+          [18, 10],
+          [29, 12],
+          [18, 10],
+          [28, 8],
+          [3, 9],
+          [19, 6],
+          [15, 16],
+          [1, 6],
+          [28, 22],
+          [27, 10],
+          [29, 15],
+          [9, 12],
+          [18, 10],
+          [7, 6],
+          [3, 8],
+          [7, 4],
+          [20, 16],
+          [21, 4],
+          [15, 26],
+          [21, 4],
+          [23, 10],
+          [12, 27],
+          [3, 8],
+          [29, 20],
+          [18, 13],
+          [15, 24],
+          [1, 0],
+          [4, 6],
+          [3, 11],
+          [28, 2],
+          [26, 23],
+          [24, 10],
+          [25, 6],
+          [8, 7]
+        ]
+      },
+      "expected": true
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "7fe86e55-442b-4420-ab73-b83aa087a5eb",
+          "description": "one step",
+          "property": "hasCircularWait",
+          "input": {
+            "n": 1,
+            "waits": []
+          },
+          "expected": false
+        }
+      ]
+    }
+  ]
+}

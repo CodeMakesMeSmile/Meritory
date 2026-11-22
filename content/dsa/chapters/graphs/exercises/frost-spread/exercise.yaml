@@ -1,0 +1,16 @@
+id: frost-spread
+kind: coding
+title: When the frost reaches every seedling
+difficulty: medium
+skills:
+  - multi-source-bfs
+sibling: nearest-exit
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: hoursToFrost
+  params:
+    - name: tray
+      type: int[][]
+  returns: int

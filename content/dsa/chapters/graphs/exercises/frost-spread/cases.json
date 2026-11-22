@@ -1,0 +1,117 @@
+{
+  "exercise": "frost-spread",
+  "cases": [
+    {
+      "uuid": "18730041-8fb6-4d8f-a6b4-06e591ae1147",
+      "description": "frost reaches every seedling",
+      "property": "hoursToFrost",
+      "input": {
+        "tray": [[1, 1, 0, 2], [0, 1, 1, 1], [0, 0, 1, 1]]
+      },
+      "expected": 5
+    },
+    {
+      "uuid": "4f1080b8-9e11-4b7d-8f21-5ea60de32240",
+      "description": "two patches of frost spread at once",
+      "property": "hoursToFrost",
+      "input": {
+        "tray": [[2, 1, 1, 1, 1, 1, 2]]
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "1f48a8d8-559a-4cda-bc7d-c54fcb8e112f",
+      "description": "a seedling frost can't reach",
+      "property": "hoursToFrost",
+      "input": {
+        "tray": [[2, 1, 0], [0, 0, 0], [0, 0, 1]]
+      },
+      "expected": -1
+    },
+    {
+      "uuid": "5383e6ab-439d-4b6c-87e0-74dda69d7971",
+      "description": "no healthy seedlings to start with",
+      "property": "hoursToFrost",
+      "input": {
+        "tray": [[2, 0], [0, 2]]
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "ed30082c-0336-4cfd-b285-32178d6739a8",
+      "description": "healthy seedlings and no frost",
+      "property": "hoursToFrost",
+      "input": {
+        "tray": [[1, 1], [0, 1]]
+      },
+      "expected": -1
+    },
+    {
+      "uuid": "5f65f1f4-46d8-436d-8419-8bfb7f42ecff",
+      "description": "frost spreads around an empty cell",
+      "property": "hoursToFrost",
+      "input": {
+        "tray": [[2, 1, 1], [1, 0, 1], [1, 1, 1]]
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "96c75b32-2318-4bbe-a664-59e173d38d65",
+      "description": "frost doesn't spread across corners",
+      "property": "hoursToFrost",
+      "input": {
+        "tray": [[2, 0], [0, 1]]
+      },
+      "expected": -1
+    },
+    {
+      "uuid": "4e1bec07-92e4-4d0a-80f6-1ec99e08f90a",
+      "description": "a big tray",
+      "property": "hoursToFrost",
+      "input": {
+        "tray": [
+          [0, 0, 0, 1, 0, 0, 1, 1, 1],
+          [1, 1, 1, 1, 2, 0, 0, 1, 0],
+          [1, 0, 1, 1, 1, 0, 1, 2, 1],
+          [1, 0, 1, 1, 0, 1, 1, 0, 1],
+          [1, 1, 0, 1, 1, 1, 1, 1, 1],
+          [1, 1, 2, 0, 1, 0, 0, 0, 0],
+          [1, 1, 0, 0, 1, 1, 1, 1, 1]
+        ]
+      },
+      "expected": 11
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "fc2e280d-8f08-48e2-a4e3-7cd85794220d",
+          "description": "one healthy seedling",
+          "property": "hoursToFrost",
+          "input": {
+            "tray": [[1]]
+          },
+          "expected": -1
+        },
+        {
+          "uuid": "06612466-eacf-43d0-a002-0c134b1e8fc2",
+          "description": "one frosted seedling",
+          "property": "hoursToFrost",
+          "input": {
+            "tray": [[2]]
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "5f10afc0-1620-4f58-8bf6-d3d25b3c18bf",
+          "description": "one empty cell",
+          "property": "hoursToFrost",
+          "input": {
+            "tray": [[0]]
+          },
+          "expected": 0
+        }
+      ]
+    }
+  ]
+}

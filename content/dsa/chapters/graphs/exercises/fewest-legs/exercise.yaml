@@ -1,0 +1,23 @@
+id: fewest-legs
+kind: coding
+title: Fewest ferry rides
+difficulty: easy
+skills:
+  - adjacency-list
+  - graph-bfs
+sibling: courtyard-path
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: fewestRides
+  params:
+    - name: n
+      type: int
+    - name: routes
+      type: int[][]
+    - name: start
+      type: int
+    - name: goal
+      type: int
+  returns: int
