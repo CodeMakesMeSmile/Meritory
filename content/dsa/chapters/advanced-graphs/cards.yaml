@@ -1,0 +1,353 @@
+- id: why-skip-stale-entries
+  skill: dijkstra-heap
+  asks: why
+  type: prompt
+  prompt: In Dijkstra's algorithm, why can the same node come out of the heap more than once, and what should you do with the extra entries?
+  reworded: A node is pushed onto Dijkstra's heap twice. Why does that happen, and how do you handle the second time it comes out?
+  points:
+    - A node is pushed again each time a cheaper route to it turns up.
+    - The heap can't find and lower an entry already inside it, so the older, dearer entry stays.
+    - When an entry comes out costing more than the node's best known cost, it's stale, so skip it.
+  misconception: That each node goes into the heap exactly once, as in a breadth-first search.
+  lesson:
+    title: Old entries go stale
+    explanation: "The first entry out for a node is its cheapest, so the node is settled then. Checking `if (at > cost[node]) continue` stops the later, dearer entries from redoing its edges."
+- id: dijkstra-steps
+  skill: dijkstra-heap
+  asks: what
+  type: ordering
+  prompt: Put the steps of Dijkstra's algorithm in order.
+  reworded: In what order does Dijkstra's algorithm find the cheapest path to every node?
+  steps:
+    - Set every cost to infinity, then the start's cost to 0.
+    - Push the start onto a min-heap with cost 0.
+    - Pop the cheapest entry from the heap.
+    - Skip it if it costs more than that node's best known cost.
+    - Relax each edge out of the node, and push any neighbour whose cost went down.
+  terms:
+    - term: Relax
+      definition: Check whether going through this node is a cheaper way to reach a neighbour, and lower its cost if so.
+  lesson:
+    title: Cheapest first, settled for good
+    explanation: The heap always hands back the cheapest unsettled node. With no negative edges, nothing found later can beat it, so each node is settled the first time it comes out.
+- id: why-first-pop-final
+  skill: dijkstra-heap
+  asks: why
+  type: pick-one
+  prompt: Why is a node's cost final the first time it comes out of Dijkstra's heap?
+  reworded: What makes it safe for Dijkstra's algorithm to settle a node as soon as it's popped?
+  options:
+    - text: Every other entry costs at least as much, and with no negative edges any other route can only add to that
+      correct: true
+      reason: Any other route has to pass through something still in the heap, then add weight that's 0 or more.
+    - text: The node has been reached by the fewest edges
+      reason: That's breadth-first search. Dijkstra's algorithm orders by cost, not by edge count.
+    - text: Each node is only ever pushed once
+      reason: A node can be pushed many times. Only its first pop counts.
+  lesson:
+    title: Nothing cheaper is left
+    explanation: The popped cost is the smallest in the heap. Since weights can't be negative, no route through a dearer entry can come back below it.
+- id: when-signal-never-arrives
+  skill: dijkstra-heap
+  asks: when
+  type: pick-one
+  prompt: An alert spreads from one relay along one way links, each with its own delay. After Dijkstra's algorithm, when is the answer -1?
+  reworded: You've found the cheapest time to every relay. In which case does the alert never reach everyone?
+  options:
+    - text: When some relay's cost is still infinity
+      correct: true
+      reason: No path reaches it, so it never hears the alert.
+    - text: When two relays are reached at the same time
+      reason: Ties are fine. The answer is still the largest cost.
+    - text: When the slowest link is longer than every path
+      reason: A slow link only matters if a cheapest path uses it.
+  lesson:
+    title: The largest cost, unless one is missing
+    explanation: Everyone hears it at their own cheapest cost, so the answer is the largest of those. Check for infinity first, since an unreached relay means never.
+- id: why-negative-edge-breaks
+  skill: negative-edges
+  asks: why
+  type: prompt
+  prompt: Why does Dijkstra's algorithm give wrong answers when an edge can have a negative weight?
+  reworded: What goes wrong in Dijkstra's algorithm if some edges cost less than zero?
+  points:
+    - It settles a node the first time it's popped, trusting that later routes can only cost more.
+    - A negative edge found later can make a cheaper route to a node that's already settled.
+    - The settled node and everything reached through it then keep their wrong costs.
+  misconception: That Dijkstra's algorithm just runs a little slower with negative edges but still gets the right answer.
+  lesson:
+    title: Settled too soon
+    explanation: "With edges `0 → 1` at 2, `0 → 2` at 5, and `2 → 1` at -4, node 1 is settled at 2, but the real cheapest is 1. Bellman-Ford never settles early, so it handles this."
+- id: when-no-cheapest-path
+  skill: negative-edges
+  asks: when
+  type: pick-one
+  prompt: When is there no cheapest path from the start to a node at all?
+  reworded: In which case does asking for the cheapest path to a node stop making sense?
+  options:
+    - text: When a loop whose weights add up to less than zero can be reached on the way
+      correct: true
+      reason: Going round once more always lowers the cost, so there's no lowest one.
+    - text: When some edges are negative
+      reason: Negative edges are fine as long as no loop adds up below zero.
+    - text: When a loop adds up to exactly zero
+      reason: Going round it changes nothing, so the cheapest path still exists.
+  lesson:
+    title: Negative cycles have no bottom
+    explanation: Bellman-Ford finds them with one extra round. If any edge still relaxes in round n, a negative cycle can be reached.
+- id: why-n-minus-one-rounds
+  skill: bellman-ford
+  asks: why
+  type: pick-one
+  prompt: Why are n - 1 rounds of relaxing every edge enough for Bellman-Ford?
+  reworded: What tells you that Bellman-Ford can stop after n - 1 rounds?
+  options:
+    - text: A cheapest path with no cycle visits each node at most once, so it has at most n - 1 edges
+      correct: true
+      reason: Each round adds at least one more edge of every cheapest path.
+    - text: Each round settles exactly one node, as in Dijkstra's algorithm
+      reason: Bellman-Ford never settles nodes. A round can fix many at once, or none.
+    - text: There are at most n - 1 edges in any graph
+      reason: A graph can have far more edges than nodes.
+  lesson:
+    title: One edge per round
+    explanation: After round r, every path of up to r edges has been tried. No cheapest path needs more than n - 1, unless there's a negative cycle.
+- id: why-relax-from-copy
+  skill: bellman-ford
+  asks: why
+  type: prompt
+  prompt: To find the cheapest path with at most k stops, why should each round of Bellman-Ford read from a copy of the last round's costs?
+  reworded: In Bellman-Ford with a limit on stops, what goes wrong if a round writes straight into the costs it's reading?
+  points:
+    - An edge could use a cost that was lowered earlier in the same round.
+    - Then one round can chain several edges, so a path can use more edges than allowed.
+    - Reading only last round's costs means each round adds exactly one edge.
+  misconception: That the order the edges are listed in can't change the answer.
+  lesson:
+    title: One round, one more edge
+    explanation: "With routes `0 → 1`, `1 → 2`, `2 → 3` listed in that order and no stops allowed, writing in place reaches 3 in one round through three routes. The copy keeps it to direct routes."
+- id: stops-to-rounds
+  skill: bellman-ford
+  asks: what
+  type: pick-one
+  prompt: A parcel may pass through at most k depots between its start and its goal. How many rounds of Bellman-Ford do you run?
+  reworded: With at most k stops in between, how many times do you relax every edge?
+  options:
+    - text: k + 1, since k stops means k + 1 routes
+      correct: true
+      reason: Each round adds one more route to the path.
+    - text: k, one per stop
+      reason: That would only allow paths of k routes, which is k - 1 stops.
+    - text: n - 1, as in plain Bellman-Ford
+      reason: That would allow any number of stops.
+  lesson:
+    title: Count the edges, not the stops
+    explanation: Stops are the nodes between start and goal. A path with k of them has k + 1 edges.
+- id: negative-cycle-steps
+  skill: bellman-ford
+  asks: what
+  type: ordering
+  prompt: Put the steps for finding a negative cycle the start can reach in order.
+  reworded: In what order does Bellman-Ford check for a loop that keeps getting cheaper?
+  steps:
+    - Set every cost to infinity, then the start's cost to 0.
+    - Relax every edge, skipping edges from nodes still at infinity.
+    - Repeat for n - 1 rounds, or stop early when a round changes nothing.
+    - Relax every edge one more time.
+    - If any cost still goes down, a negative cycle can be reached.
+  lesson:
+    title: One round too many
+    explanation: Without a negative cycle, every cost is final after n - 1 rounds. A change in round n means some loop keeps paying.
+- id: prim-steps
+  skill: prim-tree
+  asks: what
+  type: ordering
+  prompt: Put the steps of Prim's algorithm with a heap in order.
+  reworded: In what order does Prim's algorithm grow a minimum spanning tree?
+  steps:
+    - Push any start node onto a min-heap with weight 0.
+    - Pop the cheapest entry.
+    - Skip it if its node is already in the tree.
+    - Add the node to the tree and its weight to the total.
+    - Push every edge from the new node to a node outside the tree.
+  lesson:
+    title: Always the cheapest edge out
+    explanation: Each step takes the cheapest edge leaving the tree, which is always safe. It's O(m log m) with a heap.
+- id: why-prim-pushes-weight
+  skill: prim-tree
+  asks: why
+  type: pick-one
+  prompt: Prim's algorithm looks like Dijkstra's algorithm. Why does it push only the edge's weight, not the cost from the start plus the weight?
+  reworded: What's different about the value Prim's algorithm puts in its heap, compared with Dijkstra's algorithm?
+  options:
+    - text: It only cares what it costs to join this node to the tree, not how far the node is from the start
+      correct: true
+      reason: The tree's total is the sum of its edges, so each edge counts on its own.
+    - text: Adding the costs would overflow
+      reason: Overflow isn't the reason. The two algorithms answer different questions.
+    - text: The heap can only hold one number per entry
+      reason: Entries hold the weight and the node, just like in Dijkstra's algorithm.
+  lesson:
+    title: Joining cost, not distance
+    explanation: Dijkstra's algorithm asks how far each node is from the start. Prim's algorithm asks what it costs to bring each node in.
+- id: when-prim-or-kruskal
+  skill: prim-tree
+  asks: when
+  type: matching
+  prompt: Match each graph to the way of building its minimum spanning tree that suits it best.
+  reworded: Which method of finding a minimum spanning tree fits each of these?
+  matchHeading: Method
+  matchName: a method
+  pairs:
+    - item: A list of 20,000 possible cables between 10,000 buildings
+      match: Kruskal's algorithm, sorting the edges
+    - item: 1,000 points on a map, where any two can be wired together
+      match: Prim's algorithm with an array, in O(n²)
+    - item: An adjacency list that's already built
+      match: Prim's algorithm with a heap
+  extraMatches:
+    - Breadth-first search from one node
+  lesson:
+    title: Fit the method to the edges
+    explanation: Kruskal's algorithm sorts an edge list. Prim's algorithm grows from an adjacency list, and its array version avoids listing every pair in a dense graph.
+- id: why-cheapest-edge-safe
+  skill: kruskal-tree
+  asks: why
+  type: prompt
+  prompt: Kruskal's algorithm takes the cheapest edge that joins two separate groups. Why is that always safe?
+  reworded: How do we know Kruskal's algorithm never regrets taking the cheapest edge between two groups?
+  points:
+    - Any spanning tree has to join those two groups with some edge.
+    - If a tree used a dearer edge to join them, swapping in the cheaper one keeps it joined and lowers the total.
+    - So some minimum spanning tree always contains the cheapest edge between the groups.
+  misconception: That a greedy choice might block a cheaper total later on.
+  lesson:
+    title: The cheapest crossing is safe
+    explanation: Split the nodes into any two groups, and the cheapest edge between them belongs to some minimum spanning tree. Prim's algorithm uses the same fact.
+- id: when-kruskal-stops
+  skill: kruskal-tree
+  asks: when
+  type: pick-one
+  prompt: When can Kruskal's algorithm stop, and how does it know the graph can't be fully joined?
+  reworded: How does Kruskal's algorithm tell that it's finished, or that no spanning tree exists?
+  options:
+    - text: It stops after taking n - 1 edges, and if the edges run out first, some node can't be reached
+      correct: true
+      reason: A spanning tree always has exactly n - 1 edges.
+    - text: It stops when every edge has been looked at, and fails if any edge was skipped
+      reason: Skipping edges that close a cycle is normal.
+    - text: It stops when the next edge costs more than the last
+      reason: The edges are sorted, so that happens all the time.
+  lesson:
+    title: n - 1 edges or bust
+    explanation: Count the edges taken. Reaching n - 1 means everything is joined, and running out of edges before that means the answer is -1.
+- id: why-tree-not-paths
+  skill: kruskal-tree
+  asks: why
+  type: pick-one
+  prompt: Why isn't a minimum spanning tree the same as the cheapest paths from one node?
+  reworded: A minimum spanning tree joins every node. Why might the path it gives between two nodes not be their cheapest?
+  options:
+    - text: The tree keeps the total of all its edges low, not the cost between any one pair
+      correct: true
+      reason: It can leave out a direct edge that would be the cheapest path between two nodes.
+    - text: They are always the same tree
+      reason: In a triangle with edges of 2, 3, and 4, the tree drops the 4, even when it's the cheapest way between its two ends.
+    - text: A spanning tree can't include the start node
+      reason: A spanning tree includes every node.
+  lesson:
+    title: Different questions, different trees
+    explanation: Use a spanning tree to join everything cheaply, and Dijkstra's algorithm to get from one place to another cheaply.
+- id: why-zero-edges-front
+  skill: zero-one-bfs
+  asks: why
+  type: prompt
+  prompt: In a search where every edge costs 0 or 1, why do nodes reached by a 0 edge go to the front of the deque and nodes reached by a 1 edge go to the back?
+  reworded: How does putting 0 edges at the front and 1 edges at the back keep a deque in cost order?
+  points:
+    - The deque only ever holds two costs, some d at the front and d + 1 at the back.
+    - A 0 edge keeps the cost at d, so the node belongs at the front with the others at d.
+    - A 1 edge makes d + 1, so the node belongs at the back. The deque stays in order with no heap, so it's O(n + m).
+  lesson:
+    title: Two costs, two ends
+    explanation: It's Dijkstra's algorithm where the heap only ever needs two levels, so a deque does the job in O(1) per step.
+- id: when-zero-one
+  skill: zero-one-bfs
+  asks: when
+  type: matching
+  prompt: Match each set of edge costs to the search that fits it best.
+  reworded: Which search finds the cheapest path for each kind of edge cost?
+  matchHeading: Search
+  matchName: a search
+  pairs:
+    - item: Every edge costs 1
+      match: Breadth-first search with a queue
+    - item: Every edge costs 0 or 1
+      match: A deque, with 0 edges at the front
+    - item: Edges cost anything from 1 to 1,000
+      match: Dijkstra's algorithm with a heap
+    - item: Some edges cost less than 0
+      match: Bellman-Ford
+  lesson:
+    title: The weights pick the tool
+    explanation: The simpler the weights, the simpler the search. Each tool on the list handles everything above it, but more slowly.
+- id: why-dag-longest-easy
+  skill: dag-paths
+  asks: why
+  type: prompt
+  prompt: Finding the longest path is hard in a general graph. Why is it easy when the graph has no cycles?
+  reworded: What does having no cycles give you when you want the longest path through a directed graph?
+  points:
+    - A topological order lists every node after everything that points to it.
+    - Relaxing edges in that order means every edge into a node is handled before the node's turn, so its best is final.
+    - With no cycles, no path can loop to grow forever, so taking the larger value at each step just works, in O(n + m).
+  misconception: That you can find the longest path with Dijkstra's algorithm by popping the largest cost instead.
+  lesson:
+    title: The order does the settling
+    explanation: Topological order guarantees each node is complete before it's used. That works for the longest path, the shortest path, and negative weights alike.
+- id: dag-path-steps
+  skill: dag-paths
+  asks: what
+  type: ordering
+  prompt: Put the steps for finding the longest path from a start node in a graph with no cycles in order.
+  reworded: In what order do you find the most valuable path from one node in a directed graph with no cycles?
+  steps:
+    - Build a topological order with Kahn's algorithm.
+    - Set every best value to unreached, then the start's to 0.
+    - Go through the nodes in topological order.
+    - Skip a node that's still unreached.
+    - For each edge out, keep the larger of the neighbour's best and this node's best plus the weight.
+  lesson:
+    title: Relax in order
+    explanation: Kahn's algorithm comes from the graphs chapter. Skipping unreached nodes keeps paths that don't start at the start from counting.
+- id: why-max-keeps-dijkstra
+  skill: bottleneck-paths
+  asks: why
+  type: prompt
+  prompt: When a path's cost is its single worst step, why does Dijkstra's algorithm still work if you take the larger value instead of adding?
+  reworded: Dijkstra's algorithm usually adds weights. Why is it still right when it keeps the largest weight on the path instead?
+  points:
+    - The proof only needs a path's cost to never go down as the path gets longer.
+    - Taking the larger of the cost so far and the next step can never make it smaller.
+    - So the first time a node comes out of the heap, its worst step is as small as it can be.
+  misconception: That Dijkstra's algorithm only works for sums.
+  lesson:
+    title: Never cheaper by going further
+    explanation: "Sums of weights that are 0 or more and the largest weight so far both only grow along a path. That's the one rule Dijkstra's algorithm needs."
+- id: when-bottleneck
+  skill: bottleneck-paths
+  asks: when
+  type: pick-one
+  prompt: Which question asks for the path whose worst step is smallest?
+  reworded: Which of these is judged by a path's single worst step rather than its total?
+  options:
+    - text: The route across a ridge whose steepest climb or drop is as gentle as possible
+      correct: true
+      reason: Only the steepest step matters, not how many steps there are.
+    - text: The route across a ridge with the least total climbing
+      reason: That adds up every climb, so it's a sum.
+    - text: The route across a ridge with the fewest steps
+      reason: That's breadth-first search on a grid.
+  lesson:
+    title: Worst step, not total
+    explanation: Words like "steepest", "highest point on the way", or "heaviest load any bridge must carry" point to a path judged by its worst step.

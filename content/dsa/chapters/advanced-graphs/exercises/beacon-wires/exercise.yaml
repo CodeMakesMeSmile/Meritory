@@ -1,0 +1,17 @@
+id: beacon-wires
+kind: coding
+title: Wiring the trail beacons
+difficulty: medium
+skills:
+  - prim-tree
+  - kruskal-tree
+sibling: greenhouse-pipes
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: leastWire
+  params:
+    - name: beacons
+      type: int[][]
+  returns: int

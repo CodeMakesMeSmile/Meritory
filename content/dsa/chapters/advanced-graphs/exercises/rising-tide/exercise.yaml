@@ -1,0 +1,17 @@
+id: rising-tide
+kind: coding
+title: Rowing over the flooded field
+difficulty: medium
+skills:
+  - bottleneck-paths
+  - dijkstra-heap
+sibling: gentlest-hike
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: earliestHour
+  params:
+    - name: field
+      type: int[][]
+  returns: int

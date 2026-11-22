@@ -1,0 +1,22 @@
+id: against-traffic
+kind: coding
+title: Walking against the one way streets
+difficulty: medium
+skills:
+  - zero-one-bfs
+sibling: snow-drifts
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: fewestAgainst
+  params:
+    - name: n
+      type: int
+    - name: streets
+      type: int[][]
+    - name: start
+      type: int
+    - name: goal
+      type: int
+  returns: int

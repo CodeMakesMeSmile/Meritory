@@ -1,0 +1,134 @@
+{
+  "exercise": "against-traffic",
+  "cases": [
+    {
+      "uuid": "3994acae-2328-4467-8859-aa526eac547d",
+      "description": "walks against two streets",
+      "property": "fewestAgainst",
+      "input": {
+        "n": 4,
+        "streets": [[1, 0], [1, 2], [3, 2]],
+        "start": 0,
+        "goal": 3
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "799384cb-5db7-4969-b52f-1a1d1da851ee",
+      "description": "every street goes the right way",
+      "property": "fewestAgainst",
+      "input": {
+        "n": 4,
+        "streets": [[0, 1], [1, 2], [2, 3]],
+        "start": 0,
+        "goal": 3
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "a90c7ccb-7ad5-4201-a298-1967a4443e75",
+      "description": "a junction with no streets",
+      "property": "fewestAgainst",
+      "input": {
+        "n": 3,
+        "streets": [[0, 1]],
+        "start": 0,
+        "goal": 2
+      },
+      "expected": -1
+    },
+    {
+      "uuid": "f3f1912b-cd91-43ab-8218-9f6ed5072d77",
+      "description": "a longer ride beats walking",
+      "property": "fewestAgainst",
+      "input": {
+        "n": 5,
+        "streets": [[4, 0], [0, 1], [1, 2], [2, 3], [3, 4]],
+        "start": 0,
+        "goal": 4
+      },
+      "expected": 0
+    },
+    {
+      "uuid": "27f62af5-d38e-4356-a437-536e2b1072bd",
+      "description": "a street listed both ways",
+      "property": "fewestAgainst",
+      "input": {
+        "n": 3,
+        "streets": [[1, 0], [0, 1], [2, 1]],
+        "start": 0,
+        "goal": 2
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "386cd83c-811a-490c-afad-75f6064a9e40",
+      "description": "every street points back to the start",
+      "property": "fewestAgainst",
+      "input": {
+        "n": 4,
+        "streets": [[1, 0], [2, 1], [3, 2]],
+        "start": 0,
+        "goal": 3
+      },
+      "expected": 3
+    },
+    {
+      "uuid": "dd29a066-90fa-4cd4-b1bb-20aabaf4f6e8",
+      "description": "a busy town",
+      "property": "fewestAgainst",
+      "input": {
+        "n": 12,
+        "streets": [
+          [3, 4],
+          [7, 1],
+          [4, 0],
+          [1, 0],
+          [11, 7],
+          [3, 0],
+          [4, 9],
+          [10, 8],
+          [11, 6],
+          [3, 0],
+          [0, 5],
+          [0, 4],
+          [8, 11],
+          [2, 0],
+          [1, 6]
+        ],
+        "start": 0,
+        "goal": 11
+      },
+      "expected": 2
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "71bfd999-f50e-417b-87de-de8b9c34ec2d",
+          "description": "already at the goal",
+          "property": "fewestAgainst",
+          "input": {
+            "n": 2,
+            "streets": [[1, 0]],
+            "start": 1,
+            "goal": 1
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "2eb1be16-9204-46c4-a7f8-0845de83ef8b",
+          "description": "one junction",
+          "property": "fewestAgainst",
+          "input": {
+            "n": 1,
+            "streets": [],
+            "start": 0,
+            "goal": 0
+          },
+          "expected": 0
+        }
+      ]
+    }
+  ]
+}

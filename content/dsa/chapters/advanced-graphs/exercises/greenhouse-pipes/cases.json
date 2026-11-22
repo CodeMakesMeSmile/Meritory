@@ -1,0 +1,114 @@
+{
+  "exercise": "greenhouse-pipes",
+  "cases": [
+    {
+      "uuid": "3caa8ad6-1212-464e-91d8-d86833c33afa",
+      "description": "picks the cheapest pipes that reach everywhere",
+      "property": "leastPipe",
+      "input": {
+        "n": 4,
+        "pipes": [[0, 1, 4], [1, 2, 2], [0, 2, 3], [2, 3, 6], [1, 3, 7]]
+      },
+      "expected": 11
+    },
+    {
+      "uuid": "c5165a3e-8134-4ab7-9710-57432fcc7ded",
+      "description": "a greenhouse no pipe reaches",
+      "property": "leastPipe",
+      "input": {
+        "n": 4,
+        "pipes": [[0, 1, 1], [1, 2, 1], [0, 2, 1]]
+      },
+      "expected": -1
+    },
+    {
+      "uuid": "4a4daacb-5316-4a2c-b390-947f468f1361",
+      "description": "skips a cheap pipe that would close a loop",
+      "property": "leastPipe",
+      "input": {
+        "n": 4,
+        "pipes": [[0, 1, 1], [1, 2, 2], [0, 2, 2], [2, 3, 9], [1, 3, 8]]
+      },
+      "expected": 11
+    },
+    {
+      "uuid": "28655069-f10e-4521-8780-f497404f57a8",
+      "description": "the same pair offered twice",
+      "property": "leastPipe",
+      "input": {
+        "n": 2,
+        "pipes": [[0, 1, 9], [0, 1, 2]]
+      },
+      "expected": 2
+    },
+    {
+      "uuid": "10aaba93-8462-4c5a-8a8c-d4400c6e3200",
+      "description": "every pipe costs the same",
+      "property": "leastPipe",
+      "input": {
+        "n": 4,
+        "pipes": [[0, 1, 5], [1, 2, 5], [2, 3, 5], [3, 0, 5], [0, 2, 5]]
+      },
+      "expected": 15
+    },
+    {
+      "uuid": "469db594-d9da-4d03-a5bb-4bd6d3224829",
+      "description": "two groups with no pipe between them",
+      "property": "leastPipe",
+      "input": {
+        "n": 4,
+        "pipes": [[0, 1, 3], [2, 3, 4]]
+      },
+      "expected": -1
+    },
+    {
+      "uuid": "d292053c-da39-4a29-9b77-8750b95c8c3a",
+      "description": "a busy site",
+      "property": "leastPipe",
+      "input": {
+        "n": 8,
+        "pipes": [
+          [4, 1, 1],
+          [4, 3, 24],
+          [2, 5, 14],
+          [6, 4, 3],
+          [2, 3, 7],
+          [6, 2, 13],
+          [7, 0, 27],
+          [1, 5, 8],
+          [7, 0, 26],
+          [2, 0, 27],
+          [7, 3, 8],
+          [3, 7, 6],
+          [5, 3, 13]
+        ]
+      },
+      "expected": 64
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "3667c22c-2ba5-4f9b-96c1-e291472ed7b6",
+          "description": "one greenhouse",
+          "property": "leastPipe",
+          "input": {
+            "n": 1,
+            "pipes": []
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "f9715e71-6e34-4918-a044-a22e03cd897b",
+          "description": "two greenhouses and no pipes",
+          "property": "leastPipe",
+          "input": {
+            "n": 2,
+            "pipes": []
+          },
+          "expected": -1
+        }
+      ]
+    }
+  ]
+}

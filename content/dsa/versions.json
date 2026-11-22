@@ -30,8 +30,14 @@
   "card/count-parts-steps": [
     "ae36062191193b9804af16ce98a9a93699cfd29933e06fe53cd88b2002326e00"
   ],
+  "card/dag-path-steps": [
+    "202f011757cfa4aaa3d91a75695b5350bce4a68e5543e12a370bd83e64ad0440"
+  ],
   "card/deque-steps": [
     "fc63e9d6970bf8e1ef5d11dca056b5514f25318a58ed7f8871c961ba05090ba4"
+  ],
+  "card/dijkstra-steps": [
+    "a868300602d581b89a2111251fea6585d76195d33101b2971050cc4899713dd1"
   ],
   "card/dp-plan-steps": [
     "57e12fdf1c8f4ced2d12a0403e122ae29719c271d1e52997b0df4bb0a694e264"
@@ -154,6 +160,9 @@
   "card/monotonic-stack-steps": [
     "c4125eabb1ea591cec65ad48a6aaf776dd61092bc2a9f3f81d66d37569fcc4ff"
   ],
+  "card/negative-cycle-steps": [
+    "ed74013233d8f14045fbe045ea5bb208a84f1d0404e46e585fda4a6fd3c25e68"
+  ],
   "card/orders-of-a-tree": [
     "5d1b566ec9b8103210bab04485bcc77634aec9493e929eb4d450010b6ea9450e"
   ],
@@ -168,6 +177,9 @@
   ],
   "card/prefix-count-steps": [
     "0c6c6bd5aa04ca47c845d10c43fee594c88f5d98b6170ca4d369ed775e0b3a03"
+  ],
+  "card/prim-steps": [
+    "57ae4595933cac4ddc08505a34b5acbd8f16fa822a56463ecafa50881eea8492"
   ],
   "card/proof-before-moving": [
     "1e6704f5060013b301850d7b0a5e6e4e0336ef34f0a3a8b79b7dac8cccfe70db"
@@ -201,6 +213,9 @@
   ],
   "card/sort-with-no-compare": [
     "9b28b2e01ad66dabb7f5539d6fb2ad5bbd7691ad522880285e57c9ebd729424c"
+  ],
+  "card/stops-to-rounds": [
+    "4af45a7a3f9fd0006e8ce10960c44aef27ffc752a3e4ebf445c514a56af19c27"
   ],
   "card/sweep-steps": [
     "69e7cd02e93e39b1d86f344f8e4c2a0f065efe4bd9e0f6c47d9c3bf7bfa0134d"
@@ -246,6 +261,9 @@
   ],
   "card/when-balance-check": [
     "4d76a68a10db57d4025224367356cc152d24d2fa86651c2da48bb91da4d59e19"
+  ],
+  "card/when-bottleneck": [
+    "0de6dd21a86e23fb67e5fe687c933228f547f133d02c8c61dd24e831460c25c5"
   ],
   "card/when-bst-or-plain": [
     "22696ee6137fbafb6e2f774bc29d7647896d526ae07bac86e791bd6d19a7dfcf"
@@ -337,6 +355,9 @@
   "card/when-keep-full-table": [
     "4520070b6459b9a9ba348d7f0856c0d12765a5adaaff2a6ec39267f2909d272a"
   ],
+  "card/when-kruskal-stops": [
+    "5b2ffff892180beba0e9fc07da530c7519def66e85192eadd500a46fc0bb9041"
+  ],
   "card/when-lcs-in-disguise": [
     "19b402b8903a9b450219442326f2d5de62e31462853784267808e69f548ca537"
   ],
@@ -380,6 +401,9 @@
   "card/when-new-visit": [
     "b75942f3d230ecfff52364a62dca889154f59d15f72d9ab6f8d6e24a1b7bfc46"
   ],
+  "card/when-no-cheapest-path": [
+    "149059d10f163a234052fc138e7910e0c6dbcf04b64852802cc519a12fea6dc7"
+  ],
   "card/when-no-sort-intersect": [
     "c982503dc53b38dab1a555de0807275c08422e07bfcaf038512700a74970f1bd"
   ],
@@ -403,6 +427,9 @@
   ],
   "card/when-pop-direction": [
     "036cc8b239c56925c1c7e80773f64a8445cf0c5deed6ef327d148de9a17637c4"
+  ],
+  "card/when-prim-or-kruskal": [
+    "c86cd0d4ab91187f1effb268843f50739e6821528898bc27f3cbf5faa312aa95"
   ],
   "card/when-prune-on-total": [
     "b7e62190b25df17b8922010744977a6340139dc824e1fc693081de2c3ca8ece6"
@@ -442,6 +469,9 @@
   ],
   "card/when-set-or-pointers": [
     "dcc1c09c3533a47a8c78058a2688cc0412ecce3faccc87496ba3f752aed1034d"
+  ],
+  "card/when-signal-never-arrives": [
+    "0636625611e751c2060ab2b6d037da278b0d14c6c81285979d648c4e4fb5e10f"
   ],
   "card/when-skip-repeat-ordering": [
     "db090cea8383fd3a8cecf7d9b6913eb68154b17cd6c073b2c24aa7af94b8a8ab"
@@ -521,6 +551,9 @@
   "card/when-window-fits": [
     "eae91cbe9c5aae2ae304717f9a41bdb3527d61b3ea50cab1f0c383ee2e895fa3"
   ],
+  "card/when-zero-one": [
+    "b83362372d42e1edb290a1986736a89e1cef0897108e9ef4e5b364a694f0beea"
+  ],
   "card/which-edge-is-a-cycle": [
     "d30dfe11755447f043431b07e8667c21e6378d9470f946520ffde6c5addd2a49"
   ],
@@ -560,6 +593,9 @@
   "card/why-bst-lca-walk": [
     "b9d6b6c514478948d0757bb0e9850af82e7fb2868d4d7b747e7321fbc9b110ec"
   ],
+  "card/why-cheapest-edge-safe": [
+    "8b741faaabd193b140dda8b4810d8167e10f3f2dacaf263ff5dfe81aff0775e2"
+  ],
   "card/why-check-before-adding": [
     "45f84bb63408807d4835728e647fc9ff54b5d7c9c38859a4f26b36ddac7d5f7c"
   ],
@@ -598,6 +634,9 @@
   ],
   "card/why-cut-before-weaving": [
     "68716fc4068c2645d655efc19598ceaf3650514ce2e181ff4e41578d819d96a0"
+  ],
+  "card/why-dag-longest-easy": [
+    "fa4ea3199f316529dd310df7249e71d77cfe7ba888de9bff1cad3d6b29c508f2"
   ],
   "card/why-delete-empty-counts": [
     "3c88367fd223aa687ace4242cbf21fa0d5624c2adb8b551037a4c0f20c503162"
@@ -653,6 +692,9 @@
   "card/why-find-pivot-first": [
     "169a838f34ec00fd7f68dbb6bc372fe966b2edd3b592127f8289f563503f7a62"
   ],
+  "card/why-first-pop-final": [
+    "1b99d76b198aa642b9cd0338164e4668d4d141fb980be5db110748473581d6fd"
+  ],
   "card/why-flatten-grid": [
     "8b2b37137a281afa48e2e84e95ccd1e27d212079e72257465de9e6c73f380c81"
   ],
@@ -704,6 +746,9 @@
   "card/why-mark-seen-graph": [
     "b2016c9defa54ab47050fdcaf43483ff7928b359d5e4a5db8675a07b4694f538"
   ],
+  "card/why-max-keeps-dijkstra": [
+    "9364db0aa2d08356286a294a2fc00bc4d135a16d2405992fa24e86193a3e6a96"
+  ],
   "card/why-merge-linear": [
     "8f492a5b6d9794ff69df646d4a4c3c28a59faf4eb194f80f039d384079a02a98"
   ],
@@ -733,6 +778,12 @@
   ],
   "card/why-move-shorter-post": [
     "55366fa2e1c9a51be5c97461bee5950b7677acacdbc8ffc366f0addf6c1b2839"
+  ],
+  "card/why-n-minus-one-rounds": [
+    "7c0d1cf93570a5e82559df2f6028344ba0297c73cc24ecdf4f6f1dee8d70dda6"
+  ],
+  "card/why-negative-edge-breaks": [
+    "18978b6f1a42086ce3de330cc9d2ffc54aa22e0e84d44a7fc8f9c31f63039787"
   ],
   "card/why-no-crossing": [
     "64b4b398b87cb7f3504db5eeb0c8ae6184f050d6e10479d392a9ebebb2a9db52"
@@ -773,6 +824,9 @@
   "card/why-preorder-sorted": [
     "9b4e3e60b4b1e26f3e53bb9740e463b1f59ba0776d428fb24b3fb401d0213a8f"
   ],
+  "card/why-prim-pushes-weight": [
+    "2a2a80c27d84612b9815645c99d0d27e7f517928e15862e1fecc84f7e9756708"
+  ],
   "card/why-queue-for-fewest": [
     "c7105c3dfcf9fe9a9a2dd2e366eef0993ceff88942d7d53a51a4ad1fa5a819f4"
   ],
@@ -787,6 +841,9 @@
   ],
   "card/why-recursion-depth": [
     "a9f3edf084abc047a3f07c7558e41bcd457112a6d156094e64da3f62f79add0f"
+  ],
+  "card/why-relax-from-copy": [
+    "16f879bec972c3a4aa4077b69c768cc29ccf3f66c61d7408424767add31dd68d"
   ],
   "card/why-restart-from-head": [
     "0903c46827107b595563e19837c66533e348d466899c36b2f69e5b3992e9f8d8"
@@ -823,6 +880,9 @@
   ],
   "card/why-skip-same-first": [
     "9b1b0256c3c05d6a2a777203ea34f0c8b32810046142fe4b40e475caea728d4b"
+  ],
+  "card/why-skip-stale-entries": [
+    "713ab3ec35db13d2b233b388a8fdab9973fcec669fe5802348a0f58a10a3734b"
   ],
   "card/why-slide-not-resum": [
     "3128d20dd3154c94378cd319c7f66a06b8783b23fdf51c5e2e2f739490c81433"
@@ -884,6 +944,9 @@
   "card/why-take-or-skip": [
     "5d4543f97b1f06c2edc287e568c2ea71545907ee62c19ebe8845d56c6e5a0eb6"
   ],
+  "card/why-tree-not-paths": [
+    "1487a3e4429cad1ab6fce2fad4a164d1511f259c934a7cd6b046f8bf819407a1"
+  ],
   "card/why-trie-for-many-words": [
     "fc26cfed96950f42936040a03679d096637fd3da874f3096c697a52a01c8a348"
   ],
@@ -926,6 +989,9 @@
   "card/why-write-never-passes-read": [
     "611aba8fe0dc1bad002c661b476382a3b74f4c6994844b2e413dcd020e559221"
   ],
+  "card/why-zero-edges-front": [
+    "70fb411214b70347b3baadb20e057a2d03454b302f0a91376bf84dfae45c5ded"
+  ],
   "card/why-zero-past-end": [
     "496a27e1b27f918ac0a43a85c5c1df62add3b5e3ef375e628d014d9d3d4494a9"
   ],
@@ -934,6 +1000,9 @@
   ],
   "card/word-split-steps": [
     "654d0cfa9e5e9ee9bdbd0ce9bd08bf020e7d6829499fc87f85ca5d1b08723e62"
+  ],
+  "chapter/advanced-graphs": [
+    "878cf881e400975129f6b1fc2cc306e9e30e9991346a832a78b2007ddd607744"
   ],
   "chapter/arrays-and-hashing": [
     "7279e5a2ae1ae974ff737e0fd4ab732eae5dc61d6495006491b878cacd341620"
@@ -983,6 +1052,12 @@
   "exercise/add-booking": [
     "2a9b4930b26b0bcbeb4a4c12580809a5546dcfffcd015ec556bb7442b09a348f"
   ],
+  "exercise/against-traffic": [
+    "cc693063ea2aeebddaf951161459775dc0b5502fbdebb63168639e0b0602d135"
+  ],
+  "exercise/alert-relay": [
+    "1106b0076395e4da15ec89f49da0e25fb4a46387f202932f066251debc63f1ef"
+  ],
   "exercise/alternate-courses": [
     "315e5613dff17e27e029c4fbcd69357d9546d4d987c8808e10866c07939c40c9"
   ],
@@ -997,6 +1072,9 @@
   ],
   "exercise/balanced-triples": [
     "d554d6866ec9bb508b8d1a29fa56845369ac1fff592e04bd4334337af411ad61"
+  ],
+  "exercise/beacon-wires": [
+    "58a16728f2c60ff8f773465eb87f45301f0fae6fd87f2c0dbc9edc257ac96880"
   ],
   "exercise/bead-patterns": [
     "a4d192b9927b25815586791e4b6cbb13984bf74efc78bab58f70098c5a9b58c2"
@@ -1088,6 +1166,9 @@
   "exercise/east-view": [
     "d5cb1f9b2125da923c3e76c7de1daab83d4f787e8272d14c0fdd166642c5e17d"
   ],
+  "exercise/endless-bonus": [
+    "a1cdc1a1573f46605b822c9c36775a485b0ae5946ada10517f3f14b4530eba3b"
+  ],
   "exercise/endless-hunt": [
     "3b7562577d46796ce618a23f26955d6272ed2381ff7977ef1c5f40c8f8d56cf9"
   ],
@@ -1151,11 +1232,17 @@
   "exercise/gauge-trips": [
     "2d9d30e5e167f16da3333795f20651a1143dca10e52d133c60de255c96fed1c3"
   ],
+  "exercise/gentlest-hike": [
+    "a8f76ae428bd942960b4254a04f91b7ddcb7270c567ee8afbfbcadb6c9668c7f"
+  ],
   "exercise/gift-bundles": [
     "d85d4bab41c8d5840488a15e1c4820cdec520c068c6a9d0338482c13b6863c3c"
   ],
   "exercise/gifts-under-budget": [
     "db8b9f6b142f19d314c02034ed9e57b6f267fa6bc2fb68dc940b14f92d6aec25"
+  ],
+  "exercise/greenhouse-pipes": [
+    "e7f6e6b51e72f2d072bf7c5ace673742e1f6fc3c9af562d43aac60abdcca82e6"
   ],
   "exercise/hidden-rearrangements": [
     "a32bbfcf431d7578fead4fca7560836986c9ffa763edbbe17ef8ac79ac9cc5a7"
@@ -1301,6 +1388,9 @@
   "exercise/parcel-groups": [
     "0d1bc1a87ac9f48e4e4775a1faa48f49279fd5428c24d9e366e8c2305dda9379"
   ],
+  "exercise/parcel-hops": [
+    "41225ca9da1ea6053c9527bc3d517dee2247acc60eee524ea228aa9802b95b0c"
+  ],
   "exercise/pattern-counts": [
     "52630410a6ded499a7f1387e6cb7a95d73874b88bfea11948f00f79195027b31"
   ],
@@ -1346,6 +1436,9 @@
   "exercise/product-of-others": [
     "02eb84dcf89f10d67d2ece04ff6dac683957856ed94ef2d3acd3df30beb19964"
   ],
+  "exercise/project-finish": [
+    "8d4fb0639b4b332d32113b4bdbba91cb5639e9ccdf3e2385649e47090c5a7fe3"
+  ],
   "exercise/rain-between-walls": [
     "885e1e07443e4709cb10d9ee582b776311514ac3aebe19d98ed58ab48aa687a3"
   ],
@@ -1379,6 +1472,9 @@
   "exercise/rising-streak": [
     "05e41c0896072f633fa255a889e3df73b8aff9253d200c69d5eb2b0b26742aab"
   ],
+  "exercise/rising-tide": [
+    "58335e835cc9a7bed647900004c7ed7408d9f308dc4528455450bfa7c4683559"
+  ],
   "exercise/rotated-playlist": [
     "c1747b8295aef655e39f56ddcd1a07cac9134db391f9b57f4cc9edcdffdab9fa"
   ],
@@ -1393,6 +1489,9 @@
   ],
   "exercise/sand-piles": [
     "ec7a4c0c716c9246e387f9b7106f42d500c4048b20cadcb6654c1d2f3829bb84"
+  ],
+  "exercise/scenic-descent": [
+    "df597a4c22929e57e696a04c5237732d2319cae0a3c0cad8f6e31b826844ec62"
   ],
   "exercise/scooter-loop": [
     "5432889d2fb259996ed0d080ae2a3a0521e3c795e7f6ef1efa2b7f31737ec9a9"
@@ -1435,6 +1534,9 @@
   ],
   "exercise/smallest-window": [
     "5eed9fd14da1054048c0d051917efbfb099d35915320e3e31a762ca54dae08c9"
+  ],
+  "exercise/snow-drifts": [
+    "d634a3eea89032bd2021a1c6168dec9e7c469b9ccf8ef7fb8a0b11786cd2cb21"
   ],
   "exercise/snow-plough": [
     "8b3805839be31f743f0f23f98fb5692743eb65c3a9931e4f519eb13692a54d5e"
@@ -1501,6 +1603,9 @@
   ],
   "exercise/voucher-spend": [
     "3bcebcea403a754bc58c84904932bce21a4b3a9b580ef18032507a6983336dec"
+  ],
+  "exercise/walk-times": [
+    "c5fc9e9a5f659c5b1e89e9235e4581b67658bc6953b2f99bbfa3df52fcdeb71b"
   ],
   "exercise/warm-stretches": [
     "372222f71285f595fea460d685342054dfaaac63401e98bab62893d70cfb32a9"

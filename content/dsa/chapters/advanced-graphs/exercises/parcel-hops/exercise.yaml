@@ -1,0 +1,24 @@
+id: parcel-hops
+kind: coding
+title: The cheapest parcel route with few stops
+difficulty: medium
+skills:
+  - bellman-ford
+sibling: endless-bonus
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: cheapestRoute
+  params:
+    - name: n
+      type: int
+    - name: routes
+      type: int[][]
+    - name: source
+      type: int
+    - name: target
+      type: int
+    - name: maxStops
+      type: int
+  returns: int

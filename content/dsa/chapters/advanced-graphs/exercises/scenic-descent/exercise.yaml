@@ -1,0 +1,22 @@
+id: scenic-descent
+kind: coding
+title: The most scenic way down the mountain
+difficulty: medium
+skills:
+  - dag-paths
+sibling: project-finish
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: mostScenic
+  params:
+    - name: n
+      type: int
+    - name: runs
+      type: int[][]
+    - name: start
+      type: int
+    - name: goal
+      type: int
+  returns: int

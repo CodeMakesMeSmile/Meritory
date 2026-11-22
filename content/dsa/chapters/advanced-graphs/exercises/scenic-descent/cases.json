@@ -1,0 +1,148 @@
+{
+  "exercise": "scenic-descent",
+  "cases": [
+    {
+      "uuid": "fb1f05e1-d109-4b4b-b8d8-238ff571ae08",
+      "description": "picks the run with the best views",
+      "property": "mostScenic",
+      "input": {
+        "n": 5,
+        "runs": [
+          [0, 1, 3],
+          [0, 2, 7],
+          [1, 3, 8],
+          [2, 3, 2],
+          [3, 4, 4],
+          [1, 4, 6]
+        ],
+        "start": 0,
+        "goal": 4
+      },
+      "expected": 15
+    },
+    {
+      "uuid": "0cc445ed-3f05-42d7-8991-7fae003d9bb9",
+      "description": "more runs aren't always better",
+      "property": "mostScenic",
+      "input": {
+        "n": 4,
+        "runs": [[0, 3, 30], [0, 1, 5], [1, 2, 5], [2, 3, 5]],
+        "start": 0,
+        "goal": 3
+      },
+      "expected": 30
+    },
+    {
+      "uuid": "9822f9ec-9c3d-42b7-a386-978de1c96a3a",
+      "description": "the goal can't be reached",
+      "property": "mostScenic",
+      "input": {
+        "n": 4,
+        "runs": [[0, 1, 2], [2, 3, 2]],
+        "start": 0,
+        "goal": 3
+      },
+      "expected": -1
+    },
+    {
+      "uuid": "a76586b3-7052-466a-9bad-535a909997f6",
+      "description": "runs only go downhill",
+      "property": "mostScenic",
+      "input": {
+        "n": 3,
+        "runs": [[0, 1, 4], [1, 2, 4]],
+        "start": 2,
+        "goal": 0
+      },
+      "expected": -1
+    },
+    {
+      "uuid": "94898dd7-348e-46a3-ae0a-a6b290ba7303",
+      "description": "runs above the start don't count",
+      "property": "mostScenic",
+      "input": {
+        "n": 5,
+        "runs": [[3, 0, 50], [3, 4, 90], [0, 1, 2], [1, 2, 2], [4, 2, 1]],
+        "start": 0,
+        "goal": 2
+      },
+      "expected": 4
+    },
+    {
+      "uuid": "5effa32a-c2df-437b-baad-94adebdba0bb",
+      "description": "two runs between the same huts",
+      "property": "mostScenic",
+      "input": {
+        "n": 3,
+        "runs": [[0, 1, 2], [0, 1, 9], [1, 2, 1]],
+        "start": 0,
+        "goal": 2
+      },
+      "expected": 10
+    },
+    {
+      "uuid": "a75803d7-5ed1-471c-b9c6-bbe251b1b454",
+      "description": "a busy mountain",
+      "property": "mostScenic",
+      "input": {
+        "n": 12,
+        "runs": [
+          [11, 7, 49],
+          [0, 7, 45],
+          [2, 3, 13],
+          [3, 8, 43],
+          [2, 0, 29],
+          [6, 4, 40],
+          [2, 3, 6],
+          [8, 4, 47],
+          [2, 9, 30],
+          [6, 8, 13],
+          [3, 10, 47],
+          [3, 9, 43],
+          [11, 1, 11],
+          [0, 3, 14],
+          [2, 8, 5],
+          [3, 4, 37],
+          [6, 11, 9],
+          [7, 10, 50],
+          [5, 10, 5],
+          [6, 4, 9],
+          [11, 3, 8],
+          [0, 10, 47]
+        ],
+        "start": 2,
+        "goal": 4
+      },
+      "expected": 133
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "690a1859-55bd-4cab-ba47-50530e39d963",
+          "description": "starts at the goal",
+          "property": "mostScenic",
+          "input": {
+            "n": 3,
+            "runs": [[0, 1, 5]],
+            "start": 1,
+            "goal": 1
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "04ad7f4b-4e3b-4b69-b70c-b1e85dd11378",
+          "description": "one hut",
+          "property": "mostScenic",
+          "input": {
+            "n": 1,
+            "runs": [],
+            "start": 0,
+            "goal": 0
+          },
+          "expected": 0
+        }
+      ]
+    }
+  ]
+}

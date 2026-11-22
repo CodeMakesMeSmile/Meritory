@@ -1,0 +1,20 @@
+id: alert-relay
+kind: coding
+title: When every relay hears the alert
+difficulty: medium
+skills:
+  - dijkstra-heap
+sibling: walk-times
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: alertTime
+  params:
+    - name: n
+      type: int
+    - name: links
+      type: int[][]
+    - name: start
+      type: int
+  returns: int
