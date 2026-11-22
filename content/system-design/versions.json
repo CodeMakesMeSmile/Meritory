@@ -5,6 +5,12 @@
   "card/bus-queue-or-log": [
     "52776a1e63ee050126915430aab61d91de4d6629c9e6738241b9ce6bf735cf49"
   ],
+  "card/cache-aside-steps": [
+    "f9383914bec3bc1c963f9a057d4f92905e3394a864f6497ba18c662ea0336c3c"
+  ],
+  "card/cache-layer-fit": [
+    "56d5a2cf0b991c5d6a9ef62d6f4a96f2a587e0c35a4bd646e2cb475b9ae56986"
+  ],
   "card/case-time-plan": [
     "2e5f5ea21d0588bf54792cac10b27b9594f008a4c503f3bf27e6a615c88168c3"
   ],
@@ -32,6 +38,9 @@
   "card/dynamodb-read-consistency": [
     "77f2d2fae3f40489dd044995f21aaab817cb734bd53104015654a7f36fc11871"
   ],
+  "card/eviction-policy-fit": [
+    "4b0496b239b1a6adc18f86bbc65539076ee4be04f967381f21eff28318ea5cd6"
+  ],
   "card/exactly-once-in-practice": [
     "7fec0f6eaefd0953f9ff19b0e6a88ef89376510588dc52b6c3f9f646bfa48ff2"
   ],
@@ -40,6 +49,9 @@
   ],
   "card/health-states": [
     "69073cdabd8b55dec4d429007499332cca02e6af225263df5a80b0dd97837a12"
+  ],
+  "card/hot-cache-key-fixes": [
+    "6b82634aaf3d738c454f603169a5ffdea50d9591aee7a576cb44ab3114c75375"
   ],
   "card/idempotency-key-flow": [
     "a5210ca38f83f613659539b26ec887a1decabcc89f7403ec2f75f8a9450f1432"
@@ -61,6 +73,9 @@
   ],
   "card/mapping-bug-replay": [
     "7313728396ccfe6dca9f3206c49d0ec2df2ab73912130b21fa3058d34039e534"
+  ],
+  "card/noeviction-when-full": [
+    "2727f8140517f202244e4a5b5f619b5d782fe6d9a8167e9a6f968197f04fb9ea"
   ],
   "card/ordering-tools": [
     "e6cb91c453d1e2176c90174781b1e285e11550b9efd22cc08ec159a305f83246"
@@ -100,6 +115,15 @@
   ],
   "card/slow-endpoint-math": [
     "6809cc5d846cc06ae00331c8b2bfaa4e97bda831b09206ae5e4af0fe9c4f4af6"
+  ],
+  "card/stale-cost-fit": [
+    "c33ea099f7f779f976b8a9fdc689823ffc3fbecf625a090d2b2dbe9a54cd8a11"
+  ],
+  "card/stampede-math": [
+    "8ce91eede3cf6f61d559c74ded3481e9b0b483f402b343bddffe8975c5686834"
+  ],
+  "card/stampede-tool-fit": [
+    "3fc680a6c3cd1aa60933fca2543be2be3bd03f769c537929577d4346587eb528"
   ],
   "card/status-code-meanings": [
     "e1cfe8f795f7df2d0cab2b8486c57421d8a7a098cda2ea026b8d06d6f04124e2"
@@ -158,6 +182,12 @@
   "card/when-lead-deep-dives": [
     "2ad1389710c0d3b4cd6777227143cf8e11d1090e1fa80326ddd5a300d4e2abb7"
   ],
+  "card/when-negative-ttl": [
+    "ee72db72a44a2721bb85749e2f23f7e68f550eacfcb0505aba28df9cab620e8a"
+  ],
+  "card/when-not-to-cache": [
+    "09aa1c991883bc96e47c4056fb90d6dbb8ea652154c8e4355722377f774f9805"
+  ],
   "card/when-provider-429": [
     "35623ff071297ea825d436bd063f2774b8e4a26a06626fd19b6ca7ce894bb649"
   ],
@@ -170,11 +200,17 @@
   "card/when-retry-budget": [
     "67d0658755139ee3da4b721dc328269e2c4b9ed7a0bf68be71c6d113377b7dde"
   ],
+  "card/when-s-maxage": [
+    "6d8f07da7bc4b221cce87f90b1c8d324f7f783dfa52d32d18266da226d1ceb4a"
+  ],
   "card/when-save-checkpoint": [
     "d2c999f527c488b2e5360c14022a1dd42978c1bdfdd1f4aed206a457c9fe6565"
   ],
   "card/when-skip-ordering": [
     "f10cf20c1a3876a5e41de792628ce34e371d5c4ef57014870f31040323c3491c"
+  ],
+  "card/when-soft-hard-ttl": [
+    "143dc976ab7d4e9242541ff81523b934c66902a39897bdea5f38233423619bc5"
   ],
   "card/when-table-per-period": [
     "442d4d3c94ab137d767d90ffc1e9c793d9be8f03a61d335bdcc558748a47d471"
@@ -185,6 +221,9 @@
   "card/when-to-estimate": [
     "406f35d354a76859ee718016b5bc06403e327a343738143b4819f0d7be2da8ad"
   ],
+  "card/when-versioned-names": [
+    "3cc63f5496ea41afe81d7d72885c8eda334c379923e96fb81f020c918158fab9"
+  ],
   "card/when-which-delivery-style": [
     "033c703bc9445cbcf43962b5e26c993a9aaf6938a0ac1e237978f1ea2fabd5c0"
   ],
@@ -193,6 +232,9 @@
   ],
   "card/where-to-send-reads": [
     "e3e3b31a1de18e4eadd8c2e9b8af0fae09cd8cf561e55762f74732af88e11a14"
+  ],
+  "card/which-cache-pattern": [
+    "15b62096aa0064ac1eefaf6fd56cc039dbc9085489fd58f25bc7bff0e07c79b3"
   ],
   "card/which-consistency-level": [
     "1c561d3422ffb1a1af9ecba78ea1c7ccf7a84db1ecfbbb3c63823f7924ea3721"
@@ -224,6 +266,9 @@
   "card/why-branch-on-type": [
     "53ffc058ad4cf012f95a5539f3c64854cadcb3e8379de4371d44d10a70267f44"
   ],
+  "card/why-cold-cache-danger": [
+    "1231102c2e77b3a4686c7f1a70a58021f1c3ea38dfbea83a4e09fed9355ace19"
+  ],
   "card/why-connector-runtime-split": [
     "6ca0ee3a2ea11e72e606fbc75822d5f1b5265e682371a28fff8525a03298ffea"
   ],
@@ -242,8 +287,14 @@
   "card/why-dedupe-issues": [
     "991ef40943b13cb92418481f75f5a0dcbfc221a799bcc407c8f349769cd6c929"
   ],
+  "card/why-delete-not-set": [
+    "d54db372af085dee32bad272d132d4ae9db51e5a2af6879385f644c897132d61"
+  ],
   "card/why-drop-partitions": [
     "48535e7a4c527da2ef3e22e4d752551cd13b1664f1796d8a07d3d0e5463a8f98"
+  ],
+  "card/why-early-refresh": [
+    "e5568b5ec8bcfd1ad0be55b4a14ab9edd66b70080bffa6b2d8993e43c5bc4da3"
   ],
   "card/why-few-features": [
     "58aea8cd01fd083fa7269fb4df20b08657938e04c358f78f2c28580440f3a423"
@@ -263,6 +314,18 @@
   "card/why-keep-raw": [
     "f5e82b476c27fc0212d69809f4880beefe772215ee1d2c598031cb7f08bc23a3"
   ],
+  "card/why-keep-ttl": [
+    "e45823aabc66f5a89dd12e96182aebacfa8d2bc8f36165ebfb486a749ff5ce7f"
+  ],
+  "card/why-local-hot-key": [
+    "8b068b40708369bd84b9fc35ee3cfe19beba8bd613e75c800324dd54778d1835"
+  ],
+  "card/why-local-vs-shared": [
+    "c23bd2f55a1e3553e77dcdf586866bcf9b57e747c8b8184613b989a8b2d948cd"
+  ],
+  "card/why-lock-token": [
+    "92abf929f6924d1457c3b723a17209ea8384b363a8a4b663f874746cd2e28986"
+  ],
   "card/why-longer-dlq-retention": [
     "e7a5b80632ace2e476eef217ca6df70ada1ada38d924512f6bb6c48e85f0a025"
   ],
@@ -271,6 +334,9 @@
   ],
   "card/why-name-failure-modes": [
     "d3fd9ee525a40ac97f901438afcca730d2ad58529cf53a452ab090db6180f1dd"
+  ],
+  "card/why-negative-cache": [
+    "0a621c65a79c86706267ca6e26e6e475da259d278172ee7d4494190ffe7c804e"
   ],
   "card/why-not-hash-body-key": [
     "51f25b3343e6117e23da492a43a1b254b434b197e3b2a8a78508943d6529030d"
@@ -311,6 +377,9 @@
   "card/why-say-hardest-part": [
     "5fec594001cefa640129d1674f62e657abbf3326e79ad9ea4d78ce9db1231ea1"
   ],
+  "card/why-scan-hurts-lru": [
+    "d21e44100dc514556fae763ba1f80d2a1b0fd3ac930ccb008af1416a88057cca"
+  ],
   "card/why-signed-timestamp": [
     "64aec669cce89938c5a834638637c26abe309e5a6bcbb1ee44f9949840990ee1"
   ],
@@ -335,6 +404,9 @@
   "card/why-upsert-unique-index": [
     "92183e04d4de6a272469594e97119ab248c699335384c4ee510b8ca767e2db0e"
   ],
+  "card/why-write-behind-risk": [
+    "91cc42522309fa828b50e96aa1d6a264c3d6a99ab7df12d4fad01d609cd0f82b"
+  ],
   "card/why-write-sharding": [
     "8361c34e9c252bbcddf622b1d9d43c55c94e80b979bfc0705e176270a73a2ece"
   ],
@@ -343,6 +415,9 @@
   ],
   "chapter/api-design": [
     "d8ed1518ba1404d751030aceaa7839b59d6102235230b8c31f72a5394ad083f2"
+  ],
+  "chapter/caching": [
+    "8d8755c2d1e86ac96ed061a3edc5f3debedb2ade0e9536cd5dafbabc13bd7098"
   ],
   "chapter/case-studies": [
     "7edafea066c50e7a2e4386f35b23ad791bd5f5d752947f2dde4a0169743fd307"
