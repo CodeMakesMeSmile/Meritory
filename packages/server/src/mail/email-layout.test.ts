@@ -55,6 +55,14 @@ describe("renderEmail", () => {
     expect(html.split("Or paste this link").length - 1).toBe(1);
   });
 
+  // A fixed width broke "Choose a new password" onto two 44px lines
+  it("grows the button to fit its label on one line", () => {
+    const html = renderEmail(email).html ?? "";
+    expect(html).not.toMatch(/class="button" width=/);
+    expect(html).toContain("min-width:200px;mso-padding-alt:0 20px");
+    expect(html).toMatch(/class="button-label"[^>]*white-space:nowrap/);
+  });
+
   it("keeps the subject, address, and link out of the HTML unescaped", () => {
     for (const attack of HTML_ATTACKS) {
       const html =
