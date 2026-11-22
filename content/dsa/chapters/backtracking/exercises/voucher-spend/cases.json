@@ -1,0 +1,110 @@
+{
+  "exercise": "voucher-spend",
+  "cases": [
+    {
+      "uuid": "094069a4-4134-4b20-b190-4ef985517c6c",
+      "description": "lists each basket that spends the voucher",
+      "property": "voucherBaskets",
+      "input": {
+        "prices": [4, 2, 6, 2, 3],
+        "voucher": 8
+      },
+      "expected": [[2, 2, 4], [2, 6]]
+    },
+    {
+      "uuid": "ec7f7764-65ed-4d86-8c05-0a7c1cd17221",
+      "description": "repeated prices make one basket",
+      "property": "voucherBaskets",
+      "input": {
+        "prices": [1, 1, 1, 1],
+        "voucher": 2
+      },
+      "expected": [[1, 1]]
+    },
+    {
+      "uuid": "2479b131-ad72-4c8b-a768-5ca864664c6f",
+      "description": "several baskets",
+      "property": "voucherBaskets",
+      "input": {
+        "prices": [3, 5, 2, 8, 1, 5, 3],
+        "voucher": 8
+      },
+      "expected": [[1, 2, 5], [2, 3, 3], [3, 5], [8]]
+    },
+    {
+      "uuid": "6a6f2a9f-fa5c-4ccf-8022-ffbea1d60d7c",
+      "description": "the whole list",
+      "property": "voucherBaskets",
+      "input": {
+        "prices": [1, 2, 3],
+        "voucher": 6
+      },
+      "expected": [[1, 2, 3]]
+    },
+    {
+      "uuid": "da516208-c6a2-4f59-a362-415db03e9b82",
+      "description": "no basket spends it exactly",
+      "property": "voucherBaskets",
+      "input": {
+        "prices": [5, 7],
+        "voucher": 3
+      },
+      "expected": []
+    },
+    {
+      "uuid": "a7b8f98b-f081-4e35-b6c0-027235924147",
+      "description": "each item at most once",
+      "property": "voucherBaskets",
+      "input": {
+        "prices": [2, 4],
+        "voucher": 8
+      },
+      "expected": []
+    },
+    {
+      "uuid": "0534aafb-806b-4808-8938-8ab60fc0c607",
+      "description": "many repeats",
+      "property": "voucherBaskets",
+      "input": {
+        "prices": [2, 2, 2, 3, 3, 4, 4, 5],
+        "voucher": 9
+      },
+      "expected": [[2, 2, 2, 3], [2, 2, 5], [2, 3, 4], [4, 5]]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "f7fa36d1-cdcd-4d43-8ed2-51f9790c93c2",
+          "description": "one item that matches",
+          "property": "voucherBaskets",
+          "input": {
+            "prices": [9],
+            "voucher": 9
+          },
+          "expected": [[9]]
+        },
+        {
+          "uuid": "11c2fd65-a826-415b-b79a-8765b1089422",
+          "description": "one item that's too cheap",
+          "property": "voucherBaskets",
+          "input": {
+            "prices": [3],
+            "voucher": 9
+          },
+          "expected": []
+        },
+        {
+          "uuid": "33ed5667-175e-42e8-8e4f-f70478201d58",
+          "description": "every item costs more than the voucher",
+          "property": "voucherBaskets",
+          "input": {
+            "prices": [20, 30],
+            "voucher": 10
+          },
+          "expected": []
+        }
+      ]
+    }
+  ]
+}

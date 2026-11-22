@@ -1,0 +1,339 @@
+- id: why-trust-smaller-call
+  skill: base-and-smaller
+  asks: why
+  type: prompt
+  prompt: When writing a recursive function, why is it safe to assume the smaller call already gives the right answer?
+  reworded: What lets you trust a recursive call on a smaller input without tracing it all the way down?
+  points:
+    - The base case is answered directly, so the smallest inputs are right.
+    - If each step is right whenever the smaller calls are right, every size above the base case is right too.
+    - So you only check two things, the base case and one step, and that every call gets closer to the base case.
+  misconception: That you have to follow every call down to the bottom to know a recursion works.
+  lesson:
+    title: Check the base case and one step
+    explanation: Recursion works like a proof by induction. A right base case plus a right step that always moves toward it covers every input.
+- id: smaller-problem-steps
+  skill: base-and-smaller
+  asks: what
+  type: ordering
+  prompt: Put the steps for moving a stack of n crates from one bay to another in order, when a crate can never sit on a smaller one.
+  reworded: In what order does the recursive answer move n crates from the start bay to the goal bay?
+  steps:
+    - If there are no crates, stop.
+    - Move the top n - 1 crates from the start bay to the spare bay.
+    - Move the biggest crate from the start bay to the goal bay.
+    - Move the n - 1 crates from the spare bay onto the goal bay.
+  lesson:
+    title: Two smaller moves around one big one
+    explanation: The biggest crate can only move when everything above it is out of the way, on the spare bay. The two smaller moves are the same problem with the bays in a different order.
+- id: when-depth-matters
+  skill: base-and-smaller
+  asks: when
+  type: pick-one
+  prompt: When does a correct recursive answer still fail in Python?
+  reworded: A recursive function is right on paper but crashes in Python. When does that happen?
+  options:
+    - text: When the calls go more than about 1,000 deep, Python's default limit
+      correct: true
+      reason: Each call waits on the stack until the ones below it finish, so depth, not the total number of calls, is what runs out.
+    - text: When the function makes more than 1,000 calls in total
+      reason: A wide, shallow recursion can make millions of calls. Only the depth at any one moment counts toward the limit.
+    - text: When the base case returns an empty list
+      reason: That's a normal base case, as in the subsets of nothing.
+  lesson:
+    title: Depth sets the limit
+    explanation: Halving, like working out a power by squaring, stays about 30 calls deep for a billion. Taking one off at a time goes as deep as the input is big.
+- id: why-undo-after-explore
+  skill: choose-explore-undo
+  asks: why
+  type: prompt
+  prompt: In the choose, explore, and undo template, why must every choice be taken back off the path after exploring it?
+  reworded: What goes wrong in a backtracking search that adds a choice to the path but never removes it?
+  points:
+    - Every call shares one path list.
+    - The next choice in the loop should start from the path as it was before the last choice.
+    - Without the undo, leftovers from earlier branches end up in later answers.
+  misconception: That each call gets its own copy of the path, so nothing needs undoing.
+  lesson:
+    title: Leave the path as you found it
+    explanation: Push before the call and pop after it, so each choice in the loop starts from the same place. Any other state you change, like a used list or a marked cell, needs the same undo.
+- id: why-copy-the-path
+  skill: choose-explore-undo
+  asks: why
+  type: pick-one
+  prompt: "A subsets search saves answers with `results.push(path)` instead of `results.push([...path])`. Why is every saved answer empty at the end?"
+  reworded: Saving the path list itself, rather than a copy, makes every answer come out empty. Why?
+  options:
+    - text: Every entry in the results points to the same list, which the undos empty by the end
+      correct: true
+      reason: The results hold one list many times over, and it ends up as it started.
+    - text: The search never reaches its base case
+      reason: It does, which is when the answers are saved.
+    - text: Pushing a list into a list is not allowed
+      reason: It's allowed. It just stores a reference, not the values.
+  lesson:
+    title: Save a copy of the path
+    explanation: The path keeps changing as the search goes on. Copying it when it's saved keeps the answer as it was at that moment.
+- id: backtrack-template-steps
+  skill: choose-explore-undo
+  asks: what
+  type: ordering
+  prompt: Put the steps one call of a backtracking search takes in order.
+  reworded: In what order does a single call of the choose, explore, and undo template do its work?
+  steps:
+    - If the path is a finished answer, save a copy and return.
+    - Loop over the choices that are still open.
+    - Add the choice to the path.
+    - Call the search again to explore from there.
+    - Take the choice back off the path.
+  terms:
+    - term: Path
+      definition: The list of choices made so far, shared by every call.
+  lesson:
+    title: Choose, explore, undo
+    explanation: Each call is one node in a tree of decisions. The loop tries each branch in turn, and the undo puts the path back between them.
+- id: why-two-to-the-n
+  skill: all-subsets
+  asks: why
+  type: pick-one
+  prompt: Why does a list of n different items have exactly 2ⁿ subsets?
+  reworded: Where does the count of 2ⁿ subsets for n items come from?
+  options:
+    - text: Each item is either in or out, and the n choices are independent
+      correct: true
+      reason: Two choices for each of n items gives 2 × 2 × ... × 2, which is 2ⁿ.
+    - text: Each subset is built from two smaller subsets
+      reason: That doesn't count them. The in or out choice per item does.
+    - text: There are n choices for the first item, n - 1 for the next, and so on
+      reason: That's how orderings are counted, which gives n!.
+  lesson:
+    title: In or out, n times
+    explanation: Counting the empty subset and the whole list, n items give 2ⁿ subsets. Ten items give 1,024, and twenty give about a million.
+- id: why-start-moves-forward
+  skill: all-subsets
+  asks: why
+  type: prompt
+  prompt: In the subsets search, why does the next call start at `i + 1` instead of at 0?
+  reworded: What does passing `i + 1` as the next start position do when listing every subset?
+  points:
+    - Later picks only come from items after the last one picked.
+    - So each subset is built in one order only, and it can't appear twice, like `[1, 2]` and `[2, 1]`.
+    - It also keeps the items inside each subset in the same order as the input.
+  lesson:
+    title: Only move forward
+    explanation: Subsets don't care about order, so each one should be built one way. Choosing only from later items gives every subset exactly one path.
+- id: why-used-list
+  skill: all-orderings
+  asks: why
+  type: prompt
+  prompt: Why does the search for every ordering keep a `used` list instead of a start position?
+  reworded: Listing orderings needs a list of which items are taken, where subsets only need a start position. Why?
+  points:
+    - In an ordering, any unused item can come next, including ones earlier in the input.
+    - A start position would only ever pick later items, which lists subsets, not orderings.
+    - The used list stops an item from appearing twice, and clearing it is part of the undo.
+  misconception: That orderings are subsets of the full size.
+  lesson:
+    title: Any unused item can go next
+    explanation: Each position in an ordering can be filled by any item not yet placed. Marking items as used, and clearing the mark on the way back, gives every ordering exactly once.
+- id: growth-of-searches
+  skill: all-orderings
+  asks: what
+  type: matching
+  prompt: Match each search to how many answers it lists.
+  reworded: How many answers does each of these searches produce?
+  matchHeading: Answers
+  matchName: a count
+  pairs:
+    - item: Every subset of 8 different items
+      match: "256"
+    - item: Every ordering of 8 different items
+      match: "40,320"
+    - item: Every ordering of 10 different items
+      match: "3,628,800"
+  extraMatches:
+    - "64"
+  lesson:
+    title: n! grows much faster than 2ⁿ
+    explanation: Subsets double with each item, but orderings multiply by the number of items. Orderings stop being practical somewhere past 10 items.
+- id: when-start-at-i
+  skill: target-combinations
+  asks: when
+  type: matching
+  prompt: Match each search to where its next call starts.
+  reworded: For each of these searches, which position should the loop in the next call start from?
+  matchHeading: Next start
+  matchName: a start
+  pairs:
+    - item: Sets that hit a target, each item used at most once
+      match: "i + 1"
+    - item: Sets that hit a target, any item used as often as you like
+      match: "i"
+    - item: Every ordering of the items
+      match: "0, skipping used items"
+  extraMatches:
+    - "i - 1"
+  lesson:
+    title: The start decides reuse and order
+    explanation: Starting after `i` uses each item once. Starting at `i` lets it be picked again. Starting at 0 lets earlier items come later, so order counts.
+- id: why-reuse-starts-at-i
+  skill: target-combinations
+  asks: why
+  type: pick-one
+  prompt: "When items can be reused to hit a target, why does the next call start at `i` rather than at 0?"
+  reworded: In the search for sets with reuse, what would go wrong if every call looped from the first item again?
+  options:
+    - text: It would find the same set in more than one order, like 2 then 3 and 3 then 2
+      correct: true
+      reason: Starting at `i` only picks items in order, so each set is built once.
+    - text: It would never pick the same item twice
+      reason: Starting at 0 still allows the same item again. It allows too much, not too little.
+    - text: It would run forever
+      reason: The remaining total still shrinks with each pick, so it ends. It just repeats answers.
+  lesson:
+    title: Same item again, earlier items never
+    explanation: Starting at `i` keeps each set in sorted order as it's built, which is one order per set.
+- id: why-sort-before-skipping
+  skill: skip-duplicates
+  asks: why
+  type: prompt
+  prompt: To list each answer once when the input has repeated values, why sort before searching?
+  reworded: What does sorting the input first do for a search that must skip repeated answers?
+  points:
+    - Sorting puts equal values side by side.
+    - Then a repeat is easy to spot, since it equals the item just before it.
+    - Skipping that repeat at the same level stops a branch that would find the same answers again.
+  misconception: That you can drop repeated answers afterwards at no cost.
+  lesson:
+    title: Make repeats neighbours
+    explanation: Removing repeats at the end works, but the search still builds every copy first, which can be far more work. Sorting lets you skip them before they're built.
+- id: when-skip-same-level
+  skill: skip-duplicates
+  asks: when
+  type: pick-one
+  prompt: "In `[1, 2, 2]`, why is the skip check `i > start && items[i] === items[i - 1]` and not `i > 0 && items[i] === items[i - 1]`?"
+  reworded: When skipping repeats in a subsets search, why compare `i` with the loop's start instead of with 0?
+  options:
+    - text: With `i > 0`, the second 2 could never follow the first one, so `[2, 2]` would be missed
+      correct: true
+      reason: One level down, the loop starts at the second 2, and taking it there is a different subset.
+    - text: The two checks always give the same answers
+      reason: They don't. `i > 0` also skips picks one level down that make new subsets.
+    - text: The `i > 0` check would run off the start of the list
+      reason: It guards the read of `items[i - 1]` just as well. The trouble is what it skips.
+  lesson:
+    title: Skip repeats at the same level only
+    explanation: A second branch at the same level with the same value repeats the first one. Taking a copy deeper down, after the first copy, builds a new answer.
+- id: when-skip-repeat-ordering
+  skill: skip-duplicates
+  asks: when
+  type: pick-one
+  prompt: When listing orderings of a sorted list with repeats, when should item `i` be skipped?
+  reworded: In an orderings search with repeated values, after sorting, what rule skips orderings that would repeat?
+  options:
+    - text: When it equals item `i - 1` and item `i - 1` isn't on the path
+      correct: true
+      reason: Copies of a value then go in from left to right, so swapping two equal copies never makes a new ordering.
+    - text: Whenever it equals item `i - 1`
+      reason: Then two equal values could never both be placed, so orderings like `[1, 1, 2]` would be missed.
+    - text: When it equals the last item on the path
+      reason: Equal values can sit side by side in an ordering. This would miss `[1, 1, 2]`.
+  lesson:
+    title: Use copies from left to right
+    explanation: Two copies of a value are the same to the answer. Allowing only one order of use for them means each ordering is built once.
+- id: why-break-not-continue
+  skill: prune-early
+  asks: why
+  type: pick-one
+  prompt: With sorted positive values, why can a target search `break` out of the loop when a value is more than what's still needed?
+  reworded: Searching sorted positive values for a total, why stop the whole loop at the first value that's too big, rather than skip just that one?
+  options:
+    - text: Every value after it is at least as big, so none of them can fit either
+      correct: true
+      reason: Sorting means the rest of the loop is doomed, so leaving it saves all those calls.
+    - text: The path is already full
+      reason: The path can still grow. It's the values that are too big.
+    - text: It stops the search from finding the same set twice
+      reason: That's the job of the start position and the repeat skip.
+  lesson:
+    title: Sorted order makes the cut bigger
+    explanation: One check rules out the rest of the loop. Without sorting, a later value could still be small enough, so you could only skip the one.
+- id: when-prune-safe
+  skill: prune-early
+  asks: when
+  type: matching
+  prompt: Match each situation to whether it's safe to stop the branch.
+  reworded: For each of these, can the search give up on the current branch right away?
+  matchHeading: Stop the branch
+  matchName: an answer
+  pairs:
+    - item: The total is over the target and every value is positive
+      match: Yes, it can only grow
+    - item: The total is over the target and values can be negative
+      match: No, it can still come back down
+    - item: The next letter in the grid doesn't match the word
+      match: Yes, no path through it can match
+  extraMatches:
+    - Only after sorting twice
+  lesson:
+    title: Cut only what truly can't work
+    explanation: Pruning is safe when nothing below the branch could fix it. A wrong cut makes the search miss answers without any error.
+- id: bracket-prune-checks
+  skill: prune-early
+  asks: what
+  type: prompt
+  prompt: When building every string of n pairs of brackets that close properly, which two checks keep every path valid?
+  reworded: What rules on adding an opening or a closing bracket mean no finished string ever has to be thrown away?
+  points:
+    - Only add an opening bracket while fewer than n have been opened.
+    - Only add a closing bracket while more have been opened than closed.
+    - Then every path that reaches length 2n is a string that closes properly.
+  lesson:
+    title: Never build what you'd throw away
+    explanation: Checking each finished string would build all 2²ⁿ strings of brackets. The two checks only build the valid ones.
+- id: why-unmark-cell
+  skill: grid-word-search
+  asks: why
+  type: prompt
+  prompt: In a grid word search, why must a cell be cleared when the search leaves it?
+  reworded: What goes wrong if a word search marks cells as used but never clears them?
+  points:
+    - The mark only means the cell is on the current path.
+    - Another start, or another turn earlier on, may need that cell.
+    - A mark left behind blocks those paths, so the search can say no when the answer is yes.
+  misconception: That a cell visited once never needs to be visited again.
+  lesson:
+    title: Clearing the mark is the undo
+    explanation: Mark on the way in, clear on the way out, just like pushing and popping the path. Then each path sees only its own cells as used.
+- id: grid-search-steps
+  skill: grid-word-search
+  asks: what
+  type: ordering
+  prompt: Put the steps one call of a grid word search takes in order.
+  reworded: In what order does a single call handle a cell when tracing a word through a grid?
+  steps:
+    - If every letter is matched, return true.
+    - If the cell is off the grid, already used, or the wrong letter, return false.
+    - Mark the cell as used.
+    - Try the four neighbours with the next letter.
+    - Clear the mark and return what the neighbours found.
+  lesson:
+    title: Check, mark, explore, clear
+    explanation: The checks prune bad cells right away. The mark stops the path from crossing itself, and clearing it lets other paths use the cell.
+- id: when-letter-count-check
+  skill: grid-word-search
+  asks: when
+  type: pick-one
+  prompt: When can a grid word search answer no without searching at all?
+  reworded: Before tracing any path, what quick check can show a word isn't in the grid?
+  options:
+    - text: When the grid holds fewer copies of some letter than the word needs
+      correct: true
+      reason: No path can use a letter the grid doesn't have enough of.
+    - text: When the word is longer than the grid is wide
+      reason: The path can turn, so a long word can fit in a narrow grid.
+    - text: When the first letter appears more than once
+      reason: That only means there are several places to start.
+  lesson:
+    title: Count before you search
+    explanation: Counting letters takes one pass over the grid and the word. It can save an exponential search that was never going to succeed.

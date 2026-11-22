@@ -1,0 +1,19 @@
+id: word-in-grid
+kind: coding
+title: Trace a word in the letter grid
+difficulty: medium
+skills:
+  - grid-word-search
+  - prune-early
+sibling: berry-maze
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: wordInGrid
+  params:
+    - name: grid
+      type: string[]
+    - name: word
+      type: string
+  returns: boolean

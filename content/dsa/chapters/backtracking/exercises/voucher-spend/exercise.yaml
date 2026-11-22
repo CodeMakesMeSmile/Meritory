@@ -1,0 +1,21 @@
+id: voucher-spend
+kind: coding
+title: Spend the voucher exactly
+difficulty: medium
+skills:
+  - target-combinations
+  - skip-duplicates
+  - prune-early
+sibling: postage-stamps
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: voucherBaskets
+  params:
+    - name: prices
+      type: int[]
+    - name: voucher
+      type: int
+  returns: int[][]
+  anyOrder: true

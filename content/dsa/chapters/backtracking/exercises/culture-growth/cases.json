@@ -1,0 +1,120 @@
+{
+  "exercise": "culture-growth",
+  "cases": [
+    {
+      "uuid": "a3d7eee5-1fcc-49c9-b6ef-2066b958ecb9",
+      "description": "triples for five hours",
+      "property": "cultureSize",
+      "input": {
+        "factor": 3,
+        "hours": 5
+      },
+      "expected": 243
+    },
+    {
+      "uuid": "4ae3d36f-9f69-40d7-bb66-b0e809a5deec",
+      "description": "doubles for ten hours",
+      "property": "cultureSize",
+      "input": {
+        "factor": 2,
+        "hours": 10
+      },
+      "expected": 1024
+    },
+    {
+      "uuid": "0f20bdd6-bd9e-4248-87d6-be0a546f66ef",
+      "description": "passes the modulus",
+      "property": "cultureSize",
+      "input": {
+        "factor": 2,
+        "hours": 40
+      },
+      "expected": 511620083
+    },
+    {
+      "uuid": "e5e55950-daaa-40db-b51d-20a727da9fb3",
+      "description": "a factor of one never grows",
+      "property": "cultureSize",
+      "input": {
+        "factor": 1,
+        "hours": 1000000000
+      },
+      "expected": 1
+    },
+    {
+      "uuid": "6aef3ad9-5018-4861-bba3-e79b9d9ffe1e",
+      "description": "a big factor for two hours",
+      "property": "cultureSize",
+      "input": {
+        "factor": 1000000000,
+        "hours": 2
+      },
+      "expected": 49
+    },
+    {
+      "uuid": "fb533b58-8380-410d-948a-0fdebc18052a",
+      "description": "an odd number of hours",
+      "property": "cultureSize",
+      "input": {
+        "factor": 7,
+        "hours": 13
+      },
+      "expected": 889009735
+    },
+    {
+      "uuid": "7c3c74e1-c52c-43ab-859c-129f1417ea18",
+      "description": "a billion hours",
+      "property": "cultureSize",
+      "input": {
+        "factor": 2,
+        "hours": 1000000000
+      },
+      "expected": 140625001
+    },
+    {
+      "uuid": "294c5702-76ee-4a6f-a006-b56a37504da8",
+      "description": "large factor and hours",
+      "property": "cultureSize",
+      "input": {
+        "factor": 123456789,
+        "hours": 987654321
+      },
+      "expected": 652541198
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "29cf3f23-765e-4553-aa24-dddb60138108",
+          "description": "no hours means one cell",
+          "property": "cultureSize",
+          "input": {
+            "factor": 5,
+            "hours": 0
+          },
+          "expected": 1
+        },
+        {
+          "uuid": "76bacd5b-8945-4806-a767-21e03e049e43",
+          "description": "one hour means the factor",
+          "property": "cultureSize",
+          "input": {
+            "factor": 9,
+            "hours": 1
+          },
+          "expected": 9
+        },
+        {
+          "uuid": "66e0e80a-8acf-4119-a715-5c284543d7a5",
+          "description": "the largest factor and hours",
+          "property": "cultureSize",
+          "input": {
+            "factor": 1000000000,
+            "hours": 1000000000
+          },
+          "expected": 312556845
+        }
+      ]
+    }
+  ]
+}

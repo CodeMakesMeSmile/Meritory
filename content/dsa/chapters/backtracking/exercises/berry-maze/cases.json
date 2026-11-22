@@ -1,0 +1,118 @@
+{
+  "exercise": "berry-maze",
+  "cases": [
+    {
+      "uuid": "787bf7f6-768f-4d95-a1f1-11a17f21568c",
+      "description": "walks the richest path",
+      "property": "mostBerries",
+      "input": {
+        "field": [[4, 0, 2], [3, 0, 9], [5, 1, 6]]
+      },
+      "expected": 30
+    },
+    {
+      "uuid": "485a4308-cb11-474e-8af5-fedc02d6c4fb",
+      "description": "a ring can't be walked twice",
+      "property": "mostBerries",
+      "input": {
+        "field": [[1, 1, 1], [1, 0, 1], [1, 1, 1]]
+      },
+      "expected": 8
+    },
+    {
+      "uuid": "264b9352-6497-4004-a0fe-d62d36a45c72",
+      "description": "only one arm of a cross",
+      "property": "mostBerries",
+      "input": {
+        "field": [[0, 5, 0], [5, 1, 5], [0, 5, 0]]
+      },
+      "expected": 11
+    },
+    {
+      "uuid": "5a746f12-31fe-4d89-bd19-7768d71134a2",
+      "description": "a single rich patch beats a long poor path",
+      "property": "mostBerries",
+      "input": {
+        "field": [[1, 2, 3, 0, 10]]
+      },
+      "expected": 10
+    },
+    {
+      "uuid": "2b766d28-2e4a-462d-a799-5f1a389445ae",
+      "description": "two separate patches of bushes",
+      "property": "mostBerries",
+      "input": {
+        "field": [[8, 8, 0, 0], [0, 0, 0, 9], [1, 0, 0, 9]]
+      },
+      "expected": 18
+    },
+    {
+      "uuid": "b0f02add-a6da-41c3-9aff-22c0328269ff",
+      "description": "a winding path",
+      "property": "mostBerries",
+      "input": {
+        "field": [[3, 0, 6, 4], [2, 0, 5, 0], [7, 1, 8, 0], [0, 0, 2, 9]]
+      },
+      "expected": 36
+    },
+    {
+      "uuid": "40262fec-3eee-451e-882f-068269742adf",
+      "description": "a full field of bushes",
+      "property": "mostBerries",
+      "input": {
+        "field": [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+      },
+      "expected": 45
+    },
+    {
+      "uuid": "ac0b106f-8afc-4fc0-883c-f0826485b716",
+      "description": "takes one side branch, not both",
+      "property": "mostBerries",
+      "input": {
+        "field": [[1, 9, 1], [0, 1, 0], [0, 50, 0]]
+      },
+      "expected": 61
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "81ef5043-93c3-45e8-a2a2-d748ab18c132",
+          "description": "only hedges",
+          "property": "mostBerries",
+          "input": {
+            "field": [[0, 0], [0, 0]]
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "62504b5c-d86b-49e7-93a8-fd9cdb8e45bf",
+          "description": "one patch",
+          "property": "mostBerries",
+          "input": {
+            "field": [[7]]
+          },
+          "expected": 7
+        },
+        {
+          "uuid": "90c662db-e5ab-4a54-9bda-511a16639ffd",
+          "description": "one hedge",
+          "property": "mostBerries",
+          "input": {
+            "field": [[0]]
+          },
+          "expected": 0
+        },
+        {
+          "uuid": "802d45a7-5534-4744-bed5-6ce752fc002a",
+          "description": "the most berries in a patch",
+          "property": "mostBerries",
+          "input": {
+            "field": [[100, 100], [0, 100]]
+          },
+          "expected": 300
+        }
+      ]
+    }
+  ]
+}

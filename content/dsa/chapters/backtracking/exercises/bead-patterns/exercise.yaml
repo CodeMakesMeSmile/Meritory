@@ -1,0 +1,18 @@
+id: bead-patterns
+kind: coding
+title: Every bead pattern, once
+difficulty: medium
+skills:
+  - all-orderings
+  - skip-duplicates
+sibling: running-orders
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: beadPatterns
+  params:
+    - name: beads
+      type: int[]
+  returns: int[][]
+  anyOrder: true

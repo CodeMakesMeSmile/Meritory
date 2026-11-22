@@ -1,0 +1,120 @@
+{
+  "exercise": "postage-stamps",
+  "cases": [
+    {
+      "uuid": "ef5b9881-bd50-4ab1-a08f-e0a2a7f0769b",
+      "description": "lists every set that makes the postage",
+      "property": "stampSets",
+      "input": {
+        "values": [2, 3, 5],
+        "postage": 8
+      },
+      "expected": [[3, 5], [2, 3, 3], [2, 2, 2, 2]]
+    },
+    {
+      "uuid": "47cae9f8-af16-4591-ac04-e685111e56d3",
+      "description": "stamp values in any order",
+      "property": "stampSets",
+      "input": {
+        "values": [5, 3, 2],
+        "postage": 10
+      },
+      "expected": [[5, 5], [2, 3, 5], [2, 2, 3, 3], [2, 2, 2, 2, 2]]
+    },
+    {
+      "uuid": "8d2d902f-d0a2-4adc-aff8-338e20f77d07",
+      "description": "a stamp of value 1",
+      "property": "stampSets",
+      "input": {
+        "values": [1, 2],
+        "postage": 5
+      },
+      "expected": [[1, 2, 2], [1, 1, 1, 2], [1, 1, 1, 1, 1]]
+    },
+    {
+      "uuid": "075354db-075a-4a46-ae3e-f14eea1b829c",
+      "description": "one value used many times",
+      "property": "stampSets",
+      "input": {
+        "values": [3],
+        "postage": 9
+      },
+      "expected": [[3, 3, 3]]
+    },
+    {
+      "uuid": "f1ccf2dc-2655-4999-9272-608be150b8e2",
+      "description": "only one stamp fits exactly",
+      "property": "stampSets",
+      "input": {
+        "values": [7, 2],
+        "postage": 7
+      },
+      "expected": [[7]]
+    },
+    {
+      "uuid": "5f47c56d-885f-41b5-9cf9-4f92ce0cd5e7",
+      "description": "no set makes the postage",
+      "property": "stampSets",
+      "input": {
+        "values": [4, 6],
+        "postage": 9
+      },
+      "expected": []
+    },
+    {
+      "uuid": "daa160af-ebef-410c-b604-32b582c65cd4",
+      "description": "four stamp values",
+      "property": "stampSets",
+      "input": {
+        "values": [2, 3, 6, 7],
+        "postage": 15
+      },
+      "expected": [
+        [2, 6, 7],
+        [3, 6, 6],
+        [2, 3, 3, 7],
+        [3, 3, 3, 6],
+        [2, 2, 2, 2, 7],
+        [2, 2, 2, 3, 6],
+        [3, 3, 3, 3, 3],
+        [2, 2, 2, 3, 3, 3],
+        [2, 2, 2, 2, 2, 2, 3]
+      ]
+    },
+    {
+      "description": "edge cases",
+      "cases": [
+        {
+          "uuid": "2498d56a-2ad4-4be5-bf6e-8f8157f801b3",
+          "description": "every stamp is worth more than the postage",
+          "property": "stampSets",
+          "input": {
+            "values": [10, 20],
+            "postage": 5
+          },
+          "expected": []
+        },
+        {
+          "uuid": "5cb9d83a-76b8-4dd6-a042-8ec60523c174",
+          "description": "postage equal to the smallest stamp",
+          "property": "stampSets",
+          "input": {
+            "values": [4, 9],
+            "postage": 4
+          },
+          "expected": [[4]]
+        },
+        {
+          "uuid": "cbe27851-cf43-4018-8183-052d3d0aaf93",
+          "description": "the largest postage with large stamps",
+          "property": "stampSets",
+          "input": {
+            "values": [25, 50],
+            "postage": 50
+          },
+          "expected": [[50], [25, 25]]
+        }
+      ]
+    }
+  ]
+}

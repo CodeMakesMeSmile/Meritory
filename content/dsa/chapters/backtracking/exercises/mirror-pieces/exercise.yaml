@@ -1,0 +1,18 @@
+id: mirror-pieces
+kind: coding
+title: Cut a word into mirror pieces
+difficulty: medium
+skills:
+  - prune-early
+  - choose-explore-undo
+sibling: bracket-patterns
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: mirrorSplits
+  params:
+    - name: word
+      type: string
+  returns: string[][]
+  anyOrder: true

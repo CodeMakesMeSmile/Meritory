@@ -1,0 +1,20 @@
+id: move-the-crates
+kind: coding
+title: Move the crate stack
+difficulty: easy
+skills:
+  - base-and-smaller
+sibling: culture-growth
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: moveCrates
+  params:
+    - name: count
+      type: int
+    - name: start
+      type: int
+    - name: goal
+      type: int
+  returns: int[][]

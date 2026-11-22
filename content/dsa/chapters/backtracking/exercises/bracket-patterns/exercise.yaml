@@ -1,0 +1,18 @@
+id: bracket-patterns
+kind: coding
+title: Brackets that close properly
+difficulty: medium
+skills:
+  - prune-early
+  - choose-explore-undo
+sibling: mirror-pieces
+rubric: coding-practice
+requires:
+  - correctness
+signature:
+  function: bracketPatterns
+  params:
+    - name: pairs
+      type: int
+  returns: string[]
+  anyOrder: true
