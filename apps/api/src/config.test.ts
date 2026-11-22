@@ -41,6 +41,7 @@ describe("readConfig", () => {
         ...base,
         NODE_ENV: "production",
         WEB_ORIGIN: "https://meritory.app",
+        AUTH_TRUSTED_PROXIES: "10.0.0.1",
       }).expoGoScheme,
     ).toBeUndefined();
   });
@@ -112,8 +113,34 @@ describe("readConfig", () => {
         ...base,
         NODE_ENV: "production",
         WEB_ORIGIN: "https://meritory.app",
+        AUTH_TRUSTED_PROXIES: "10.0.0.1",
       }).webOrigin,
     ).toBe("https://meritory.app");
+  });
+
+  it("needs a client IP source in production", () => {
+    const production = {
+      ...base,
+      NODE_ENV: "production",
+      WEB_ORIGIN: "https://meritory.app",
+    };
+    expect(() => readConfig(production)).toThrow(/AUTH_IP_HEADERS/);
+    expect(() =>
+      readConfig({
+        ...production,
+        AUTH_IP_HEADERS: "",
+        AUTH_TRUSTED_PROXIES: " ",
+      }),
+    ).toThrow(/AUTH_TRUSTED_PROXIES/);
+    expect(
+      readConfig({ ...production, AUTH_IP_HEADERS: "cf-connecting-ip" })
+        .ipAddressHeaders,
+    ).toEqual(["cf-connecting-ip"]);
+    expect(
+      readConfig({ ...production, AUTH_TRUSTED_PROXIES: "10.0.0.1" })
+        .trustedProxies,
+    ).toEqual(["10.0.0.1"]);
+    expect(readConfig(base).ipAddressHeaders).toBeUndefined();
   });
 
   it("reads proxy settings as lists", () => {
@@ -132,6 +159,7 @@ describe("readConfig", () => {
       ...base,
       NODE_ENV: "production",
       WEB_ORIGIN: "https://meritory.app",
+      AUTH_TRUSTED_PROXIES: "10.0.0.1",
     };
     expect(readConfig(production).breachCheck).toBe(true);
     expect(

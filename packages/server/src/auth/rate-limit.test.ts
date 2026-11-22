@@ -133,4 +133,35 @@ describe.skipIf(!url)("sign-in rate limit against Postgres", () => {
     }
     expect((await trade()).status).toBe(429);
   });
+
+  it("counts a forged address against the real one behind trusted proxies", async () => {
+    const proxy = "192.0.2.10";
+    const proxied = createAuth({
+      db,
+      secret: "x".repeat(32),
+      baseUrl: `${ORIGIN}/api/v1/auth`,
+      webOrigin: ORIGIN,
+      appScheme: "app.meritory.mobile://",
+      mailer: { send: async () => {} },
+      log: { error: () => {} },
+      trustedProxies: [proxy],
+    });
+    const client = nextIp();
+    const attempt = () =>
+      proxied.handler(
+        new Request(`${ORIGIN}/api/v1/auth/sign-in/email`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            origin: ORIGIN,
+            "x-forwarded-for": `${freshIp()}, ${client}, ${proxy}`,
+          },
+          body: JSON.stringify({ email: owner, password: "wrong guess" }),
+        }),
+      );
+    for (let i = 0; i < 3; i++) {
+      expect((await attempt()).status).toBe(401);
+    }
+    expect((await attempt()).status).toBe(429);
+  });
 });
