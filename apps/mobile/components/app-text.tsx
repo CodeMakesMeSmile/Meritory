@@ -2,9 +2,10 @@ import { textStyles } from "@meritory/design-tokens";
 import { Text, type TextProps } from "react-native";
 import { useTheme } from "../lib/theme";
 
-const FONT = {
+export const FONT = {
   regular: "HostGrotesk_400Regular",
   strong: "HostGrotesk_600SemiBold",
+  mono: "IBMPlexMono_400Regular",
 };
 
 type Variant =

@@ -3,6 +3,7 @@ import {
   HostGrotesk_600SemiBold,
   useFonts,
 } from "@expo-google-fonts/host-grotesk";
+import { IBMPlexMono_400Regular } from "@expo-google-fonts/ibm-plex-mono";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { ProviderSignInProvider } from "../lib/provider-sign-in";
@@ -37,6 +38,7 @@ export default function RootLayout() {
   const [loaded, failed] = useFonts({
     HostGrotesk_400Regular,
     HostGrotesk_600SemiBold,
+    IBMPlexMono_400Regular,
   });
   return (
     <>
