@@ -425,3 +425,46 @@ describe("collectResults", () => {
     });
   });
 });
+
+describe("async TypeScript answers", () => {
+  it("waits for a promise before comparing", async () => {
+    const result = await runCode(
+      request(
+        pricePair(),
+        "typescript",
+        "export async function pricePair(): Promise<number[]> { await Promise.resolve(); return [0, 0]; }",
+      ),
+      sandbox,
+    );
+    expect(result.status).toBe("fail");
+    const failed = result.tests.find((t) => t.status === "fail");
+    expect(failed?.message).toMatch(/^Expected \[.*\] but got \[0,0\]$/);
+  });
+
+  it("reports a rejected promise like a thrown error", async () => {
+    const result = await runCode(
+      request(
+        pricePair(),
+        "typescript",
+        'export async function pricePair(): Promise<number[]> { throw new Error("nope"); }',
+      ),
+      sandbox,
+    );
+    expect(result.status).toBe("error");
+    expect(result.tests[0]?.message).toMatch(/nope/);
+  });
+
+  it("stops a promise that never settles at the time limit", async () => {
+    const result = await runCode(
+      request(
+        pricePair(),
+        "typescript",
+        "export function pricePair(): Promise<number[]> { return new Promise(() => {}); }",
+      ),
+      directSandbox(1500),
+    );
+    expect(result.status).toBe("error");
+    expect(result.tests[0]?.message).toMatch(/Took too long/);
+    expect(result.tests[1]?.message).toMatch(/Didn't run/);
+  }, 20000);
+});
