@@ -193,6 +193,7 @@ export async function registerRecallRoutes(
           chapterId: string;
           due: number;
           new: number;
+          offered: number;
           learned: number;
           total: number;
         }
@@ -203,6 +204,7 @@ export async function registerRecallRoutes(
           chapterId: chapter.chapterId,
           due: 0,
           new: 0,
+          offered: 0,
           learned: 0,
           total: chapter.cards.length,
         });
@@ -210,6 +212,8 @@ export async function registerRecallRoutes(
       const started = new Set<string>();
       let dueTomorrow = 0;
       let overdue = 0;
+      // Cards come in the order a sitting serves them, so the allowance goes to the same ones
+      let newLeft = day.newLeft;
       for (const { trackId, chapterId, card } of cards) {
         const key = chapterKey(trackId, chapterId);
         const count = counts.get(key);
@@ -217,8 +221,13 @@ export async function registerRecallRoutes(
         started.add(key);
         if (isLearned(card)) count.learned += 1;
         const due = card.dueAt.getTime();
-        if (card.scheduleStatus === "new") count.new += 1;
-        else if (due <= now.getTime()) {
+        if (card.scheduleStatus === "new") {
+          count.new += 1;
+          if (newLeft > 0) {
+            count.offered += 1;
+            newLeft -= 1;
+          }
+        } else if (due <= now.getTime()) {
           count.due += 1;
           if (due < day.start.getTime()) overdue += 1;
         }

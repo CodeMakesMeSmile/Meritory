@@ -1,4 +1,4 @@
-import { LEVELS, REQUIRED_LEVEL } from "@meritory/content";
+import { LEVELS, REQUIRED_LEVEL } from "@meritory/content/levels";
 import { type Chapter, chapterPath, type Track } from "./content";
 import { readStored, writeStored } from "./device-storage";
 

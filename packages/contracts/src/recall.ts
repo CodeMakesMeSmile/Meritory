@@ -44,6 +44,8 @@ export const RecallDueResponse = Type.Object(
         chapterId: Type.String(),
         due: Count,
         new: Count,
+        /** New cards today's allowance still covers, counted in the order a sitting serves them */
+        offered: Count,
         /** Cards that have left their learning steps */
         learned: Count,
         /** Every card the chapter has */

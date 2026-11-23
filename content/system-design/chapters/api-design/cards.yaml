@@ -411,8 +411,8 @@
     title: Compatibility is a two-way contract
     explanation: An API can only grow without versions if clients expect growth. Documenting open enums and the ignore-unknown rule turns many changes into safe ones.
     source:
-      url: https://docs.stripe.com/api/pagination
-      title: Stripe API Reference, Versioning and Enums sections
+      url: https://docs.stripe.com/api/enums
+      title: Stripe API Reference, Enums
 - id: retire-version-steps
   skill: version-apis
   asks: what

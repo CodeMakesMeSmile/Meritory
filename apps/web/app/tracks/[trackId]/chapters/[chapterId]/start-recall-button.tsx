@@ -1,5 +1,6 @@
 "use client";
 
+import { waitMessage } from "@meritory/contracts/sign-in-messages";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/button";
@@ -20,11 +21,11 @@ export function StartRecallButton({
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
-  const [failed, setFailed] = useState(false);
+  const [failed, setFailed] = useState<string | null>(null);
 
   async function start() {
     setBusy(true);
-    setFailed(false);
+    setFailed(null);
     const result = await startChapter(trackId, chapterId);
     if (result.ok) {
       router.push("/recall");
@@ -35,7 +36,11 @@ export function StartRecallButton({
       return;
     }
     setBusy(false);
-    setFailed(true);
+    setFailed(
+      result.code === "rate_limited"
+        ? waitMessage(null)
+        : "Check your connection, then try again.",
+    );
   }
 
   return (
@@ -55,7 +60,7 @@ export function StartRecallButton({
             <p className="text-small font-semibold text-danger">
               Recall didn't start
             </p>
-            <p className="text-small">Check your connection, then try again.</p>
+            <p className="text-small">{failed}</p>
           </div>
         )}
       </div>

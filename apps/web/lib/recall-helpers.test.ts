@@ -21,6 +21,7 @@ import {
   UNDO_ERRORS,
   type UndoOffer,
   undoKeptText,
+  undoRetryText,
 } from "./recall-sitting";
 import { longWait, shortWait } from "./recall-time";
 
@@ -259,10 +260,15 @@ describe("undo after a rating", () => {
       busy: false,
       offline: true,
     });
-    expect(lineAfterFailedUndo(offer, "rate_limited")).toMatchObject({
-      kind: "offer",
-      offline: true,
-    });
+    const limited = lineAfterFailedUndo(offer, "rate_limited");
+    expect(limited).toMatchObject({ kind: "offer", offline: true });
+    // The connection isn't the cause, so the line doesn't blame it
+    expect(undoRetryText(limited as UndoOffer)).toBe(
+      "Too many tries. Wait a few seconds, then try again.",
+    );
+    expect(
+      undoRetryText(lineAfterFailedUndo(offer, undefined) as UndoOffer),
+    ).toBe("Undo didn't reach us. Check your connection, then try again.");
   });
 
   it("names the rating that stays", () => {

@@ -33,8 +33,8 @@ import {
   type SittingCard,
   showsUndo,
   tomorrowLine,
-  UNDO_OFFLINE,
   type UndoLine,
+  undoRetryText,
 } from "@/lib/recall-sitting";
 import { longWait } from "@/lib/recall-time";
 import { MatchingCard } from "./matching-card";
@@ -71,7 +71,7 @@ export function UndoBar({
       <p
         className={`text-small ${line.offline ? "text-danger" : "text-secondary"}`}
       >
-        {line.offline ? UNDO_OFFLINE : `Last card saved as ${label}.`}
+        {line.offline ? undoRetryText(line) : `Last card saved as ${label}.`}
       </p>
       <button
         type="button"
@@ -327,7 +327,7 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
     }
     const next = lineAfterFailedUndo(line, result.code);
     setLine(next);
-    setAnnouncement(next.kind === "kept" ? next.text : UNDO_OFFLINE);
+    setAnnouncement(next.kind === "kept" ? next.text : undoRetryText(next));
   }
 
   function toggleShortcuts() {

@@ -41,21 +41,18 @@ interface QueueRow {
   offered: number;
 }
 
-/** New cards are offered chapter by chapter until today's allowance runs out */
+/** Chapters with something to do today, in book order */
 function queueRows(
   due: RecallDueResponse,
   chapters: { track: Track; chapter: Chapter }[],
 ): QueueRow[] {
-  let newLeft = due.newLeftToday;
   return chapters.flatMap(({ track, chapter }) => {
     const counts = due.chapters.find(
       (c) => c.trackId === track.id && c.chapterId === chapter.id,
     );
     if (!counts) return [];
-    const offered = Math.min(counts.new, newLeft);
-    newLeft -= offered;
-    return counts.due + offered > 0
-      ? [{ track, chapter, due: counts.due, offered }]
+    return counts.due + counts.offered > 0
+      ? [{ track, chapter, due: counts.due, offered: counts.offered }]
       : [];
   });
 }

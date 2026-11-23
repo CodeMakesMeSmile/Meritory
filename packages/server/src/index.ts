@@ -26,6 +26,7 @@ export {
   PROVIDERS,
   type ProviderConfig,
 } from "./auth/providers.ts";
+export { PURGE_INTERVAL_MS, purgeExpired } from "./auth/purge.ts";
 export {
   createSignInMethods,
   type SignInMethodStore,

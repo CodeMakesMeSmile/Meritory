@@ -1,16 +1,14 @@
 import Type, { type Static } from "typebox";
 import { ID_PATTERN, TEXT_PATTERN } from "./fact.ts";
+import { LEVELS, REQUIRED_LEVEL } from "./levels.ts";
 
 const Id = Type.String({ pattern: ID_PATTERN, maxLength: 80 });
 
 const Text = (maxLength: number) =>
   Type.String({ minLength: 1, maxLength, pattern: TEXT_PATTERN });
 
-/** How many levels every criterion has, scored 1 to 4 */
-export const LEVELS = 4;
-
-/** The level a criterion an exercise requires must reach to pass */
-export const REQUIRED_LEVEL = 3;
+// Kept apart from the schemas, so a page can use them without loading TypeBox
+export { LEVELS, REQUIRED_LEVEL };
 
 const SCORERS = ["tests", "self"] as const;
 

@@ -304,6 +304,7 @@ describe.skipIf(!url)("recall routes against Postgres", () => {
           chapterId: "arrays-and-hashing",
           due: 0,
           new: chapterCards().length,
+          offered: Math.min(10, chapterCards().length),
           learned: 0,
           total: chapterCards().length,
         },
