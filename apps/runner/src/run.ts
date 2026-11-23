@@ -8,7 +8,12 @@ import {
   readLine,
   type Signature,
 } from "./judge.ts";
-import type { Sandbox, SandboxExit } from "./sandbox.ts";
+import {
+  LIMITS,
+  readBoxFile,
+  type Sandbox,
+  type SandboxExit,
+} from "./sandbox.ts";
 
 export const LANGUAGES = ["typescript", "python"] as const;
 export type Language = (typeof LANGUAGES)[number];
@@ -243,14 +248,24 @@ export async function runCode(
       ),
     ]);
     const exit = await box.run(request.language, files.harness);
-    const lines = await readFile(join(box.dir, "results.jsonl"), "utf8").catch(
-      () => "",
+    // The most the file limit lets a box file grow
+    const results = await readBoxFile(
+      join(box.dir, "results.jsonl"),
+      LIMITS.fileKb * 1024,
     );
+    if (results.cut) {
+      return {
+        version: 3,
+        status: "error",
+        message: "The values it returned were too large to check.",
+        tests: [],
+      };
+    }
     return collectResults(
       cases,
       request.signature as unknown as Signature,
       request.language,
-      lines,
+      results.text,
       exit,
     );
   } finally {

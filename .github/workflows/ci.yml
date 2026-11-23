@@ -67,3 +67,57 @@ jobs:
       # Warns about facts that need a recheck, without failing the run
       - run: pnpm content:recheck
       - run: pnpm --filter @meritory/web build
+
+  # Runs answers inside a real Isolate box, set up the way docs/runner.md does it
+  sandbox:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: package.json
+
+      - run: npm install -g "$(node -p "require('./package.json').packageManager")"
+
+      - id: pnpm-store
+        run: echo "path=$(pnpm store path --silent)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.pnpm-store.outputs.path }}
+          key: pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: pnpm-${{ runner.os }}-
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Install Isolate
+        run: |
+          sudo install -d /etc/apt/keyrings
+          curl -fsSL https://www.ucw.cz/isolate/debian/signing-key.asc | sudo tee /etc/apt/keyrings/isolate.asc >/dev/null
+          printf '%s\n' 'Types: deb' 'URIs: http://www.ucw.cz/isolate/debian/' 'Suites: noble-isolate' 'Components: main' 'Architectures: amd64' 'Signed-By: /etc/apt/keyrings/isolate.asc' | sudo tee /etc/apt/sources.list.d/isolate.sources >/dev/null
+          sudo apt-get update
+          sudo apt-get install -y isolate
+          sudo systemctl enable --now isolate.service
+          sudo usermod -aG isolate "$USER"
+
+      # The box only sees /usr, /bin, and /lib, so Node goes in /usr/local
+      - name: Install Node for the box
+        run: |
+          version="$(node -p "require('./package.json').volta.node")"
+          file="node-v$version-linux-x64.tar.xz"
+          cd "$RUNNER_TEMP"
+          curl -fsSLO "https://nodejs.org/dist/v$version/$file"
+          curl -fsSL "https://nodejs.org/dist/v$version/SHASUMS256.txt" | grep " $file\$" | sha256sum -c
+          sudo tar -xJf "$file" -C /usr/local --strip-components=1
+
+      # The new group applies to new sessions only, so sg starts one
+      - name: Run answers inside Isolate
+        run: sg isolate -c "pnpm vitest run apps/runner/src/isolate.test.ts"
+        env:
+          ISOLATE_TESTS: "1"
+          # vitest.config needs it under CI, and these tests never open it
+          TEST_DATABASE_URL: postgres://meritory:meritory@localhost:5432/meritory

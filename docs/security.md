@@ -33,6 +33,7 @@ React escapes every value it renders as text or as an attribute. Keep it that wa
 - Names and other short text refuse control characters. Postgres can't store a null byte, and line breaks could forge email headers.
 - Send back only the fields the client needs. Build the response object by hand instead of returning a database row.
 - Server-only modules import `server-only`, so they can't end up in browser code.
+- Files that untrusted code could write are untrusted input too, such as anything in a code runner box. Open them without following links, only if they're regular files, and read no more than a set size.
 
 ### 4. Redirect only to our own pages
 
@@ -52,6 +53,7 @@ React escapes every value it renders as text or as an attribute. Keep it that wa
 - Recall routes have a per-user rate limit from `@fastify/rate-limit`. It counts in memory, which only works while one API server runs.
 - Session cookies stay HttpOnly, SameSite=Lax, and Secure on https.
 - Better Auth refuses requests from other sites on its own routes. Its check is set on explicitly, because Better Auth turns it off under tests by default.
+- The API passes on only the Better Auth routes our apps use, from a fixed list. A route that a library update adds stays closed until it's added to that list.
 
 ### 6. Send security headers
 
@@ -94,6 +96,7 @@ The code is public, so how a defense works is public too, and that's fine. Secur
 | `tools/biome/security-rules.test.ts` | Any of the rules above being turned off |
 | CodeQL (security-extended) | Untrusted data reaching SQL, HTML, redirects, the file system, or a shell, plus unsafe GitHub Actions workflows |
 | Tests | The failing-path tests from rule 8 |
+| Sandbox tests (`apps/runner/src/isolate.test.ts`) | Hostile answers getting past the runner's limits inside a real Isolate box |
 
 ## Exceptions
 

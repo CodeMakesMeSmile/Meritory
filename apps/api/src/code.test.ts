@@ -166,6 +166,43 @@ describe("code runs", () => {
     expect(failed.json().code).toBe("runner_failed");
   });
 
+  it("lets each user have one run going at a time", async () => {
+    let release = () => {};
+    const held = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const api = await start({
+      async run() {
+        await held;
+        return { kind: "ok", result: PASSED };
+      },
+    });
+    const first = post(api, body());
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    const second = await post(api, body());
+    expect(second.statusCode).toBe(429);
+    expect(second.json()).toEqual({
+      code: "run_in_progress",
+      message: "A run is still going. Wait for it to finish.",
+    });
+    release();
+    expect((await first).statusCode).toBe(200);
+    expect((await post(api, body())).statusCode).toBe(200);
+  });
+
+  it("frees the user's run when the runner throws", async () => {
+    let calls = 0;
+    const api = await start({
+      async run() {
+        calls += 1;
+        if (calls === 1) throw new Error("down");
+        return { kind: "ok", result: PASSED };
+      },
+    });
+    expect((await post(api, body())).statusCode).toBe(500);
+    expect((await post(api, body())).statusCode).toBe(200);
+  });
+
   it("limits how often each user can run code", async () => {
     const api = await start(runner({ kind: "ok", result: PASSED }));
     for (let i = 0; i < CODE_RUN_LIMIT; i++) {

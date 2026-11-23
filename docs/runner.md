@@ -45,6 +45,16 @@ sudo systemctl enable --now isolate.service
 sudo usermod -aG isolate "$USER"
 ```
 
+Isolate makes each box under `box_root` in `/etc/isolate`, which is `/var/lib/isolate`. Give that folder its own small disk in memory, so runs can't fill Ubuntu's disk or use up its files, and nothing is left behind after a restart. Isolate needs it writable only by root, hence `mode=0755`:
+
+```bash
+echo "tmpfs /var/lib/isolate tmpfs size=512m,nr_inodes=20k,mode=0755,nosuid,nodev 0 0" | sudo tee -a /etc/fstab
+sudo mount /var/lib/isolate
+df -h /var/lib/isolate
+```
+
+`df` shows `tmpfs` with a size of 512M. WSL mounts `/etc/fstab` each time Ubuntu starts.
+
 The new group applies to new sessions only. In PowerShell, run `wsl --terminate Ubuntu-24.04`, then open Ubuntu again and check the setup:
 
 ```bash
@@ -102,7 +112,7 @@ It prints the port it listens on. From PowerShell, `curl.exe http://localhost:41
 
 ## Limits
 
-Each run gets its own box with no network, up to 16 processes and threads (Node needs a few), 5 seconds of CPU time, 10 seconds of wall time, 256 MB of memory, and 2 MB per file it writes. Code over 64 KB is refused before it reaches the box.
+Each run gets its own box with no network, up to 16 processes and threads (Node needs a few), 5 seconds of CPU time, 10 seconds of wall time, 256 MB of memory, and 2 MB per file it writes. All boxes share 512 MB and 20,000 files of disk. Code over 64 KB is refused before it reaches the box.
 
 The box gets each case's inputs but never its expected values. The harness inside only writes down what the answer returned, and the runner compares that with the expected values outside the box. So an answer can't read the right answers or write its own verdict.
 

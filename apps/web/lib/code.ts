@@ -142,7 +142,11 @@ export const CODE_RUN_ERRORS = {
   runnerBusy: "runner_busy",
   runnerFailed: "runner_failed",
   codeTooLarge: "code_too_large",
+  runInProgress: "run_in_progress",
 } as const;
+
+/** Stands in for the rate limit, which sends no code */
+const TOO_MANY = "too_many";
 
 export type RunOutcome =
   | { ok: true; result: CodeRunResponse }
@@ -163,7 +167,9 @@ export function runProblem(outcome: Exclude<RunOutcome, { ok: true }>): string {
       return "The runner is checking another answer. Try again in a moment.";
     case CODE_RUN_ERRORS.codeTooLarge:
       return "Your code is over 64 KB. Shorten it, then run it again.";
-    case "too_many":
+    case CODE_RUN_ERRORS.runInProgress:
+      return "Another run of yours is still going. Wait for it to finish, then try again.";
+    case TOO_MANY:
       return "That's a lot of runs in one minute. Wait a moment, then try again.";
     default:
       return "The runner couldn't check that. Try again.";
@@ -198,11 +204,40 @@ export async function runCode(body: {
     } catch {
       code = undefined;
     }
-    // The rate limit answers without a code of its own
-    if (res.status === 429 && !code) code = "too_many";
+    if (res.status === 429) code = busyCode(code);
     return { ok: false, reason: "failed", code };
   }
-  return { ok: true, result: (await res.json()) as CodeRunResponse };
+  try {
+    const data = (await res.json()) as CodeRunResponse | null;
+    // summary() and the page read tests, so a body without them is a failed run
+    if (Array.isArray(data?.tests)) return { ok: true, result: data };
+  } catch {
+    // A body that isn't JSON falls through to the failed result
+  }
+  return { ok: false, reason: "failed" };
+}
+
+const KNOWN_CODES: readonly string[] = [
+  ...Object.values(CODE_RUN_ERRORS),
+  TOO_MANY,
+];
+
+// The rate limit answers without a code, and an unknown 429 code means the runner is busy
+function busyCode(code: string | undefined): string {
+  if (!code) return TOO_MANY;
+  return KNOWN_CODES.includes(code) ? code : CODE_RUN_ERRORS.runnerBusy;
+}
+
+/** Numbers each run, so an answer that comes back after a newer run or a reset is dropped */
+export function runCounter() {
+  let latest = 0;
+  return {
+    start: () => ++latest,
+    isLatest: (run: number) => run === latest,
+    cancel: () => {
+      latest += 1;
+    },
+  };
 }
 
 /** "All 6 cases passed", or how many did */

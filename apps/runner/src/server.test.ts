@@ -2,7 +2,12 @@ import type { AddressInfo } from "node:net";
 import { SQL_ATTACKS } from "@meritory/security-testing";
 import { afterEach, describe, expect, it } from "vitest";
 import type { RunRequest, RunResult } from "./run.ts";
-import { createRunnerServer, parseRequest, slotPool } from "./server.ts";
+import {
+  createRunnerServer,
+  parseRequest,
+  readSlots,
+  slotPool,
+} from "./server.ts";
 
 const TOKEN = "t".repeat(40);
 const PASSED: RunResult = { version: 3, status: "pass", tests: [] };
@@ -20,8 +25,15 @@ afterEach(() => close?.());
 async function start(
   run: (request: RunRequest, slot: number) => Promise<RunResult>,
   slots = 1,
+  deadlineMs?: number,
 ) {
-  const server = createRunnerServer({ token: TOKEN, slots, waiting: 1, run });
+  const server = createRunnerServer({
+    token: TOKEN,
+    slots,
+    waiting: 1,
+    deadlineMs,
+    run,
+  });
   await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
   close = () => server.close();
   const { port } = server.address() as AddressInfo;
@@ -87,6 +99,25 @@ describe("runner server", () => {
     expect((await first).status).toBe(200);
     expect((await second).status).toBe(200);
   });
+
+  it("fails a run that never finishes and gives its slot back", async () => {
+    const slots: number[] = [];
+    let calls = 0;
+    const post = await start(
+      (_request, slot) => {
+        slots.push(slot);
+        calls += 1;
+        return calls === 1 ? new Promise(() => {}) : Promise.resolve(PASSED);
+      },
+      1,
+      100,
+    );
+    const stuck = await post(valid);
+    expect(stuck.status).toBe(500);
+    expect(await stuck.json()).toEqual({ code: "runner_failed" });
+    expect((await post(valid)).status).toBe(200);
+    expect(slots).toEqual([0, 0]);
+  });
 });
 
 describe("slotPool", () => {
@@ -97,6 +128,16 @@ describe("slotPool", () => {
     expect(pool.take()).toBeNull();
     pool.give(first as number);
     expect(await waiting).toBe(0);
+  });
+});
+
+describe("readSlots", () => {
+  it("takes a whole number from 1 up and refuses anything else", () => {
+    expect(readSlots(undefined, 2)).toBe(2);
+    expect(readSlots("3", 2)).toBe(3);
+    for (const text of ["", "0", "-1", "1.5", "two", "NaN", "1e3", " 2"]) {
+      expect(readSlots(text, 2)).toBeNull();
+    }
   });
 });
 

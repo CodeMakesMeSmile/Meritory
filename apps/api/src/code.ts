@@ -9,6 +9,7 @@ import {
 } from "@meritory/contracts";
 import type { FastifyInstance, FastifyReply } from "fastify";
 import type { ServedChapter } from "./content.ts";
+import type { CurrentSession } from "./session.ts";
 
 /** What the runner said, in terms the route answers with */
 export type RunnerAnswer =
@@ -93,6 +94,8 @@ export async function registerCodeRoutes(
     }),
   });
 
+  const running = new Set<string>();
+
   scope.post<{ Body: CodeRunBody }>(
     "/code/runs",
     {
@@ -134,12 +137,26 @@ export async function registerCodeRoutes(
           message: OFFLINE,
         });
       }
-      const answer = await deps.runner.run({
-        language,
-        code,
-        signature: exercise.signature,
-        cases: exercise.cases,
-      });
+      const { user } = request.current as CurrentSession;
+      // One run each, so no one person holds every runner slot
+      if (running.has(user.id)) {
+        return refuse(reply, 429, {
+          code: CODE_ERRORS.runInProgress,
+          message: "A run is still going. Wait for it to finish.",
+        });
+      }
+      running.add(user.id);
+      let answer: RunnerAnswer;
+      try {
+        answer = await deps.runner.run({
+          language,
+          code,
+          signature: exercise.signature,
+          cases: exercise.cases,
+        });
+      } finally {
+        running.delete(user.id);
+      }
       switch (answer.kind) {
         case "ok":
           return answer.result;
