@@ -1,10 +1,10 @@
 import Type, { type Static } from "typebox";
+import { SOURCE_URL_PATTERN } from "./source-url.ts";
+
+export { SOURCE_URL_PATTERN };
 
 /** Lowercase words joined by hyphens */
 export const ID_PATTERN = "^[a-z0-9]+(-[a-z0-9]+)*$";
-
-// No "@" before the path, so a link can't hide its real host behind a user name
-export const SOURCE_URL_PATTERN = "^https://[^/?#@\\s]+([/?#]|$)";
 
 /** Any text except control characters, apart from tab and newline */
 // biome-ignore lint/security/noSecrets: a pattern, not a secret

@@ -43,7 +43,7 @@ export const CONTROL_ATTACKS = [
   "a\u007fb",
 ] as const;
 
-/** Every attack string, for fields that take free text */
+/** The SQL, HTML, and URL attacks, without the control and email lists, for fields that take free text */
 export const ATTACKS = [...SQL_ATTACKS, ...HTML_ATTACKS, ...URL_ATTACKS];
 
 /** Valid email addresses that carry SQL, so they get past format checks */
