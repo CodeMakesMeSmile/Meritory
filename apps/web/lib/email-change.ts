@@ -34,3 +34,39 @@ export const sentNotice = (email: string) =>
     tone: "info",
     text: `Check ${email} for a link to approve the change. It works for 1 hour.`,
   }) as const;
+
+/** Account, showing where the change left off */
+const stepUrl = (step: EmailStep) => `/account?email=${step}`;
+export const APPROVED_URL = stepUrl("approved");
+export const FAILED_URL = stepUrl("failed");
+
+const APPROVE_OFFLINE = "You're offline. Approving needs a connection.";
+const APPROVE_FAILED =
+  "Something went wrong on our side. Try again in a moment.";
+
+/** Where to go next, or what to say while the button stays */
+export type ApproveOutcome = { next: string } | { message: string };
+
+/** The press on the approve page, so a mail scanner opening the link changes nothing */
+export async function approveEmailChange(
+  token: string,
+): Promise<ApproveOutcome> {
+  let res: Response;
+  try {
+    res = await fetch("/api/v1/auth/approve-email-change", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      credentials: "same-origin",
+      cache: "no-store",
+      body: JSON.stringify({ token }),
+    });
+  } catch {
+    return { message: APPROVE_OFFLINE };
+  }
+  if (res.ok) return { next: APPROVED_URL };
+  // A used, expired, or unknown token can't work on a second press
+  if (res.status >= 400 && res.status < 500 && res.status !== 429) {
+    return { next: FAILED_URL };
+  }
+  return { message: APPROVE_FAILED };
+}

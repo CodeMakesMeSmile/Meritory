@@ -42,4 +42,8 @@ describe("proxy", () => {
   it("lets public pages through without a session", () => {
     expect(proxy(request("/sign-up")).status).toBe(200);
   });
+
+  it("opens the approve page from the email on a device that isn't signed in", () => {
+    expect(proxy(request("/approve-email-change?token=abc")).status).toBe(200);
+  });
 });

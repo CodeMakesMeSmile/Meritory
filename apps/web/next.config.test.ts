@@ -19,13 +19,16 @@ describe("next.config", () => {
     });
   });
 
-  it("sends no referrer from the reset page, after the general rule", async () => {
-    const rules = (await config.headers?.()) ?? [];
-    const general = rules.findIndex((rule) => rule.source === "/:path*");
-    const reset = rules.findIndex((rule) => rule.source === "/reset-password");
-    expect(reset).toBeGreaterThan(general);
-    expect(rules[reset]?.headers).toEqual([
-      { key: "Referrer-Policy", value: "no-referrer" },
-    ]);
-  });
+  it.each(["/reset-password", "/approve-email-change"])(
+    "sends no referrer from %s, after the general rule",
+    async (page) => {
+      const rules = (await config.headers?.()) ?? [];
+      const general = rules.findIndex((rule) => rule.source === "/:path*");
+      const own = rules.findIndex((rule) => rule.source === page);
+      expect(own).toBeGreaterThan(general);
+      expect(rules[own]?.headers).toEqual([
+        { key: "Referrer-Policy", value: "no-referrer" },
+      ]);
+    },
+  );
 });
