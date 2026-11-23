@@ -69,7 +69,7 @@ export function FeedbackHeading({
 }: {
   right: boolean;
   encourage: boolean;
-  wait: string;
+  wait: string | null;
   focusRef: RefObject<HTMLHeadingElement | null>;
   showWait?: boolean;
 }) {
@@ -83,7 +83,7 @@ export function FeedbackHeading({
           Trying first, then checking the answer, helps it stick.
         </p>
       )}
-      {showWait && (
+      {showWait && wait !== null && (
         <p className="text-small text-secondary">{waitLine(right, wait)}</p>
       )}
     </div>
@@ -114,7 +114,7 @@ export function Lesson({
 }: {
   card: Card;
   missed: boolean;
-  wait: string;
+  wait: string | null;
   /** With the mix-up and source, which a free-answer card already showed or leaves out */
   full?: boolean;
   titleRef?: RefObject<HTMLHeadingElement | null>;
@@ -130,7 +130,9 @@ export function Lesson({
         >
           {lesson.title}
         </h3>
-        <p className="text-small text-secondary">{waitLine(!missed, wait)}</p>
+        {wait !== null && (
+          <p className="text-small text-secondary">{waitLine(!missed, wait)}</p>
+        )}
       </div>
       <Markdown text={lesson.explanation} />
       {missed && lesson.fix && <Note label="Next time" text={lesson.fix} />}
