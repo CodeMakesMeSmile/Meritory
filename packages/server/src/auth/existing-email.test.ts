@@ -2,8 +2,9 @@ import { randomUUID } from "node:crypto";
 import { eq, ilike, inArray, like } from "drizzle-orm";
 import { afterAll, describe, expect, it } from "vitest";
 import { createDatabase } from "../db/client.ts";
-import { accounts, users, verifications } from "../db/schema.ts";
+import { accounts, rateLimits, users, verifications } from "../db/schema.ts";
 import type { Mail } from "../mail/mailer.ts";
+import { NOTICE_PREFIX } from "./account-limits.ts";
 import { createAuth } from "./auth.ts";
 
 const url = process.env.TEST_DATABASE_URL;
@@ -84,6 +85,12 @@ describe.skipIf(!url)("signing up with an email that has an account", () => {
         mine.map(({ id }) => id),
       ),
     );
+    await db.delete(rateLimits).where(
+      inArray(
+        rateLimits.key,
+        mine.map(({ id }) => `${NOTICE_PREFIX}existing-account|${id}`),
+      ),
+    );
     await db.delete(users).where(like(users.email, "existing-%@meritory.test"));
     await database.close();
   });
@@ -108,6 +115,26 @@ describe.skipIf(!url)("signing up with an email that has an account", () => {
     await expect
       .poll(() => mailTo(email).map((mail) => mail.subject))
       .toContain("Someone tried to sign up with your email");
+  });
+
+  it("tells the owner once a minute, and answers the same each time", async () => {
+    const email = newEmail();
+    await signUp(email, "Owner", "violet harbor tractor sandwich");
+    await confirm(email);
+    const notices = () =>
+      mailTo(email).filter(
+        (mail) => mail.subject === "Someone tried to sign up with your email",
+      );
+
+    const first = await signUp(email, "Someone", "maple glacier pencil drum");
+    await expect.poll(() => notices().length).toBe(1);
+    const again = await signUp(email, "Someone", "maple glacier pencil drum");
+    expect(again.status).toBe(first.status);
+    const shape = async (res: Response) =>
+      Object.keys((await res.json()) as SignUpBody).sort();
+    expect(await shape(again)).toEqual(await shape(first));
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    expect(notices()).toHaveLength(1);
   });
 
   it("answers the same way whether or not the email has an account", async () => {

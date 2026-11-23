@@ -12,6 +12,7 @@ import {
   type RunRequest,
   type RunResult,
 } from "./run.ts";
+import { RUN_DEADLINE_MS } from "./sandbox.ts";
 
 /** Code longer than this is refused before it reaches a box */
 export const MAX_CODE_BYTES = 64 * 1024;
@@ -24,6 +25,8 @@ export interface RunnerOptions {
   slots: number;
   /** How many more can wait for a slot before the runner says it's busy */
   waiting: number;
+  /** A run that takes longer fails and gives its slot back */
+  deadlineMs?: number;
   run(request: RunRequest, slot: number): Promise<RunResult>;
 }
 
@@ -50,6 +53,17 @@ function readBody(req: IncomingMessage): Promise<string | null> {
     req.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
     req.on("error", reject);
   });
+}
+
+function within<T>(work: Promise<T>, ms: number): Promise<T> {
+  let timer: NodeJS.Timeout | undefined;
+  const late = new Promise<never>((_, reject) => {
+    timer = setTimeout(
+      () => reject(new Error(`The run took over ${ms} ms`)),
+      ms,
+    );
+  });
+  return Promise.race([work, late]).finally(() => clearTimeout(timer));
 }
 
 /** The request's shape, or why it's refused */
@@ -88,6 +102,18 @@ export function parseRequest(body: unknown): RunRequest | string {
   };
 }
 
+/** RUNNER_SLOTS as a whole number from 1 up, or null when it's anything else */
+export function readSlots(
+  text: string | undefined,
+  fallback: number,
+): number | null {
+  if (text === undefined) return fallback;
+  const slots = Number(text);
+  return /^\d+$/.test(text) && Number.isSafeInteger(slots) && slots >= 1
+    ? slots
+    : null;
+}
+
 /** Hands out box numbers, and keeps a short line of runs waiting for one */
 export function slotPool(slots: number, waiting: number) {
   const free = Array.from({ length: slots }, (_, i) => i);
@@ -110,6 +136,7 @@ export function slotPool(slots: number, waiting: number) {
 export function createRunnerServer(options: RunnerOptions): Server {
   const expected = digest(options.token);
   const pool = slotPool(options.slots, options.waiting);
+  const deadline = options.deadlineMs ?? RUN_DEADLINE_MS;
 
   return createServer(async (req, res) => {
     if (req.method === "GET" && req.url === "/health") {
@@ -151,7 +178,7 @@ export function createRunnerServer(options: RunnerOptions): Server {
     }
     const slot = await taking;
     try {
-      send(res, 200, await options.run(request, slot));
+      send(res, 200, await within(options.run(request, slot), deadline));
     } catch (error) {
       console.error(error);
       send(res, 500, { code: "runner_failed" });

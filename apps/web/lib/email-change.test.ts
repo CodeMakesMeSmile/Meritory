@@ -1,5 +1,6 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+  approveEmailChange,
   emailStep,
   FAILED_LINK,
   sentNotice,
@@ -49,5 +50,55 @@ describe("notices", () => {
     expect(sentNotice("rowan@meritory.test").text).toBe(
       "Check rowan@meritory.test for a link to approve the change. It works for 1 hour.",
     );
+  });
+});
+
+describe("approveEmailChange", () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  const answer = (status: number) => {
+    const fetch = vi.fn(async () => new Response("{}", { status }));
+    vi.stubGlobal("fetch", fetch);
+    return fetch;
+  };
+
+  it("posts the token and goes to Account once approved", async () => {
+    const fetch = answer(200);
+    expect(await approveEmailChange("abc123")).toEqual({
+      next: "/account?email=approved",
+    });
+    expect(fetch).toHaveBeenCalledWith("/api/v1/auth/approve-email-change", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      credentials: "same-origin",
+      cache: "no-store",
+      body: JSON.stringify({ token: "abc123" }),
+    });
+  });
+
+  it("goes to the failed notice when the token is refused", async () => {
+    answer(400);
+    expect(await approveEmailChange("used")).toEqual({
+      next: "/account?email=failed",
+    });
+  });
+
+  it("stays to try again when the connection drops", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => {
+        throw new TypeError("Failed to fetch");
+      }),
+    );
+    expect(await approveEmailChange("abc123")).toEqual({
+      message: "You're offline. Approving needs a connection.",
+    });
+  });
+
+  it.each([429, 500, 503])("stays to try again after a %i", async (status) => {
+    answer(status);
+    expect(await approveEmailChange("abc123")).toEqual({
+      message: "Something went wrong on our side. Try again in a moment.",
+    });
   });
 });

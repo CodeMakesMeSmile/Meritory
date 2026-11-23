@@ -6,7 +6,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { stringify } from "yaml";
 import { buildBundle } from "./build.ts";
 import { Bundle } from "./bundle.ts";
-import { lockTrack } from "./lock.ts";
+import { lockTrack, versionsJson } from "./lock.ts";
 import { canonicalJson } from "./values.ts";
 import { formatProblem } from "./yaml-file.ts";
 
@@ -353,5 +353,108 @@ describe("content bundle", () => {
     expect(result.problems.map((p) => formatProblem(p, track))).toEqual([
       "versions.json must only map content items to lists of hashes",
     ]);
+  });
+});
+
+describe("card chapters", () => {
+  const listsDir = () => path.join(track, "chapters", "lists");
+  const card = (id: string, skill: string, asks: string) => ({
+    id,
+    skill,
+    asks,
+    type: "prompt",
+    prompt: `Why ${id}?`,
+    reworded: `What makes ${id} work?`,
+    points: ["A point."],
+    lesson: { title: "A lesson", explanation: "Text." },
+  });
+  const writeCards = (dir: string, cards: object[]) =>
+    write(path.join(dir, "cards.yaml"), stringify(cards));
+  const readVersionsFile = async () =>
+    JSON.parse(await readFile(path.join(track, "versions.json"), "utf8"));
+
+  beforeEach(async () => {
+    await write(
+      path.join(listsDir(), "chapter.yaml"),
+      stringify({
+        id: "lists",
+        title: "Lists",
+        order: 2,
+        skills: [{ id: "linking", name: "Following links" }],
+      }),
+    );
+    await write(path.join(listsDir(), "explanation.md"), "# Lists\n\nText.\n");
+    await writeCards(listsDir(), [
+      card("next-pointer", "linking", "why"),
+      card("head-first", "linking", "what"),
+    ]);
+  });
+
+  it("records the chapter each card was locked in", async () => {
+    const result = await lockTrack(track);
+    expect(result.chapters.map((c) => c.added)).toEqual([3]);
+    const versions = await readVersionsFile();
+    expect(versions["card-chapter/by-index"]).toEqual(["arrays"]);
+    expect(versions["card-chapter/head-first"]).toEqual(["lists"]);
+    const again = await lockTrack(track);
+    expect([again.versions, again.chapters]).toEqual([[], []]);
+  });
+
+  it("still builds from versions locked before chapters were recorded", async () => {
+    await lockTrack(track);
+    const versions = await readVersionsFile();
+    const old = Object.fromEntries(
+      Object.entries(versions).filter(([key]) => !key.startsWith("card-")),
+    );
+    await write(path.join(track, "versions.json"), JSON.stringify(old));
+    await built();
+    const result = await lockTrack(track);
+    expect([result.versions, result.chapters.map((c) => c.added)]).toEqual([
+      [],
+      [3],
+    ]);
+  });
+
+  it("refuses a card moved to another chapter until it gets a new id", async () => {
+    await lockTrack(track);
+    await writeCards(listsDir(), [card("next-pointer", "linking", "why")]);
+    await writeCards(chapterDir, [
+      card("by-index", "indexing", "why"),
+      card("head-first", "indexing", "what"),
+    ]);
+    const moved =
+      "chapters/arrays/cards.yaml card head-first was locked in chapter lists, so move it back or give it a new id";
+    expect((await build()).lines).toContain(moved);
+    const refused = await lockTrack(track);
+    expect(refused.problems.map((p) => formatProblem(p, track))).toEqual([
+      moved,
+    ]);
+    expect(refused.versions).toEqual([]);
+
+    await writeCards(chapterDir, [
+      card("by-index", "indexing", "why"),
+      card("first-index", "indexing", "what"),
+    ]);
+    const relocked = await lockTrack(track);
+    expect(relocked.problems).toEqual([]);
+    expect((await readVersionsFile())["card-chapter/first-index"]).toEqual([
+      "arrays",
+    ]);
+    await built();
+  });
+});
+
+describe("versionsJson", () => {
+  it("keeps short lists on one line and breaks long ones", () => {
+    const hash = "a".repeat(64);
+    expect(
+      versionsJson({ "card-chapter/x": ["arrays"], "card/x": [hash, hash] }),
+    ).toBe(
+      `{\n  "card-chapter/x": ["arrays"],\n  "card/x": [\n    "${hash}",\n    "${hash}"\n  ]\n}\n`,
+    );
+  });
+
+  it("writes an empty file as an empty object", () => {
+    expect(versionsJson({})).toBe("{}\n");
   });
 });

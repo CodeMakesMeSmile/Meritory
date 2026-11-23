@@ -23,7 +23,8 @@ export function isProvider(value: unknown): value is Provider {
   return PROVIDERS.includes(value as Provider);
 }
 
-const MAX_NAME_LENGTH = 100;
+/** Longest name kept, from sign-up, Account, or a provider */
+export const MAX_NAME_LENGTH = 100;
 
 /**
  * Applies the sign-up name rule to a name from GitHub or Google. Control characters become
@@ -95,6 +96,8 @@ export function socialProviders(config: ProviderConfig = {}) {
       google: {
         ...config.google,
         prompt: "select_account" as const,
+        // Sign-in always goes through Google's own page
+        disableIdTokenSignIn: true,
         mapProfileToUser: (profile: { name?: string; email?: string }) => ({
           name: providerName(profile.name, profile.email?.split("@")[0] ?? ""),
         }),

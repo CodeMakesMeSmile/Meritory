@@ -19,12 +19,43 @@ import { OrDivider, ProviderButtons } from "@/components/provider-buttons";
 import { StrengthMeter } from "@/components/strength-meter";
 import { TextField } from "@/components/text-field";
 import { authClient, SIGN_UP_EMAIL_KEY } from "@/lib/auth-client";
-import { loadPasswordRules } from "@/lib/password-rules";
+import { passwordRulesOrNull } from "@/lib/password-rules";
 
 type Field = "name" | "email" | "password";
 type Errors = Partial<Record<Field, string>>;
 
 const FIELDS: Field[] = ["name", "email", "password"];
+
+type SignUpOutcome =
+  | { ok: true }
+  | { ok: false; field?: Field; message: string | undefined };
+
+/** Sends the sign-up and turns every failure, a dropped connection too, into what the form shows */
+export async function createAccount(fields: {
+  name: string;
+  email: string;
+  password: string;
+}): Promise<SignUpOutcome> {
+  try {
+    const { error } = await authClient.signUp.email(fields);
+    if (!error) return { ok: true };
+    const field = signUpFieldFor(error.code);
+    if (field) {
+      return {
+        ok: false,
+        field,
+        message: field === "email" ? EMAIL_ERROR : error.message,
+      };
+    }
+    return {
+      ok: false,
+      message:
+        error.status === 429 ? waitMessage(null) : SIGN_UP_MESSAGES.failed,
+    };
+  } catch {
+    return { ok: false, message: SIGN_UP_MESSAGES.offline };
+  }
+}
 
 export function SignUpForm() {
   const router = useRouter();
@@ -54,7 +85,9 @@ export function SignUpForm() {
       setCheck(null);
       return;
     }
-    const rules = await loadPasswordRules();
+    // A failed load leaves the meter as it was until the next keystroke
+    const rules = await passwordRulesOrNull();
+    if (!rules) return;
     setStrengthMessages(rules.STRENGTH_MESSAGES);
     setCheck(rules.checkPassword(next.password, next));
   }
@@ -83,20 +116,24 @@ export function SignUpForm() {
     const found: Errors = {};
     if (!name.trim()) found.name = NAME_ERROR;
     if (!EMAIL_PATTERN.test(email.trim())) found.email = EMAIL_ERROR;
-    const result = (await loadPasswordRules()).checkPassword(password, {
-      name,
-      email,
-    });
+    const rules = await passwordRulesOrNull();
+    if (!rules) {
+      setFormError(
+        navigator.onLine ? SIGN_UP_MESSAGES.failed : SIGN_UP_MESSAGES.offline,
+      );
+      return;
+    }
+    const result = rules.checkPassword(password, { name, email });
     if (result.problem) found.password = result.message;
     if (showErrors(found)) return;
 
     setPending(true);
-    const { error } = await authClient.signUp.email({
+    const outcome = await createAccount({
       name: name.trim(),
       email: email.trim(),
       password,
     });
-    if (!error) {
+    if (outcome.ok) {
       try {
         sessionStorage.setItem(SIGN_UP_EMAIL_KEY, email.trim());
       } catch {
@@ -107,14 +144,8 @@ export function SignUpForm() {
     }
 
     setPending(false);
-    const field = signUpFieldFor(error.code);
-    if (field) {
-      showErrors({ [field]: field === "email" ? EMAIL_ERROR : error.message });
-      return;
-    }
-    setFormError(
-      error.status === 429 ? waitMessage(null) : SIGN_UP_MESSAGES.failed,
-    );
+    if (outcome.field) showErrors({ [outcome.field]: outcome.message });
+    else setFormError(outcome.message ?? SIGN_UP_MESSAGES.failed);
   }
 
   return (

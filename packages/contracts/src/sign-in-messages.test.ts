@@ -20,6 +20,21 @@ describe("waitMessage", () => {
     );
   });
 
+  it("counts a long wait in minutes, rounded up", () => {
+    expect(waitMessage("59")).toBe(
+      "Too many tries. Wait 59 seconds, then try again.",
+    );
+    expect(waitMessage("60")).toBe(
+      "Too many tries. Wait 1 minute, then try again.",
+    );
+    expect(waitMessage("61")).toBe(
+      "Too many tries. Wait 2 minutes, then try again.",
+    );
+    expect(waitMessage("900")).toBe(
+      "Too many tries. Wait 15 minutes, then try again.",
+    );
+  });
+
   it.each([null, "", "0", "-3", "1.5", "soon"])(
     "falls back when the header is %s",
     (header) => {

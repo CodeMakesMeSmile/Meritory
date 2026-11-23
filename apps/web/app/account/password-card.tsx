@@ -17,7 +17,7 @@ import { ShowButton } from "@/components/show-button";
 import { StrengthMeter } from "@/components/strength-meter";
 import { TextField } from "@/components/text-field";
 import { authClient } from "@/lib/auth-client";
-import { loadPasswordRules } from "@/lib/password-rules";
+import { passwordRulesOrNull } from "@/lib/password-rules";
 import { Card, Row } from "./card";
 
 type Field = "current" | "password" | "confirm";
@@ -26,6 +26,7 @@ type Notice = { tone: "success" | "danger"; text: string };
 
 const FIELDS: Field[] = ["current", "password", "confirm"];
 const OFFLINE = "You're offline. Changing your password needs a connection.";
+const FAILED = "Something went wrong on our side. Try again in a moment.";
 
 interface PasswordCardProps {
   /** Lets the meter catch a password with the name or email in it */
@@ -77,7 +78,9 @@ export function PasswordCard({
       setCheck(null);
       return;
     }
-    const rules = await loadPasswordRules();
+    // A failed load leaves the meter as it was until the next keystroke
+    const rules = await passwordRulesOrNull();
+    if (!rules) return;
     setStrengthMessages(rules.STRENGTH_MESSAGES);
     setCheck(rules.checkPassword(value, { name, email }));
   }
@@ -94,10 +97,15 @@ export function PasswordCard({
     if (pending) return;
     setNotice(null);
 
-    const result = (await loadPasswordRules()).checkPassword(values.password, {
-      name,
-      email,
-    });
+    const rules = await passwordRulesOrNull();
+    if (!rules) {
+      setNotice({
+        tone: "danger",
+        text: navigator.onLine ? FAILED : OFFLINE,
+      });
+      return;
+    }
+    const result = rules.checkPassword(values.password, { name, email });
     const found: Errors = {};
     if (!values.current) found.current = "Enter your current password.";
     if (result.problem) found.password = result.message;
@@ -142,10 +150,7 @@ export function PasswordCard({
       } else if (error.status === 429) {
         setNotice({ tone: "danger", text: waitMessage(retryAfter) });
       } else {
-        setNotice({
-          tone: "danger",
-          text: "Something went wrong on our side. Try again in a moment.",
-        });
+        setNotice({ tone: "danger", text: FAILED });
       }
     } catch {
       setPending(false);

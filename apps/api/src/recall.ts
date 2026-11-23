@@ -306,6 +306,13 @@ export async function registerRecallRoutes(
     async (request, reply) => {
       const { user } = request.current as CurrentSession;
       const body = request.body;
+      const answeredAt = new Date(body.answeredAt);
+      if (Number.isNaN(answeredAt.getTime())) {
+        return refuse(reply, 400, {
+          code: "validation_failed",
+          message: "body/answeredAt must be a real date and time",
+        });
+      }
       const current = findChapter(body.trackId, body.chapterId)?.cards.find(
         (card) => card.id === body.cardId,
       );
@@ -326,7 +333,7 @@ export async function registerRecallRoutes(
           cardId: body.cardId,
           cardVersion: body.cardVersion,
           rating: body.rating,
-          answeredAt: new Date(body.answeredAt),
+          answeredAt,
           durationMs: body.durationMs ?? null,
         },
         now,
@@ -342,6 +349,12 @@ export async function registerRecallRoutes(
         return refuse(reply, 422, {
           code: RECALL_ERRORS.idReused,
           message: "That review id was already used for a different answer.",
+        });
+      }
+      if (result.kind === "undone") {
+        return refuse(reply, 409, {
+          code: RECALL_ERRORS.reviewUndone,
+          message: "That rating was undone, so it no longer counts.",
         });
       }
       return {

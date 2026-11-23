@@ -80,8 +80,11 @@ export function waitMessage(retryAfter: string | null) {
   if (!retryAfter || !Number.isInteger(seconds) || seconds <= 0) {
     return "Too many tries. Wait a few seconds, then try again.";
   }
-  const unit = seconds === 1 ? "second" : "seconds";
-  return `Too many tries. Wait ${seconds} ${unit}, then try again.`;
+  // Rounded up, so the wait never ends early
+  const [count, unit] =
+    seconds < 60 ? [seconds, "second"] : [Math.ceil(seconds / 60), "minute"];
+  const units = count === 1 ? unit : `${unit}s`;
+  return `Too many tries. Wait ${count} ${units}, then try again.`;
 }
 
 /** What the strength meter says under a password field */

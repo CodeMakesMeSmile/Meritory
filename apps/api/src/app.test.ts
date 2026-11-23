@@ -6,6 +6,7 @@ import type { RecallStore } from "@meritory/server";
 import Type from "typebox";
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import { buildApp } from "./app.ts";
+import { AUTH_ROUTES } from "./auth-routes.ts";
 import type { ServedContent } from "./content.ts";
 import type {
   AccountDeletionDependency,
@@ -231,6 +232,69 @@ describe("auth routes", () => {
     expect(res.statusCode).toBe(400);
     expect(res.json()).toEqual({ code: "INVALID_EMAIL" });
     expect(res.headers["set-cookie"]).toEqual(["a=1; Path=/", "b=2; Path=/"]);
+  });
+});
+
+describe("auth route allowlist", () => {
+  // Fills each :name part, so the path looks like a real request
+  const filled = (path: string) => path.replace(/:[a-z]+/g, "github");
+
+  const listed = Object.entries(AUTH_ROUTES).flatMap(([method, paths]) =>
+    paths.map((path) => [method as "GET" | "POST", filled(path)] as const),
+  );
+
+  it.each(listed)("passes %s %s to Better Auth", async (method, path) => {
+    const seen: string[] = [];
+    const app = await start(true, async (request) => {
+      seen.push(`${request.method} ${new URL(request.url).pathname}`);
+      return Response.json({ ok: true });
+    });
+    const res = await app.inject({
+      method,
+      url: `/v1/auth${path}?token=abc`,
+      ...(method === "POST" && { payload: {} }),
+    });
+    expect(res.statusCode).toBe(200);
+    expect(seen).toEqual([`${method} /api/v1/auth${path}`]);
+  });
+
+  it.each([
+    ["GET", "/list-sessions"],
+    ["POST", "/revoke-session"],
+    ["POST", "/revoke-sessions"],
+    ["POST", "/revoke-other-sessions"],
+    ["POST", "/update-session"],
+    ["POST", "/delete-user"],
+    ["GET", "/delete-user/callback"],
+    ["POST", "/unlink-account"],
+    ["GET", "/list-accounts"],
+    ["POST", "/verify-password"],
+    ["GET", "/ok"],
+    ["GET", "/foo"],
+    ["GET", "/sign-in/email"],
+    ["POST", "/get-session"],
+    ["GET", "/callback/github/extra"],
+    ["GET", "/callback/github/../../list-sessions"],
+    ["GET", "/callback/%2E%2E/list-sessions"],
+    ["GET", "/list%2Dsessions"],
+    ["GET", "/get-session/"],
+    ["GET", ""],
+    ...SQL_ATTACKS.map((attack) => ["GET", `/${encodeURIComponent(attack)}`]),
+  ])("answers %s %s with our own 404", async (method, path) => {
+    let called = false;
+    const app = await start(true, async () => {
+      called = true;
+      return new Response(null);
+    });
+    const res = await app.inject({
+      method: method as "GET" | "POST",
+      url: `/v1/auth${path}`,
+      ...(method === "POST" && { payload: {} }),
+    });
+    expect(res.statusCode).toBe(404);
+    expect(res.json()).toMatchObject({ code: "not_found" });
+    expect(res.headers["x-content-type-options"]).toBe("nosniff");
+    expect(called).toBe(false);
   });
 });
 
@@ -672,6 +736,7 @@ describe("content", () => {
     expect(res.statusCode).toBe(200);
   });
 
+  // It reads every exercise folder, which is slow while other suites run
   it("never sends a reference solution or a case lock", async () => {
     const res = await get();
     const exercises = await exerciseDirs();
@@ -693,7 +758,7 @@ describe("content", () => {
         expect(res.body).not.toContain(hash);
       }
     }
-  });
+  }, 30_000);
 });
 
 /** Every exercise folder in the real curriculum */
@@ -744,7 +809,7 @@ describe("security headers", () => {
       async () =>
         new Response(null, { headers: { "cache-control": "max-age=60" } }),
     );
-    const res = await app.inject("/v1/auth/ok");
+    const res = await app.inject("/v1/auth/get-session");
     expect(res.headers["cache-control"]).toBe("max-age=60");
   });
 

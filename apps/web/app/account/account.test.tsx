@@ -4,7 +4,10 @@ import { describe, expect, it, vi } from "vitest";
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ replace: () => {}, push: () => {}, refresh: () => {} }),
+  unstable_rethrow: () => {},
 }));
+
+const interviewFails = vi.hoisted(() => ({ current: false }));
 
 const me = vi.hoisted(() => ({ current: null as MeResponse | null }));
 vi.mock("@/lib/me", () => ({ requireMe: async () => me.current }));
@@ -18,7 +21,12 @@ const interview = vi.hoisted(() => ({
   },
 }));
 vi.mock("@/lib/server-api", () => ({
-  getInterviewDate: async () => interview.current,
+  getInterviewDate: async () => {
+    if (interviewFails.current) {
+      throw new Error("GET /v1/me/interview-date failed with 503");
+    }
+    return interview.current;
+  },
 }));
 
 const { default: AccountPage } = await import("./page.tsx");
@@ -293,6 +301,18 @@ describe("Interview date", () => {
     expect(html).toContain('type="date"');
     expect(html).toContain("Save date");
     expect(html).not.toContain("Remove date");
+  });
+
+  it("keeps the rest of the page when only the date fails to load", async () => {
+    interviewFails.current = true;
+    const html = await account(withPassword);
+    interviewFails.current = false;
+    expect(html).toContain(
+      "We couldn&#x27;t load your interview date. Reload the page to try again.",
+    );
+    expect(html).not.toContain('type="date"');
+    expect(html).toContain("Delete account");
+    expect(html).toContain("Change password");
   });
 
   it("says when the higher target is on", async () => {

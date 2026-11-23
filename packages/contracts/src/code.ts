@@ -55,4 +55,5 @@ export const CODE_ERRORS = {
   runnerBusy: "runner_busy",
   runnerFailed: "runner_failed",
   codeTooLarge: "code_too_large",
+  runInProgress: "run_in_progress",
 } as const;

@@ -19,9 +19,13 @@ const config: NextConfig = {
   async headers() {
     return [
       { source: "/:path*", headers: SECURITY_HEADERS },
-      // The reset token is in this page's URL. The later rule wins.
+      // A token is in these pages' URLs. The later rules win.
       {
         source: "/reset-password",
+        headers: [{ key: "Referrer-Policy", value: "no-referrer" }],
+      },
+      {
+        source: "/approve-email-change",
         headers: [{ key: "Referrer-Policy", value: "no-referrer" }],
       },
     ];

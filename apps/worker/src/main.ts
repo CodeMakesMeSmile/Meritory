@@ -26,9 +26,9 @@ boss.on("warning", ({ message }) => log.warn({ message }, "queue warning"));
 
 async function shutdown(signal: string) {
   log.info({ signal }, "shutting down");
-  setTimeout(() => process.exit(1), 10_000).unref();
-  // Lets a send in progress finish, so it isn't tried twice
-  await boss.stop({ graceful: true, timeout: 8_000 });
+  setTimeout(() => process.exit(1), 55_000).unref();
+  // Longer than SEND_DEADLINE_MS, so a send in progress ends before the worker does
+  await boss.stop({ graceful: true, timeout: 50_000 });
   process.exit(0);
 }
 

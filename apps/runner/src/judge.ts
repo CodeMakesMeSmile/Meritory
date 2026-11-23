@@ -72,6 +72,7 @@ export function readLine(line: string, python: boolean): unknown {
   );
 }
 
+/** A value as text for a message, which never throws */
 export function show(value: unknown): string {
   try {
     const text = JSON.stringify(value);
@@ -79,7 +80,12 @@ export function show(value: unknown): string {
   } catch {
     // Falls through to the plain name below
   }
-  return String(value);
+  try {
+    return String(value);
+  } catch {
+    // Nested too deeply, or an object with no toString
+    return "a value that can't be shown";
+  }
 }
 
 function same(actual: unknown, expected: unknown, loose: boolean): boolean {

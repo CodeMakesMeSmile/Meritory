@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 import type { BundleCodingExercise } from "@meritory/content";
 import { buildBundle } from "@meritory/content/node";
 import { beforeAll, describe, expect, it } from "vitest";
-import { readLine } from "./judge.ts";
+import { readLine, show } from "./judge.ts";
 import {
   type BundleCase,
   casesToRun,
@@ -251,6 +251,17 @@ describe.each(["typescript", "python"] as const)(
     });
   },
 );
+
+describe("show", () => {
+  it("never throws, even on a value nested too deeply to print", () => {
+    // JSON can't carry the BigInt, and String recurses through every level
+    let deep: unknown = [1n];
+    for (let i = 0; i < 1_000_000; i++) deep = [deep];
+    expect(show(deep)).toBe("a value that can't be shown");
+    expect(show(Object.create(null))).toBe("{}");
+    expect(show([1, 2])).toBe("[1,2]");
+  });
+});
 
 describe("casesToRun", () => {
   const base = { input: {}, expected: 1 };

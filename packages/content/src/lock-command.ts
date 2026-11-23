@@ -22,6 +22,7 @@ for (const track of await subfolders(contentDir)) {
   const result = await lockTrack(path.join(contentDir, track));
   report(result.written, ["case", "cases"], "Locked");
   report(result.versions, ["version", "versions"], "Recorded");
+  report(result.chapters, ["card chapter", "card chapters"], "Recorded");
   for (const problem of result.problems) {
     console.error(`${formatProblem(problem, root)}, so it was left as it is`);
     failed = true;

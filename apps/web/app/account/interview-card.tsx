@@ -14,6 +14,8 @@ const OFFLINE = "You're offline. This needs a connection.";
 const FAILED = "Something went wrong on our side. Try again in a moment.";
 const PASSED = "That date has passed. Pick a date after today.";
 const NOT_A_DATE = "That isn't a date. Pick one from the calendar.";
+const DESCRIPTION =
+  "Optional. Add your date and recall gets more thorough in the last 4 weeks, so more cards are fresh on the day. You'll see a few more cards each day while it's on.";
 const SOONER =
   "cards come back a bit sooner, aiming for 95% recall instead of 90%.";
 
@@ -94,10 +96,7 @@ export function InterviewCard({ initial }: { initial: InterviewDateResponse }) {
   const removable = state.date !== null && state.status !== "passed";
 
   return (
-    <Card
-      title="Interview date"
-      description="Optional. Add your date and recall gets more thorough in the last 4 weeks, so more cards are fresh on the day. You'll see a few more cards each day while it's on."
-    >
+    <Card title="Interview date" description={DESCRIPTION}>
       {notice && <Alert tone={notice.tone}>{notice.text}</Alert>}
       <form
         noValidate
@@ -147,6 +146,17 @@ export function InterviewCard({ initial }: { initial: InterviewDateResponse }) {
           </Button>
         </Row>
       )}
+    </Card>
+  );
+}
+
+/** Shown when the date didn't load, so a blank field never looks like no date */
+export function InterviewUnavailableCard() {
+  return (
+    <Card title="Interview date" description={DESCRIPTION}>
+      <Alert tone="danger">
+        We couldn't load your interview date. Reload the page to try again.
+      </Alert>
     </Card>
   );
 }

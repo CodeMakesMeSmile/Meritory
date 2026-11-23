@@ -4,6 +4,7 @@ import Type, { type Static } from "typebox";
 const UUID = "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$";
 
 const ContentId = Type.String({ pattern: ID_PATTERN, maxLength: 80 });
+// Also allows a leap second or a zone suffix that Date can't read, so routes check the parsed time
 const Time = Type.String({ format: "date-time" });
 const Count = Type.Integer({ minimum: 0 });
 
@@ -158,6 +159,7 @@ export type InterviewDateResponse = Static<typeof InterviewDateResponse>;
 /** Error codes the recall routes answer with */
 export const RECALL_ERRORS = {
   idReused: "review_id_reused",
+  reviewUndone: "review_undone",
   notLatest: "not_latest_review",
   undoExpired: "undo_expired",
   unknownTimeZone: "unknown_time_zone",

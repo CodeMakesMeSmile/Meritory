@@ -9,6 +9,7 @@ const PUBLIC_PATHS = new Set([
   "/email-confirmed",
   "/forgot-password",
   "/reset-password",
+  "/approve-email-change",
 ]);
 
 export function proxy(request: NextRequest) {

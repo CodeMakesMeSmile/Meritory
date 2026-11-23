@@ -3,8 +3,15 @@ import { ATTACKS, CONTROL_ATTACKS } from "@meritory/security-testing";
 import { eq, inArray, like } from "drizzle-orm";
 import { afterAll, describe, expect, it } from "vitest";
 import { createDatabase } from "../db/client.ts";
-import { accounts, sessions, users, verifications } from "../db/schema.ts";
+import {
+  accounts,
+  rateLimits,
+  sessions,
+  users,
+  verifications,
+} from "../db/schema.ts";
 import type { Mail } from "../mail/mailer.ts";
+import { NOTICE_PREFIX } from "./account-limits.ts";
 import { createAuth } from "./auth.ts";
 
 const url = process.env.TEST_DATABASE_URL;
@@ -85,6 +92,22 @@ describe.skipIf(!url)("profile changes against Postgres", () => {
     return link;
   };
 
+  // The approval email opens our page, which posts the token from its address
+  const approvalTokenIn = (mail: Mail | undefined) => {
+    const link = mail?.text.match(
+      /https:\/\/\S+\/approve-email-change\?token=\S+/,
+    )?.[0];
+    const token = link ? new URL(link).searchParams.get("token") : null;
+    if (!token) throw new Error("no approval link in the email");
+    return token;
+  };
+
+  const approveWith = (token: unknown, cookie?: string) =>
+    post("/approve-email-change", { token }, cookie ? { cookie } : {});
+
+  const verifyLink = (token: string) =>
+    `${ORIGIN}/api/v1/auth/verify-email?token=${encodeURIComponent(token)}`;
+
   // Where opening an emailed link sends the browser
   const open = async (link: string, cookie?: string) => {
     const res = await auth.handler(
@@ -100,13 +123,13 @@ describe.skipIf(!url)("profile changes against Postgres", () => {
       query: { disableCookieCache: true },
     })) !== null;
 
-  // Asks for the change and opens the approval link, so the new address has its link
+  // Asks for the change and approves it, so the new address has its link
   const approve = async (cookie: string, email: string, next: string) => {
     expect((await changeEmail(cookie, next)).status).toBe(200);
     const approval = await waitForMail(email, APPROVE);
-    expect(await open(linkIn(approval), cookie)).toBe(
-      "/account?email=approved",
-    );
+    const res = await approveWith(approvalTokenIn(approval), cookie);
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ status: "approved" });
     return linkIn(await waitForMail(next, CONFIRM_NEW));
   };
 
@@ -167,6 +190,12 @@ describe.skipIf(!url)("profile changes against Postgres", () => {
           mine.map(({ id }) => `email-link:${id}`),
         ),
       );
+      await db.delete(rateLimits).where(
+        inArray(
+          rateLimits.key,
+          mine.map(({ id }) => `${NOTICE_PREFIX}email-in-use|${id}`),
+        ),
+      );
     }
     await db.delete(users).where(like(users.email, "profile-%@meritory.test"));
     await database.close();
@@ -211,6 +240,28 @@ describe.skipIf(!url)("profile changes against Postgres", () => {
       expect(await nameOf(email)).toBe("Rowan");
     });
 
+    it("refuses a name over 100 characters and keeps the old one", async () => {
+      const { email, cookie } = await newAccount();
+      const res = await post(
+        "/update-user",
+        { name: "a".repeat(101) },
+        { cookie },
+      );
+      expect(res.status).toBe(400);
+      expect(await res.json()).toMatchObject({
+        code: "NAME_INVALID",
+        message: "Use 100 characters or fewer.",
+      });
+      expect(await nameOf(email)).toBe("Rowan");
+      const padded = await post(
+        "/update-user",
+        { name: `  ${"a".repeat(100)}  ` },
+        { cookie },
+      );
+      expect(padded.status).toBe(200);
+      expect(await nameOf(email)).toBe("a".repeat(100));
+    });
+
     it.each(ATTACKS)("stores the name %j exactly", async (name) => {
       const { email, cookie } = await newAccount();
       const res = await post("/update-user", { name }, { cookie });
@@ -242,9 +293,8 @@ describe.skipIf(!url)("profile changes against Postgres", () => {
       expect(res.status).toBe(200);
       const approval = await waitForMail(email, APPROVE);
       expect(approval?.text).toContain(next);
-      expect(approval?.text).toContain(
-        `${ORIGIN}/api/v1/auth/verify-email?token=`,
-      );
+      expect(approval?.text).toContain(`${ORIGIN}/approve-email-change?token=`);
+      expect(approval?.text).not.toContain("/verify-email");
       expect(sent.filter((mail) => mail.to === next)).toEqual([]);
       expect(await emailOf(email)).toBe(email);
     });
@@ -274,6 +324,18 @@ describe.skipIf(!url)("profile changes against Postgres", () => {
       expect(mailsTo(asker.email, APPROVE)).toHaveLength(1);
       expect(notice?.text).toContain(`${ORIGIN}/sign-in`);
       expect(await emailOf(owner.email)).toBe(owner.email);
+    });
+
+    it("tells a taken address's owner once a minute, and answers the same each time", async () => {
+      const asker = await newAccount();
+      const owner = await newAccount();
+      const first = await changeEmail(asker.cookie, owner.email);
+      await waitForMail(owner.email, IN_USE);
+      const again = await changeEmail(asker.cookie, owner.email);
+      expect(again.status).toBe(first.status);
+      expect(await again.json()).toEqual(await first.json());
+      await settle();
+      expect(mailsTo(owner.email, IN_USE)).toHaveLength(1);
     });
 
     it("says when it's already the account's email", async () => {
@@ -375,20 +437,70 @@ describe.skipIf(!url)("profile changes against Postgres", () => {
 
     it("lets each link work once", async () => {
       const { email, cookie } = await newAccount();
-      const finish = await approve(cookie, email, freshEmail());
-      const approval = linkIn(mailsTo(email, APPROVE).at(-1));
-      expect(await open(approval, cookie)).toBe("/account?email=failed");
+      const next = freshEmail();
+      const finish = await approve(cookie, email, next);
+      const approval = approvalTokenIn(mailsTo(email, APPROVE).at(-1));
+      const again = await approveWith(approval, cookie);
+      expect(again.status).toBe(400);
+      expect(await again.json()).toMatchObject({ code: "INVALID_TOKEN" });
+      expect(await open(verifyLink(approval), cookie)).toBe(
+        "/account?email=failed",
+      );
+      await settle();
+      expect(mailsTo(next, CONFIRM_NEW)).toHaveLength(1);
       expect(await open(finish, cookie)).toBe("/account?email=changed");
       expect(await open(finish, cookie)).toBe("/account?email=failed");
+    });
+
+    it("approves only from the page, so opening the link changes nothing", async () => {
+      const { email, cookie } = await newAccount();
+      const next = freshEmail();
+      await changeEmail(cookie, next);
+      const approval = approvalTokenIn(await waitForMail(email, APPROVE));
+      for (const who of [cookie, undefined]) {
+        expect(await open(verifyLink(approval), who)).toBe(
+          "/account?email=failed",
+        );
+      }
+      await settle();
+      expect(mailsTo(next, CONFIRM_NEW)).toEqual([]);
+      // Opening it didn't use it up, so the page still works
+      expect((await approveWith(approval)).status).toBe(200);
+      await waitForMail(next, CONFIRM_NEW);
+    });
+
+    it("refuses the new address's link on the approve route, and still finishes with it", async () => {
+      const { email, cookie } = await newAccount();
+      const next = freshEmail();
+      const finish = await approve(cookie, email, next);
+      const token = new URL(finish).searchParams.get("token");
+      const res = await approveWith(token, cookie);
+      expect(res.status).toBe(400);
+      expect(await res.json()).toMatchObject({ code: "INVALID_TOKEN" });
+      expect(await open(finish, cookie)).toBe("/account?email=changed");
+      expect(await emailOf(next)).toBe(next);
+    });
+
+    it("refuses an approval from a browser signed in to another account", async () => {
+      const { email, cookie } = await newAccount();
+      const other = await newAccount();
+      const next = freshEmail();
+      await changeEmail(cookie, next);
+      const approval = approvalTokenIn(await waitForMail(email, APPROVE));
+      const res = await approveWith(approval, other.cookie);
+      expect(res.status).toBe(400);
+      expect(await res.json()).toMatchObject({ code: "INVALID_TOKEN" });
+      await settle();
+      expect(mailsTo(next, CONFIRM_NEW)).toEqual([]);
     });
 
     it("cancels an older request when a newer one is made", async () => {
       const { email, cookie } = await newAccount();
       await changeEmail(cookie, freshEmail());
-      const older = linkIn(await waitForMail(email, APPROVE));
+      const older = approvalTokenIn(await waitForMail(email, APPROVE));
       await changeEmail(cookie, freshEmail());
       await waitForMail(email, APPROVE, 2);
-      expect(await open(older, cookie)).toBe("/account?email=failed");
+      expect((await approveWith(older, cookie)).status).toBe(400);
       expect(await emailOf(email)).toBe(email);
     });
 

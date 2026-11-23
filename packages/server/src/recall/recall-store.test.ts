@@ -165,6 +165,20 @@ describe.skipIf(!url)("recall store against Postgres", () => {
       expect((await card(me))?.card.reps).toBe(1);
     });
 
+    it("answers a retry of an undone review as undone, and changes nothing", async () => {
+      const me = await user();
+      await store.start(me, CHAPTER, start);
+      const review = input();
+      await store.review(me, review, start);
+      await store.undo(me, review.id, later(MINUTE));
+      const before = await card(me);
+      expect(await store.review(me, review, later(2 * MINUTE))).toEqual({
+        kind: "undone",
+      });
+      expect(await card(me)).toEqual(before);
+      expect(await reviewsOf(me)).toHaveLength(2);
+    });
+
     it("refuses the same id with a different answer", async () => {
       const me = await user();
       await store.start(me, CHAPTER, start);
@@ -406,6 +420,17 @@ describe.skipIf(!url)("recall store against Postgres", () => {
       await store.review(me, miss, start);
       await store.undo(me, miss.id, start);
       expect((await card(me, "card-c"))?.lastMissed).toBe(false);
+    });
+
+    it("counts an earlier miss again once a later rating is undone", async () => {
+      const me = await user();
+      await store.start(me, CHAPTER, start);
+      await store.review(me, input({ rating: "again" }), start);
+      const good = input({ rating: "good", answeredAt: later(MINUTE) });
+      await store.review(me, good, later(MINUTE));
+      expect((await card(me))?.lastMissed).toBe(false);
+      await store.undo(me, good.id, later(2 * MINUTE));
+      expect((await card(me))?.lastMissed).toBe(true);
     });
   });
 

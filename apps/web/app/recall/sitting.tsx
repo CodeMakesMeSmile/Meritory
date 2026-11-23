@@ -206,12 +206,23 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
         setSaving({ state: "failed", review });
         return;
       }
+      // Undone since it was sent, so it doesn't count and the sitting moves on
+      if (result.data === null) {
+        setSaving({ state: "idle" });
+        setLine(null);
+        if (advance) {
+          setIndex((at) => at + 1);
+          cardStart.current = Date.now();
+        }
+        return;
+      }
+      const { dueAt } = result.data;
       setSaved((list) => [
         ...list,
         {
           chapterTitle:
             items.find((i) => i.session === review.card)?.chapterTitle ?? "",
-          dueAt: new Date(result.data.dueAt),
+          dueAt: new Date(dueAt),
         },
       ]);
       setSaving({ state: "idle" });

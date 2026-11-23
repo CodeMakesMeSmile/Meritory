@@ -32,6 +32,30 @@ export function writeStored(
   }
 }
 
+// Practice answers, code, and rehearsals from lib/practice, lib/code, and lib/rehearsal
+const DRAFT_PREFIXES = [
+  "meritory.practice.",
+  "meritory.code.",
+  "meritory.rehearsal.",
+];
+
+/** Forgets this browser's drafts, so the next person here doesn't see them */
+export function clearDrafts() {
+  try {
+    const storage = window.localStorage;
+    const keys = Array.from({ length: storage.length }, (_, i) =>
+      storage.key(i),
+    );
+    for (const key of keys) {
+      if (key && DRAFT_PREFIXES.some((prefix) => key.startsWith(prefix))) {
+        storage.removeItem(key);
+      }
+    }
+  } catch {
+    // Blocked storage has nothing to clear
+  }
+}
+
 const SHORTCUTS_KEY = "meritory.shortcuts";
 
 /** Single-key shortcuts are on unless this browser turned them off */

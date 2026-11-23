@@ -1,7 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { runCode } from "./run.ts";
 import { isolateSandbox } from "./sandbox.ts";
-import { createRunnerServer } from "./server.ts";
+import { createRunnerServer, readSlots } from "./server.ts";
 
 const token = process.env.RUNNER_TOKEN ?? "";
 if (token.length < 32) {
@@ -19,7 +19,11 @@ try {
 }
 
 const port = Number(process.env.RUNNER_PORT ?? 4100);
-const slots = Number(process.env.RUNNER_SLOTS ?? 2);
+const slots = readSlots(process.env.RUNNER_SLOTS, 2);
+if (slots === null) {
+  console.error("Set RUNNER_SLOTS to a whole number of at least 1.");
+  process.exit(1);
+}
 
 const server = createRunnerServer({
   token,

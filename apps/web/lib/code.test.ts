@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { runCode, runProblem, starterCode, summary } from "./code";
+import { runCode, runCounter, runProblem, starterCode, summary } from "./code";
 
 const pairSum = {
   function: "pairSum",
@@ -133,5 +133,68 @@ describe("runCode", () => {
     const result = { version: 3, status: "pass", tests: [] };
     answer(200, result);
     expect(await runCode(body)).toEqual({ ok: true, result });
+  });
+
+  it("calls a 200 that isn't a result a failed run", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response("<html>gateway</html>", { status: 200 })),
+    );
+    expect(await runCode(body)).toEqual({ ok: false, reason: "failed" });
+    answer(200, { version: 3 });
+    expect(await runCode(body)).toEqual({ ok: false, reason: "failed" });
+  });
+
+  it("tells the learner their own run is still going", async () => {
+    answer(429, { code: "run_in_progress" });
+    expect(runProblem((await runCode(body)) as never)).toBe(
+      "Another run of yours is still going. Wait for it to finish, then try again.",
+    );
+  });
+
+  it("reads a 429 with an unknown code as the runner being busy", async () => {
+    answer(429, { code: "something_new" });
+    expect(runProblem((await runCode(body)) as never)).toBe(
+      "The runner is checking another answer. Try again in a moment.",
+    );
+    answer(429, { code: "runner_busy" });
+    expect(await runCode(body)).toEqual({
+      ok: false,
+      reason: "failed",
+      code: "runner_busy",
+    });
+  });
+});
+
+describe("runCounter", () => {
+  // A run the test answers by hand, like a slow runner
+  function deferred<T>() {
+    let resolve: (value: T) => void = () => {};
+    const promise = new Promise<T>((done) => {
+      resolve = done;
+    });
+    return { promise, resolve };
+  }
+
+  it("drops a run that comes back after Start over or a language switch", async () => {
+    const runs = runCounter();
+    const shown: string[] = [];
+    const slow = deferred<string>();
+    const first = runs.start();
+    const landing = slow.promise.then((answer) => {
+      if (runs.isLatest(first)) shown.push(answer);
+    });
+    runs.cancel();
+    slow.resolve("python result");
+    await landing;
+    expect(shown).toEqual([]);
+  });
+
+  it("keeps only the newest of two runs", () => {
+    const runs = runCounter();
+    const older = runs.start();
+    const newer = runs.start();
+    expect(runs.isLatest(older)).toBe(false);
+    expect(runs.isLatest(newer)).toBe(true);
   });
 });

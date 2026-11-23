@@ -10,6 +10,7 @@ import { Alert } from "@/components/alert";
 import { Button } from "@/components/button";
 import { Dialog } from "@/components/dialog";
 import { deleteAccount, listSessions } from "@/lib/account-api";
+import { clearDrafts } from "@/lib/device-storage";
 import { ACCOUNT_DELETED_URL } from "@/lib/password-saved";
 import { savePendingDelete, takePendingDelete } from "@/lib/pending-action";
 import { Card, Row } from "./card";
@@ -27,6 +28,13 @@ export function deleteText(sessions: number | null, methods: number) {
     sessions === null ? "sessions" : count(sessions, "session", "sessions");
   const unlinked = count(methods, "sign-in method", "sign-in methods");
   return `Your practice history, ${ended}, and ${unlinked} will be removed for good. This can't be undone.`;
+}
+
+/** Deletes the account, then the drafts in this browser, as the dialog promises */
+export async function deleteEverything() {
+  const result = await deleteAccount();
+  if (result.ok) clearDrafts();
+  return result;
 }
 
 interface DeleteCardProps {
@@ -70,7 +78,7 @@ export function DeleteCard({
   async function run() {
     setAsk(false);
     setPending(true);
-    const result = await deleteAccount();
+    const result = await deleteEverything();
     if (result.ok) {
       // A full load, so nothing from the deleted account stays in memory
       window.location.replace(ACCOUNT_DELETED_URL);

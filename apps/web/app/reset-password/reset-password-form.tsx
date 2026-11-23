@@ -15,11 +15,14 @@ import { ShowButton } from "@/components/show-button";
 import { StrengthMeter } from "@/components/strength-meter";
 import { TextField } from "@/components/text-field";
 import { authClient } from "@/lib/auth-client";
-import { loadPasswordRules } from "@/lib/password-rules";
+import { passwordRulesOrNull } from "@/lib/password-rules";
 import { PASSWORD_SAVED_URL } from "@/lib/password-saved";
 
 type Field = "password" | "confirm";
 type Errors = Partial<Record<Field, string>>;
+
+const OFFLINE = "You're offline. Saving needs a connection.";
+const FAILED = "Something went wrong on our side. Try again in a moment.";
 
 /** Where an expired, used, or cancelled link ends up */
 export const EXPIRED_URL = "/reset-password?error=INVALID_TOKEN";
@@ -56,7 +59,9 @@ export function ResetPasswordForm({
       setCheck(null);
       return;
     }
-    const rules = await loadPasswordRules();
+    // A failed load leaves the meter as it was until the next keystroke
+    const rules = await passwordRulesOrNull();
+    if (!rules) return;
     setStrengthMessages(rules.STRENGTH_MESSAGES);
     setCheck(rules.checkPassword(value, {}));
   }
@@ -74,14 +79,19 @@ export function ResetPasswordForm({
     setFormError(null);
 
     // The server also checks for the name and email, which this page can't see
-    const result = (await loadPasswordRules()).checkPassword(password, {});
+    const rules = await passwordRulesOrNull();
+    if (!rules) {
+      setFormError(navigator.onLine ? FAILED : OFFLINE);
+      return;
+    }
+    const result = rules.checkPassword(password, {});
     const found: Errors = {};
     if (result.problem) found.password = result.message;
     else if (confirm !== password) found.confirm = MISMATCH;
     if (showErrors(found)) return;
 
     if (!navigator.onLine) {
-      setFormError("You're offline. Saving needs a connection.");
+      setFormError(OFFLINE);
       return;
     }
 
@@ -108,13 +118,11 @@ export function ResetPasswordForm({
       } else if (error.status === 429) {
         setFormError(waitMessage(retryAfter));
       } else {
-        setFormError(
-          "Something went wrong on our side. Try again in a moment.",
-        );
+        setFormError(FAILED);
       }
     } catch {
       setPending(false);
-      setFormError("You're offline. Saving needs a connection.");
+      setFormError(OFFLINE);
     }
   }
 

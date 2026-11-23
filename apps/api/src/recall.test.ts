@@ -178,6 +178,23 @@ describe("recall routes refuse bad requests before the database", () => {
     }
   });
 
+  it("refuses a time that fits the format but isn't a real moment", async () => {
+    const api = await start({ recall: UNREACHABLE });
+    for (const answeredAt of [
+      "2026-12-31T23:59:60Z",
+      "2026-11-19T14:00:00Z[UTC]",
+    ]) {
+      const res = await api.inject({
+        method: "POST",
+        url: "/v1/recall/reviews",
+        headers: { cookie: "session=good", origin: ORIGIN },
+        payload: review({ answeredAt }),
+      });
+      expect(res.statusCode, answeredAt).toBe(400);
+      expect(res.json().code).toBe("validation_failed");
+    }
+  });
+
   it("refuses a body far bigger than a review", async () => {
     const api = await start({ recall: UNREACHABLE });
     const res = await api.inject({
@@ -406,6 +423,15 @@ describe.skipIf(!url)("recall routes against Postgres", () => {
     const reused = await post({ ...payload, rating: "easy" });
     expect(reused.statusCode).toBe(422);
     expect(reused.json().code).toBe("review_id_reused");
+
+    await api.inject({
+      method: "POST",
+      url: `/v1/recall/reviews/${payload.id}/undo`,
+      headers: me.headers,
+    });
+    const undone = await post(payload);
+    expect(undone.statusCode).toBe(409);
+    expect(undone.json().code).toBe("review_undone");
   });
 
   it("answers as if another user's card and review don't exist", async () => {
