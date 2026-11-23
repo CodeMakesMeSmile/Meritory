@@ -30,6 +30,14 @@ export {
   shuffled,
 } from "./grading.ts";
 export {
+  nothingDueLine,
+  plural,
+  type QueueRow,
+  queueNote,
+  queueParts,
+  queueRows,
+} from "./home.ts";
+export {
   doneLine,
   lineAfterFailedUndo,
   lineAfterSave,

@@ -23,6 +23,7 @@ function Routes() {
     >
       <Stack.Protected guard={user !== null}>
         <Stack.Screen name="index" />
+        <Stack.Screen name="recall" />
       </Stack.Protected>
       <Stack.Protected guard={user === null}>
         <Stack.Screen name="sign-in" />

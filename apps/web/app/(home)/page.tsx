@@ -2,6 +2,14 @@ import type {
   InterviewDateResponse,
   RecallDueResponse,
 } from "@meritory/contracts";
+import {
+  nothingDueLine,
+  plural,
+  type QueueRow,
+  queueNote,
+  queueParts,
+  queueRows,
+} from "@meritory/recall-client";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { unstable_rethrow } from "next/navigation";
@@ -34,45 +42,14 @@ type Chapters = { track: Track; chapter: Chapter }[];
 type DueLoad = Promise<RecallDueResponse | null>;
 type InterviewLoad = Promise<InterviewDateResponse | null>;
 
-interface QueueRow {
-  track: Track;
-  chapter: Chapter;
-  due: number;
-  offered: number;
-}
-
-/** Chapters with something to do today, in book order */
-function queueRows(
-  due: RecallDueResponse,
-  chapters: { track: Track; chapter: Chapter }[],
-): QueueRow[] {
-  return chapters.flatMap(({ track, chapter }) => {
-    const counts = due.chapters.find(
-      (c) => c.trackId === track.id && c.chapterId === chapter.id,
-    );
-    if (!counts) return [];
-    return counts.due + counts.offered > 0
-      ? [{ track, chapter, due: counts.due, offered: counts.offered }]
-      : [];
-  });
-}
-
-function plural(count: number, one: string, many = `${one}s`) {
-  return `${count} ${count === 1 ? one : many}`;
-}
-
 function QueueItem({ row }: { row: QueueRow }) {
-  const parts = [
-    row.due > 0 ? `${row.due} to recall` : null,
-    row.offered > 0 ? `${row.offered} new` : null,
-  ].filter(Boolean);
   return (
     <li className="flex flex-wrap items-center justify-between gap-4 border border-border bg-card px-5 py-4">
       <div className="flex flex-col gap-1">
         <span className="text-body font-semibold">{row.chapter.title}</span>
         <span className="flex gap-3 text-small">
           <span className="text-gold">{trackLabel(row.track)}</span>
-          <span className="text-secondary">{parts.join(", ")}</span>
+          <span className="text-secondary">{queueParts(row)}</span>
         </span>
       </div>
       <span className="flex items-center gap-4">
@@ -198,19 +175,10 @@ function HomeBody({ load, chapters }: { load: DueLoad; chapters: Chapters }) {
     );
   }
   if (rows.length === 0) {
-    const newLater = due.chapters.reduce((sum, c) => sum + c.new, 0);
-    const tomorrow =
-      due.dueTomorrow > 0
-        ? ` ${due.dueTomorrow} come back tomorrow${newLater > 0 ? ", plus up to 10 new." : "."}`
-        : newLater > 0
-          ? " Up to 10 new cards arrive tomorrow."
-          : "";
     return (
       <div className="flex flex-col gap-1">
         <h2 className="text-body font-semibold">Nothing due right now</h2>
-        <p className="text-small text-secondary">
-          You've done today's cards.{tomorrow}
-        </p>
+        <p className="text-small text-secondary">{nothingDueLine(due)}</p>
       </div>
     );
   }
@@ -221,14 +189,7 @@ function HomeBody({ load, chapters }: { load: DueLoad; chapters: Chapters }) {
           <QueueItem key={`${row.track.id}/${row.chapter.id}`} row={row} />
         ))}
       </ul>
-      <QueueNote
-        fallback={
-          // Only true once cards wait from an earlier day
-          due.overdue > 0
-            ? "Due cards come first, oldest first. Do what you can today, and the rest stay in the queue."
-            : "We add up to 10 new cards a day so reviews grow slowly."
-        }
-      />
+      <QueueNote fallback={queueNote(due)} />
     </div>
   );
 }
