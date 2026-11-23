@@ -524,6 +524,8 @@ Never edit `cases.lock.json` by hand.
 
 Each coding exercise has a reference solution in `solutions/` for every language: `solution.ts`, `solution.py`, `Solution.java`, and `solution.c`. None of them can be empty. They stay in the repo for the code runner and are never sent to learners.
 
+An exercise that only makes sense in some languages names them in `exercise.yaml`, for example `languages: [typescript, python]`. It then needs a solution for each listed language and none for the others, and learners are offered only those languages. The names are `typescript`, `python`, `java`, and `c`.
+
 <details>
 <summary>Reference solutions for both exercises</summary>
 
