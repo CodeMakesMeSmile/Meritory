@@ -14,6 +14,8 @@
   "dependencies": {
     "@better-auth/expo": "1.7.25",
     "@expo-google-fonts/host-grotesk": "^0.4.1",
+    "@expo-google-fonts/ibm-plex-mono": "^0.4.2",
+    "@meritory/content": "workspace:*",
     "@meritory/contracts": "workspace:*",
     "@meritory/design-tokens": "workspace:*",
     "@meritory/password": "workspace:*",
