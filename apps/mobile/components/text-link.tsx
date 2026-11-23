@@ -1,7 +1,7 @@
 import { Pressable } from "react-native";
 import { AppText } from "./app-text";
 
-// The text is 20 tall, so this makes the tap area 44
+// The text is 24 tall, so this makes the tap area 48
 const TAP_AREA = { top: 12, bottom: 12, left: 4, right: 4 };
 
 export function TextLink({
