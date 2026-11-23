@@ -8,4 +8,5 @@ export {
   radius,
   space,
   textStyles,
+  touchTarget,
 } from "./tokens.ts";

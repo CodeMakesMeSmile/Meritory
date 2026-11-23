@@ -69,8 +69,11 @@ export const radius = {
   full: 999,
 } as const;
 
-/** Every control is this tall, on web and phone */
+/** Every web control is this tall */
 export const controlHeight = 44;
+
+/** Every phone control is at least this tall, Android's touch target size */
+export const touchTarget = 48;
 
 export const fontFamily = {
   sans: "Host Grotesk",

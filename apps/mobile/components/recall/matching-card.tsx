@@ -1,4 +1,4 @@
-import { controlHeight, space } from "@meritory/design-tokens";
+import { space, touchTarget } from "@meritory/design-tokens";
 import {
   type MatchingCard as MatchingContent,
   matchingIsRight,
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
   heading: { textTransform: "uppercase" },
   choices: { flexDirection: "row", flexWrap: "wrap", gap: space[2] },
   choice: {
-    minHeight: controlHeight,
+    minHeight: touchTarget,
     justifyContent: "center",
     paddingHorizontal: space[3],
     paddingVertical: space[2],

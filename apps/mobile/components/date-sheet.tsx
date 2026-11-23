@@ -1,4 +1,4 @@
-import { controlHeight, space } from "@meritory/design-tokens";
+import { space, touchTarget } from "@meritory/design-tokens";
 import { dayName } from "@meritory/recall-client";
 import { useState } from "react";
 import { Modal, Pressable, StyleSheet, View } from "react-native";
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: space[4],
   },
   header: {
-    minHeight: controlHeight,
+    minHeight: touchTarget,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -181,8 +181,8 @@ const styles = StyleSheet.create({
   side: { width: 64 },
   week: { flexDirection: "row", justifyContent: "space-between" },
   cell: {
-    width: controlHeight,
-    height: controlHeight,
+    width: touchTarget,
+    height: touchTarget,
     alignItems: "center",
     justifyContent: "center",
   },
