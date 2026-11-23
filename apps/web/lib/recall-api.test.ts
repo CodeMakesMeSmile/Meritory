@@ -1,6 +1,13 @@
 import { RECALL_ERRORS } from "@meritory/contracts";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { INTERVIEW_ERRORS, saveInterviewDate, undoReview } from "./recall-api";
+import {
+  INTERVIEW_ERRORS,
+  REVIEW_ERRORS,
+  type RecallSessionCard,
+  saveInterviewDate,
+  saveReview,
+  undoReview,
+} from "./recall-api";
 import { UNDO_ERRORS } from "./recall-sitting";
 
 const ID = "0b6f3c1e-8a3d-4f7a-9c2e-5d1b7e9f0a12";
@@ -30,6 +37,37 @@ describe("recall api", () => {
     expect(INTERVIEW_ERRORS).toEqual({
       notADate: RECALL_ERRORS.notADate,
       datePassed: RECALL_ERRORS.datePassed,
+    });
+  });
+
+  it("uses the same review code as the API contract", () => {
+    expect(REVIEW_ERRORS).toEqual({ undone: RECALL_ERRORS.reviewUndone });
+  });
+
+  it("answers a retried rating that was undone since with no data", async () => {
+    const card = {
+      trackId: "dsa",
+      chapterId: "arrays",
+      cardId: "c",
+      version: 1,
+    };
+    const review = {
+      id: ID,
+      card: card as RecallSessionCard,
+      rating: "good" as const,
+      answeredAt: new Date("2026-11-19T15:00:00.000Z"),
+      durationMs: 4000,
+    };
+    vi.stubGlobal(
+      "fetch",
+      reply(409, { code: RECALL_ERRORS.reviewUndone, message: "x" }),
+    );
+    expect(await saveReview(review)).toEqual({ ok: true, data: null });
+    vi.stubGlobal("fetch", reply(409, { code: "conflict", message: "x" }));
+    expect(await saveReview(review)).toEqual({
+      ok: false,
+      reason: "failed",
+      code: "conflict",
     });
   });
 

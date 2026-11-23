@@ -11,7 +11,16 @@ import {
   SCHEDULER_VERSION,
   undoRecallReview,
 } from "@meritory/learning";
-import { and, count, eq, gte, isNotNull, notExists } from "drizzle-orm";
+import {
+  and,
+  count,
+  desc,
+  eq,
+  gte,
+  isNotNull,
+  ne,
+  notExists,
+} from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import type { Database } from "../db/client.ts";
 import { recallCards, recallReviews, users } from "../db/schema.ts";
@@ -61,7 +70,9 @@ export interface SavedReview {
 export type ReviewResult =
   | { kind: "saved"; review: SavedReview }
   | { kind: "not_found" }
-  | { kind: "id_reused" };
+  | { kind: "id_reused" }
+  /** A retry of a review that was undone since, so it no longer counts */
+  | { kind: "undone" };
 
 export type UndoResult =
   | { kind: "undone"; card: CardKey & { dueAt: Date } }
@@ -187,9 +198,14 @@ export function createRecallStore(db: Database["db"]) {
         .from(recallReviews)
         .where(eq(recallReviews.id, input.id));
       if (earlier) {
-        return sameReview(earlier, input, userId)
-          ? { kind: "saved", review: savedReview(earlier) }
-          : { kind: "id_reused" };
+        if (!sameReview(earlier, input, userId)) return { kind: "id_reused" };
+        const [undo] = await tx
+          .select({ id: recallReviews.id })
+          .from(recallReviews)
+          .where(eq(recallReviews.undoes, input.id));
+        return undo
+          ? { kind: "undone" }
+          : { kind: "saved", review: savedReview(earlier) };
       }
       if (!row) return { kind: "not_found" };
 
@@ -306,7 +322,7 @@ export function createRecallStore(db: Database["db"]) {
     },
 
     async cards(userId: string): Promise<StoredRecallCard[]> {
-      // Undo clears lastReviewId, so an undone miss doesn't count
+      // Undo moves lastReviewId back to the latest review that still counts
       const rows = await db
         .select({ row: recallCards, lastRating: recallReviews.rating })
         .from(recallCards)
@@ -425,9 +441,34 @@ export function createRecallStore(db: Database["db"]) {
           undoes: reviewId,
           acceptedAt: now,
         });
+        const undo = alias(recallReviews, "undo");
+        const [counted] = await tx
+          .select({ id: recallReviews.id })
+          .from(recallReviews)
+          .where(
+            and(
+              eq(recallReviews.userId, userId),
+              eq(recallReviews.trackId, key.trackId),
+              eq(recallReviews.chapterId, key.chapterId),
+              eq(recallReviews.cardId, key.cardId),
+              isNotNull(recallReviews.rating),
+              ne(recallReviews.id, reviewId),
+              notExists(
+                tx
+                  .select({ id: undo.id })
+                  .from(undo)
+                  .where(eq(undo.undoes, recallReviews.id)),
+              ),
+            ),
+          )
+          .orderBy(
+            desc(recallReviews.acceptedAt),
+            desc(recallReviews.reviewTime),
+          )
+          .limit(1);
         await tx
           .update(recallCards)
-          .set({ ...scheduleColumns(card), lastReviewId: null })
+          .set({ ...scheduleColumns(card), lastReviewId: counted?.id ?? null })
           .where(cardWhere(userId, key));
         return { kind: "undone", card: { ...key, dueAt: card.dueAt } };
       });

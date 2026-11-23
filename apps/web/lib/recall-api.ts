@@ -73,8 +73,14 @@ export interface ReviewToSave {
   durationMs: number;
 }
 
-export function saveReview(review: ReviewToSave) {
-  return call<RecordReviewResponse>("/recall/reviews", {
+/** The review code from RECALL_ERRORS, kept here so pages don't load the API schemas */
+export const REVIEW_ERRORS = { undone: "review_undone" } as const;
+
+/** The saved rating, or null when a retry finds it was undone, so it no longer counts */
+export async function saveReview(
+  review: ReviewToSave,
+): Promise<RecallResult<RecordReviewResponse | null>> {
+  const result = await call<RecordReviewResponse>("/recall/reviews", {
     method: "POST",
     ...json({
       id: review.id,
@@ -87,6 +93,10 @@ export function saveReview(review: ReviewToSave) {
       durationMs: Math.max(0, Math.round(review.durationMs)),
     }),
   });
+  if (!result.ok && result.code === REVIEW_ERRORS.undone) {
+    return { ok: true, data: null };
+  }
+  return result;
 }
 
 export function undoReview(id: string) {
