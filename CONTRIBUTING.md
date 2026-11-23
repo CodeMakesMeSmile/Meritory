@@ -28,7 +28,7 @@ In `.env`, set `BETTER_AUTH_SECRET` and `MAIL_JOB_KEY` first. `openssl rand -bas
 
 `pnpm mail:preview` sends one of every email through the SMTP settings in `.env`, so locally they show up in the mail inbox. Pass an address after it to choose who they go to. Mailpit is how to check emails when contributing. Maintainers also check them in real inboxes, as described in [Sending test email through Amazon SES](docs/email-sending.md).
 
-Before pushing, run `pnpm check`. It runs lint, type checks, and tests, the same as CI.
+Before pushing, run `pnpm check`. It runs lint, type checks, and tests. CI runs the same three, and adds the database migration, the content build, and the web build.
 
 The database tests skip unless `TEST_DATABASE_URL` is set. Tests don't read `.env`, so set it in the shell. They only touch rows they create, so the local database works once it's migrated. CI runs them against a fresh Postgres on every pull request, and fails if they skip.
 

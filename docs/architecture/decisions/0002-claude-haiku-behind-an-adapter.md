@@ -6,7 +6,7 @@
 
 Use Anthropic's Claude Haiku 5.5 (`claude-haiku-5-5`) for AI feedback to start. The model ID comes from the `AI_MODEL` setting, never from code. All model calls go through the `AiProvider` interface in `packages/ai`. Locally and in tests the provider is `mock`, which is deterministic and needs no key.
 
-Only the worker holds the API key. The API queues AI jobs and never calls the model.
+Planned, not built yet: only the worker will hold the API key. The API will queue AI jobs and never call the model.
 
 ## Why
 
