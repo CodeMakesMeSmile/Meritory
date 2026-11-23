@@ -1,6 +1,7 @@
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { HTML_ATTACKS } from "@meritory/security-testing";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { LoadedFact } from "./load.ts";
@@ -157,9 +158,11 @@ describe("runRecheck", () => {
     await writeFile(file, text);
   }
 
-  const run = (extra: { github?: boolean; summaryFile?: string } = {}) =>
+  const run = (
+    extra: { github?: boolean; summaryFile?: string; strict?: boolean } = {},
+  ) =>
     runRecheck({
-      trackDir: track(),
+      contentDir: path.join(root, "content"),
       root,
       today: TODAY,
       out: (text) => out.push(text),
@@ -171,6 +174,7 @@ describe("runRecheck", () => {
     root = await mkdtemp(path.join(tmpdir(), "meritory-recheck-"));
     out = [];
     err = [];
+    await write("track.yaml", "id: stack-decisions\n");
     await write("categories.yaml", "- id: key-value\n  name: Key-value\n");
     await write(
       "facts/key-value.yaml",
@@ -219,11 +223,47 @@ facts:
     ]);
   });
 
-  it("has nothing to report for a track with no folder", async () => {
-    await rm(track(), { recursive: true });
+  it("fails a strict run on an overdue fact", async () => {
+    expect(await run({ strict: true })).toBe(1);
+    expect(out.join("\n")).toContain("stale-fact (key-value), due 2026-11-02");
+  });
+
+  it("says how much it checked, and skips folders that aren't tracks", async () => {
+    const dsa = path.join(root, "content", "dsa");
+    await mkdir(dsa, { recursive: true });
+    await writeFile(path.join(dsa, "track.yaml"), "id: dsa\n");
+    await mkdir(path.join(root, "content", "resources"));
     expect(await run()).toBe(0);
+    expect(out[0]).toBe("Checked 1 fact in 2 tracks.");
+  });
+
+  it("passes a strict run for a track with no facts", async () => {
+    await rm(path.join(track(), "facts"), { recursive: true });
+    await rm(path.join(track(), "categories.yaml"));
+    expect(await run({ strict: true })).toBe(0);
     expect(out).toEqual([
+      "Checked 0 facts in 1 track.",
       "No facts are due for a recheck in the next 30 days.",
     ]);
+  });
+
+  it("fails when there are no tracks to check", async () => {
+    await rm(track(), { recursive: true });
+    expect(await run()).toBe(1);
+    expect(err).toEqual(["content has no tracks, so nothing was checked"]);
+    expect(out).toEqual([]);
+  });
+
+  it("reads the tracks in this repo", async () => {
+    const repo = fileURLToPath(new URL("../../../", import.meta.url));
+    const lines: string[] = [];
+    const code = await runRecheck({
+      contentDir: path.join(repo, "content"),
+      root: repo,
+      out: (text) => lines.push(text),
+      err: (text) => lines.push(text),
+    });
+    expect(code).toBe(0);
+    expect(lines[0]).toMatch(/^Checked \d+ facts? in [3-9] tracks\.$/);
   });
 });

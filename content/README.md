@@ -809,4 +809,4 @@ Checks every track and writes the bundle to `packages/content/dist/bundle.json`,
 pnpm content:recheck
 ```
 
-Lists Stack decisions facts that are due for a recheck, or will be within 30 days.
+Lists the facts in every track that are due for a recheck, or will be within 30 days, after a line saying how many facts and tracks it read. It fails when it finds no tracks. Add `--strict` to fail on an overdue fact too, as the weekly run does.
