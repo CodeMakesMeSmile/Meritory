@@ -4,10 +4,11 @@ One short file per decision that would be expensive to reverse. Each follows the
 
 | # | Decision | Status |
 |---|---|---|
-| [0001](0001-aws-hosting.md) | Host on AWS | Accepted |
+| [0001](0001-aws-hosting.md) | Host on AWS | Superseded by 0008 |
 | [0002](0002-claude-haiku-behind-an-adapter.md) | Claude Haiku behind a provider adapter | Accepted |
 | [0003](0003-sign-in-methods.md) | Email, GitHub and Google sign-in through Better Auth | Accepted |
 | [0004](0004-split-license.md) | AGPL code, all-rights-reserved curriculum | Accepted |
 | [0005](0005-toolchain-and-versions.md) | Toolchain and pinned versions | Accepted |
 | [0006](0006-auth-under-the-web-origin.md) | Auth routes under the web origin, with Better Auth's own errors | Accepted |
 | [0007](0007-durable-jobs-on-pg-boss.md) | Durable jobs on pg-boss | Accepted |
+| [0008](0008-staging-on-one-lightsail-server.md) | Staging on one Lightsail server | Accepted |

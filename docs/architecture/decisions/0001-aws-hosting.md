@@ -1,6 +1,6 @@
 # 0001: Host on AWS
 
-**Status:** Accepted, 2026-11-03
+**Status:** Superseded by [0008](0008-staging-on-one-lightsail-server.md), 2026-11-22. Accepted 2026-11-03.
 
 ## Decision
 
