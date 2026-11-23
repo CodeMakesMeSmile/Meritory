@@ -1,6 +1,7 @@
 import { providerNotice } from "@meritory/contracts/sign-in-messages";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { unstable_rethrow } from "next/navigation";
 import { linkClass } from "@/components/button";
 import { KeepSession } from "@/components/keep-session";
 import { LinkedNotice } from "@/components/linked-notice";
@@ -22,7 +23,13 @@ export default async function AccountPage({
   const step = emailStep(params.email, params.error);
   // An emailed link may open where nobody is signed in, so the step survives sign-in
   const me = await requireMe(step ? `/account?email=${step}` : "/account");
-  const interview = await getInterviewDate("/account");
+  // Sign out and Delete still work when only the date fails to load
+  const interview = await getInterviewDate("/account").catch(
+    (error: unknown) => {
+      unstable_rethrow(error);
+      return null;
+    },
+  );
   const notice = providerNotice(
     params.provider,
     params.error,

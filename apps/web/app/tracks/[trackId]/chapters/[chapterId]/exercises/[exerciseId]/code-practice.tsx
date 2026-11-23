@@ -11,6 +11,7 @@ import {
   readCode,
   readLanguage,
   runCode,
+  runCounter,
   runProblem,
   starterCode,
   summary,
@@ -50,19 +51,25 @@ export function CodePractice({
   const [result, setResult] = useState<CodeRunResponse | null>(null);
   const [problem, setProblem] = useState<string | null>(null);
   const [confirmReset, setConfirmReset] = useState(false);
+  const [runs] = useState(runCounter);
   const leaving = useRef(false);
   const resultRef = useRef<HTMLHeadingElement>(null);
   const editorRef = useRef<HTMLTextAreaElement>(null);
   const id = useId();
 
   useEffect(() => {
+    // A run for the exercise before this one isn't about this code
+    runs.cancel();
+    setRunning(false);
+    setResult(null);
+    setProblem(null);
     const saved = readLanguage();
     setLanguage(saved);
     setCode(
       readCode(trackId, exerciseId, saved) ?? starterCode(signature, saved),
     );
     setLoaded(true);
-  }, [trackId, exerciseId, signature]);
+  }, [runs, trackId, exerciseId, signature]);
 
   useEffect(() => {
     if (!loaded) return;
@@ -72,6 +79,8 @@ export function CodePractice({
   }, [loaded, trackId, exerciseId, language, signature, code]);
 
   function pickLanguage(next: CodeLanguage) {
+    runs.cancel();
+    setRunning(false);
     setLanguage(next);
     writeLanguage(next);
     setCode(
@@ -109,6 +118,7 @@ export function CodePractice({
 
   async function run() {
     if (running) return;
+    const current = runs.start();
     setRunning(true);
     setProblem(null);
     setResult(null);
@@ -119,6 +129,7 @@ export function CodePractice({
       language,
       code,
     });
+    if (!runs.isLatest(current)) return;
     setRunning(false);
     if (outcome.ok) {
       setResult(outcome.result);
@@ -130,6 +141,8 @@ export function CodePractice({
   }
 
   function reset() {
+    runs.cancel();
+    setRunning(false);
     writeCode(trackId, exerciseId, language, null);
     setCode(starterCode(signature, language));
     setResult(null);
@@ -149,12 +162,12 @@ export function CodePractice({
         <h2 id={`${id}-heading`} className="text-h2">
           Your answer
         </h2>
-        <fieldset className="flex flex-wrap gap-3">
+        <fieldset disabled={running} className="flex flex-wrap gap-3">
           <legend className="mb-2 text-small text-secondary">Language</legend>
           {LANGUAGES.map((option) => (
             <label
               key={option}
-              className={`flex h-control cursor-pointer items-center gap-3 border px-4 has-focus-visible:shadow-(--focus-ring) ${
+              className={`flex h-control cursor-pointer items-center has-disabled:cursor-progress has-disabled:text-secondary gap-3 border px-4 has-focus-visible:shadow-(--focus-ring) ${
                 language === option
                   ? "border-accent bg-sunken"
                   : "border-border"
@@ -207,7 +220,12 @@ export function CodePractice({
               >
                 Keep my code
               </Button>
-              <Button type="button" variant="danger" onClick={reset}>
+              <Button
+                type="button"
+                variant="danger"
+                disabled={running}
+                onClick={reset}
+              >
                 Start over
               </Button>
             </>
@@ -215,6 +233,7 @@ export function CodePractice({
             <Button
               type="button"
               variant="secondary"
+              disabled={running}
               onClick={() => setConfirmReset(true)}
             >
               Start over
