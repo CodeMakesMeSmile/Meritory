@@ -146,6 +146,7 @@ export default async function ExercisePage({ params, searchParams }: Props) {
             chapterId={chapter.id}
             exerciseId={exercise.id}
             signature={exercise.signature}
+            languages={exercise.languages}
           />
         ) : null}
       </div>

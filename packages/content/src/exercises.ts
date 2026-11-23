@@ -7,7 +7,10 @@ import {
   FunctionSignature,
   type Param,
   type Signature,
+  SOLUTION_FILE,
   SOLUTION_FILES,
+  SOLUTION_LANGUAGES,
+  type SolutionLanguage,
   type TestCase,
 } from "./exercise.ts";
 import { checkExplanation } from "./explanation.ts";
@@ -120,13 +123,16 @@ export async function loadExercises(
       if (data !== undefined) {
         add("/signature", "a design exercise has no signature");
       }
+      if (exercise.languages !== undefined) {
+        add("/languages", "a design exercise has no languages");
+      }
       await checkNoCodingFiles(dir, problems);
       const answer = await readMarkdown(path.join(dir, ANSWER_FILE), problems);
       exercises.push({ ...base, kind, answer: answer ?? "" });
       continue;
     }
 
-    await checkSolutions(dir, problems);
+    await checkSolutions(dir, exercise.languages, problems);
     if (data === undefined) add("/kind", "a coding exercise needs a signature");
     const signature = data && readSignature(file, data, at, problems);
     const cases = await loadCases(dir, id, signature, ids, problems);
@@ -191,8 +197,27 @@ function checkRubric(
   });
 }
 
-async function checkSolutions(dir: string, problems: Problem[]) {
+async function checkSolutions(
+  dir: string,
+  languages: readonly SolutionLanguage[] | undefined,
+  problems: Problem[],
+) {
+  const wanted: string[] = (languages ?? SOLUTION_LANGUAGES).map(
+    (language) => SOLUTION_FILE[language],
+  );
+  // A solution for a language the exercise doesn't list would never be checked
   for (const name of SOLUTION_FILES) {
+    if (wanted.includes(name)) continue;
+    const file = path.join(dir, "solutions", name);
+    if ((await readText(file)) !== undefined) {
+      problems.push({
+        file,
+        line: null,
+        message: "is for a language the exercise doesn't list",
+      });
+    }
+  }
+  for (const name of wanted) {
     const file = path.join(dir, "solutions", name);
     const solution = await readText(file);
     if (solution === undefined || solution.trim() === "") {

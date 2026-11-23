@@ -1,7 +1,14 @@
 "use client";
 
 import type { CodeLanguage, CodeRunResponse } from "@meritory/contracts";
-import { type KeyboardEvent, useEffect, useId, useRef, useState } from "react";
+import {
+  type KeyboardEvent,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Alert } from "@/components/alert";
 import { Button } from "@/components/button";
 import { CountSquares } from "@/components/count-squares";
@@ -20,6 +27,15 @@ import {
 } from "@/lib/code";
 
 const LANGUAGES = Object.keys(LANGUAGE_NAMES) as CodeLanguage[];
+
+/** The runner's languages the exercise ships, or all of them when it lists none it can run */
+export function offeredLanguages(
+  listed: readonly string[] | undefined,
+): CodeLanguage[] {
+  if (!listed) return LANGUAGES;
+  const offered = LANGUAGES.filter((language) => listed.includes(language));
+  return offered.length > 0 ? offered : LANGUAGES;
+}
 const INDENT: Record<CodeLanguage, string> = {
   typescript: "  ",
   python: "    ",
@@ -38,12 +54,16 @@ export function CodePractice({
   chapterId,
   exerciseId,
   signature,
+  languages,
 }: {
   trackId: string;
   chapterId: string;
   exerciseId: string;
   signature: CodingExercise["signature"];
+  /** The languages the exercise names, when it doesn't ship every one */
+  languages?: readonly string[];
 }) {
+  const offered = useMemo(() => offeredLanguages(languages), [languages]);
   const [language, setLanguage] = useState<CodeLanguage>("typescript");
   const [code, setCode] = useState(() => starterCode(signature, "typescript"));
   const [loaded, setLoaded] = useState(false);
@@ -63,13 +83,16 @@ export function CodePractice({
     setRunning(false);
     setResult(null);
     setProblem(null);
-    const saved = readLanguage();
+    const stored = readLanguage();
+    const saved = offered.includes(stored)
+      ? stored
+      : (offered[0] ?? "typescript");
     setLanguage(saved);
     setCode(
       readCode(trackId, exerciseId, saved) ?? starterCode(signature, saved),
     );
     setLoaded(true);
-  }, [runs, trackId, exerciseId, signature]);
+  }, [runs, trackId, exerciseId, signature, offered]);
 
   useEffect(() => {
     if (!loaded) return;
@@ -164,7 +187,7 @@ export function CodePractice({
         </h2>
         <fieldset disabled={running} className="flex flex-wrap gap-3">
           <legend className="mb-2 text-small text-secondary">Language</legend>
-          {LANGUAGES.map((option) => (
+          {offered.map((option) => (
             <label
               key={option}
               className={`flex h-control cursor-pointer items-center has-disabled:cursor-progress has-disabled:text-secondary gap-3 border px-4 has-focus-visible:shadow-(--focus-ring) ${

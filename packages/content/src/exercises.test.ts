@@ -229,6 +229,28 @@ describe("exercises", () => {
     expect(chapters[0]?.exercises).toEqual([]);
   });
 
+  it("needs only the solutions an exercise lists", async () => {
+    await writePair();
+    await lockAll();
+    const file = path.join(exercisesDir, "pair-gap", "exercise.yaml");
+    await write(
+      file,
+      `${await readFile(file, "utf8")}languages: [typescript, python]
+`,
+    );
+    const solutions = path.join(exercisesDir, "pair-gap", "solutions");
+    await rm(path.join(solutions, "solution.c"));
+    expect(await problemLines()).toEqual([
+      "pair-gap/solutions/Solution.java is for a language the exercise doesn't list",
+    ]);
+    await rm(path.join(solutions, "Solution.java"));
+    expect(await problemLines()).toEqual([]);
+    await rm(path.join(solutions, "solution.py"));
+    expect(await problemLines()).toEqual([
+      "pair-gap/solutions/solution.py is missing",
+    ]);
+  });
+
   it("reports a missing exercise file, statement, and solution", async () => {
     await writePair();
     await lockAll();

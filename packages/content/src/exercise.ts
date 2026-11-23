@@ -120,6 +120,18 @@ export const ExerciseFile = Type.Object(
     requires: Type.Optional(Type.Array(Id, { minItems: 1 })),
     /** Checked as a function or a class signature, by whether it names a class */
     signature: Type.Optional(Type.Record(Type.String(), Type.Unknown())),
+    /** The languages a coding exercise ships solutions in, every language unless given */
+    languages: Type.Optional(
+      Type.Array(
+        Type.Union([
+          Type.Literal("typescript"),
+          Type.Literal("python"),
+          Type.Literal("java"),
+          Type.Literal("c"),
+        ]),
+        { minItems: 1, uniqueItems: true },
+      ),
+    ),
   },
   { additionalProperties: false },
 );
@@ -148,10 +160,17 @@ export type TestCase = Static<typeof TestCase>;
 /** The model answer a design exercise shows after you score yourself */
 export const ANSWER_FILE = "answer.md";
 
-/** The reference solution files every exercise needs, one per language */
-export const SOLUTION_FILES = [
-  "solution.ts",
-  "solution.py",
-  "Solution.java",
-  "solution.c",
-];
+/** Every language an exercise can ship a reference solution in, with its file */
+export const SOLUTION_FILE = {
+  typescript: "solution.ts",
+  python: "solution.py",
+  java: "Solution.java",
+  c: "solution.c",
+} as const;
+export type SolutionLanguage = keyof typeof SOLUTION_FILE;
+export const SOLUTION_LANGUAGES = Object.keys(
+  SOLUTION_FILE,
+) as SolutionLanguage[];
+
+/** The reference solution files an exercise needs unless it names its languages */
+export const SOLUTION_FILES: string[] = Object.values(SOLUTION_FILE);
