@@ -56,6 +56,12 @@ export function readSmtpConfig(
   };
 }
 
+/**
+ * The most one send may take. Each SMTP timeout resets on activity, so a slow server could
+ * hold a send past the queue's expiry and it would be tried again while still going.
+ */
+export const SEND_DEADLINE_MS = 45_000;
+
 // Mailpit runs on this machine and has no certificate
 const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
 
@@ -78,7 +84,10 @@ export function smtpOptions(config: SmtpConfig): SMTPTransport.Options {
 }
 
 /** Mailpit locally, SES SMTP in AWS */
-export function createSmtpMailer(config: SmtpConfig): Mailer {
+export function createSmtpMailer(
+  config: SmtpConfig,
+  deadlineMs = SEND_DEADLINE_MS,
+): Mailer {
   const transport = nodemailer.createTransport(smtpOptions(config));
   return {
     async send(mail) {
@@ -86,6 +95,8 @@ export function createSmtpMailer(config: SmtpConfig): Mailer {
         from: config.from,
         ...mail,
         attachments: mail.html ? EMAIL_LOGOS : undefined,
+        // Closes the connection and fails with EABORT, so the queue tries again later
+        signal: AbortSignal.timeout(deadlineMs),
       });
     },
   };

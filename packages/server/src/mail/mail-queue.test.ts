@@ -41,6 +41,13 @@ const logged = (calls: unknown[][]) =>
     value instanceof Error ? { ...value, message: value.message } : value,
   );
 
+const failedAt = (code: string, command: string, responseCode: number) =>
+  Object.assign(new Error(`${responseCode} refused`), {
+    code,
+    command,
+    responseCode,
+  });
+
 describe("isPermanent", () => {
   it("gives up on a 5xx reply only", () => {
     expect(isPermanent(smtpError(550))).toBe(true);
@@ -51,6 +58,19 @@ describe("isPermanent", () => {
       isPermanent(Object.assign(new Error(), { code: "ECONNECTION" })),
     ).toBe(false);
     expect(isPermanent(new Error("unknown"))).toBe(false);
+  });
+
+  it("gives up on a 5xx reply to the recipient or the message", () => {
+    expect(isPermanent(failedAt("EENVELOPE", "RCPT TO", 550))).toBe(true);
+    expect(isPermanent(failedAt("EMESSAGE", "DATA", 554))).toBe(true);
+    expect(isPermanent(failedAt("EPROTOCOL", "DATA", 552))).toBe(true);
+  });
+
+  it("tries again after a 5xx at sign-in or on connecting", () => {
+    expect(isPermanent(failedAt("EAUTH", "AUTH PLAIN", 535))).toBe(false);
+    expect(isPermanent(failedAt("EPROTOCOL", "CONN", 554))).toBe(false);
+    expect(isPermanent(failedAt("EPROTOCOL", "EHLO", 550))).toBe(false);
+    expect(isPermanent(failedAt("ETLS", "STARTTLS", 554))).toBe(false);
   });
 });
 
@@ -93,7 +113,7 @@ describe.skipIf(!url)("the mail queue against Postgres", () => {
     queue: `mail_test_${id}`,
     deadLetter: `mail_test_dead_${id}`,
   };
-  const queued = createQueuedMailer(boss, key, names.queue);
+  const queued = createQueuedMailer(boss, key, names);
 
   beforeAll(async () => {
     await boss.start();
@@ -157,6 +177,38 @@ describe.skipIf(!url)("the mail queue against Postgres", () => {
       tag.userId,
     ]);
     await boss.deleteQueuedJobs(names.queue);
+  });
+
+  it("forgets an account's dead-lettered mail and keeps the rest", async () => {
+    const gone: MailTag = { kind: "verify-email", userId: randomUUID() };
+    await boss.send(names.deadLetter, {
+      ...gone,
+      sealed: sealMail(key, newMail()),
+    });
+    await boss.send(names.deadLetter, {
+      ...tag,
+      sealed: sealMail(key, newMail()),
+    });
+    await queued.forget?.(gone.userId);
+    const left = await rows(names.deadLetter);
+    expect(left.map((row) => JSON.parse(row.data).userId)).toEqual([
+      tag.userId,
+    ]);
+    await boss.deleteAllJobs(names.deadLetter);
+  });
+
+  it("forgets mail that gave up after trying", async () => {
+    const gone: MailTag = { kind: "verify-email", userId: randomUUID() };
+    await queued.send(newMail(), gone);
+    await withWorker(
+      { send: () => Promise.reject(smtpError(550)) },
+      async () => {
+        expect(await rows(names.deadLetter)).toHaveLength(1);
+      },
+    );
+    await queued.forget?.(gone.userId);
+    expect(await rows(names.deadLetter)).toEqual([]);
+    await boss.deleteAllJobs(names.queue);
   });
 
   it("sends the mail and leaves no job behind", async () => {

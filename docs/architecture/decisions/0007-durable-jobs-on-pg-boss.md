@@ -9,7 +9,7 @@ Background jobs live in Postgres and run through pg-boss 12. The first queue is 
 - The API adds a job during the request and doesn't wait for the write, so a reset request takes as long whether or not the account exists.
 - The job holds the email sealed with AES-256-GCM under `MAIL_JOB_KEY`. Only the kind of email and the user id are readable. In AWS the key lives in Secrets Manager.
 - The worker wakes on each new job through LISTEN/NOTIFY, sends it, and deletes the job right away.
-- A 4xx reply, a dropped connection, or an unknown error retries. A 5xx reply, or a job that can't be opened, goes straight to the `mail-dead` queue.
+- A 4xx reply, a dropped connection, a 5xx at sign-in or on connecting, or an unknown error retries. A 5xx reply to the envelope or the message, or a job that can't be opened, goes straight to the `mail-dead` queue.
 - Up to 9 tries over about 25 minutes. Waits double from 15 seconds up to 5 minutes, with jitter. Then the job goes to `mail-dead`, still sealed, for a week.
 - Logs and stored failures carry the job id, the kind of email, the user id, the attempt, and the SMTP code. Never the address, the text, or the link.
 - `pnpm db:migrate` installs and upgrades the `pgboss` schema and sets up the queues. The API and worker only check that it's there, and refuse to start if it isn't.

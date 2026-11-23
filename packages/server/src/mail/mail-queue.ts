@@ -77,8 +77,8 @@ export async function setUpMailQueues(boss: PgBoss, names = NAMES) {
     ...MAIL_RETRY,
     deadLetter: names.deadLetter,
     notify: true,
-    // Longer than the SMTP timeouts, so a stuck try is retried
-    expireInSeconds: 60,
+    // Longer than the send deadline, so only a worker that died mid-send leaves a try to expire
+    expireInSeconds: 120,
     retentionSeconds: DAY,
     // The worker deletes each job once it's sent. This catches any it couldn't.
     deleteAfterSeconds: 60,
@@ -89,24 +89,32 @@ export async function setUpMailQueues(boss: PgBoss, names = NAMES) {
 export function createQueuedMailer(
   boss: PgBoss,
   key: Buffer,
-  queue = MAIL_QUEUE,
+  names = NAMES,
 ): Mailer {
+  async function drop(queue: string, ids: string[]) {
+    if (ids.length > 0) await boss.deleteJob(queue, ids);
+  }
   return {
     async send(mail, { kind, userId }) {
       const job: MailJob = { kind, userId, sealed: sealMail(key, mail) };
-      await boss.send(queue, { ...job });
+      await boss.send(names.queue, { ...job });
     },
     async forget(userId) {
-      const waiting = await boss.findJobs(queue, {
+      // A try already sending is left to finish or fail within its deadline
+      const waiting = await boss.findJobs(names.queue, {
         data: { userId },
         queued: true,
       });
-      if (waiting.length > 0) {
-        await boss.deleteJob(
-          queue,
-          waiting.map((job) => job.id),
-        );
-      }
+      await drop(
+        names.queue,
+        waiting.map((job) => job.id),
+      );
+      // Mail that gave up still holds the sealed address for a week
+      const dead = await boss.findJobs(names.deadLetter, { data: { userId } });
+      await drop(
+        names.deadLetter,
+        dead.map((job) => job.id),
+      );
     },
   };
 }
