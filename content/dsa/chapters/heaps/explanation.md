@@ -41,7 +41,7 @@ Each swap moves one level, and a heap of n values has about log₂ n levels, so 
 
 | Language | What it gives you | Order |
 |---|---|---|
-| Python | The `heapq` functions, which work on a plain list | Smallest first. Push negated values for a max-heap |
+| Python | The `heapq` functions, which work on a plain list | Smallest first. From Python 3.14, `heapify_max`, `heappush_max`, `heappop_max`, `heapreplace_max`, and `heappushpop_max` give a max-heap. On older versions, push negated values |
 | Java | `PriorityQueue` | Smallest first. Pass `Collections.reverseOrder()` or a comparator for anything else |
 | TypeScript | Nothing built in | Write a small class, like the one below |
 | C | Nothing built in | Write one over an array |

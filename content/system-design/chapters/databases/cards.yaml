@@ -203,16 +203,16 @@
     - item: A sync worker loads its checkpoint before fetching the next page
       match: The primary
     - item: A nightly report over last month's records
-      match: A read replica
+      match: Any read replica
     - item: A customer reloads the page right after saving a setting
       match: The primary, for a short time after their write
-    - item: A customer lists records, with docs saying data may be seconds behind
-      match: Any read replica
+    - item: A customer pages through records, with docs saying data may be seconds behind
+      match: One read replica, kept for the whole session
   extraMatches:
     - A synchronous standby that serves no reads
   lesson:
     title: Decide per read path
-    explanation: RDS read replicas are updated asynchronously, so they can be behind. Reads that act on fresh state, or that follow the reader's own write, belong on the primary. Reports and lists that tolerate a few seconds of lag can use replicas.
+    explanation: RDS read replicas are updated asynchronously, so they can be behind. Reads that act on fresh state, or that follow the reader's own write, belong on the primary. Reports and lists that tolerate a few seconds of lag can use replicas. Keeping a customer's session on one replica stops a later page from being older than an earlier one.
     source:
       url: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html
       title: Working with DB instance read replicas

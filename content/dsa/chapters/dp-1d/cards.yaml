@@ -144,9 +144,9 @@
   matchName: an answer
   pairs:
     - item: "`ways[i] = ways[i - 1] + ways[i - 2]`"
-      match: Yes, two variables are enough
+      match: Yes, the last two counts are enough
     - item: "`best[i] = max(best[i - 1], best[i - 2] + pay[i - 1])`"
-      match: Yes, it only looks two back
+      match: Yes, the last two pay totals are enough
     - item: "`fewest[a] = 1 + min(fewest[a - c])` over every coin c"
       match: No, it can look far back
   extraMatches:
