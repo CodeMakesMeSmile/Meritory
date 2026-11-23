@@ -1,7 +1,13 @@
-import type { ContentResponse, RecallDueResponse } from "@meritory/contracts";
+import type {
+  ContentResponse,
+  InterviewDateResponse,
+  RecallDueResponse,
+} from "@meritory/contracts";
 import { controlHeight, space } from "@meritory/design-tokens";
 import {
   allChapters,
+  dayName,
+  interviewIsAhead,
   nothingDueLine,
   plural,
   type QueueRow,
@@ -30,7 +36,13 @@ import { useTheme } from "../lib/theme";
 type Load =
   | { state: "loading" }
   | { state: "failed" }
-  | { state: "ready"; content: ContentResponse; due: RecallDueResponse };
+  | {
+      state: "ready";
+      content: ContentResponse;
+      due: RecallDueResponse;
+      /** Null when the date didn't load, which only hides its line */
+      interview: InterviewDateResponse | null;
+    };
 
 function today() {
   return new Intl.DateTimeFormat("en-US", {
@@ -116,9 +128,10 @@ export default function Home() {
   useEffect(() => clear, [clear]);
 
   const refresh = useCallback(async () => {
-    const [content, due] = await Promise.all([
+    const [content, due, interview] = await Promise.all([
       fetchContent(),
       recallApi.loadDue(),
+      recallApi.loadInterviewDate(),
     ]);
     if (!content.ok || !due.ok) {
       const signedOut =
@@ -128,7 +141,12 @@ export default function Home() {
       else setLoad({ state: "failed" });
       return;
     }
-    setLoad({ state: "ready", content: content.content, due: due.data });
+    setLoad({
+      state: "ready",
+      content: content.content,
+      due: due.data,
+      interview: interview.ok ? interview.data : null,
+    });
   }, [signOut]);
 
   // Runs again on the way back from a sitting, so the counts are current
@@ -218,6 +236,18 @@ export default function Home() {
         </View>
       )}
 
+      {ready && (
+        <View style={styles.links}>
+          <TextLink
+            label={
+              interviewIsAhead(ready.interview) && ready.interview?.date
+                ? `Interview on ${dayName(ready.interview.date)}`
+                : "Add an interview date"
+            }
+            onPress={() => router.push("/interview-date")}
+          />
+        </View>
+      )}
       <Button label="Sign out" variant="secondary" onPress={signOut} />
       <View style={styles.links}>
         <TextLink

@@ -1,12 +1,15 @@
 "use client";
 
 import type { InterviewDateResponse } from "@meritory/contracts";
+import {
+  INTERVIEW_DESCRIPTION as DESCRIPTION,
+  interviewStatusLine,
+} from "@meritory/recall-client";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useRef, useState } from "react";
 import { Alert } from "@/components/alert";
 import { Button } from "@/components/button";
 import { TextField } from "@/components/text-field";
-import { dayName } from "@/lib/interview";
 import { INTERVIEW_ERRORS, saveInterviewDate } from "@/lib/recall-api";
 import { Card, Row } from "./card";
 
@@ -14,24 +17,8 @@ const OFFLINE = "You're offline. This needs a connection.";
 const FAILED = "Something went wrong on our side. Try again in a moment.";
 const PASSED = "That date has passed. Pick today or a later date.";
 const NOT_A_DATE = "That isn't a date. Pick one from the calendar.";
-const DESCRIPTION =
-  "Optional. Add your date and recall gets more thorough in the last 4 weeks, so more cards are fresh on the day. You'll see a few more cards each day while it's on.";
-const SOONER =
-  "cards come back a bit sooner, aiming for 95% recall instead of 90%.";
-
 /** What the line under the field says for each stage */
-export function statusLine(state: InterviewDateResponse): string | null {
-  if (!state.date) return null;
-  if (state.status === "on")
-    return `On now. Until ${dayName(state.date)}, ${SOONER}`;
-  if (state.status === "later" && state.startsOn) {
-    return `Saved. From ${dayName(state.startsOn)}, ${SOONER}`;
-  }
-  if (state.status === "passed") {
-    return `${dayName(state.date)} has passed, so recall is back to its usual 90%. Add a new date any time.`;
-  }
-  return null;
-}
+export const statusLine = interviewStatusLine;
 
 type Notice = { tone: "success" | "danger"; text: string };
 
