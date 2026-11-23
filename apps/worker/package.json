@@ -10,7 +10,6 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@meritory/ai": "workspace:*",
     "@meritory/server": "workspace:*",
     "pino": "^10.4.0"
   }
