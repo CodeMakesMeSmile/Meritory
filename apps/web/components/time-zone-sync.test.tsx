@@ -34,4 +34,30 @@ describe("syncTimeZone", () => {
     saveTimeZone.mockResolvedValue({ ok: false });
     expect(await syncTimeZone("UTC")).toBe("UTC");
   });
+
+  it("doesn't send a zone again after the server refused it", async () => {
+    inZone("Mars/Olympus_Mons");
+    saveTimeZone.mockResolvedValue({
+      ok: false,
+      reason: "failed",
+      code: "validation_failed",
+    });
+    expect(await syncTimeZone("UTC")).toBe("UTC");
+    expect(await syncTimeZone("UTC")).toBe("UTC");
+    expect(saveTimeZone).toHaveBeenCalledTimes(1);
+  });
+
+  it("tries again after a rate limit or a dropped connection", async () => {
+    inZone("Asia/Tokyo");
+    saveTimeZone.mockResolvedValue({
+      ok: false,
+      reason: "failed",
+      code: "rate_limited",
+    });
+    await syncTimeZone("UTC");
+    saveTimeZone.mockResolvedValue({ ok: false, reason: "failed" });
+    await syncTimeZone("UTC");
+    await syncTimeZone("UTC");
+    expect(saveTimeZone).toHaveBeenCalledTimes(3);
+  });
 });
