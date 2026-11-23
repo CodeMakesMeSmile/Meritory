@@ -73,7 +73,13 @@ Dijkstra's algorithm counts on paths only ever getting dearer as they grow. A ne
 2 → 1 costs -4
 ```
 
-Starting from 0, node 1 comes out of the heap first, at cost 2, and is settled. Later, node 2 comes out at 5, and the edge to 1 would make it 5 - 4 = 1. That's cheaper than the settled cost, but the algorithm has already treated 1 as final and moved on from it. Anything it reached through 1 is wrong too.
+Starting from 0, node 1 comes out of the heap first, at cost 2. With no negative edges, that first pop would be final. Here it isn't. Node 2 comes out later at 5, and its edge to 1 makes 5 - 4 = 1, which is cheaper.
+
+So the first pop is no longer final, and what goes wrong depends on how the search is written:
+
+- If it stops the moment the goal comes out, it has already answered 2 for node 1.
+- If it keeps a list of settled nodes and never goes back to one, node 1 keeps the wrong cost, and so does anything reached through it.
+- The loop above has no such list, so it lowers the cost, pushes node 1 again, and redoes everything it reached through 1. It gets this small graph right in the end, but nodes can be redone over and over, so the time bound no longer holds.
 
 It gets worse with a **negative cycle**, a loop whose weights add up to less than zero. Going round it once more always lowers the cost, so there's no cheapest path at all to anything the loop can reach. A question with negative edges either promises there's no negative cycle or asks you to find one.
 
