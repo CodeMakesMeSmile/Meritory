@@ -9,6 +9,8 @@ allowBuilds:
 overrides:
   # drizzle-kit lists it but never loads it, and it pins an esbuild with a known flaw
   "drizzle-kit>@esbuild-kit/esm-loader": "-"
+  # An optional peer for phones, which would bring the Expo CLI into the server install
+  "drizzle-orm>expo-sqlite": "-"
   # 13.0.7 has the abort fix and stays inside Expo's ^13 range. Remove with MER-49
   "glob@": 13.0.7
 
