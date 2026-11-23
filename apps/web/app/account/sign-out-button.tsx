@@ -4,8 +4,21 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/button";
 import { authClient } from "@/lib/auth-client";
+import { clearDrafts } from "@/lib/device-storage";
 
-/** Ends this device's session on the server, not just in this browser */
+/** Ends this device's session on the server, then forgets this browser's drafts */
+export async function signOutHere(): Promise<boolean> {
+  try {
+    const { error } = await authClient.signOut();
+    if (error) return false;
+  } catch {
+    // Reported the same as a server error
+    return false;
+  }
+  clearDrafts();
+  return true;
+}
+
 export function SignOutButton({
   disabled,
   onFailed,
@@ -19,14 +32,9 @@ export function SignOutButton({
   async function signOut() {
     if (pending) return;
     setPending(true);
-    try {
-      const { error } = await authClient.signOut();
-      if (!error) {
-        router.replace("/sign-in");
-        return;
-      }
-    } catch {
-      // Reported the same as a server error
+    if (await signOutHere()) {
+      router.replace("/sign-in");
+      return;
     }
     setPending(false);
     onFailed();
