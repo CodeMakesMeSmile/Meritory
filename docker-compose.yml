@@ -20,7 +20,7 @@ services:
 
   # S3-compatible storage. Stands in for the private S3 bucket used in AWS.
   storage:
-    image: rustfs/rustfs:1.0.4
+    image: rustfs/rustfs:1.0.6
     environment:
       RUSTFS_ACCESS_KEY: meritory
       RUSTFS_SECRET_KEY: meritory-local-secret
