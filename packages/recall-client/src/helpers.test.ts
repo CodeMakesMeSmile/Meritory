@@ -8,7 +8,7 @@ import {
   orderingIsRight,
   ordinal,
   shuffled,
-} from "./recall-grading";
+} from "./grading.ts";
 import {
   doneLine,
   lineAfterFailedUndo,
@@ -22,8 +22,8 @@ import {
   type UndoOffer,
   undoKeptText,
   undoRetryText,
-} from "./recall-sitting";
-import { longWait, shortWait } from "./recall-time";
+} from "./sitting.ts";
+import { longWait, shortWait } from "./time.ts";
 
 const at = (iso: string) => new Date(iso);
 const NOW = at("2026-11-19T15:00:00Z");

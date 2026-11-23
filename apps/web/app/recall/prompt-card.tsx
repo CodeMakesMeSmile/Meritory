@@ -1,17 +1,17 @@
 "use client";
 
 import type { RecallRating } from "@meritory/contracts";
-import { type ReactNode, useEffect, useId, useRef, useState } from "react";
-import { Button } from "@/components/button";
-import { Markdown } from "@/components/markdown";
-import type { PromptCard as PromptCardContent } from "@/lib/content";
 import {
   promptOf,
   RATING_LABELS,
   RATINGS,
   type SittingCard,
-} from "@/lib/recall-sitting";
-import { shortWait } from "@/lib/recall-time";
+  shortWait,
+} from "@meritory/recall-client";
+import { type ReactNode, useEffect, useId, useRef, useState } from "react";
+import { Button } from "@/components/button";
+import { Markdown } from "@/components/markdown";
+import type { PromptCard as PromptCardContent } from "@/lib/content";
 import {
   CardBox,
   hasFinePointer,

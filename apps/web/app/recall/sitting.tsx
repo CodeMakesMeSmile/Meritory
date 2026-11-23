@@ -1,6 +1,19 @@
 "use client";
 
 import type { RecallRating } from "@meritory/contracts";
+import {
+  doneLine,
+  lineAfterFailedUndo,
+  lineAfterSave,
+  longWait,
+  RATING_LABELS,
+  type SavedRating,
+  type SittingCard,
+  showsUndo,
+  tomorrowLine,
+  type UndoLine,
+  undoRetryText,
+} from "@meritory/recall-client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -24,19 +37,6 @@ import {
   saveReview,
   undoReview,
 } from "@/lib/recall-api";
-import {
-  doneLine,
-  lineAfterFailedUndo,
-  lineAfterSave,
-  RATING_LABELS,
-  type SavedRating,
-  type SittingCard,
-  showsUndo,
-  tomorrowLine,
-  type UndoLine,
-  undoRetryText,
-} from "@/lib/recall-sitting";
-import { longWait } from "@/lib/recall-time";
 import { MatchingCard } from "./matching-card";
 import { OrderingCard } from "./ordering-card";
 import { PickOneCard } from "./pick-one-card";

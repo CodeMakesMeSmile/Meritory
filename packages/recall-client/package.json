@@ -1,0 +1,17 @@
+{
+  "name": "@meritory/recall-client",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "AGPL-3.0-only",
+  "description": "Recall grading, sitting rules, and the recall API client shared by the web and the phone",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "@meritory/contracts": "workspace:*"
+  }
+}

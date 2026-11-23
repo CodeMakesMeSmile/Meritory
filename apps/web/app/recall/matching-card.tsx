@@ -1,11 +1,15 @@
 "use client";
 
+import {
+  matchingIsRight,
+  promptOf,
+  type SittingCard,
+  shuffled,
+} from "@meritory/recall-client";
 import { type ReactNode, useId, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/button";
 import { Markdown } from "@/components/markdown";
 import type { MatchingCard as MatchingContent } from "@/lib/content";
-import { matchingIsRight, shuffled } from "@/lib/recall-grading";
-import { promptOf, type SittingCard } from "@/lib/recall-sitting";
 import {
   CardBox,
   Explanation,

@@ -4,8 +4,8 @@ import type {
   RecallSessionResponse,
 } from "@meritory/contracts";
 import { waitMessage } from "@meritory/contracts/sign-in-messages";
-import { type Card, findChapter } from "./content";
-import { longWait } from "./recall-time";
+import { type Card, findChapter } from "./content.ts";
+import { longWait } from "./time.ts";
 
 export type SessionCard = RecallSessionResponse["cards"][number];
 
