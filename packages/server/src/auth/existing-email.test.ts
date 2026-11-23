@@ -53,6 +53,18 @@ describe.skipIf(!url)("signing up with an email that has an account", () => {
     return link;
   };
 
+  // Presses the button on the page the confirmation email opens
+  const press = (link: string) =>
+    auth.handler(
+      new Request(`${ORIGIN}/api/v1/auth/confirm-email`, {
+        method: "POST",
+        headers: { "content-type": "application/json", origin: ORIGIN },
+        body: JSON.stringify({
+          token: new URL(link).searchParams.get("token"),
+        }),
+      }),
+    );
+
   const newEmail = () => `existing-${randomUUID()}@meritory.test`;
 
   // Matches every casing, so a second row in any case would show up
@@ -202,17 +214,15 @@ describe.skipIf(!url)("signing up with an email that has an account", () => {
     const chosen = "copper lantern meadow violin";
     await signUp(email, "Someone", first);
     await expect.poll(() => mailTo(email).length).toBe(1);
-    const verifyLink = linkIn(mailTo(email)[0], "verify-email");
+    const verifyLink = linkIn(mailTo(email)[0], "confirm-email");
 
     await signUp(email, "Owner", owner);
     await expect.poll(() => mailTo(email).length).toBe(2);
     const resetLink = linkIn(mailTo(email)[1], "reset-password");
 
     // The first link still confirms the email, but leaves no password to use
-    const verified = await auth.handler(
-      new Request(verifyLink, { redirect: "manual" }),
-    );
-    expect(verified.status).toBe(302);
+    const verified = await press(verifyLink);
+    expect(verified.status).toBe(200);
     expect((await signIn(email, first)).status).toBe(401);
     expect((await signIn(email, owner)).status).toBe(401);
 
@@ -257,11 +267,7 @@ describe.skipIf(!url)("signing up with an email that has an account", () => {
       }),
     );
     await expect.poll(() => mailTo(email).length).toBe(3);
-    await auth.handler(
-      new Request(linkIn(mailTo(email)[2], "verify-email"), {
-        redirect: "manual",
-      }),
-    );
+    await press(linkIn(mailTo(email)[2], "confirm-email"));
 
     expect((await signIn(email, first)).status).toBe(401);
   });

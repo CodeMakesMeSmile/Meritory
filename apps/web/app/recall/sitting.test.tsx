@@ -286,7 +286,18 @@ describe("a recall sitting", () => {
   it.each([
     ["nothing is out", { state: "idle" }, offer(false), false],
     ["a rating saves", { state: "saving" }, null, true],
-    ["a rating failed to save", { state: "failed", review }, null, true],
+    [
+      "a rating failed to save",
+      { state: "failed", review, refused: false },
+      null,
+      true,
+    ],
+    [
+      "a rating was refused",
+      { state: "failed", review, refused: true },
+      null,
+      true,
+    ],
     ["an Undo is out", { state: "idle" }, offer(true), true],
   ] as const)("holds ratings when %s", (_, saving, line, held) => {
     expect(ratingsWait(saving, line)).toBe(held);

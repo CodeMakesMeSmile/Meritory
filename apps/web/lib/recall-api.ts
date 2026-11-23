@@ -14,7 +14,13 @@ export type RecallSessionCard = RecallSessionResponse["cards"][number];
 /** What a recall request came back with, in terms the page acts on */
 export type RecallResult<T> =
   | { ok: true; data: T }
-  | { ok: false; reason: "signed_out" | "failed"; code?: string };
+  | {
+      ok: false;
+      reason: "signed_out" | "failed";
+      code?: string;
+      /** The API turned it down for good, so sending it again gets the same answer */
+      refused?: boolean;
+    };
 
 /** The API's own error code, such as undo_expired, when the body has one */
 async function errorCode(res: Response): Promise<string | undefined> {
@@ -40,8 +46,20 @@ async function call<T>(
     return { ok: false, reason: "failed" };
   }
   if (res.status === 401) return { ok: false, reason: "signed_out" };
-  if (!res.ok)
-    return { ok: false, reason: "failed", code: await errorCode(res) };
+  if (!res.ok) {
+    // A timeout or a rate limit can pass on a later try
+    const refused =
+      res.status >= 400 &&
+      res.status < 500 &&
+      res.status !== 408 &&
+      res.status !== 429;
+    return {
+      ok: false,
+      reason: "failed",
+      code: await errorCode(res),
+      ...(refused ? { refused } : {}),
+    };
+  }
   const data = res.status === 204 ? undefined : await res.json();
   return { ok: true, data: data as T };
 }
@@ -63,6 +81,9 @@ export function startChapter(trackId: string, chapterId: string) {
   const path = `/recall/tracks/${encodeURIComponent(trackId)}/chapters/${encodeURIComponent(chapterId)}/start`;
   return call<StartChapterResponse>(path, { method: "POST" });
 }
+
+/** The longest time on one card the API accepts, which a card left open overnight can pass */
+export const MAX_DURATION_MS = 86_400_000;
 
 export interface ReviewToSave {
   /** Made once per answer, so Save again can't count it twice */
@@ -90,7 +111,10 @@ export async function saveReview(
       cardVersion: review.card.version,
       rating: review.rating,
       answeredAt: review.answeredAt.toISOString(),
-      durationMs: Math.max(0, Math.round(review.durationMs)),
+      durationMs: Math.min(
+        MAX_DURATION_MS,
+        Math.max(0, Math.round(review.durationMs)),
+      ),
     }),
   });
   if (!result.ok && result.code === REVIEW_ERRORS.undone) {

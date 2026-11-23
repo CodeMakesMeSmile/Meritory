@@ -86,7 +86,7 @@ describe.skipIf(!url)("profile changes against Postgres", () => {
 
   const linkIn = (mail: Mail | undefined) => {
     const link = mail?.text.match(
-      /https:\/\/\S+\/verify-email\?token=\S+/,
+      /https:\/\/\S+\/confirm-email\?token=\S+/,
     )?.[0];
     if (!link) throw new Error("no link in the email");
     return link;
@@ -108,13 +108,25 @@ describe.skipIf(!url)("profile changes against Postgres", () => {
   const verifyLink = (token: string) =>
     `${ORIGIN}/api/v1/auth/verify-email?token=${encodeURIComponent(token)}`;
 
-  // Where opening an emailed link sends the browser
+  // Where an emailed link ends up: a press on our page, or a redirect for an address Better Auth serves
   const open = async (link: string, cookie?: string) => {
-    const res = await auth.handler(
-      new Request(link, { headers: cookie ? { cookie } : {} }),
+    const url = new URL(link);
+    if (url.pathname !== "/confirm-email") {
+      const res = await auth.handler(
+        new Request(link, { headers: cookie ? { cookie } : {} }),
+      );
+      expect(res.status).toBe(302);
+      return res.headers.get("location");
+    }
+    expect(url.searchParams.get("change")).toBe("1");
+    const res = await post(
+      "/confirm-email",
+      { token: url.searchParams.get("token") },
+      cookie ? { cookie } : {},
     );
-    expect(res.status).toBe(302);
-    return res.headers.get("location");
+    if (res.ok) expect(await res.json()).toEqual({ status: "changed" });
+    else expect(res.status).toBe(400);
+    return res.ok ? "/account?email=changed" : "/account?email=failed";
   };
 
   const sessionAlive = async (cookie: string) =>
@@ -538,9 +550,7 @@ describe.skipIf(!url)("profile changes against Postgres", () => {
       const { email, cookie } = await newAccount();
       const other = await newAccount();
       const finish = await approve(cookie, email, freshEmail());
-      expect(await open(finish, other.cookie)).toMatch(
-        /^\/account\?email=changed&error=/,
-      );
+      expect(await open(finish, other.cookie)).toBe("/account?email=failed");
       expect(await emailOf(email)).toBe(email);
     });
   });

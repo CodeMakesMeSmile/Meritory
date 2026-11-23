@@ -46,7 +46,7 @@ import type { Checked } from "./sitting-types";
 type Saving =
   | { state: "idle" }
   | { state: "saving" }
-  | { state: "failed"; review: ReviewToSave };
+  | { state: "failed"; review: ReviewToSave; refused: boolean };
 
 export function UndoBar({
   line,
@@ -203,7 +203,11 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
           router.replace(`/sign-in?next=${encodeURIComponent("/recall")}`);
           return;
         }
-        setSaving({ state: "failed", review });
+        setSaving({
+          state: "failed",
+          review,
+          refused: result.refused === true,
+        });
         return;
       }
       // Undone since it was sent, so it doesn't count and the sitting moves on
@@ -289,6 +293,14 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
     cardStart.current = Date.now();
   }
 
+  // Moves on from a rating the API turned down for good, leaving the card as it was
+  function skipUnsaved() {
+    setSaving({ state: "idle" });
+    setLine(null);
+    setAnnouncement("That rating wasn't saved.");
+    nextCard();
+  }
+
   async function undo() {
     if (line?.kind !== "offer" || inFlight.current) return;
     if (saving.state !== "idle") return;
@@ -351,9 +363,34 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
 
   const busy = ratingsWait(saving, line);
   const failed = saving.state === "failed" ? saving.review : null;
+  const refused = saving.state === "failed" && saving.refused;
   const after = (
     <>
-      {failed && (
+      {failed && refused && (
+        <div
+          ref={failedBox}
+          role="alert"
+          className="flex flex-col gap-3 border border-danger bg-card p-4"
+        >
+          <h2 className="text-small font-semibold text-danger">
+            That rating can't be saved
+          </h2>
+          <p className="text-small">
+            We couldn't record {RATING_LABELS[failed.rating]} for this card, and
+            trying again won't change that. Your earlier answers are saved, and
+            this card stays in your queue.
+          </p>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={skipUnsaved}
+            className="self-start"
+          >
+            Next card
+          </Button>
+        </div>
+      )}
+      {failed && !refused && (
         <div
           ref={failedBox}
           role="alert"

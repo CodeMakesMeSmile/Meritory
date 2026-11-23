@@ -23,7 +23,6 @@ const SKIPPED_HEADERS = new Set([
 export const AUTH_ROUTES = {
   GET: [
     "/get-session",
-    "/verify-email",
     "/reset-password/:token",
     "/callback/:provider",
     "/expo-authorization-proxy",
@@ -40,6 +39,7 @@ export const AUTH_ROUTES = {
     "/change-password",
     "/change-email",
     "/approve-email-change",
+    "/confirm-email",
     "/update-user",
     "/link-social",
     "/app-session",

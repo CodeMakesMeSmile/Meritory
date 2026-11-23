@@ -20,7 +20,7 @@ describe("next.config", () => {
     });
   });
 
-  it.each(["/reset-password", "/approve-email-change"])(
+  it.each(["/reset-password", "/approve-email-change", "/confirm-email"])(
     "sends no referrer from %s, after the general rule",
     async (page) => {
       const rules = (await config.headers?.()) ?? [];

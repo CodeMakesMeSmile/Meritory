@@ -120,7 +120,7 @@ describe.skipIf(!url)("requests from the phone app", () => {
 
     const link = mailedLink(email);
     expect(link).toContain(`${ORIGIN}/`);
-    expect(link).toContain("email-confirmed");
+    expect(link).toContain("/confirm-email?token=");
     expect(link).not.toContain(APP);
     expect(link).not.toContain("exp://");
   });
