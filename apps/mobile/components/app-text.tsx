@@ -11,10 +11,13 @@ export const FONT = {
 type Variant =
   | "display"
   | "heading2"
+  | "heading3"
+  | "prompt"
   | "body"
   | "bodyStrong"
   | "small"
   | "smallStrong"
+  | "numeric"
   | "link";
 type Color = "textPrimary" | "textSecondary" | "textAccent" | "statusDanger";
 
@@ -36,7 +39,12 @@ export function AppText({
       style={[
         {
           color: theme[color],
-          fontFamily: text.weight === 400 ? FONT.regular : FONT.strong,
+          fontFamily:
+            text.family === "mono"
+              ? FONT.mono
+              : text.weight === 400
+                ? FONT.regular
+                : FONT.strong,
           fontSize: text.size,
           lineHeight: text.lineHeight ?? undefined,
           letterSpacing: text.size * text.letterSpacing,

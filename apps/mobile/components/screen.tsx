@@ -12,7 +12,14 @@ import { GraphPaper } from "./graph-paper";
 import { LogoLockup } from "./logo";
 
 /** Graph paper, the logo, and a body that scrolls clear of the keyboard */
-export function Screen({ children }: { children: ReactNode }) {
+export function Screen({
+  children,
+  bare = false,
+}: {
+  children: ReactNode;
+  /** Without the logo, for a sitting that keeps the eye on one card */
+  bare?: boolean;
+}) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   return (
@@ -29,7 +36,7 @@ export function Screen({ children }: { children: ReactNode }) {
             },
           ]}
         >
-          <LogoLockup />
+          {!bare && <LogoLockup />}
           <View style={styles.content}>{children}</View>
         </ScrollView>
       </KeyboardAvoidingView>

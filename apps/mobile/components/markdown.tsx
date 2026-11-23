@@ -19,13 +19,16 @@ type TextVariant = "body" | "prompt" | "small";
 interface Context {
   theme: Theme;
   variant: TextVariant;
+  secondary: boolean;
+  strong: boolean;
+  renderText?: (text: string) => ReactNode;
 }
 
-function baseText({ theme, variant }: Context) {
+function baseText({ theme, variant, secondary, strong }: Context) {
   const text = textStyles[variant];
   return {
-    color: theme.textPrimary,
-    fontFamily: FONT.regular,
+    color: secondary ? theme.textSecondary : theme.textPrimary,
+    fontFamily: strong ? FONT.strong : FONT.regular,
     fontSize: text.size,
     lineHeight: text.lineHeight ?? undefined,
   };
@@ -42,7 +45,11 @@ function renderInline(
     );
   switch (node.type) {
     case "text":
-      return node.value;
+      return context.renderText && node.value !== undefined ? (
+        <Text key={key}>{context.renderText(node.value)}</Text>
+      ) : (
+        node.value
+      );
     case "emphasis":
       return (
         <Text key={key} style={styles.emphasis}>
@@ -83,7 +90,14 @@ function renderInline(
           style={{ color: context.theme.textAccent, fontFamily: FONT.strong }}
           onPress={() => void Linking.openURL(target)}
         >
-          {children()}
+          {(node.children ?? []).map((child, index) =>
+            // Nothing tappable inside a link
+            renderInline(
+              child,
+              { ...context, renderText: undefined },
+              `${child.type}-${index}`,
+            ),
+          )}
         </Text>
       );
     }
@@ -272,15 +286,32 @@ interface MarkdownProps {
   text: string;
   /** The size of plain paragraphs, such as prompt for a card's question */
   variant?: TextVariant;
+  /** In the quieter ink, for supporting lines */
+  secondary?: boolean;
+  strong?: boolean;
+  /** Renders plain words outside code and links, such as to mark terms */
+  renderText?: (text: string) => ReactNode;
 }
 
 /** CommonMark and GFM tables as native views, without raw HTML or unsafe links */
-export function Markdown({ text, variant = "body" }: MarkdownProps) {
+export function Markdown({
+  text,
+  variant = "body",
+  secondary = false,
+  strong = false,
+  renderText,
+}: MarkdownProps) {
   const theme = useTheme();
   const root = parseMarkdown(text) as MarkdownNode;
   return (
     <View style={styles.blocks}>
-      {renderBlocks(root.children ?? [], { theme, variant })}
+      {renderBlocks(root.children ?? [], {
+        theme,
+        variant,
+        secondary,
+        strong,
+        renderText,
+      })}
     </View>
   );
 }
