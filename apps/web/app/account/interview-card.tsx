@@ -12,7 +12,7 @@ import { Card, Row } from "./card";
 
 const OFFLINE = "You're offline. This needs a connection.";
 const FAILED = "Something went wrong on our side. Try again in a moment.";
-const PASSED = "That date has passed. Pick a date after today.";
+const PASSED = "That date has passed. Pick today or a later date.";
 const NOT_A_DATE = "That isn't a date. Pick one from the calendar.";
 const DESCRIPTION =
   "Optional. Add your date and recall gets more thorough in the last 4 weeks, so more cards are fresh on the day. You'll see a few more cards each day while it's on.";

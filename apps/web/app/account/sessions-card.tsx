@@ -1,6 +1,9 @@
 "use client";
 
-import type { Provider } from "@meritory/contracts/sign-in-messages";
+import {
+  type Provider,
+  waitMessage,
+} from "@meritory/contracts/sign-in-messages";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { Alert } from "@/components/alert";
@@ -102,6 +105,8 @@ export function SessionsCard({
       setRetry(action);
     } else if (result.reason === "signed_out") {
       toSignIn();
+    } else if (result.reason === "rate_limited") {
+      setError(waitMessage(result.retryAfter));
     } else {
       setError(END_FAILED);
     }
