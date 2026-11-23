@@ -119,6 +119,7 @@ export function checkCases(
   problems: Problem[],
 ) {
   const uuids = new Set(cases.map(({ testCase }) => testCase.uuid));
+  const earlier = new Set<string>();
   for (const { testCase, line } of cases) {
     const report = (message: string) =>
       problems.push({
@@ -131,7 +132,11 @@ export function checkCases(
       report("can't reimplement itself");
     } else if (reimplements !== undefined && !uuids.has(reimplements)) {
       report(`reimplements ${reimplements}, which isn't a case in this file`);
+    } else if (reimplements !== undefined && !earlier.has(reimplements)) {
+      // Two cases that name each other would both be left out of a run
+      report(`reimplements ${reimplements}, which must come before it`);
     }
+    earlier.add(testCase.uuid);
     if ("class" in signature) {
       checkClassCase(signature, testCase, report);
     } else {
@@ -210,7 +215,11 @@ function checkClassCase(
     returns.push(method.returns);
   });
 
-  if (isError(testCase.expected)) return;
+  // The judge grades a class call by call, so it can't expect an error
+  if (isError(testCase.expected)) {
+    report("expected can't be an error for a class");
+    return;
+  }
   const expected = testCase.expected;
   if (!Array.isArray(expected) || expected.length !== calls.length) {
     report("expected must have one value per call");

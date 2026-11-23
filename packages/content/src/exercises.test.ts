@@ -398,6 +398,36 @@ describe("signatures", () => {
     expect(await signatureProblems(signature, cases)).toEqual([]);
   });
 
+  it.each([
+    [
+      "with no list beside it",
+      [
+        { name: "nums", type: "int[]" },
+        { name: "pos", type: "int", hidden: true },
+      ],
+    ],
+    [
+      "that isn't an int",
+      [
+        { name: "head", type: "ListNode" },
+        { name: "pos", type: "string", hidden: true },
+      ],
+    ],
+    [
+      "listed twice",
+      [
+        { name: "head", type: "ListNode" },
+        { name: "pos", type: "int", hidden: true },
+        { name: "skip", type: "int", hidden: true },
+      ],
+    ],
+  ])("refuses a hidden parameter %s", async (_name, params) => {
+    const signature = { function: "hasCycle", params, returns: "boolean" };
+    expect(await signatureProblems(signature, [])).toContain(
+      "two-sum/exercise.yaml:9 hidden is only for one int parameter beside a ListNode parameter",
+    );
+  });
+
   it("checks the changed parameter of a function that returns void", async () => {
     const signature = {
       function: "rotate",
@@ -544,6 +574,17 @@ describe("design problems", () => {
     },
   );
 
+  it("refuses a case that expects an error", async () => {
+    expect(
+      await designProblems(
+        { calls: ["LruCache", "get"], args: [[2], [1]] },
+        { error: "no such key" },
+      ),
+    ).toEqual([
+      `two-sum/cases.json:5 case ${uuid(1)} expected can't be an error for a class`,
+    ]);
+  });
+
   it("refuses hidden parameters", async () => {
     const signature = {
       ...cache,
@@ -649,6 +690,19 @@ describe("cases", () => {
     expect(await problemLines()).toEqual([
       `two-sum/cases.json:42 case ${uuid(4)} can't reimplement itself`,
       `two-sum/cases.json:61 case ${uuid(5)} reimplements ${uuid(9)}, which isn't a case in this file`,
+    ]);
+  });
+
+  it("refuses a fix for a case that comes after it", async () => {
+    await writePair({
+      cases: [
+        pairCase(1, "twoSum", { reimplements: uuid(2) }),
+        pairCase(2, "twoSum", { reimplements: uuid(1) }),
+      ],
+    });
+    await lockAll();
+    expect(await problemLines()).toEqual([
+      `two-sum/cases.json:5 case ${uuid(1)} reimplements ${uuid(2)}, which must come before it`,
     ]);
   });
 });
