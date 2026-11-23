@@ -1,3 +1,4 @@
+import { sittingCards } from "@meritory/recall-client";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { unstable_rethrow } from "next/navigation";
@@ -5,7 +6,6 @@ import type { ReactNode } from "react";
 import { buttonClass } from "@/components/button";
 import { KeepSession } from "@/components/keep-session";
 import { TimeZoneSync } from "@/components/time-zone-sync";
-import { sittingCards } from "@/lib/recall-sitting";
 import { getContent, getDue, getSession, requireMe } from "@/lib/server-api";
 import { Sitting } from "./sitting";
 

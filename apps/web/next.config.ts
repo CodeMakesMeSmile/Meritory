@@ -42,6 +42,7 @@ const config: NextConfig = {
     "@meritory/contracts",
     "@meritory/design-tokens",
     "@meritory/password",
+    "@meritory/recall-client",
   ],
   // Locally, stand in for the edge gateway: the browser calls /api/v1 on the
   // same origin and it reaches Fastify. In AWS the edge does this routing.

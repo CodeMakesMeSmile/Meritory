@@ -1,11 +1,10 @@
 "use client";
 
+import { promptOf, type SittingCard, shuffled } from "@meritory/recall-client";
 import { type ReactNode, useId, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/button";
 import { Markdown } from "@/components/markdown";
 import type { PickOneCard as PickOneContent } from "@/lib/content";
-import { shuffled } from "@/lib/recall-grading";
-import { promptOf, type SittingCard } from "@/lib/recall-sitting";
 import { CardBox, FeedbackHeading, Lesson, Prompt, useFocusOn } from "./parts";
 import type { Checked } from "./sitting-types";
 

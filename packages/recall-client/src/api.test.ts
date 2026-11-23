@@ -1,14 +1,14 @@
 import { RECALL_ERRORS } from "@meritory/contracts";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+  createRecallApi,
   INTERVIEW_ERRORS,
   REVIEW_ERRORS,
   type RecallSessionCard,
-  saveInterviewDate,
-  saveReview,
-  undoReview,
-} from "./recall-api";
-import { UNDO_ERRORS } from "./recall-sitting";
+} from "./api.ts";
+import { UNDO_ERRORS } from "./sitting.ts";
+
+const { saveInterviewDate, saveReview, undoReview } = createRecallApi();
 
 const ID = "0b6f3c1e-8a3d-4f7a-9c2e-5d1b7e9f0a12";
 
@@ -199,5 +199,47 @@ describe("recall api", () => {
       "/api/v1/recall/reviews/..%2Fme/undo",
       expect.anything(),
     );
+  });
+});
+
+describe("recall api on another origin", () => {
+  it("calls the given base address with the given headers and credentials", async () => {
+    const fetch = reply(200, { newLeftToday: 0, cards: [] });
+    vi.stubGlobal("fetch", fetch);
+    const api = createRecallApi({
+      baseUrl: "https://app.example/api/v1",
+      headers: async () => ({ cookie: "session=abc" }),
+      credentials: "omit",
+    });
+    await api.loadSession();
+    expect(fetch).toHaveBeenCalledWith(
+      "https://app.example/api/v1/recall/session",
+      expect.objectContaining({
+        credentials: "omit",
+        headers: { cookie: "session=abc" },
+      }),
+    );
+  });
+
+  it("keeps the content type next to the given headers", async () => {
+    const fetch = reply(204);
+    vi.stubGlobal("fetch", fetch);
+    const api = createRecallApi({ headers: () => ({ cookie: "session=abc" }) });
+    await api.saveTimeZone("America/Toronto");
+    const [, init] = fetch.mock.calls[0] as unknown as [string, RequestInit];
+    expect(init.headers).toEqual({
+      cookie: "session=abc",
+      "content-type": "application/json",
+    });
+  });
+
+  it("answers failed when the headers can't be read", async () => {
+    vi.stubGlobal("fetch", reply(200, {}));
+    const api = createRecallApi({
+      headers: async () => {
+        throw new Error("no cookie store");
+      },
+    });
+    expect(await api.loadDue()).toEqual({ ok: false, reason: "failed" });
   });
 });

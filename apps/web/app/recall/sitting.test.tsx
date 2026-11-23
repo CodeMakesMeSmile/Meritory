@@ -1,8 +1,8 @@
+import type { SittingCard } from "@meritory/recall-client";
 import { ATTACKS, escapeHtml } from "@meritory/security-testing";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import type { Card } from "@/lib/content";
-import type { SittingCard } from "@/lib/recall-sitting";
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ replace: () => {}, push: () => {}, refresh: () => {} }),
