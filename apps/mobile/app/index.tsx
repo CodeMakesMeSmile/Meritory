@@ -3,7 +3,7 @@ import type {
   InterviewDateResponse,
   RecallDueResponse,
 } from "@meritory/contracts";
-import { controlHeight, space } from "@meritory/design-tokens";
+import { space, touchTarget } from "@meritory/design-tokens";
 import {
   allChapters,
   dayName,
@@ -273,5 +273,5 @@ const styles = StyleSheet.create({
   meta: { flexDirection: "row", gap: space[3] },
   rule: { borderTopWidth: 1, paddingTop: space[5] },
   // Keeps the tap area to the words, not the whole row
-  links: { minHeight: controlHeight, alignItems: "flex-start" },
+  links: { minHeight: touchTarget, alignItems: "flex-start" },
 });

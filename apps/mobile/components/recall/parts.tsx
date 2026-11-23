@@ -1,4 +1,4 @@
-import { controlHeight, space } from "@meritory/design-tokens";
+import { space, touchTarget } from "@meritory/design-tokens";
 import type { Card } from "@meritory/recall-client";
 import * as Linking from "expo-linking";
 import type { ReactNode } from "react";
@@ -251,9 +251,9 @@ const styles = StyleSheet.create({
   card: { borderWidth: 1, padding: space[5], gap: space[5] },
   blocks: { gap: space[4] },
   tight: { gap: space[1] },
-  link: { minHeight: controlHeight, justifyContent: "center" },
+  link: { minHeight: touchTarget, justifyContent: "center" },
   row: {
-    minHeight: controlHeight,
+    minHeight: touchTarget,
     flexDirection: "row",
     alignItems: "center",
     gap: space[3],

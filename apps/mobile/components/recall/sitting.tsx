@@ -1,4 +1,4 @@
-import { controlHeight, space } from "@meritory/design-tokens";
+import { space, touchTarget } from "@meritory/design-tokens";
 import {
   doneLine,
   lineAfterFailedUndo,
@@ -444,13 +444,13 @@ export function Sitting({
 const styles = StyleSheet.create({
   top: { gap: space[4] },
   bar: {
-    minHeight: controlHeight,
+    minHeight: touchTarget,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
   undo: {
-    minHeight: controlHeight,
+    minHeight: touchTarget,
     flexDirection: "row",
     flexWrap: "wrap",
     alignItems: "center",

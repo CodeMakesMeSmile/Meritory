@@ -1,8 +1,6 @@
-import { Pressable } from "react-native";
+import { touchTarget } from "@meritory/design-tokens";
+import { Pressable, StyleSheet } from "react-native";
 import { AppText } from "./app-text";
-
-// The text is 24 tall, so this makes the tap area 48
-const TAP_AREA = { top: 12, bottom: 12, left: 4, right: 4 };
 
 export function TextLink({
   label,
@@ -23,7 +21,7 @@ export function TextLink({
       accessibilityRole={role}
       accessibilityLabel={accessibilityLabel}
       accessibilityHint={accessibilityHint}
-      hitSlop={TAP_AREA}
+      style={styles.link}
       onPress={onPress}
     >
       <AppText variant="link" color="textAccent">
@@ -48,3 +46,12 @@ export function PasswordToggle({
     />
   );
 }
+
+const styles = StyleSheet.create({
+  // Real bounds, not hitSlop, so Accessibility Scanner sees the full target
+  link: {
+    minWidth: touchTarget,
+    minHeight: touchTarget,
+    justifyContent: "center",
+  },
+});

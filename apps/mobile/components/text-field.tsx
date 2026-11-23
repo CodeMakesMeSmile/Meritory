@@ -1,4 +1,4 @@
-import { controlHeight, radius, space } from "@meritory/design-tokens";
+import { radius, space, touchTarget } from "@meritory/design-tokens";
 import { type ComponentRef, type ReactNode, type Ref, useState } from "react";
 import { StyleSheet, TextInput, type TextInputProps, View } from "react-native";
 import { useTheme } from "../lib/theme";
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: space[3],
-    minHeight: controlHeight,
+    minHeight: touchTarget,
     borderRadius: radius.control,
   },
   input: {

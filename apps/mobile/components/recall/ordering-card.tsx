@@ -1,4 +1,4 @@
-import { space } from "@meritory/design-tokens";
+import { space, touchTarget } from "@meritory/design-tokens";
 import {
   type OrderingCard as OrderingContent,
   orderingIsRight,
@@ -184,6 +184,10 @@ export function OrderingCard({
 const styles = StyleSheet.create({
   step: { flexDirection: "row", gap: space[3] },
   term: { textDecorationLine: "underline" },
-  undo: { minHeight: 44, justifyContent: "center", alignItems: "flex-start" },
+  undo: {
+    minHeight: touchTarget,
+    justifyContent: "center",
+    alignItems: "flex-start",
+  },
   meaning: { gap: space[1], borderTopWidth: 1, paddingTop: space[4] },
 });

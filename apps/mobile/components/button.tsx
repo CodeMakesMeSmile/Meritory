@@ -1,4 +1,4 @@
-import { controlHeight, radius, space } from "@meritory/design-tokens";
+import { radius, space, touchTarget } from "@meritory/design-tokens";
 import { Pressable, StyleSheet } from "react-native";
 import { useTheme } from "../lib/theme";
 import { AppText } from "./app-text";
@@ -64,7 +64,7 @@ export function Button({
 
 const styles = StyleSheet.create({
   button: {
-    minHeight: controlHeight,
+    minHeight: touchTarget,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: space[5],

@@ -1,5 +1,5 @@
 import type { InterviewDateResponse } from "@meritory/contracts";
-import { controlHeight, space } from "@meritory/design-tokens";
+import { space, touchTarget } from "@meritory/design-tokens";
 import {
   dayAndYear,
   INTERVIEW_DESCRIPTION,
@@ -216,11 +216,11 @@ export default function InterviewDate() {
 }
 
 const styles = StyleSheet.create({
-  back: { minHeight: controlHeight, justifyContent: "center" },
+  back: { minHeight: touchTarget, justifyContent: "center" },
   block: { gap: space[4] },
   field: { gap: space[2] },
   input: {
-    minHeight: controlHeight,
+    minHeight: touchTarget,
     justifyContent: "center",
     paddingHorizontal: space[3],
   },

@@ -3,7 +3,7 @@ import {
   PROVIDER_LABELS,
   type Provider,
 } from "@meritory/contracts/sign-in-messages";
-import { controlHeight, radius, space } from "@meritory/design-tokens";
+import { radius, space, touchTarget } from "@meritory/design-tokens";
 import {
   Pressable,
   StyleSheet,
@@ -134,7 +134,7 @@ export function OrDivider() {
 const styles = StyleSheet.create({
   buttons: { gap: space[2] },
   button: {
-    minHeight: controlHeight,
+    minHeight: touchTarget,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
