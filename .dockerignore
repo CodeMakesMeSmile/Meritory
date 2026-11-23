@@ -1,0 +1,31 @@
+# Keeps secrets, local-only content, and build output out of every image
+
+.git
+.github
+.idea
+.vscode
+docs
+
+# Secrets and local settings
+.env
+.env.*
+!.env.example
+
+# Dependencies and build output are made inside the image
+**/node_modules
+**/.next
+**/dist
+**/build
+**/out
+**/coverage
+**/*.tsbuildinfo
+
+# Content that only loads on the owner's machine, and course downloads
+content/private-*
+content/resources
+
+# The phone app and the code runner have no image. pnpm still needs their manifests
+apps/mobile/**
+!apps/mobile/package.json
+apps/runner/**
+!apps/runner/package.json
