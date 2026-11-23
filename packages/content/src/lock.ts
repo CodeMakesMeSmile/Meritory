@@ -4,6 +4,7 @@ import { loadTrackChapters } from "./chapters.ts";
 import { addToLock, LOCK_FILE, readCases, readLock } from "./test-cases.ts";
 import {
   addVersions,
+  checkCardChapters,
   readVersions,
   trackItems,
   VERSIONS_FILE,
@@ -18,6 +19,8 @@ export type LockResult = {
   written: Written[];
   /** The versions file, when items gained versions */
   versions: Written[];
+  /** The versions file, when cards had their chapters recorded */
+  chapters: Written[];
   /** Files left alone, and why */
   problems: Problem[];
 };
@@ -28,7 +31,12 @@ export type LockResult = {
  * a changed case still fails the content check.
  */
 export async function lockTrack(trackDir: string): Promise<LockResult> {
-  const result: LockResult = { written: [], versions: [], problems: [] };
+  const result: LockResult = {
+    written: [],
+    versions: [],
+    chapters: [],
+    problems: [],
+  };
   const chaptersDir = path.join(trackDir, "chapters");
   for (const chapter of await subfolders(chaptersDir)) {
     const exercisesDir = path.join(chaptersDir, chapter, "exercises");
@@ -75,8 +83,36 @@ async function recordVersions(trackDir: string, result: LockResult) {
     result.problems.push(...versionProblems);
     return;
   }
-  const next = addVersions(versions, trackItems(chapters, rubrics));
-  if (next.added === 0) return;
-  await writeFile(file, `${JSON.stringify(next.versions, null, 2)}\n`);
-  result.versions.push({ file, added: next.added });
+  const items = trackItems(chapters, rubrics);
+  const moved: Problem[] = [];
+  checkCardChapters(items, versions, moved);
+  if (moved.length > 0) {
+    result.problems.push(...moved);
+    return;
+  }
+  const next = addVersions(versions, items);
+  if (next.added === 0 && next.placed === 0) return;
+  await writeFile(file, versionsJson(next.versions));
+  if (next.added > 0) result.versions.push({ file, added: next.added });
+  if (next.placed > 0) result.chapters.push({ file, added: next.placed });
+}
+
+const LINE_WIDTH = 80;
+
+/** Laid out the way Biome formats it, so a fresh lock passes lint */
+export function versionsJson(versions: Record<string, string[]>): string {
+  const keys = Object.keys(versions);
+  const lines = keys.map((key, i) => {
+    const comma = i < keys.length - 1 ? "," : "";
+    const items = versions[key] ?? [];
+    const name = `  ${JSON.stringify(key)}: `;
+    const inline = `${name}[${items.map((item) => JSON.stringify(item)).join(", ")}]${comma}`;
+    if (inline.length <= LINE_WIDTH) return inline;
+    const rows = items.map(
+      (item, j) =>
+        `    ${JSON.stringify(item)}${j < items.length - 1 ? "," : ""}`,
+    );
+    return [`${name}[`, ...rows, `  ]${comma}`].join("\n");
+  });
+  return keys.length === 0 ? "{}\n" : `{\n${lines.join("\n")}\n}\n`;
 }

@@ -747,6 +747,8 @@ Every chapter, card, exercise, and rubric has a version, so a practice session i
 
 After an edit, the check fails until you run `pnpm content:lock`, which adds one version to each changed item and leaves the rest alone. It won't record versions while the track has other problems. Never edit `versions.json` by hand.
 
+The lock also records the chapter each card is in, because learners' recall progress is stored per chapter. A card can't move to another chapter after it's locked. To move one, give it a new id in its new chapter.
+
 ## Private tracks
 
 A track whose folder starts with `private-`, like `content/private-notes/`, is ignored by git. It follows every rule above and loads in the app like any other track, but only on the machine that has it. Use one for material that mustn't be public, such as your own stories or notes on a company. CI never sees private tracks, so the content check there passes without them.

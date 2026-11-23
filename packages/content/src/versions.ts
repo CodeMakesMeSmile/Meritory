@@ -17,16 +17,28 @@ import { isRecord, type Problem, readText } from "./yaml-file.ts";
 
 export const VERSIONS_FILE = "versions.json";
 
-/** Each item's hashes in the order they were recorded, keyed by its type and id */
+/**
+ * Each item's hashes in the order they were recorded, keyed by its type and
+ * id. A `card-chapter/<id>` key holds the chapter the card was locked in.
+ */
 export type Versions = Record<string, string[]>;
 
 type ItemType = "chapter" | "card" | "exercise" | "rubric";
 
 /** An item's own content and where to report a change to it */
-type Item = { type: ItemType; id: string; content: unknown; file: string };
+type Item = {
+  type: ItemType;
+  id: string;
+  content: unknown;
+  file: string;
+  /** The chapter a card is in */
+  chapter?: string;
+};
 
 const KEY = /^(chapter|card|exercise|rubric)\/[a-z0-9]+(-[a-z0-9]+)*$/;
 const HASH = /^[0-9a-f]{64}$/;
+const CHAPTER_KEY = /^card-chapter\/[a-z0-9]+(-[a-z0-9]+)*$/;
+const ID = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
 /** A hash of an item's type and content, so equal content always hashes the same */
 export function itemHash(type: ItemType, content: unknown): string {
@@ -37,6 +49,8 @@ export function itemHash(type: ItemType, content: unknown): string {
 
 const keyOf = (item: { type: ItemType; id: string }) =>
   `${item.type}/${item.id}`;
+
+const chapterKeyOf = (cardId: string) => `card-chapter/${cardId}`;
 
 // A checkout on Windows can turn line endings into CRLF
 const lf = (text: string) => text.replaceAll("\r\n", "\n");
@@ -75,7 +89,13 @@ export function trackItems(
     });
     const cardsFile = path.join(path.dirname(file), "cards.yaml");
     for (const card of chapter.cards) {
-      items.push({ type: "card", id: card.id, content: card, file: cardsFile });
+      items.push({
+        type: "card",
+        id: card.id,
+        content: card,
+        file: cardsFile,
+        chapter: chapter.id,
+      });
     }
     for (const exercise of chapter.exercises) {
       items.push({
@@ -109,13 +129,17 @@ export async function readVersions(
   // Checked by hand, so a bad key is never printed
   const valid =
     isRecord(data) &&
-    Object.entries(data).every(
-      ([key, hashes]) =>
-        KEY.test(key) &&
-        Array.isArray(hashes) &&
-        hashes.length > 0 &&
-        hashes.every((hash) => typeof hash === "string" && HASH.test(hash)),
-    );
+    Object.entries(data).every(([key, values]) => {
+      const pattern = KEY.test(key) ? HASH : CHAPTER_KEY.test(key) ? ID : null;
+      return (
+        pattern !== null &&
+        Array.isArray(values) &&
+        values.length > 0 &&
+        values.every(
+          (value) => typeof value === "string" && pattern.test(value),
+        )
+      );
+    });
   if (!valid) {
     problems.push({
       file,
@@ -127,12 +151,36 @@ export async function readVersions(
   return data as Versions;
 }
 
+/**
+ * Checks that no card left the chapter it was locked in, since learners'
+ * progress on a card is kept by its chapter. A card locked before chapters
+ * were recorded has nothing to compare.
+ */
+export function checkCardChapters(
+  items: Item[],
+  versions: Versions,
+  problems: Problem[],
+) {
+  for (const item of items) {
+    if (item.chapter === undefined) continue;
+    const locked = versions[chapterKeyOf(item.id)]?.at(-1);
+    if (locked !== undefined && locked !== item.chapter) {
+      problems.push({
+        file: item.file,
+        line: null,
+        message: `card ${item.id} was locked in chapter ${locked}, so move it back or give it a new id`,
+      });
+    }
+  }
+}
+
 /** Checks that every item's current hash is its latest recorded version */
 export function checkVersions(
   items: Item[],
   versions: Versions,
   problems: Problem[],
 ) {
+  checkCardChapters(items, versions, problems);
   for (const item of items) {
     const hashes = versions[keyOf(item)];
     const message =
@@ -151,13 +199,18 @@ export function checkVersions(
   }
 }
 
-/** Records a new version for each item whose hash changed, and leaves the rest */
+/**
+ * Records a new version for each item whose hash changed, and the chapter of
+ * each card that has none yet, and leaves the rest. Moved cards are refused
+ * by `checkCardChapters` first.
+ */
 export function addVersions(
   versions: Versions,
   items: Item[],
-): { versions: Versions; added: number } {
+): { versions: Versions; added: number; placed: number } {
   const next: Versions = { ...versions };
   let added = 0;
+  let placed = 0;
   for (const item of items) {
     const key = keyOf(item);
     const hash = itemHash(item.type, item.content);
@@ -166,11 +219,16 @@ export function addVersions(
       next[key] = [...hashes, hash];
       added++;
     }
+    const chapterKey = chapterKeyOf(item.id);
+    if (item.chapter !== undefined && next[chapterKey] === undefined) {
+      next[chapterKey] = [item.chapter];
+      placed++;
+    }
   }
   const sorted = Object.fromEntries(
     Object.entries(next).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)),
   );
-  return { versions: sorted, added };
+  return { versions: sorted, added, placed };
 }
 
 /**
