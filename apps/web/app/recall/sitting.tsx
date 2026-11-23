@@ -208,6 +208,8 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
           review,
           refused: result.refused === true,
         });
+        // Nothing was scheduled, so the card can't say when it comes back
+        if (result.refused) setChecked((now) => now && { ...now, wait: null });
         return;
       }
       // Undone since it was sent, so it doesn't count and the sitting moves on

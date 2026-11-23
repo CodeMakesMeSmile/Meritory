@@ -188,6 +188,13 @@ describe("a recall sitting", () => {
     );
     expect(right).toContain("You&#x27;ll see this again in 10 minutes.");
     expect(right).not.toContain("Next time");
+    // A rating the API turned down scheduled nothing, so there's no time to give
+    const refused = renderToStaticMarkup(
+      <Lesson card={card} missed wait={null} />,
+    );
+    expect(refused).toContain("Each slice copies.");
+    expect(refused).not.toContain("another go");
+    expect(refused).not.toContain("see this again");
   });
 
   it("shows only the explanation under a missed order or match", () => {
