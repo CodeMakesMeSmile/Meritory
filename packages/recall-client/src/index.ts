@@ -38,6 +38,13 @@ export {
   queueRows,
 } from "./home.ts";
 export {
+  dayAndYear,
+  dayName,
+  INTERVIEW_DESCRIPTION,
+  interviewIsAhead,
+  interviewStatusLine,
+} from "./interview.ts";
+export {
   doneLine,
   lineAfterFailedUndo,
   lineAfterSave,

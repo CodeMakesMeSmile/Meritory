@@ -162,6 +162,10 @@ export function createRecallApi(options: RecallApiOptions = {}) {
       });
     },
 
+    loadInterviewDate() {
+      return call<InterviewDateResponse>("/me/interview-date");
+    },
+
     saveInterviewDate(date: string | null) {
       return call<InterviewDateResponse>("/me/interview-date", {
         method: "PUT",

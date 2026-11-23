@@ -60,6 +60,10 @@ describe.each(["typescript", "python"] as const)("%s harness", (language) => {
   it("passes every reference solution on every case", async () => {
     expect(coding.length).toBeGreaterThan(0);
     for (const { path, exercise } of coding) {
+      // An exercise that names its languages ships solutions only for those
+      if (exercise.languages && !exercise.languages.includes(language)) {
+        continue;
+      }
       const code = await readFile(`${path}${SOLUTION[language]}`, "utf8");
       const result = await runCode(request(exercise, language, code), sandbox);
       const failed = result.tests.filter((t) => t.status !== "pass");
