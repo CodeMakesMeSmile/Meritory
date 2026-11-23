@@ -6,7 +6,8 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { stringify } from "yaml";
 import { loadTrackChapters } from "./chapters.ts";
 import { lockTrack } from "./lock.ts";
-import { formatProblem } from "./yaml-file.ts";
+import { addToLock, LOCK_FILE, readCases, readLock } from "./test-cases.ts";
+import { formatProblem, subfolders } from "./yaml-file.ts";
 
 const CHAPTER = `id: arrays
 title: Arrays
@@ -191,10 +192,23 @@ afterEach(async () => {
   await rm(root, { recursive: true, force: true });
 });
 
+// Locks every case as it is, so a test of a bad case sees only that case's problems
+async function lockAll() {
+  for (const exercise of await subfolders(exercisesDir)) {
+    const dir = path.join(exercisesDir, exercise);
+    const cases = await readCases(path.join(dir, "cases.json"), exercise, []);
+    if (!cases || cases.length === 0) continue;
+    const file = path.join(dir, LOCK_FILE);
+    const { lock } = addToLock(await readLock(file, []), cases);
+    await writeFile(file, JSON.stringify(lock));
+  }
+  await lockTrack(track);
+}
+
 describe("exercises", () => {
   it("loads a linked pair with grouped and error cases", async () => {
     await writePair();
-    await lockTrack(track);
+    await lockAll();
     const { chapters, problems } = await loadTrackChapters(track);
     expect(problems).toEqual([]);
     const exercises = (chapters[0]?.exercises ?? []).filter(
@@ -217,7 +231,7 @@ describe("exercises", () => {
 
   it("reports a missing exercise file, statement, and solution", async () => {
     await writePair();
-    await lockTrack(track);
+    await lockAll();
     await rm(path.join(exercisesDir, "two-sum", "exercise.yaml"));
     await rm(path.join(exercisesDir, "pair-gap", "statement.md"));
     await rm(path.join(exercisesDir, "pair-gap", "solutions", "solution.c"));
@@ -248,7 +262,7 @@ describe("exercises", () => {
     ),
   ])("refuses %j in a statement", async (attack, message) => {
     await writePair();
-    await lockTrack(track);
+    await lockAll();
     await write(
       path.join(exercisesDir, "two-sum", "statement.md"),
       `# Two sum\n\n${attack}\n`,
@@ -258,7 +272,7 @@ describe("exercises", () => {
 
   it("reports an exercise with no sibling", async () => {
     await writePair();
-    await lockTrack(track);
+    await lockAll();
     const file = path.join(exercisesDir, "two-sum", "exercise.yaml");
     const text = await readFile(file, "utf8");
     await writeFile(file, text.replace("sibling: pair-gap\n", ""));
@@ -276,7 +290,7 @@ describe("exercises", () => {
       signature: pairSignature("pairSum"),
       cases: [pairCase(4, "pairSum")],
     });
-    await lockTrack(track);
+    await lockAll();
     expect(await problemLines()).toEqual([
       "pair-gap/exercise.yaml:6 sibling two-sum doesn't name pair-gap as its sibling",
       "pair-sum/exercise.yaml:6 sibling pair-gap doesn't name pair-sum as its sibling",
@@ -286,7 +300,7 @@ describe("exercises", () => {
 
   it("reports a skill from another chapter", async () => {
     await writePair({ skills: ["indexing", "hashing"] });
-    await lockTrack(track);
+    await lockAll();
     expect(await problemLines()).toEqual([
       "two-sum/exercise.yaml:6 skill hashing is not in this chapter",
     ]);
@@ -330,7 +344,7 @@ describe("exercises", () => {
       },
       otherExercises,
     );
-    await lockTrack(track);
+    await lockAll();
     expect(await problemLines(track)).toEqual([
       "chapters/hashing/exercises/two-sum/exercise.yaml:1 exercise two-sum is also in arrays",
     ]);
@@ -340,7 +354,7 @@ describe("exercises", () => {
 describe("signatures", () => {
   async function signatureProblems(signature: unknown, cases?: unknown[]) {
     await writePair({ signature, ...(cases ? { cases } : {}) });
-    await lockTrack(track);
+    await lockAll();
     return problemLines();
   }
 
@@ -481,7 +495,7 @@ describe("design problems", () => {
 
   async function designProblems(input: unknown, expected: unknown) {
     await writePair({ signature: cache, cases: [cacheCase(input, expected)] });
-    await lockTrack(track);
+    await lockAll();
     return problemLines();
   }
 
@@ -539,7 +553,7 @@ describe("design problems", () => {
       signature,
       cases: [cacheCase({ calls: ["LruCache"], args: [[1]] }, [null])],
     });
-    await lockTrack(track);
+    await lockAll();
     expect(await problemLines()).toEqual([
       "two-sum/exercise.yaml:7 hidden parameters are only for functions",
     ]);
@@ -556,7 +570,7 @@ describe("cases", () => {
         }),
       ],
     });
-    await lockTrack(track);
+    await lockAll();
     const at = `two-sum/cases.json:5 case ${uuid(1)}`;
     expect(await problemLines()).toEqual([
       `${at} property must be twoSum`,
@@ -585,7 +599,7 @@ describe("cases", () => {
         },
       ],
     });
-    await lockTrack(track);
+    await lockAll();
     expect(await problemLines()).toEqual([
       "two-sum/cases.json case at cases/0 note is not a known field",
       "two-sum/cases.json case at cases/0 uuid must be a lowercase version 4 uuid",
@@ -595,7 +609,7 @@ describe("cases", () => {
 
   it("reports a file that isn't JSON, or is for another exercise", async () => {
     await writePair();
-    await lockTrack(track);
+    await lockAll();
     await write(path.join(exercisesDir, "two-sum", "cases.json"), "{ not json");
     await write(
       path.join(exercisesDir, "pair-gap", "cases.json"),
@@ -615,7 +629,7 @@ describe("cases", () => {
 
   it("reports a uuid used twice in a file or a track", async () => {
     await writePair({ cases: [pairCase(1), pairCase(1), pairCase(3)] });
-    await lockTrack(track);
+    await lockAll();
     expect(await problemLines()).toEqual([
       `two-sum/cases.json:5 case ${uuid(1)} is also in two-sum`,
       `two-sum/cases.json:41 case ${uuid(3)} is also in pair-gap`,
@@ -631,7 +645,7 @@ describe("cases", () => {
         pairCase(5, "twoSum", { reimplements: uuid(9) }),
       ],
     });
-    await lockTrack(track);
+    await lockAll();
     expect(await problemLines()).toEqual([
       `two-sum/cases.json:42 case ${uuid(4)} can't reimplement itself`,
       `two-sum/cases.json:61 case ${uuid(5)} reimplements ${uuid(9)}, which isn't a case in this file`,
@@ -651,7 +665,7 @@ describe("case lock", () => {
 
   it("refuses a locked case that changed, and keeps its old hash on relock", async () => {
     await writePair();
-    await lockTrack(track);
+    await lockAll();
     const lockFile = path.join(exercisesDir, "two-sum", "cases.lock.json");
     const locked = await readFile(lockFile, "utf8");
 
@@ -673,7 +687,7 @@ describe("case lock", () => {
 
   it("refuses a locked case that was removed", async () => {
     await writePair();
-    await lockTrack(track);
+    await lockAll();
     await writeCases("two-sum", [pairCase(1)]);
     expect(await problemLines()).toEqual([
       `two-sum/cases.lock.json case ${uuid(2)} was removed after it was locked, so put it back and add a new case that reimplements it`,
@@ -682,7 +696,7 @@ describe("case lock", () => {
 
   it("adds only new cases to the lock", async () => {
     await writePair();
-    await lockTrack(track);
+    await lockAll();
     const lockFile = path.join(exercisesDir, "two-sum", "cases.lock.json");
     const before = JSON.parse(await readFile(lockFile, "utf8"));
     await writeCases("two-sum", [
@@ -742,7 +756,7 @@ async function writeDesign(
 describe("rubric links", () => {
   it("loads each exercise's rubric and the track's rubrics", async () => {
     await writePair({ requires: ["correctness"] });
-    await lockTrack(track);
+    await lockAll();
     const { chapters, rubrics, problems } = await loadTrackChapters(track);
     expect(problems).toEqual([]);
     expect(rubrics.map((rubric) => rubric.id)).toEqual([
@@ -758,7 +772,7 @@ describe("rubric links", () => {
 
   it("reports a rubric that doesn't exist", async () => {
     await writePair({ rubric: "speed-run" });
-    await lockTrack(track);
+    await lockAll();
     expect(await problemLines()).toEqual([
       "two-sum/exercise.yaml:17 rubric speed-run is not a rubric in this track",
     ]);
@@ -767,7 +781,7 @@ describe("rubric links", () => {
   it("reports a broken rubric only in its own file", async () => {
     await writeRubric({ ...CODING_RUBRIC, pass: { total: 99, lowest: 2 } });
     await writePair();
-    await lockTrack(track);
+    await lockAll();
     expect(await problemLines(track)).toEqual([
       "rubrics/coding-practice.yaml:21 pass/total 99 is more than the highest total, 8",
     ]);
@@ -775,7 +789,7 @@ describe("rubric links", () => {
 
   it("refuses a coding exercise whose rubric has no tests", async () => {
     await writePair({ rubric: "design-review" });
-    await lockTrack(track);
+    await lockAll();
     expect(await problemLines()).toEqual([
       "two-sum/exercise.yaml:17 rubric design-review has no criterion scored by tests, which a coding exercise needs",
     ]);
@@ -783,7 +797,7 @@ describe("rubric links", () => {
 
   it("refuses a required criterion the rubric doesn't have, or one listed twice", async () => {
     await writePair({ requires: ["correctness", "speed", "correctness"] });
-    await lockTrack(track);
+    await lockAll();
     expect(await problemLines()).toEqual([
       "two-sum/exercise.yaml:20 speed is not a criterion in rubric coding-practice",
       "two-sum/exercise.yaml:21 correctness is listed twice",
@@ -792,7 +806,7 @@ describe("rubric links", () => {
 
   it("reports a coding exercise with no signature", async () => {
     await writePair({ signature: undefined });
-    await lockTrack(track);
+    await lockAll();
     expect(await problemLines()).toEqual([
       "two-sum/exercise.yaml:7 a coding exercise needs a signature",
     ]);
@@ -882,7 +896,7 @@ describe("design exercises", () => {
       cases: [pairCase(1)],
     });
     await writeDesign("url-short", "two-sum");
-    await lockTrack(track);
+    await lockAll();
     expect(await problemLines()).toEqual([
       "two-sum/exercise.yaml:6 sibling url-short is a design exercise, so it can't pair with a coding one",
       "url-short/exercise.yaml:6 sibling two-sum is a coding exercise, so it can't pair with a design one",
