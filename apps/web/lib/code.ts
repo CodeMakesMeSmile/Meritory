@@ -145,8 +145,9 @@ export const CODE_RUN_ERRORS = {
   runInProgress: "run_in_progress",
 } as const;
 
-/** Stands in for the rate limit, which sends no code */
+/** One code for the rate limit, whether or not its answer carries one */
 const TOO_MANY = "too_many";
+const RATE_LIMITED = "rate_limited";
 
 export type RunOutcome =
   | { ok: true; result: CodeRunResponse }
@@ -205,6 +206,8 @@ export async function runCode(body: {
       code = undefined;
     }
     if (res.status === 429) code = busyCode(code);
+    // The body limit counts bytes, so code under the character limit can still be refused
+    if (res.status === 413) code = CODE_RUN_ERRORS.codeTooLarge;
     return { ok: false, reason: "failed", code };
   }
   try {
@@ -222,9 +225,9 @@ const KNOWN_CODES: readonly string[] = [
   TOO_MANY,
 ];
 
-// The rate limit answers without a code, and an unknown 429 code means the runner is busy
+// Any other unknown 429 code means the runner is busy
 function busyCode(code: string | undefined): string {
-  if (!code) return TOO_MANY;
+  if (!code || code === RATE_LIMITED) return TOO_MANY;
   return KNOWN_CODES.includes(code) ? code : CODE_RUN_ERRORS.runnerBusy;
 }
 
