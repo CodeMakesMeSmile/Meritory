@@ -46,3 +46,12 @@ updates:
     directory: /
     schedule:
       interval: weekly
+
+  # The Node image the three app images are built on
+  - package-ecosystem: docker
+    directories:
+      - /apps/api
+      - /apps/web
+      - /apps/worker
+    schedule:
+      interval: weekly
