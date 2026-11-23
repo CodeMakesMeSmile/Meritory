@@ -1,8 +1,10 @@
 import { randomInt, randomUUID } from "node:crypto";
-import { like, or } from "drizzle-orm";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { ATTACKS } from "@meritory/security-testing";
+import { eq, inArray, like, or } from "drizzle-orm";
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { createDatabase } from "../db/client.ts";
 import { rateLimits, users } from "../db/schema.ts";
+import { SIGN_IN_FAILURE_LIMIT, signInFailureKey } from "./account-limits.ts";
 import { APP_SESSION_LIMIT, createAuth } from "./auth.ts";
 
 const url = process.env.TEST_DATABASE_URL;
@@ -31,7 +33,7 @@ describe.skipIf(!url)("sign-in rate limit against Postgres", () => {
   const owner = `rate-limit-${randomUUID()}@meritory.test`;
   const ips: string[] = [];
 
-  const signIn = (ip: string, password: string) =>
+  const signIn = (ip: string, password: string, email = owner) =>
     auth.handler(
       new Request(`${ORIGIN}/api/v1/auth/sign-in/email`, {
         method: "POST",
@@ -40,9 +42,12 @@ describe.skipIf(!url)("sign-in rate limit against Postgres", () => {
           origin: ORIGIN,
           "x-forwarded-for": ip,
         },
-        body: JSON.stringify({ email: owner, password }),
+        body: JSON.stringify({ email, password }),
       }),
     );
+
+  // Emails whose wrong passwords this file counted
+  const counted = [owner];
 
   const nextIp = () => {
     const ip = freshIp();
@@ -69,10 +74,20 @@ describe.skipIf(!url)("sign-in rate limit against Postgres", () => {
     expect(response.status).toBe(200);
   });
 
+  // Each test starts the owner's wrong password count from zero
+  beforeEach(async () => {
+    await db
+      .delete(rateLimits)
+      .where(eq(rateLimits.key, signInFailureKey(owner)));
+  });
+
   afterAll(async () => {
     await db
       .delete(rateLimits)
       .where(or(...ips.map((ip) => like(rateLimits.key, `${ip}|%`))));
+    await db
+      .delete(rateLimits)
+      .where(inArray(rateLimits.key, counted.map(signInFailureKey)));
     await db
       .delete(users)
       .where(like(users.email, "rate-limit-%@meritory.test"));
@@ -109,6 +124,71 @@ describe.skipIf(!url)("sign-in rate limit against Postgres", () => {
     }
 
     expect((await signIn(nextIp(), "wrong password guess")).status).toBe(401);
+  });
+
+  it("refuses an account's sign-in after 10 wrong passwords from any address", async () => {
+    for (let i = 0; i < SIGN_IN_FAILURE_LIMIT.max; i++) {
+      expect((await signIn(nextIp(), "wrong password guess")).status).toBe(401);
+    }
+    for (const password of ["wrong password guess", PASSWORD]) {
+      const blocked = await signIn(nextIp(), password);
+      expect(blocked.status).toBe(429);
+      expect(await blocked.json()).toEqual({
+        message: "Too many requests. Please try again later.",
+      });
+      const retry = Number(blocked.headers.get("x-retry-after"));
+      expect(retry).toBeGreaterThan(10 * 60);
+      expect(retry).toBeLessThanOrEqual(SIGN_IN_FAILURE_LIMIT.windowSeconds);
+    }
+    // Another account isn't held up
+    const other = `rate-limit-other-${randomUUID()}@meritory.test`;
+    counted.push(other);
+    expect((await signIn(nextIp(), "wrong guess", other)).status).toBe(401);
+  });
+
+  it("counts the email in any case as one account", async () => {
+    for (let i = 0; i < SIGN_IN_FAILURE_LIMIT.max; i++) {
+      const email = i % 2 ? owner.toUpperCase() : owner;
+      await signIn(nextIp(), "wrong password guess", email);
+    }
+    expect((await signIn(nextIp(), "wrong password guess")).status).toBe(429);
+  });
+
+  it("answers an unknown email the same way", async () => {
+    const unknown = `rate-limit-nobody-${randomUUID()}@meritory.test`;
+    counted.push(unknown);
+    for (let i = 0; i < SIGN_IN_FAILURE_LIMIT.max; i++) {
+      const res = await signIn(nextIp(), "wrong password guess", unknown);
+      expect(res.status).toBe(401);
+    }
+    const blocked = await signIn(nextIp(), "wrong password guess", unknown);
+    expect(blocked.status).toBe(429);
+    expect(Number(blocked.headers.get("x-retry-after"))).toBeGreaterThan(0);
+  });
+
+  it("starts the count again after a right password", async () => {
+    // An unconfirmed email still means the password was right
+    await db
+      .update(users)
+      .set({ emailVerified: true })
+      .where(eq(users.email, owner));
+    for (let i = 0; i < SIGN_IN_FAILURE_LIMIT.max - 1; i++) {
+      await signIn(nextIp(), "wrong password guess");
+    }
+    expect((await signIn(nextIp(), PASSWORD)).status).toBe(200);
+    for (let i = 0; i < SIGN_IN_FAILURE_LIMIT.max - 1; i++) {
+      expect((await signIn(nextIp(), "wrong password guess")).status).toBe(401);
+    }
+    await db
+      .update(users)
+      .set({ emailVerified: false })
+      .where(eq(users.email, owner));
+  });
+
+  it.each(ATTACKS)("counts the email %j without trouble", async (email) => {
+    const res = await signIn(nextIp(), "wrong password guess", email);
+    expect([400, 401]).toContain(res.status);
+    counted.push(email);
   });
 
   it("refuses the eleventh code trade from the app in a minute", async () => {

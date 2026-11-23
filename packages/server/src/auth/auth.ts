@@ -31,6 +31,10 @@ import {
   verifyEmail,
 } from "../mail/emails.ts";
 import type { Mail, Mailer, MailKind } from "../mail/mailer.ts";
+import {
+  createAccountNotices,
+  createSignInFailures,
+} from "./account-limits.ts";
 import { isFresh } from "./account-sessions.ts";
 import { type AppCodes, createAppCodes, isChallenge } from "./app-codes.ts";
 import type { BreachCheck } from "./breached-passwords.ts";
@@ -44,6 +48,7 @@ import { createEmailLinks, type EmailLinks } from "./email-links.ts";
 import {
   appReturnAddress,
   isProvider,
+  MAX_NAME_LENGTH,
   PROVIDER_LABELS,
   PROVIDER_UNLINKED,
   type Provider,
@@ -85,6 +90,20 @@ const CONFIRM_FIRST = {
 
 /** Code trades per IP in the window. The app makes one per sign-in. */
 export const APP_SESSION_LIMIT = { window: 60, max: 10 };
+
+/** Email change approvals per IP in the window */
+export const APPROVE_EMAIL_CHANGE_LIMIT = { window: 60, max: 10 };
+
+/** Where the approval email's button opens, with ?token= */
+export const APPROVE_EMAIL_CHANGE_PATH = "/approve-email-change";
+
+const APPROVAL_INVALID = {
+  code: "INVALID_TOKEN",
+  message: "This link didn't work. Start the change again from Account.",
+};
+
+// The same answer Better Auth's own limiter gives
+const TOO_MANY = { message: "Too many requests. Please try again later." };
 
 const PASSWORD_ERROR_CODES = {
   too_short: "PASSWORD_TOO_SHORT",
@@ -132,6 +151,34 @@ function checkName(name: unknown) {
       message: "Use letters, numbers, spaces, and punctuation.",
     });
   }
+  if (name.trim().length > MAX_NAME_LENGTH) {
+    throw new APIError("BAD_REQUEST", {
+      code: "NAME_INVALID",
+      message: `Use ${MAX_NAME_LENGTH} characters or fewer.`,
+    });
+  }
+}
+
+/** A JSON body without its session tokens, or null when it has none */
+function withoutSessionTokens(returned: unknown) {
+  if (
+    typeof returned !== "object" ||
+    returned === null ||
+    Array.isArray(returned) ||
+    returned instanceof Response ||
+    isAPIError(returned)
+  ) {
+    return null;
+  }
+  const { token, session, ...rest } = returned as Record<string, unknown>;
+  const inner =
+    typeof session === "object" && session !== null && "token" in session
+      ? (session as Record<string, unknown>)
+      : null;
+  if (token === undefined && !inner) return null;
+  if (!inner) return session === undefined ? rest : { ...rest, session };
+  const { token: _token, ...kept } = inner;
+  return { ...rest, session: kept };
 }
 
 export interface AuthLogger {
@@ -183,6 +230,10 @@ export function createAuth(config: AuthConfig) {
   const links = config.emailLinks ?? createEmailLinks(config.db);
   const resetLinks = config.resetLinks ?? createResetLinks(config.db);
   const appCodes = config.appCodes ?? createAppCodes(config.db);
+  const notices = createAccountNotices(config.db);
+  // Follows the IP limiter's switch, so tests that turn it off can repeat wrong passwords
+  const signInFailures =
+    config.rateLimit === false ? null : createSignInFailures(config.db);
 
   // Runs after the local rules, so the service is only asked about passwords that pass them
   const rejectBreached = async (password: unknown) => {
@@ -194,6 +245,20 @@ export function createAuth(config: AuthConfig) {
 
   const rules = createAuthMiddleware(async (ctx) => {
     const body = (ctx.body ?? {}) as Record<string, unknown>;
+    if (
+      ctx.path === "/sign-in/email" &&
+      signInFailures &&
+      typeof body.email === "string"
+    ) {
+      // Counted per email whether or not it has an account, so the answer is the same
+      const wait = await signInFailures.wait(body.email);
+      if (wait !== null) {
+        throw new APIError("TOO_MANY_REQUESTS", TOO_MANY, {
+          "X-Retry-After": String(wait),
+        });
+      }
+    }
+
     if (ctx.path === "/sign-up/email") {
       checkName(body.name);
       checkPasswordRules(body.password, body);
@@ -362,23 +427,25 @@ export function createAuth(config: AuthConfig) {
       const token = ctx.query?.token;
       const change = typeof token === "string" ? readChangeLink(token) : null;
       const failed = change ? emailChangePath("failed") : LINK_FAILED_PATH;
+      if (typeof token === "string" && change && !change.finishes) {
+        // Approval takes a press on our page, whose route has already used the link
+        if (ctx.request || !approving.delete(token)) throw ctx.redirect(failed);
+        // No callbackURL, so Better Auth answers instead of redirecting
+        return;
+      }
       if (typeof token !== "string" || !(await links.consume(token))) {
         throw ctx.redirect(failed);
       }
       if (change) {
-        if (change.finishes) {
-          // Someone may have taken the address since it was approved
-          const taken = await ctx.context.internalAdapter.findUserByEmail(
-            change.to,
-          );
-          if (taken) throw ctx.redirect(failed);
-        }
-        // Better Auth sends both steps to one address, so each step picks its own
-        const step = change.finishes ? "changed" : "approved";
+        // Someone may have taken the address since it was approved
+        const taken = await ctx.context.internalAdapter.findUserByEmail(
+          change.to,
+        );
+        if (taken) throw ctx.redirect(failed);
         return {
           context: {
             ...ctx,
-            query: { ...ctx.query, callbackURL: emailChangePath(step) },
+            query: { ...ctx.query, callbackURL: emailChangePath("changed") },
           },
         };
       }
@@ -402,8 +469,20 @@ export function createAuth(config: AuthConfig) {
     );
   }
 
+  // Skipped inside the same background chain, so the response never changes
+  function sendNotice(mail: Mail, kind: MailKind, userId: string) {
+    notices
+      .claim(kind, userId)
+      .then((claimed) => {
+        if (claimed) sendLater(mail, kind, userId);
+      })
+      .catch((err: unknown) =>
+        config.log.error({ err, kind, userId }, "sign-in email failed"),
+      );
+  }
+
   function sendEmailInUse(user: { id: string; email: string }) {
-    sendLater(
+    sendNotice(
       emailInUse(user.email, config.webOrigin),
       "email-in-use",
       user.id,
@@ -473,6 +552,17 @@ export function createAuth(config: AuthConfig) {
   const appChallenges = new WeakMap<object, string>();
 
   const afterRoutes = createAuthMiddleware(async (ctx) => {
+    if (ctx.path === "/sign-in/email" && signInFailures) {
+      const email = (ctx.body as Record<string, unknown> | undefined)?.email;
+      const returned = ctx.context.returned;
+      if (typeof email !== "string" || !returned) return;
+      if (!isAPIError(returned)) {
+        await signInFailures.clear(email);
+      } else if (returned.statusCode === 401) {
+        await signInFailures.record(email);
+      }
+      return;
+    }
     if (ctx.path === "/callback/:id") {
       const provider = justLinked.get(ctx.context);
       const returned = ctx.context.returned;
@@ -521,11 +611,14 @@ export function createAuth(config: AuthConfig) {
       const token = ctx.query?.token;
       // Hooks don't share a context, so read the link again. Only a link Better Auth accepted reaches the changed step.
       const change = typeof token === "string" ? readChangeLink(token) : null;
+      if (!change?.finishes) return;
       const returned = ctx.context.returned;
-      const location = isAPIError(returned)
-        ? returned.headers?.get("location")
-        : null;
-      if (change?.finishes && location === emailChangePath("changed")) {
+      // Errors without a redirect carry plain headers
+      const location =
+        isAPIError(returned) && returned.headers instanceof Headers
+          ? returned.headers.get("location")
+          : null;
+      if (location === emailChangePath("changed")) {
         await finishEmailChange(ctx, change);
       }
       return;
@@ -537,10 +630,32 @@ export function createAuth(config: AuthConfig) {
     if (user) sendPasswordChanged(user);
   });
 
+  // The session cookie is all a client needs, so tokens stay out of bodies page scripts can read
+  const withoutTokensInBody = {
+    id: "no-session-tokens",
+    hooks: {
+      after: [
+        {
+          matcher: () => true,
+          handler: createAuthMiddleware(async (ctx) => {
+            const body = withoutSessionTokens(ctx.context.returned);
+            if (body) return ctx.json(body);
+          }),
+        },
+      ],
+    },
+  };
+
   // Reset links that finish a sign-up instead of changing a password, by user
   const finishing = new Set<string>();
   // Resets that set an account's first way to sign in, by request
   const firstPasswords = new WeakSet<Request>();
+
+  // Approval links the approve route has used and is passing to Better Auth
+  const approving = new Set<string>();
+  // Set once auth exists, so the approve route can use its API
+  let runApproval: (token: string, headers?: Headers) => Promise<boolean> =
+    async () => false;
 
   // Set once auth exists, so the duplicate sign-up hook can use its API
   let sendFinishLink: (user: { id: string; email: string }) => void = () => {};
@@ -585,17 +700,46 @@ export function createAuth(config: AuthConfig) {
               return ctx.json({ ok: true });
             },
           ),
+          // The page behind the approval email posts here, so opening the link changes nothing
+          approveEmailChange: createAuthEndpoint(
+            "/approve-email-change",
+            { method: "POST" },
+            async (ctx) => {
+              const { token } = (ctx.body ?? {}) as Record<string, unknown>;
+              const change =
+                typeof token === "string" ? readChangeLink(token) : null;
+              const approved =
+                typeof token === "string" &&
+                change !== null &&
+                !change.finishes &&
+                (await links.consume(token)) &&
+                (await runApproval(token, ctx.headers));
+              if (!approved) {
+                throw new APIError("BAD_REQUEST", APPROVAL_INVALID);
+              }
+              return ctx.json({ status: "approved" });
+            },
+          ),
         },
       },
+      // Last, so it sees each body after every other hook
+      withoutTokensInBody,
     ],
     socialProviders: socialProviders(config.providers),
-    // Our own route takes a lock and remembers the unlink
-    disabledPaths: ["/unlink-account"],
+    // Our own routes take a lock and remember the unlink, and list and end sessions
+    disabledPaths: [
+      "/unlink-account",
+      "/list-sessions",
+      "/revoke-session",
+      "/revoke-sessions",
+      "/revoke-other-sessions",
+    ],
     user: {
       changeEmail: {
         enabled: true,
         // The current address approves first, then the new one confirms
-        sendChangeEmailConfirmation: async ({ user, newEmail, url, token }) => {
+        sendChangeEmailConfirmation: async ({ user, newEmail, token }) => {
+          const link = `${config.webOrigin}${APPROVE_EMAIL_CHANGE_PATH}?${new URLSearchParams({ token })}`;
           // Not awaited, so a free address answers as fast as a taken one
           links
             .remember(
@@ -605,7 +749,12 @@ export function createAuth(config: AuthConfig) {
             )
             .then(() =>
               sendLater(
-                approveEmailChange(user.email, newEmail, url, config.webOrigin),
+                approveEmailChange(
+                  user.email,
+                  newEmail,
+                  link,
+                  config.webOrigin,
+                ),
                 "approve-email-change",
                 user.id,
               ),
@@ -716,7 +865,7 @@ export function createAuth(config: AuthConfig) {
           sendFinishLink(user);
           return;
         }
-        sendLater(
+        sendNotice(
           existingAccount(user.email, config.webOrigin),
           "existing-account",
           user.id,
@@ -753,6 +902,8 @@ export function createAuth(config: AuthConfig) {
       },
       onPasswordReset: async ({ user }, request) => {
         await resetLinks.revokeAll(user.id);
+        // A new password proves the inbox, so earlier wrong guesses stop counting
+        await signInFailures?.clear(user.email);
         // Opening the link proved they read this inbox
         if (!user.emailVerified) {
           await config.db
@@ -794,6 +945,7 @@ export function createAuth(config: AuthConfig) {
         "/change-password": CHANGE_PASSWORD_LIMIT,
         "/change-email": CHANGE_EMAIL_LIMIT,
         "/app-session": APP_SESSION_LIMIT,
+        "/approve-email-change": APPROVE_EMAIL_CHANGE_LIMIT,
       },
     },
     hooks: { before: rules, after: afterRoutes },
@@ -818,6 +970,19 @@ export function createAuth(config: AuthConfig) {
       },
     },
   });
+
+  runApproval = async (token, headers) => {
+    approving.add(token);
+    try {
+      await auth.api.verifyEmail({ query: { token }, headers });
+      return true;
+    } catch (err) {
+      if (isAPIError(err)) return false;
+      throw err;
+    } finally {
+      approving.delete(token);
+    }
+  };
 
   // Drops the unconfirmed password and emails a link to choose one, which also confirms the email
   sendFinishLink = (user) => {

@@ -1,3 +1,4 @@
+import { API_PREFIX } from "@meritory/contracts";
 import type { FastifyInstance, FastifyRequest } from "fastify";
 
 export interface AuthRouteDependencies {
@@ -14,6 +15,54 @@ const SKIPPED_HEADERS = new Set([
   "content-length",
   "transfer-encoding",
 ]);
+
+/**
+ * An allowlist, so a route Better Auth adds stays closed until it's listed here.
+ * A :name part stands for one path segment.
+ */
+export const AUTH_ROUTES = {
+  GET: [
+    "/get-session",
+    "/verify-email",
+    "/reset-password/:token",
+    "/callback/:provider",
+    "/expo-authorization-proxy",
+    "/error",
+  ],
+  POST: [
+    "/sign-up/email",
+    "/sign-in/email",
+    "/sign-in/social",
+    "/sign-out",
+    "/send-verification-email",
+    "/request-password-reset",
+    "/reset-password",
+    "/change-password",
+    "/change-email",
+    "/approve-email-change",
+    "/update-user",
+    "/link-social",
+    "/app-session",
+  ],
+} as const;
+
+const AUTH_BASE = `${API_PREFIX}/auth`;
+
+const ROUTE_PATTERNS = Object.fromEntries(
+  Object.entries(AUTH_ROUTES).map(([method, paths]) => [
+    method,
+    paths.map((path) => new RegExp(`^${path.replace(/:[a-z]+/g, "[^/]+")}$`)),
+  ]),
+) as Record<string, RegExp[] | undefined>;
+
+/** True when the request is for a listed route, read the way Better Auth will read it */
+export function isAuthRoute(method: string, url: string): boolean {
+  // Resolves dot segments the same way the Request handed to Better Auth does
+  const { pathname } = new URL(url, "http://api.invalid");
+  if (!pathname.startsWith(`${AUTH_BASE}/`)) return false;
+  const path = pathname.slice(AUTH_BASE.length);
+  return ROUTE_PATTERNS[method]?.some((pattern) => pattern.test(path)) ?? false;
+}
 
 export function toFetchHeaders(request: FastifyRequest): Headers {
   const headers = new Headers();
@@ -35,6 +84,8 @@ export function registerAuthRoutes(
     url: "/auth/*",
     schema: { hide: true },
     async handler(request, reply) {
+      if (!isAuthRoute(request.method, request.url))
+        return reply.callNotFound();
       // Links in emails and OAuth callbacks come from this URL, so never trust the Host header
       const url = `${deps.publicApiUrl}${request.url}`;
       const hasBody = request.method !== "GET" && request.body !== undefined;
