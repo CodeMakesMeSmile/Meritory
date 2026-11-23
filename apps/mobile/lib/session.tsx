@@ -6,7 +6,19 @@ import {
   useRef,
   useState,
 } from "react";
+import { AppState } from "react-native";
+import { recallApi } from "./api";
 import { authClient } from "./auth-client";
+import { contentFiles } from "./content-files";
+import { createTimeZoneSync, deviceTimeZone } from "./time-zone";
+
+const timeZones = createTimeZoneSync(recallApi.saveTimeZone);
+
+/** The content copy belongs to the account that downloaded it */
+function forgetAccount() {
+  timeZones.reset();
+  contentFiles.clear().catch(() => {});
+}
 
 interface Session {
   user: { name: string } | null;
@@ -37,11 +49,23 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     }
     if (isPending || !hadSession.current) return;
     hadSession.current = false;
+    forgetAccount();
     if (choseSignOut.current) return;
     setEndedElsewhere(true);
     // Removes the stored cookie, which the server no longer accepts
     authClient.signOut().catch(() => {});
   }, [signedIn, isPending]);
+
+  useEffect(() => {
+    if (!signedIn) return;
+    const sync = () => void timeZones.sync(deviceTimeZone());
+    sync();
+    // The zone can change while the app waits in the background
+    const returned = AppState.addEventListener("change", (state) => {
+      if (state === "active") sync();
+    });
+    return () => returned.remove();
+  }, [signedIn]);
 
   function signOut() {
     choseSignOut.current = true;
