@@ -1,9 +1,8 @@
 # Built from the repo root: docker build -f apps/worker/Dockerfile .
 ARG NODE_IMAGE=node:26.13.1-alpine@sha256:6bd9ab43c0ec0190ca7b2d193906cb8b7edf6e7f4afa43ddeccd6452710bffb5
 
-FROM ${NODE_IMAGE} AS run
+FROM ${NODE_IMAGE} AS deps
 WORKDIR /repo
-ENV NODE_ENV=production
 # pnpm at the version in package.json
 COPY package.json ./
 RUN npm install -g "$(node -p "require('./package.json').packageManager")"
@@ -24,7 +23,17 @@ COPY packages/recall-client/package.json packages/recall-client/
 COPY packages/security-testing/package.json packages/security-testing/
 COPY packages/server/package.json packages/server/
 RUN pnpm install --frozen-lockfile --prod --filter "@meritory/worker..."
-COPY packages packages
+
+# Starts clean, so pnpm and npm's cache stay behind
+FROM ${NODE_IMAGE} AS run
+WORKDIR /repo
+ENV NODE_ENV=production
+COPY --from=deps /repo ./
+# Only the packages the worker imports
+COPY packages/design-tokens packages/design-tokens
+COPY packages/learning packages/learning
+COPY packages/password packages/password
+COPY packages/server packages/server
 COPY apps/worker apps/worker
 USER node
 CMD ["node", "apps/worker/src/main.ts"]

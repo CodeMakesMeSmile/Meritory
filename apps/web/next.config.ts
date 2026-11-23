@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url";
 import type { NextConfig } from "next";
 
 const apiOrigin = process.env.API_ORIGIN ?? "http://localhost:4000";
@@ -18,6 +19,10 @@ export const SECURITY_HEADERS = [
 const config: NextConfig = {
   agentRules: false,
   poweredByHeader: false,
+  // The image runs .next/standalone, which holds only the files the server needs
+  output: "standalone",
+  // Traced from the repo root, so workspace packages and the shared store are included
+  outputFileTracingRoot: fileURLToPath(new URL("../..", import.meta.url)),
   async headers() {
     return [
       { source: "/:path*", headers: SECURITY_HEADERS },

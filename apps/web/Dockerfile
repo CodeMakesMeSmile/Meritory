@@ -1,7 +1,7 @@
 # Built from the repo root: docker build -f apps/web/Dockerfile .
 ARG NODE_IMAGE=node:26.13.1-alpine@sha256:6bd9ab43c0ec0190ca7b2d193906cb8b7edf6e7f4afa43ddeccd6452710bffb5
 
-FROM ${NODE_IMAGE} AS base
+FROM ${NODE_IMAGE} AS build
 WORKDIR /repo
 # pnpm at the version in package.json
 COPY package.json ./
@@ -22,9 +22,7 @@ COPY packages/password/package.json packages/password/
 COPY packages/recall-client/package.json packages/recall-client/
 COPY packages/security-testing/package.json packages/security-testing/
 COPY packages/server/package.json packages/server/
-
 # The build needs the dev tools, which the final image leaves out
-FROM base AS build
 RUN pnpm install --frozen-lockfile --filter "@meritory/web..."
 COPY tsconfig.base.json tsconfig.node.json ./
 COPY packages packages
@@ -34,13 +32,15 @@ ARG API_ORIGIN=http://api:4000
 ENV API_ORIGIN=${API_ORIGIN}
 RUN pnpm --filter @meritory/web build
 
-FROM base AS run
+# Standalone output holds only the files the server traced, with its own node_modules
+FROM ${NODE_IMAGE} AS run
+WORKDIR /repo
 ENV NODE_ENV=production
-RUN pnpm install --frozen-lockfile --prod --filter "@meritory/web..."
-COPY packages packages
-COPY apps/web apps/web
-COPY --from=build /repo/apps/web/.next apps/web/.next
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
+COPY --from=build /repo/apps/web/.next/standalone ./
+# The standalone server serves these, but the build leaves them out
+COPY --from=build /repo/apps/web/.next/static apps/web/.next/static
 USER node
-WORKDIR /repo/apps/web
 EXPOSE 3000
-CMD ["node", "node_modules/next/dist/bin/next", "start", "--port", "3000"]
+CMD ["node", "apps/web/server.js"]

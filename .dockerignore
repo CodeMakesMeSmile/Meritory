@@ -20,6 +20,10 @@ docs
 **/coverage
 **/*.tsbuildinfo
 
+# Tests run in CI, never in an image
+**/*.test.ts
+**/*.test.tsx
+
 # Content that only loads on the owner's machine, and course downloads
 content/private-*
 content/resources

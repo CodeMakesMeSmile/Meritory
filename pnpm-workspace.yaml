@@ -6,11 +6,18 @@ packages:
 allowBuilds:
   esbuild: true
 
+# An optional peer comes only from the project's own dependencies, so the server
+# install doesn't pick up Next.js from web or Expo from mobile
+projectScopedOptionalPeers: true
+
 overrides:
   # drizzle-kit lists it but never loads it, and it pins an esbuild with a known flaw
   "drizzle-kit>@esbuild-kit/esm-loader": "-"
   # An optional peer for phones, which would bring the Expo CLI into the server install
   "drizzle-orm>expo-sqlite": "-"
+  # better-auth's server code never loads these, and dev tools elsewhere would fill them
+  "better-auth>vitest:peer": "-"
+  "better-auth>drizzle-kit:peer": "-"
   # 13.0.7 has the abort fix and stays inside Expo's ^13 range. Remove with MER-49
   "glob@": 13.0.7
 
