@@ -107,7 +107,16 @@ function Done({
 
   return (
     <>
-      <CountSquares filled={count} total={count} />
+      <View style={styles.bar}>
+        <AppText variant="bodyStrong">Recall done</AppText>
+        <AppText
+          variant="numeric"
+          color="textSecondary"
+          accessibilityLabel={`${count} of ${count} cards`}
+        >
+          {count} of {count}
+        </AppText>
+      </View>
       {undo}
       <CardBox>
         <View accessibilityLiveRegion="polite">
