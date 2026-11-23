@@ -40,4 +40,5 @@ jobs:
           restore-keys: pnpm-content-${{ runner.os }}-
 
       - run: pnpm install --frozen-lockfile --filter @meritory/content
-      - run: pnpm content:recheck
+      # Fails on an overdue fact, so the weekly run can't pass unread
+      - run: pnpm content:recheck --strict

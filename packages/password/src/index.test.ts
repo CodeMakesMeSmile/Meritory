@@ -53,6 +53,33 @@ describe("checkPassword", () => {
     }
   });
 
+  it("accepts a short name that only sits inside a longer word", () => {
+    for (const [name, password] of [
+      ["Ian Moss", "grand piano under violet stars"],
+      ["Tom", "the bottom shelf holds teacups"],
+      ["Li", "violet harbor sunlight sandwich"],
+    ] as const) {
+      expect(checkPassword(password, { name }).problem).toBeNull();
+    }
+  });
+
+  it("rejects a short name used as a word of its own", () => {
+    for (const [name, password] of [
+      ["Ian Moss", "ian plays the grand piano"],
+      ["Tom", "teacups for tom2024 and friends"],
+      ["Anna", "Tram-rides-with-ANNA-daily"],
+    ] as const) {
+      expect(checkPassword(password, { name }).problem).toBe("personal");
+    }
+  });
+
+  it("still finds a name of five letters or more inside a word", () => {
+    const check = checkPassword("superchesterfield sofa tram", {
+      name: "Anna Chester",
+    });
+    expect(check.problem).toBe("personal");
+  });
+
   it("accepts a few unrelated words, with no character rules", () => {
     const result = checkPassword("violet harbor tractor sandwich");
     expect(result.problem).toBeNull();

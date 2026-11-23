@@ -68,16 +68,17 @@
   skill: negative-edges
   asks: why
   type: prompt
-  prompt: Why does Dijkstra's algorithm give wrong answers when an edge can have a negative weight?
+  prompt: Why can't Dijkstra's algorithm be trusted when an edge can have a negative weight?
   reworded: What goes wrong in Dijkstra's algorithm if some edges cost less than zero?
   points:
-    - It settles a node the first time it's popped, trusting that later routes can only cost more.
-    - A negative edge found later can make a cheaper route to a node that's already settled.
-    - The settled node and everything reached through it then keep their wrong costs.
-  misconception: That Dijkstra's algorithm just runs a little slower with negative edges but still gets the right answer.
+    - It treats a node's cost as final the first time it's popped, trusting that later routes can only cost more.
+    - A negative edge found later can make a cheaper route to a node that was already popped.
+    - A search that stops at the goal or never goes back to a popped node then answers with the wrong cost.
+    - A search that does go back redoes nodes over and over, so its time bound no longer holds.
+  misconception: That a node's cost is still final the first time it's popped, as long as there's no negative cycle.
   lesson:
     title: Settled too soon
-    explanation: "With edges `0 → 1` at 2, `0 → 2` at 5, and `2 → 1` at -4, node 1 is settled at 2, but the real cheapest is 1. Bellman-Ford never settles early, so it handles this."
+    explanation: "With edges `0 → 1` at 2, `0 → 2` at 5, and `2 → 1` at -4, node 1 is popped at 2, but the real cheapest is 1. Bellman-Ford never treats a cost as final early, so it handles this."
 - id: when-no-cheapest-path
   skill: negative-edges
   asks: when

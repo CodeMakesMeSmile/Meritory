@@ -62,6 +62,16 @@ function personalWords({ name, email }: PersonalDetails): string[] {
   return words;
 }
 
+/** Personal words shorter than this only count as whole words */
+export const WHOLE_WORD_BELOW = 5;
+
+// A short name sits inside ordinary words, the way "ian" is in "piano"
+function holdsWord(lower: string, word: string): boolean {
+  if (countCharacters(word) >= WHOLE_WORD_BELOW) return lower.includes(word);
+  const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(`(?<!\\p{L})${escaped}(?!\\p{L})`, "u").test(lower);
+}
+
 export function checkPassword(
   password: string,
   details: PersonalDetails = {},
@@ -77,7 +87,7 @@ export function checkPassword(
 
   const words = personalWords(details);
   const lower = password.toLowerCase();
-  const personal = words.some((word) => lower.includes(word));
+  const personal = words.some((word) => holdsWord(lower, word));
   const strength = personal ? "weak" : estimate(password, words);
   if (length < MIN_PASSWORD_LENGTH) {
     // A short password can't be saved, so the meter never calls it good

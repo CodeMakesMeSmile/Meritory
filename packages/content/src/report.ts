@@ -1,4 +1,4 @@
-import { appendFile } from "node:fs/promises";
+import { access, appendFile } from "node:fs/promises";
 import path from "node:path";
 import { formatProblem, type LoadedFact, loadTrackFacts } from "./load.ts";
 import {
@@ -8,6 +8,7 @@ import {
   recheckReport,
   todayUtc,
 } from "./recheck.ts";
+import { type Problem, subfolders } from "./yaml-file.ts";
 
 type Report = RecheckReport<LoadedFact>;
 type Item = Due<LoadedFact>;
@@ -163,7 +164,10 @@ export function formatSummary(
 }
 
 export type RecheckOptions = {
-  trackDir: string;
+  /** The folder with one folder per track */
+  contentDir: string;
+  /** Fails the run when a fact is overdue */
+  strict?: boolean;
   /** Paths in the output are relative to this */
   root: string;
   today?: string;
@@ -175,13 +179,31 @@ export type RecheckOptions = {
   err?: (text: string) => void;
 };
 
+/** Every folder that holds a track file */
+async function trackFolders(contentDir: string): Promise<string[]> {
+  const tracks: string[] = [];
+  for (const name of await subfolders(contentDir)) {
+    const dir = path.join(contentDir, name);
+    const found = await access(path.join(dir, "track.yaml")).then(
+      () => true,
+      () => false,
+    );
+    if (found) tracks.push(dir);
+  }
+  return tracks;
+}
+
+const tracks = (count: number) => (count === 1 ? "1 track" : `${count} tracks`);
+
 /**
- * Prints the recheck report and returns the exit code. Overdue facts don't
- * fail the run, since learners already can't see them, but content with
- * problems does, so the report never runs on half-loaded files.
+ * Prints the recheck report for every track and returns the exit code. Overdue
+ * facts only fail a strict run, since learners already can't see them. Content
+ * with problems always fails, so the report never runs on half-loaded files,
+ * and so does finding no tracks, so a wrong folder can't pass by checking nothing.
  */
 export async function runRecheck({
-  trackDir,
+  contentDir,
+  strict = false,
   root,
   today = todayUtc(),
   github = false,
@@ -189,7 +211,20 @@ export async function runRecheck({
   out = console.log,
   err = console.error,
 }: RecheckOptions): Promise<number> {
-  const { facts, problems } = await loadTrackFacts(trackDir, today);
+  const trackDirs = await trackFolders(contentDir);
+  if (trackDirs.length === 0) {
+    err(
+      `${relativeFile(contentDir, root)} has no tracks, so nothing was checked`,
+    );
+    return 1;
+  }
+  const facts: LoadedFact[] = [];
+  const problems: Problem[] = [];
+  for (const trackDir of trackDirs) {
+    const loaded = await loadTrackFacts(trackDir, today);
+    facts.push(...loaded.facts);
+    problems.push(...loaded.problems);
+  }
   if (problems.length > 0) {
     for (const problem of problems) {
       err(formatProblem(problem, root));
@@ -205,6 +240,8 @@ export async function runRecheck({
   }
 
   const report = recheckReport(facts, today);
+  const checked = facts.length === 1 ? "1 fact" : `${facts.length} facts`;
+  out(`Checked ${checked} in ${tracks(trackDirs.length)}.`);
   out(formatText(report, root));
   if (github) {
     for (const line of formatAnnotations(report, root)) out(line);
@@ -212,5 +249,5 @@ export async function runRecheck({
       await appendFile(summaryFile, formatSummary(report, root, today));
     }
   }
-  return 0;
+  return strict && report.overdue.length > 0 ? 1 : 0;
 }

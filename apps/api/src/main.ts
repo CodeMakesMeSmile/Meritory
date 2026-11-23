@@ -15,6 +15,7 @@ import { buildApp } from "./app.ts";
 import { createCodeRunner } from "./code.ts";
 import { readConfig } from "./config.ts";
 import { loadContent } from "./content.ts";
+import { loggerOptions } from "./request-log.ts";
 
 const config = readConfig(process.env);
 // Before anything connects, so a bad bundle stops the start cleanly
@@ -79,7 +80,7 @@ const app = await buildApp(
     recall: createRecallStore(database.db),
     codeRunner: config.runner && createCodeRunner(config.runner),
   },
-  { logger: { level: config.logLevel } },
+  { logger: loggerOptions(config.logLevel) },
 );
 
 // Close HTTP before the database so in-flight requests finish. Force exit after 10s.
