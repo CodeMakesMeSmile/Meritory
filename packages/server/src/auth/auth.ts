@@ -97,6 +97,17 @@ export const APPROVE_EMAIL_CHANGE_LIMIT = { window: 60, max: 10 };
 /** Where the approval email's button opens, with ?token= */
 export const APPROVE_EMAIL_CHANGE_PATH = "/approve-email-change";
 
+/** Email confirmations per IP in the window */
+export const CONFIRM_EMAIL_LIMIT = { window: 60, max: 10 };
+
+/** Where a confirmation email's button opens, with ?token= */
+export const CONFIRM_EMAIL_PATH = "/confirm-email";
+
+const CONFIRM_INVALID = {
+  code: "INVALID_TOKEN",
+  message: "This link didn't work. Ask for a new one.",
+};
+
 const APPROVAL_INVALID = {
   code: "INVALID_TOKEN",
   message: "This link didn't work. Start the change again from Account.",
@@ -427,28 +438,21 @@ export function createAuth(config: AuthConfig) {
       const token = ctx.query?.token;
       const change = typeof token === "string" ? readChangeLink(token) : null;
       const failed = change ? emailChangePath("failed") : LINK_FAILED_PATH;
-      if (typeof token === "string" && change && !change.finishes) {
-        // Approval takes a press on our page, whose route has already used the link
-        if (ctx.request || !approving.delete(token)) throw ctx.redirect(failed);
-        // No callbackURL, so Better Auth answers instead of redirecting
-        return;
-      }
-      if (typeof token !== "string" || !(await links.consume(token))) {
+      // Every link takes a press on our page, so only our own routes get past here
+      if (typeof token !== "string" || ctx.request || !pressed.delete(token)) {
         throw ctx.redirect(failed);
       }
+      // The approve route has already used its link
+      if (change && !change.finishes) return;
+      if (!(await links.consume(token))) throw ctx.redirect(failed);
       if (change) {
         // Someone may have taken the address since it was approved
         const taken = await ctx.context.internalAdapter.findUserByEmail(
           change.to,
         );
         if (taken) throw ctx.redirect(failed);
-        return {
-          context: {
-            ...ctx,
-            query: { ...ctx.query, callbackURL: emailChangePath("changed") },
-          },
-        };
       }
+      // No callbackURL, so Better Auth answers instead of redirecting
     }
   });
 
@@ -607,22 +611,6 @@ export function createAuth(config: AuthConfig) {
       }
       throw ctx.redirect(provider ? withLinked(location, provider) : location);
     }
-    if (ctx.path === "/verify-email") {
-      const token = ctx.query?.token;
-      // Hooks don't share a context, so read the link again. Only a link Better Auth accepted reaches the changed step.
-      const change = typeof token === "string" ? readChangeLink(token) : null;
-      if (!change?.finishes) return;
-      const returned = ctx.context.returned;
-      // Errors without a redirect carry plain headers
-      const location =
-        isAPIError(returned) && returned.headers instanceof Headers
-          ? returned.headers.get("location")
-          : null;
-      if (location === emailChangePath("changed")) {
-        await finishEmailChange(ctx, change);
-      }
-      return;
-    }
     if (ctx.path !== "/change-password") return;
     const returned = ctx.context.returned as { user?: unknown } | undefined;
     if (!returned || isAPIError(returned)) return;
@@ -651,10 +639,10 @@ export function createAuth(config: AuthConfig) {
   // Resets that set an account's first way to sign in, by request
   const firstPasswords = new WeakSet<Request>();
 
-  // Approval links the approve route has used and is passing to Better Auth
-  const approving = new Set<string>();
-  // Set once auth exists, so the approve route can use its API
-  let runApproval: (token: string, headers?: Headers) => Promise<boolean> =
+  // Links whose button was pressed, which our routes are passing to Better Auth
+  const pressed = new Set<string>();
+  // Set once auth exists, so the approve and confirm routes can use its API
+  let verifyPressed: (token: string, headers?: Headers) => Promise<boolean> =
     async () => false;
 
   // Set once auth exists, so the duplicate sign-up hook can use its API
@@ -713,11 +701,30 @@ export function createAuth(config: AuthConfig) {
                 change !== null &&
                 !change.finishes &&
                 (await links.consume(token)) &&
-                (await runApproval(token, ctx.headers));
+                (await verifyPressed(token, ctx.headers));
               if (!approved) {
                 throw new APIError("BAD_REQUEST", APPROVAL_INVALID);
               }
               return ctx.json({ status: "approved" });
+            },
+          ),
+          // The page behind a confirmation email posts here, so a mail scanner opening the link confirms nothing
+          confirmEmail: createAuthEndpoint(
+            "/confirm-email",
+            { method: "POST" },
+            async (ctx) => {
+              const { token } = (ctx.body ?? {}) as Record<string, unknown>;
+              const change =
+                typeof token === "string" ? readChangeLink(token) : null;
+              const confirmed =
+                typeof token === "string" &&
+                (change === null || change.finishes) &&
+                (await verifyPressed(token, ctx.headers));
+              if (!confirmed) {
+                throw new APIError("BAD_REQUEST", CONFIRM_INVALID);
+              }
+              if (change) await finishEmailChange(ctx, change);
+              return ctx.json({ status: change ? "changed" : "confirmed" });
             },
           ),
         },
@@ -918,7 +925,9 @@ export function createAuth(config: AuthConfig) {
     emailVerification: {
       sendOnSignUp: true,
       expiresIn: LINK_LIFETIME_SECONDS,
-      sendVerificationEmail: async ({ user, url, token }) => {
+      sendVerificationEmail: async ({ user, token }) => {
+        const link = (extra: Record<string, string> = {}) =>
+          `${config.webOrigin}${CONFIRM_EMAIL_PATH}?${new URLSearchParams({ token, ...extra })}`;
         await links.remember(
           user.id,
           token,
@@ -927,13 +936,13 @@ export function createAuth(config: AuthConfig) {
         // The second step of an email change comes here too, for the new address
         if (readChangeLink(token)) {
           sendLater(
-            confirmNewEmail(user.email, url),
+            confirmNewEmail(user.email, link({ change: "1" })),
             "confirm-new-email",
             user.id,
           );
           return;
         }
-        sendLater(verifyEmail(user.email, url), "verify-email", user.id);
+        sendLater(verifyEmail(user.email, link()), "verify-email", user.id);
       },
     },
     rateLimit: {
@@ -946,6 +955,7 @@ export function createAuth(config: AuthConfig) {
         "/change-email": CHANGE_EMAIL_LIMIT,
         "/app-session": APP_SESSION_LIMIT,
         "/approve-email-change": APPROVE_EMAIL_CHANGE_LIMIT,
+        "/confirm-email": CONFIRM_EMAIL_LIMIT,
       },
     },
     hooks: { before: rules, after: afterRoutes },
@@ -971,8 +981,8 @@ export function createAuth(config: AuthConfig) {
     },
   });
 
-  runApproval = async (token, headers) => {
-    approving.add(token);
+  verifyPressed = async (token, headers) => {
+    pressed.add(token);
     try {
       await auth.api.verifyEmail({ query: { token }, headers });
       return true;
@@ -980,7 +990,7 @@ export function createAuth(config: AuthConfig) {
       if (isAPIError(err)) return false;
       throw err;
     } finally {
-      approving.delete(token);
+      pressed.delete(token);
     }
   };
 

@@ -30,6 +30,10 @@ const config: NextConfig = {
         source: "/approve-email-change",
         headers: [{ key: "Referrer-Policy", value: "no-referrer" }],
       },
+      {
+        source: "/confirm-email",
+        headers: [{ key: "Referrer-Policy", value: "no-referrer" }],
+      },
     ];
   },
   // Workspace packages ship TypeScript source

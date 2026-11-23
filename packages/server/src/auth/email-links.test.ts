@@ -46,7 +46,7 @@ describe.skipIf(!url)("email links against Postgres", () => {
     expect(await links.consume("token-late")).toBe(false);
   });
 
-  it("verifies through the real route once, then sends the next try to the expired page", async () => {
+  it("confirms on a press of the page's button, once, and never by opening an address", async () => {
     const sent: Mail[] = [];
     const auth = createAuth({
       db: database.db,
@@ -76,20 +76,49 @@ describe.skipIf(!url)("email links against Postgres", () => {
     expect(signUp.status).toBe(200);
 
     await expect.poll(() => sent.length).toBe(1);
-    const link = sent[0]?.text.match(/https:\/\/\S+verify-email\S+/)?.[0] ?? "";
-    expect(link).toContain("callbackURL=%2Femail-confirmed");
+    const link =
+      sent[0]?.text.match(/https:\/\/\S+confirm-email\S+/)?.[0] ?? "";
+    const { origin, pathname, searchParams } = new URL(link);
+    expect(origin + pathname).toBe("https://meritory.test/confirm-email");
+    const token = searchParams.get("token") ?? "";
+    const verified = async () => {
+      const [user] = await database.db
+        .select({ verified: users.emailVerified })
+        .from(users)
+        .where(eq(users.email, email));
+      return user?.verified;
+    };
 
-    const first = await auth.handler(new Request(link));
-    expect(first.headers.get("location")).toBe("/email-confirmed");
-    const [user] = await database.db
-      .select({ verified: users.emailVerified })
-      .from(users)
-      .where(eq(users.email, email));
-    expect(user?.verified).toBe(true);
-
-    const second = await auth.handler(new Request(link));
-    expect(second.headers.get("location")).toBe(
+    // What a mail scanner would do with the address Better Auth serves
+    const opened = await auth.handler(
+      new Request(
+        `https://meritory.test/api/v1/auth/verify-email?token=${encodeURIComponent(token)}&callbackURL=%2Femail-confirmed`,
+      ),
+    );
+    expect(opened.headers.get("location")).toBe(
       "/email-confirmed?error=INVALID_TOKEN",
     );
+    expect(await verified()).toBe(false);
+
+    const press = () =>
+      auth.handler(
+        new Request("https://meritory.test/api/v1/auth/confirm-email", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            origin: "https://meritory.test",
+          },
+          body: JSON.stringify({ token }),
+        }),
+      );
+    const first = await press();
+    expect(first.status).toBe(200);
+    expect(await first.json()).toEqual({ status: "confirmed" });
+    expect(first.headers.getSetCookie()).toEqual([]);
+    expect(await verified()).toBe(true);
+
+    const second = await press();
+    expect(second.status).toBe(400);
+    expect(await second.json()).toMatchObject({ code: "INVALID_TOKEN" });
   });
 });

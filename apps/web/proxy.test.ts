@@ -45,5 +45,6 @@ describe("proxy", () => {
 
   it("opens the approve page from the email on a device that isn't signed in", () => {
     expect(proxy(request("/approve-email-change?token=abc")).status).toBe(200);
+    expect(proxy(request("/confirm-email?token=abc")).status).toBe(200);
   });
 });

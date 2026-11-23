@@ -19,7 +19,7 @@ import {
 const TO = "rowan@meritory.test";
 const NEXT = "rowan.new@meritory.test";
 const ORIGIN = "https://meritory.test";
-const LINK = `${ORIGIN}/api/v1/auth/verify-email?token=abc`;
+const LINK = `${ORIGIN}/confirm-email?token=abc`;
 
 const notices = () => [
   passwordChanged(TO, ORIGIN),
