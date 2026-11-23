@@ -6,6 +6,8 @@ const apiOrigin = process.env.API_ORIGIN ?? "http://localhost:4000";
 export const SECURITY_HEADERS = [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  // For responses the proxy skips, which carry no frame-ancestors rule
+  { key: "X-Frame-Options", value: "DENY" },
   // Two years. Browsers ignore it over plain http, so local dev is unaffected.
   {
     key: "Strict-Transport-Security",
