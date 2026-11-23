@@ -154,8 +154,27 @@ function describe(error: unknown): string {
     : `Threw ${show(error)}`;
 }
 
+/**
+ * Waits for an async answer. A timer keeps the process alive meanwhile, so a
+ * promise that never settles ends at the time limit like a loop that never ends.
+ */
+async function settled(value: unknown): Promise<unknown> {
+  const then = (value as { then?: unknown } | null)?.then;
+  if (typeof then !== "function") return value;
+  const alive = setInterval(() => {}, 1000);
+  try {
+    return await value;
+  } finally {
+    clearInterval(alive);
+  }
+}
+
 /** Calls a function and reports what it returned, or what it changed */
-function runFunction(fn: Callable, signature: Signature, test: Case): Line {
+async function runFunction(
+  fn: Callable,
+  signature: Signature,
+  test: Case,
+): Promise<Line> {
   const args = new Map<string, unknown>();
   for (const param of signature.params) {
     args.set(param.name, build(param.type, test.input[param.name]));
@@ -179,7 +198,7 @@ function runFunction(fn: Callable, signature: Signature, test: Case): Line {
   const passed = signature.params.filter((p) => !p.hidden);
   let value: unknown;
   try {
-    value = fn(...passed.map((p) => args.get(p.name)));
+    value = await settled(fn(...passed.map((p) => args.get(p.name))));
   } catch (error) {
     return { status: "threw", message: describe(error) };
   }
@@ -194,12 +213,12 @@ function runFunction(fn: Callable, signature: Signature, test: Case): Line {
 }
 
 /** Makes the object, then makes each call in order, reporting each value */
-function runClass(
+async function runClass(
   Made: new (...args: unknown[]) => object,
   signature: Signature,
   test: Case,
   note: (line: Line) => void,
-): Line {
+): Promise<Line> {
   const calls = test.input.calls as string[];
   const argLists = test.input.args as unknown[][];
   let object: Record<string, Callable> | null = null;
@@ -225,7 +244,7 @@ function runClass(
           message: `${signature.class} has no method ${name}`,
         };
       }
-      value = fn.apply(object, args);
+      value = await settled(fn.apply(object, args));
     } catch (error) {
       return {
         status: "threw",
@@ -276,7 +295,7 @@ for (const test of cases) {
     continue;
   }
   const result = signature.class
-    ? runClass(
+    ? await runClass(
         target as new (
           ...args: unknown[]
         ) => object,
@@ -284,6 +303,6 @@ for (const test of cases) {
         test,
         (line) => record({ name: test.name, ...line }),
       )
-    : runFunction(target as Callable, signature, test);
+    : await runFunction(target as Callable, signature, test);
   record({ name: test.name, ...result });
 }
