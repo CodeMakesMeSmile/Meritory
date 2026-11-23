@@ -59,10 +59,16 @@ export function DesignPractice({
 
   useEffect(() => {
     if (!running) return;
-    const timer = window.setInterval(
-      () => setDraft((d) => ({ ...d, seconds: d.seconds + 1 })),
-      1000,
-    );
+    // Counted from the clock, since a hidden tab slows its timers
+    const startedAt = Date.now();
+    let counted = 0;
+    const timer = window.setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startedAt) / 1000);
+      const more = elapsed - counted;
+      if (more <= 0) return;
+      counted = elapsed;
+      setDraft((d) => ({ ...d, seconds: d.seconds + more }));
+    }, 1000);
     return () => window.clearInterval(timer);
   }, [running]);
 
