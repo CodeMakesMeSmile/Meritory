@@ -16,6 +16,7 @@ import { ShowButton } from "@/components/show-button";
 import { TextField } from "@/components/text-field";
 import { confirmPassword } from "@/lib/account-api";
 import { daysAgo } from "@/lib/activity";
+import { createAsks } from "@/lib/asks";
 import { clearPendingActions } from "@/lib/pending-action";
 
 interface ConfirmItsYouProps {
@@ -46,8 +47,12 @@ export function ConfirmItsYou({
   const [formError, setFormError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const input = useRef<HTMLInputElement>(null);
+  const [asks] = useState(createAsks);
 
   function close() {
+    // A check still on its way back must not run the action
+    asks.cancel();
+    setPending(false);
     setPassword("");
     setError(undefined);
     setFormError(null);
@@ -72,7 +77,9 @@ export function ConfirmItsYou({
     }
 
     setPending(true);
+    const wanted = asks.ask();
     const result = await confirmPassword(password);
+    if (!wanted()) return;
     setPending(false);
     if (result.ok) {
       setPassword("");
