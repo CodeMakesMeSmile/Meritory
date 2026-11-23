@@ -41,16 +41,10 @@ function today() {
 }
 
 function QueueItem({ row }: { row: QueueRow }) {
-  const theme = useTheme();
   return (
-    <View
-      style={[
-        styles.queueItem,
-        { borderColor: theme.borderDefault, backgroundColor: theme.bgCard },
-      ]}
-    >
+    <View style={styles.queueItem}>
       <View style={styles.titleRow}>
-        <AppText variant="bodyStrong" style={styles.fill}>
+        <AppText variant="heading3" style={styles.fill}>
           {row.chapter.title}
         </AppText>
         <AppText variant="numeric" color="textSecondary">
@@ -244,12 +238,7 @@ const styles = StyleSheet.create({
   section: { gap: space[3] },
   chapter: { gap: space[2] },
   holder: { height: 80 },
-  queueItem: {
-    gap: space[1],
-    borderWidth: 1,
-    paddingHorizontal: space[5],
-    paddingVertical: space[4],
-  },
+  queueItem: { gap: space[1] },
   titleRow: { flexDirection: "row", alignItems: "baseline", gap: space[3] },
   meta: { flexDirection: "row", gap: space[3] },
   rule: { borderTopWidth: 1, paddingTop: space[5] },
