@@ -34,6 +34,11 @@ describe("checkPassword", () => {
     });
   });
 
+  it("never rates a password that's too long as strong", () => {
+    const long = "violet harbor tractor sandwich ".repeat(5);
+    expect(checkPassword(long).strength).toBe("weak");
+  });
+
   it("rejects passwords that are long but easy to guess", () => {
     expect(checkPassword("aaaaaaaaaaaaaaaa")).toMatchObject({
       strength: "weak",

@@ -93,7 +93,8 @@ export function meterMessage(
   messages: Record<string, string>,
 ) {
   if (!check) return "Strength shows as you type";
-  return check.problem === "personal"
+  // These two aren't about strength, so the meter says what to change
+  return check.problem === "personal" || check.problem === "too_long"
     ? check.message
     : (messages[check.strength] ?? "");
 }
