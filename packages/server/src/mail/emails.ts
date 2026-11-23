@@ -86,16 +86,25 @@ export function providerLinked(
   to: string,
   provider: string,
   origin: string,
+  passwordRemoved = false,
 ): Mail {
   return renderEmail({
     to,
     subject: `${provider} was added to your Meritory account`,
     heading: `${provider} was added to your account`,
-    blocks: [
-      { text: `${provider} can now sign you in to Meritory.` },
-      { text: IF_NOT_YOU },
-      { link: "Reset your password", url: `${origin}/forgot-password` },
-    ],
+    blocks: passwordRemoved
+      ? [
+          { text: `${provider} can now sign you in to Meritory.` },
+          {
+            text: "To keep your account safe, we removed its password and signed out your other devices. You can set a new password any time.",
+          },
+          { link: "Set a new password", url: `${origin}/forgot-password` },
+        ]
+      : [
+          { text: `${provider} can now sign you in to Meritory.` },
+          { text: IF_NOT_YOU },
+          { link: "Reset your password", url: `${origin}/forgot-password` },
+        ],
   });
 }
 

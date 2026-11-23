@@ -44,7 +44,7 @@ React escapes every value it renders as text or as an attribute. Keep it that wa
 
 ### 5. Protect state changes
 
-- GET never changes anything.
+- GET never changes anything. An emailed link that confirms or approves something opens a page with a button, and only the button's POST does it, so a mail scanner that opens the link changes nothing.
 - Every API route that changes data checks the `Origin` and `Sec-Fetch-Site` headers and rejects other sites.
 - Every protected route checks the session on the server. The proxy's cookie check only decides where to send people.
 - Check that the signed-in person owns the record they're reading or changing, not only that they're signed in.

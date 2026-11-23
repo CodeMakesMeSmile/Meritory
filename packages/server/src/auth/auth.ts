@@ -515,8 +515,30 @@ export function createAuth(config: AuthConfig) {
     );
   }
 
+  // Whoever set the password may not own the inbox, so it goes, along with every session it opened
+  async function dropPassword(userId: string) {
+    const removed = await config.db
+      .delete(schema.accounts)
+      .where(
+        and(
+          eq(schema.accounts.userId, userId),
+          eq(schema.accounts.providerId, "credential"),
+        ),
+      )
+      .returning({ id: schema.accounts.id });
+    if (removed.length === 0) return false;
+    await config.db
+      .delete(schema.sessions)
+      .where(eq(schema.sessions.userId, userId));
+    return true;
+  }
+
   // A new sign-in method on an account that already had one, so true when it was linked
-  async function sendProviderLinked(providerId: string, userId: string) {
+  async function sendProviderLinked(
+    providerId: string,
+    userId: string,
+    joined: boolean,
+  ) {
     if (!isProvider(providerId)) return false;
     const [{ total } = { total: 0 }] = await config.db
       .select({ total: count() })
@@ -528,9 +550,11 @@ export function createAuth(config: AuthConfig) {
       .from(schema.users)
       .where(eq(schema.users.id, userId));
     if (!user) return false;
+    // A sign-in that joined by matching email proves the inbox, not who set the password
+    const passwordRemoved = joined && (await dropPassword(userId));
     const label = PROVIDER_LABELS[providerId];
     sendLater(
-      providerLinked(user.email, label, config.webOrigin),
+      providerLinked(user.email, label, config.webOrigin, passwordRemoved),
       "provider-linked",
       userId,
     );
@@ -803,9 +827,12 @@ export function createAuth(config: AuthConfig) {
                   eq(schema.unlinkedProviders.providerId, account.providerId),
                 ),
               );
+            // Only a link started from Account carries link state
+            const state = await getOAuthState().catch(() => null);
             const linked = await sendProviderLinked(
               account.providerId,
               account.userId,
+              !state?.link,
             );
             if (linked && ctx && isProvider(account.providerId)) {
               justLinked.set(ctx.context, account.providerId);

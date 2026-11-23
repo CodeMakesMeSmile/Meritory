@@ -567,10 +567,21 @@ describe.skipIf(!url)("GitHub and Google sign-in against Postgres", () => {
     expect(sessionCookie(res)).toBeUndefined();
   });
 
-  it("links to a confirmed account and tells the owner", async () => {
+  // Whoever set the password may not own the inbox, and the provider only proves the inbox
+  it("links to a confirmed account, removes its password, and tells the owner", async () => {
     const gh = ghUser();
     const email = gh.emails[0]?.email ?? "";
     await signUp(email, true);
+    const passwordSignIn = () =>
+      auth.handler(
+        new Request(`${ORIGIN}/api/v1/auth/sign-in/email`, {
+          method: "POST",
+          headers: { "content-type": "application/json", origin: ORIGIN },
+          body: JSON.stringify({ email, password: PASSWORD }),
+        }),
+      );
+    const earlier = sessionCookie(await passwordSignIn()) ?? "";
+    expect(earlier).not.toBe("");
     fakeGitHub(gh);
     const { res, location } = await roundTrip({ code: "c" });
     // Only a fresh link is flagged, and the session cookie survives the new redirect
@@ -581,15 +592,19 @@ describe.skipIf(!url)("GitHub and Google sign-in against Postgres", () => {
     expect(signedIn?.user.email).toBe(email);
     const user = await userByEmail(email);
     const linked = await accountsOf(user?.id ?? "");
-    expect(linked.map((a) => a.providerId).sort()).toEqual([
-      "credential",
-      "github",
-    ]);
+    expect(linked.map((a) => a.providerId)).toEqual(["github"]);
+    expect((await passwordSignIn()).status).toBe(401);
+    const before = await auth.api.getSession({
+      headers: new Headers({ cookie: earlier }),
+      query: { disableCookieCache: true },
+    });
+    expect(before).toBeNull();
     const linkedMails = () =>
       sent.filter(([mail]) => mail.to === email && mail.subject === LINKED);
     await expect.poll(linkedMails).toHaveLength(1);
     const [[mail, tag]] = linkedMails() as [[Mail, MailTag]];
     expect(tag).toEqual({ kind: "provider-linked", userId: user?.id });
+    expect(mail.text).toContain("we removed its password");
     expect(mail.text).toContain(`${ORIGIN}/forgot-password`);
   });
 
