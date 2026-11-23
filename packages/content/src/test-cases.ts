@@ -312,6 +312,8 @@ export async function readLock(
 }
 
 /** Checks every case against its locked hash */
+export const NOT_LOCKED = "isn't locked yet, so run pnpm content:lock";
+
 export function checkLock(
   casesFile: string,
   lockFile: string,
@@ -325,7 +327,7 @@ export function checkLock(
     const locked = lock[testCase.uuid];
     const message =
       locked === undefined
-        ? "isn't locked yet, so run pnpm content:lock"
+        ? NOT_LOCKED
         : locked !== caseHash(testCase)
           ? "changed after it was locked, so undo the change and add a new case that reimplements it"
           : undefined;

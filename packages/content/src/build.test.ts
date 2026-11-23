@@ -338,6 +338,42 @@ describe("content bundle", () => {
     );
   });
 
+  it("leaves a case with a problem unlocked, so it can still be fixed", async () => {
+    const dir = path.join(chapterDir, "exercises", "two-sum");
+    const cases = (target: unknown) =>
+      JSON.stringify({
+        exercise: "two-sum",
+        cases: [
+          {
+            uuid: uuid(1),
+            description: "a pair",
+            property: "twoSum",
+            input: { nums: [2, 7], target },
+            expected: [0, 1],
+          },
+        ],
+      });
+    await write(path.join(dir, "cases.json"), cases("9"));
+
+    const result = await lockTrack(track);
+    expect(result.problems.map((p) => formatProblem(p, track))).toContain(
+      `chapters/arrays/exercises/two-sum/cases.json:1 case ${uuid(1)} input/target must be int`,
+    );
+    await expect(
+      readFile(path.join(dir, "cases.lock.json"), "utf8"),
+    ).rejects.toMatchObject({ code: "ENOENT" });
+    // The other exercise had nothing wrong, so its case is locked
+    expect(
+      result.written.map((w) => path.basename(path.dirname(w.file))),
+    ).toEqual(["pair-gap"]);
+
+    await write(path.join(dir, "cases.json"), cases(9));
+    const fixed = await lockTrack(track);
+    expect(fixed.problems).toEqual([]);
+    expect(fixed.written.map((w) => w.added)).toEqual([1]);
+    await built();
+  });
+
   it("refuses a versions file it can't read", async () => {
     await lockTrack(track);
     await write(

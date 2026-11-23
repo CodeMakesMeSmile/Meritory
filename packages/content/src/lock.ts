@@ -1,7 +1,13 @@
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
 import { loadTrackChapters } from "./chapters.ts";
-import { addToLock, LOCK_FILE, readCases, readLock } from "./test-cases.ts";
+import {
+  addToLock,
+  LOCK_FILE,
+  NOT_LOCKED,
+  readCases,
+  readLock,
+} from "./test-cases.ts";
 import {
   addVersions,
   checkCardChapters,
@@ -28,7 +34,8 @@ export type LockResult = {
 /**
  * Adds hashes for new cases in every exercise of a track, then records a new
  * version for every item that changed. Existing hashes are never changed, so
- * a changed case still fails the content check.
+ * a changed case still fails the content check. An exercise whose cases have
+ * problems is left unlocked, since a locked mistake could never be fixed in place.
  */
 export async function lockTrack(trackDir: string): Promise<LockResult> {
   const result: LockResult = {
@@ -37,13 +44,19 @@ export async function lockTrack(trackDir: string): Promise<LockResult> {
     chapters: [],
     problems: [],
   };
+  const caseProblems = await problemsByCasesFile(trackDir);
   const chaptersDir = path.join(trackDir, "chapters");
   for (const chapter of await subfolders(chaptersDir)) {
     const exercisesDir = path.join(chaptersDir, chapter, "exercises");
     for (const exercise of await subfolders(exercisesDir)) {
       const dir = path.join(exercisesDir, exercise);
-      // The content check reports problems in the cases themselves
-      const cases = await readCases(path.join(dir, "cases.json"), exercise, []);
+      const casesFile = path.join(dir, "cases.json");
+      const found = caseProblems.get(casesFile);
+      if (found) {
+        result.problems.push(...found);
+        continue;
+      }
+      const cases = await readCases(casesFile, exercise, []);
       if (!cases || cases.length === 0) continue;
 
       const file = path.join(dir, LOCK_FILE);
@@ -61,6 +74,20 @@ export async function lockTrack(trackDir: string): Promise<LockResult> {
   }
   await recordVersions(trackDir, result);
   return result;
+}
+
+/** What the content check finds wrong in each cases file, apart from cases waiting for a lock */
+async function problemsByCasesFile(
+  trackDir: string,
+): Promise<Map<string, Problem[]>> {
+  const { problems } = await loadTrackChapters(trackDir);
+  const byFile = new Map<string, Problem[]>();
+  for (const problem of problems) {
+    if (path.basename(problem.file) !== "cases.json") continue;
+    if (problem.message.endsWith(NOT_LOCKED)) continue;
+    byFile.set(problem.file, [...(byFile.get(problem.file) ?? []), problem]);
+  }
+  return byFile;
 }
 
 async function recordVersions(trackDir: string, result: LockResult) {
