@@ -68,7 +68,63 @@ describe("recall api", () => {
       ok: false,
       reason: "failed",
       code: "conflict",
+      refused: true,
     });
+  });
+
+  const rating = (durationMs: number) => ({
+    id: ID,
+    card: {
+      trackId: "dsa",
+      chapterId: "arrays",
+      cardId: "c",
+      version: 1,
+    } as RecallSessionCard,
+    rating: "good" as const,
+    answeredAt: new Date("2026-11-19T15:00:00.000Z"),
+    durationMs,
+  });
+
+  it.each([400, 404, 409, 413, 422])(
+    "marks a %i as refused, since sending it again can't work",
+    async (status) => {
+      vi.stubGlobal("fetch", reply(status, { code: "x", message: "x" }));
+      expect(await saveReview(rating(4000))).toMatchObject({
+        ok: false,
+        refused: true,
+      });
+    },
+  );
+
+  it.each([408, 429, 500, 502, 503])(
+    "leaves a %i open to another try",
+    async (status) => {
+      vi.stubGlobal("fetch", reply(status, { code: "x", message: "x" }));
+      const result = await saveReview(rating(4000));
+      expect(result.ok).toBe(false);
+      expect(result).not.toHaveProperty("refused");
+    },
+  );
+
+  it("leaves a dropped connection open to another try", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => {
+        throw new TypeError("offline");
+      }),
+    );
+    expect(await saveReview(rating(4000))).toEqual({
+      ok: false,
+      reason: "failed",
+    });
+  });
+
+  it("caps the time on a card left open past a day", async () => {
+    const fetch = reply(200, { dueAt: "2026-11-20T15:00:00.000Z" });
+    vi.stubGlobal("fetch", fetch);
+    await saveReview(rating(3 * 86_400_000));
+    const [, init] = fetch.mock.calls[0] as unknown as [string, RequestInit];
+    expect(JSON.parse(String(init.body)).durationMs).toBe(86_400_000);
   });
 
   it("saves or clears the interview date with PUT", async () => {
@@ -116,6 +172,7 @@ describe("recall api", () => {
       ok: false,
       reason: "failed",
       code: "undo_expired",
+      refused: true,
     });
   });
 
