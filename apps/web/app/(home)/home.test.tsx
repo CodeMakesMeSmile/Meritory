@@ -59,12 +59,14 @@ function content(arraysTitle = "Arrays and hashing") {
   } as unknown as ContentResponse;
 }
 
-function counts(chapterId: string, due: number, fresh: number) {
+// The API says how many of the new cards today's allowance covers
+function counts(chapterId: string, due: number, fresh: number, offered = 0) {
   return {
     trackId: "dsa",
     chapterId,
     due,
     new: fresh,
+    offered,
     learned: 11,
     total: 21,
   };
@@ -96,15 +98,16 @@ beforeEach(() => {
 });
 
 describe("Home", () => {
-  it("lists due chapters and shares today's new cards in chapter order", async () => {
+  // Two pointers was started first, so a sitting serves its new cards first
+  it("lists due chapters in book order, with the new cards the API says each gets", async () => {
     api.due = due({
       newLeftToday: 10,
-      chapters: [counts("pointers", 0, 8), counts("arrays", 3, 7)],
+      chapters: [counts("pointers", 0, 8, 8), counts("arrays", 3, 7, 2)],
     });
     const html = await home();
     expect(html).toContain("Start recall");
-    expect(html).toContain("3 to recall, 7 new");
-    expect(html).toContain("3 new</span>");
+    expect(html).toContain("3 to recall, 2 new");
+    expect(html).toContain("8 new</span>");
     expect(html.indexOf("Arrays and hashing")).toBeLessThan(
       html.indexOf("Two pointers"),
     );

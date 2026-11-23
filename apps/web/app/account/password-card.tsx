@@ -10,6 +10,7 @@ import {
 } from "@meritory/contracts/sign-in-messages";
 import type { PasswordCheck } from "@meritory/password";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { type FormEvent, useRef, useState } from "react";
 import { Alert } from "@/components/alert";
 import { Button, linkClass } from "@/components/button";
@@ -44,6 +45,7 @@ export function PasswordCard({
   provider = null,
   onChanged,
 }: PasswordCardProps) {
+  const router = useRouter();
   const [values, setValues] = useState<Record<Field, string>>({
     current: "",
     password: "",
@@ -149,6 +151,9 @@ export function PasswordCard({
         showErrors({ password: error.message });
       } else if (error.status === 429) {
         setNotice({ tone: "danger", text: waitMessage(retryAfter) });
+      } else if (error.status === 401) {
+        // The session ended, since a wrong password was caught above
+        router.replace("/sign-in?next=/account");
       } else {
         setNotice({ tone: "danger", text: FAILED });
       }

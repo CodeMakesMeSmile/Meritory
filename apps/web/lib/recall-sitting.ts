@@ -3,6 +3,7 @@ import type {
   RecallRating,
   RecallSessionResponse,
 } from "@meritory/contracts";
+import { waitMessage } from "@meritory/contracts/sign-in-messages";
 import { type Card, findChapter } from "./content";
 import { longWait } from "./recall-time";
 
@@ -118,6 +119,10 @@ export function undoKeptText(
 export const UNDO_OFFLINE =
   "Undo didn't reach us. Check your connection, then try again.";
 
+/** What an offer says after an Undo that could still work on another try */
+export const undoRetryText = (line: { limited?: boolean }) =>
+  line.limited ? waitMessage(null) : UNDO_OFFLINE;
+
 /** The line above the next card after a free-answer rating, at that card's place */
 export type UndoLine =
   | {
@@ -127,6 +132,8 @@ export type UndoLine =
       at: number;
       busy: boolean;
       offline: boolean;
+      /** The rate limit turned the last Undo away, so the connection isn't the cause */
+      limited?: boolean;
     }
   | { kind: "kept"; text: string; at: number };
 
@@ -152,7 +159,12 @@ export function lineAfterFailedUndo(
   const kept = undoKeptText(code, line.rating);
   return kept
     ? { kind: "kept", text: kept, at: line.at }
-    : { ...line, busy: false, offline: true };
+    : {
+        ...line,
+        busy: false,
+        offline: true,
+        limited: code === "rate_limited" ? true : undefined,
+      };
 }
 
 /** The line shows on the card right after the rated one, or on the done screen */

@@ -132,6 +132,17 @@ describe("readConfig", () => {
         AUTH_TRUSTED_PROXIES: " ",
       }),
     ).toThrow(/AUTH_TRUSTED_PROXIES/);
+    // Any client can send this header, so alone it's no better than nothing
+    expect(() =>
+      readConfig({ ...production, AUTH_IP_HEADERS: "X-Forwarded-For" }),
+    ).toThrow(/only the edge sets/);
+    expect(
+      readConfig({
+        ...production,
+        AUTH_IP_HEADERS: "x-forwarded-for",
+        AUTH_TRUSTED_PROXIES: "10.0.0.1",
+      }).ipAddressHeaders,
+    ).toEqual(["x-forwarded-for"]);
     expect(
       readConfig({ ...production, AUTH_IP_HEADERS: "cf-connecting-ip" })
         .ipAddressHeaders,

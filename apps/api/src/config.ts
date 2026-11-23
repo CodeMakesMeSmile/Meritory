@@ -66,17 +66,19 @@ function readWebOrigin(env: Record<string, string | undefined>): string {
   return url.origin;
 }
 
-// Without either, a forged header picks the address and the rest share one count
+// Any client can send this one, so on its own it proves nothing
+const FORGEABLE_HEADER = "x-forwarded-for";
+
+// Without a trusted proxy or a header only the edge sets, a forged header picks the address
 function readClientIp(env: Record<string, string | undefined>) {
   const ipAddressHeaders = list(env.AUTH_IP_HEADERS);
   const trustedProxies = list(env.AUTH_TRUSTED_PROXIES);
-  if (
-    env.NODE_ENV === "production" &&
-    !ipAddressHeaders?.length &&
-    !trustedProxies?.length
-  ) {
+  const edgeHeader = ipAddressHeaders?.some(
+    (header) => header.toLowerCase() !== FORGEABLE_HEADER,
+  );
+  if (env.NODE_ENV === "production" && !edgeHeader && !trustedProxies?.length) {
     throw new Error(
-      "Set AUTH_IP_HEADERS or AUTH_TRUSTED_PROXIES in production, so rate limits count each client.",
+      "Set AUTH_TRUSTED_PROXIES, or AUTH_IP_HEADERS to a header only the edge sets, in production, so rate limits count each client.",
     );
   }
   return { ipAddressHeaders, trustedProxies };
