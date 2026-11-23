@@ -85,6 +85,15 @@ describe("meterMessage", () => {
     expect(meterMessage(check, messages)).toBe("Leave it out");
   });
 
+  it("says a password is too long, not how strong it is", () => {
+    const check = {
+      strength: "weak",
+      problem: "too_long",
+      message: "Use 128 characters or fewer.",
+    };
+    expect(meterMessage(check, messages)).toBe("Use 128 characters or fewer.");
+  });
+
   it("shows the strength otherwise", () => {
     const check = { strength: "good", problem: null, message: "ignored" };
     expect(meterMessage(check, messages)).toBe("Good");

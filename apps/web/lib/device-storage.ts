@@ -39,7 +39,7 @@ const DRAFT_PREFIXES = [
   "meritory.rehearsal.",
 ];
 
-/** Forgets this browser's drafts, so the next person here doesn't see them */
+/** Forgets this browser's drafts and where recall stopped, so the next person here doesn't see them */
 export function clearDrafts() {
   try {
     const storage = window.localStorage;
@@ -54,6 +54,17 @@ export function clearDrafts() {
   } catch {
     // Blocked storage has nothing to clear
   }
+  writeStoppedAt(null);
+}
+
+const OWNER_KEY = "meritory.owner";
+
+/** Drafts left by another account are forgotten, since a session can end without a sign out */
+export function claimDrafts(userId: string) {
+  const owner = readStored(OWNER_KEY);
+  if (owner === userId) return;
+  if (owner !== null) clearDrafts();
+  writeStored(OWNER_KEY, userId);
 }
 
 const SHORTCUTS_KEY = "meritory.shortcuts";
@@ -74,20 +85,26 @@ export interface StoppedAt {
   total: number;
 }
 
-/** Where the last sitting stopped, kept for this tab only */
-export function readStoppedAt(): StoppedAt | null {
+// A recall day starts at 4 a.m., so a count from before then is yesterday's
+function recallDay(now: Date): string {
+  const day = new Date(now.getTime() - 4 * 60 * 60 * 1000);
+  return `${day.getFullYear()}-${day.getMonth() + 1}-${day.getDate()}`;
+}
+
+/** Where today's last sitting stopped, kept for this tab only */
+export function readStoppedAt(now = new Date()): StoppedAt | null {
   const raw = readStored(STOPPED_KEY, "session");
-  const match = raw ? /^(\d{1,4})\/(\d{1,4})$/.exec(raw) : null;
-  if (!match) return null;
+  const match = raw ? /^(\d{1,4})\/(\d{1,4})@([\d-]{8,10})$/.exec(raw) : null;
+  if (!match || match[3] !== recallDay(now)) return null;
   const done = Number(match[1]);
   const total = Number(match[2]);
   return done > 0 && done < total ? { done, total } : null;
 }
 
-export function writeStoppedAt(stopped: StoppedAt | null) {
+export function writeStoppedAt(stopped: StoppedAt | null, now = new Date()) {
   writeStored(
     STOPPED_KEY,
-    stopped ? `${stopped.done}/${stopped.total}` : null,
+    stopped ? `${stopped.done}/${stopped.total}@${recallDay(now)}` : null,
     "session",
   );
 }

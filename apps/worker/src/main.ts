@@ -1,4 +1,3 @@
-import { createProvider, readAiConfig } from "@meritory/ai";
 import {
   createBoss,
   createSmtpMailer,
@@ -16,7 +15,6 @@ if (!databaseUrl) {
 }
 
 const key = readMailKey(process.env.MAIL_JOB_KEY);
-const ai = createProvider(readAiConfig(process.env));
 const boss = createBoss({
   url: databaseUrl,
   worker: true,
@@ -43,4 +41,4 @@ await startMailWorker({
   mailer: createSmtpMailer(readSmtpConfig(process.env)),
   log,
 });
-log.info({ ai: { provider: ai.name, model: ai.model } }, "worker started");
+log.info("worker started");

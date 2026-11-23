@@ -134,7 +134,7 @@ export function OrDivider() {
 const styles = StyleSheet.create({
   buttons: { gap: space[2] },
   button: {
-    height: controlHeight,
+    minHeight: controlHeight,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",

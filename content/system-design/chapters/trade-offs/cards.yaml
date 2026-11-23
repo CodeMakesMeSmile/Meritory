@@ -94,8 +94,8 @@
       reason: With hard dependencies, the availabilities multiply, and 0.9999 cubed is about 0.9997.
     - text: 99.99%, since every part meets it
       reason: Each part can fail on its own, so the chances of an outage add up.
-    - text: About 99.9999%
-      reason: That's what redundant copies give. Hard dependencies in a chain lower availability.
+    - text: About 99.999999%
+      reason: That's what two redundant copies give. Hard dependencies in a chain lower availability.
     - text: It depends only on the least available part
       reason: The least available part sets a ceiling, but every hard dependency lowers the total further.
   lesson:

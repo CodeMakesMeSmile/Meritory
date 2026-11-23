@@ -318,7 +318,8 @@
     "bd04147402c4bd3ed6235ef562eb2c40b168846f08526f15d454e6ff026038d8"
   ],
   "card/find-entities-steps": [
-    "5731a7d4a551b8f94617ef82d8a5d03a7f238f67ec2bf2161ada6399f60f4a22"
+    "5731a7d4a551b8f94617ef82d8a5d03a7f238f67ec2bf2161ada6399f60f4a22",
+    "49a32812440eaa9d7c8d98b6526c0f29630bff5dbaf546efaa09baf2a2b21b27"
   ],
   "card/fix-lost-update": [
     "344c562ca58386027ce77f28cf86ccca1d67767315e05b22a5aae0b147d6a839"
@@ -330,7 +331,8 @@
     "f475160b6bd4b7b23987f703880ce7d04a9298689d1e53fd5147790cc935d248"
   ],
   "card/hard-dependency-math": [
-    "906c4b26a6488afa4222886d7ae1631ca8972b8aff65dbc2430dc212247ce3c9"
+    "906c4b26a6488afa4222886d7ae1631ca8972b8aff65dbc2430dc212247ce3c9",
+    "2534aadcb2b56d81c9d33ef2e82b0b9073670a617a632ce30bf1314d6026670c"
   ],
   "card/health-states": [
     "69073cdabd8b55dec4d429007499332cca02e6af225263df5a80b0dd97837a12"
@@ -510,7 +512,8 @@
     "ef3dd14c91889e9ce73c37c9c64a3b7aa38667316b1ba0127398f8c25dfe9b88"
   ],
   "card/webhook-verify-steps": [
-    "16abbd34b0a2ff50a381baaada4c19ee9e22493813eb401de5b14a78dadd2ddb"
+    "16abbd34b0a2ff50a381baaada4c19ee9e22493813eb401de5b14a78dadd2ddb",
+    "2b6f3983904ab47340a5413bdf70fc7d3e630b696a26e2045dd569ab56c9cf30"
   ],
   "card/what-cap-forbids": [
     "a47e3480f6f40323bb384c8e875adc84ea8d2286771685748a5b0f96bc4e5426"
@@ -651,7 +654,8 @@
     "341aa60cf17bb6ca109e53fc330d4215f391b75dc0b3e459ae8a5c3626dda81c"
   ],
   "card/where-to-send-reads": [
-    "e3e3b31a1de18e4eadd8c2e9b8af0fae09cd8cf561e55762f74732af88e11a14"
+    "e3e3b31a1de18e4eadd8c2e9b8af0fae09cd8cf561e55762f74732af88e11a14",
+    "c90032886c12b1306151cc018e1d0afd7b1133ca6d229d220e3ce892e3ef873f"
   ],
   "card/which-cache-pattern": [
     "15b62096aa0064ac1eefaf6fd56cc039dbc9085489fd58f25bc7bff0e07c79b3"
@@ -976,7 +980,8 @@
     "99c008390ffae76e1a7e5c55dd0920d6de59827fecb8a41c42ebcf6fe5dff91e"
   ],
   "exercise/webhook-delivery-service": [
-    "ad5f712454d6ed4329003b010ec0688a3f9be8824bb617f3d35bac7d29a49863"
+    "ad5f712454d6ed4329003b010ec0688a3f9be8824bb617f3d35bac7d29a49863",
+    "f31527de9c3a10c0ddbaf2dfb87d22dcd78f62dadcbfae8b6a5808aa84ec2ddf"
   ],
   "rubric/class-design": [
     "8691c9b159a1de306a7eeee85d4dfb5d9e639a797abc3b9bef46ac7d79f41404"

@@ -152,6 +152,21 @@ describe("runCode", () => {
     );
   });
 
+  it("reads the API's own rate limit code as too many runs", async () => {
+    answer(429, { code: "rate_limited", message: "Too many runs." });
+    expect(runProblem((await runCode(body)) as never)).toContain(
+      "a lot of runs",
+    );
+  });
+
+  // The body limit counts bytes, so it can refuse code the page let through
+  it("reads any 413 as code that's too large", async () => {
+    answer(413, { code: "payload_too_large" });
+    expect(runProblem((await runCode(body)) as never)).toBe(
+      "Your code is over 64 KB. Shorten it, then run it again.",
+    );
+  });
+
   it("reads a 429 with an unknown code as the runner being busy", async () => {
     answer(429, { code: "something_new" });
     expect(runProblem((await runCode(body)) as never)).toBe(

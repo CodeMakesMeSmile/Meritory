@@ -14,6 +14,7 @@ import {
 } from "react";
 import { providerReturn } from "./app-link";
 import { authClient } from "./auth-client";
+import { createCodeTrades, freshLink } from "./code-trades";
 import { createPkce } from "./pkce";
 
 /** Trades the code from the app's link, plus this sign-in's verifier, for the session */
@@ -24,6 +25,9 @@ async function redeem(code: string, verifier: string) {
   });
   return !error;
 }
+
+// The real return comes as the browser closes, so a short wait is enough after a wrong code
+const RETURN_WAIT_MS = 5_000;
 
 interface ProviderSignIn {
   /** The provider whose browser is open */
@@ -57,17 +61,19 @@ export function ProviderSignInProvider({ children }: { children: ReactNode }) {
     };
     try {
       const { verifier, challenge } = await createPkce();
-      const pending: { session?: Promise<boolean> } = {};
-      // Any app can open our links, so only one that returns during this sign-in counts
-      const subscription = Linking.addEventListener("url", ({ url }) => {
+      const trades = createCodeTrades((code) => redeem(code, verifier));
+      const onLink = (url: string) => {
         const back = providerReturn(url);
         setNotice(providerNotice(back.provider, back.error));
         setLinked(linkedText(back.linked));
-        // A code is single use, so a second return can't replace the first
-        if (back.code && !pending.session) {
-          pending.session = redeem(back.code, verifier);
-        }
-      });
+        if (back.code) trades.offer(back.code);
+      };
+      const launchLink = () => Linking.getInitialURL().catch(() => null);
+      const before = await launchLink();
+      // Any app can open our links, so only one that returns during this sign-in counts
+      const subscription = Linking.addEventListener("url", ({ url }) =>
+        onLink(url),
+      );
       try {
         const { error } = await authClient.signIn.social({
           provider,
@@ -76,10 +82,13 @@ export function ProviderSignInProvider({ children }: { children: ReactNode }) {
           additionalData: { appCodeChallenge: challenge },
         });
         if (error) failed();
+        // A return that restarts the screen arrives as the launch link, with no event
+        const restarted = freshLink(before, await launchLink());
+        if (restarted) onLink(restarted);
+        if (trades.started && !(await trades.result(RETURN_WAIT_MS))) failed();
       } finally {
         subscription.remove();
       }
-      if (pending.session && !(await pending.session)) failed();
     } catch {
       failed();
     } finally {

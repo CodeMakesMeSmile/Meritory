@@ -302,6 +302,15 @@ function readSignature(
   }
 
   findRepeatedNames(signature.params, "/params", repeated);
+  // The runner only knows a hidden int as the place a list's tail links back to
+  const hidden = signature.params.filter((p) => p.hidden);
+  const list = signature.params.some((p) => p.type === "ListNode" && !p.hidden);
+  if (hidden.length > 1 || hidden.some((p) => p.type !== "int" || !list)) {
+    add(
+      "/params",
+      "hidden is only for one int parameter beside a ListNode parameter",
+    );
+  }
   const checked = signature.params.find((p) => p.name === signature.checks);
   if (signature.returns === "void" && !checked) {
     add(

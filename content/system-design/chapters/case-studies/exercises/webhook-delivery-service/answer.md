@@ -31,7 +31,7 @@ Slow endpoints: 1% of traffic at a 20 s timeout = 90/s x 20 s = ~1,800 more in f
 Event storage for replay: 50M x 2 KB = 100 GB/day, x 30 days = 3 TB
 ```
 
-What they decide: the senders need thousands of concurrent outbound connections, so they're async I/O workers, not one thread per request. And just 1 percent of traffic going to slow endpoints nearly doubles the connections in flight, which is why slow endpoints need their own lane.
+What they decide: the senders need thousands of concurrent outbound connections, so they're async I/O workers, not one thread per request. And just 1 percent of traffic going to slow endpoints adds about two thirds more connections in flight, which is why slow endpoints need their own lane.
 
 ## API
 

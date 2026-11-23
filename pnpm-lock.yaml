@@ -356,9 +356,6 @@ importers:
 
   apps/worker:
     dependencies:
-      '@meritory/ai':
-        specifier: workspace:*
-        version: link:../../packages/ai
       '@meritory/server':
         specifier: workspace:*
         version: link:../../packages/server

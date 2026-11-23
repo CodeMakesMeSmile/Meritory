@@ -26,7 +26,7 @@ Background jobs live in Postgres and run through pg-boss 12. The first queue is 
 
 pg-boss brings a second Postgres driver, `pg`, beside `postgres`. The API holds a pool of 2 for it and the worker a pool of 4.
 
-LISTEN/NOTIFY needs a session connection. It won't work through PgBouncer in transaction mode, so the worker falls back to polling every 2 seconds if a pooler is added.
+LISTEN/NOTIFY needs a session connection. It won't work through PgBouncer in transaction mode, so the worker falls back to polling every 5 seconds if a pooler is added.
 
 Changing `MAIL_JOB_KEY` makes queued and dead-lettered emails unreadable. Rotate it only once the `mail` queue is empty.
 

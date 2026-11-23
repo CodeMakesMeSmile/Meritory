@@ -89,6 +89,7 @@ Counting windows with exactly k different values doesn't fit the grow and shrink
 
 ```ts
 function atMost(nums: number[], k: number): number {
+  if (k < 0) return 0;
   const counts = new Map<number, number>();
   let windows = 0;
   let left = 0;
@@ -107,6 +108,8 @@ function atMost(nums: number[], k: number): number {
 
 const exactly = atMost(nums, k) - atMost(nums, k - 1);
 ```
+
+The first line covers k = 0, where the second call asks for at most -1 values. Without it, the inner loop would never stop.
 
 The same subtraction counts stretches with exactly k of anything, like exactly k rainy days. A list of n values has n(n + 1)/2 stretches, so for long lists the count can be bigger than a 32-bit number holds.
 

@@ -74,9 +74,9 @@ Read the table backwards in an interview. If n can be 100,000, every pair is abo
 
 ## Amortized cost
 
-A list that grows on its own, like a Python list, a Java `ArrayList`, or a TypeScript array, keeps its values in a block with some spare room. When the room runs out, it moves everything into a bigger block, often about twice the size. That one move is O(n).
+A list that grows on its own, like a Python list, a Java `ArrayList`, or a TypeScript array, keeps its values in a block with some spare room. When the room runs out, it moves everything into a bigger block, larger than the old one by a fixed fraction. That one move is O(n).
 
-So is adding to the end O(n)? Not over time. Count the copies across n adds when the block doubles: 1, then 2, then 4, and so on up to n. That adds up to less than 2n copies in total, so each add costs O(1) when you share the total out. That's what **amortized** means: an average over a run of operations on the same structure, where an occasional expensive step is paid for by many cheap ones.
+So is adding to the end O(n)? Not over time. Count the copies across n adds, taking a block that doubles as the example: 1, then 2, then 4, and so on up to n. That adds up to less than 2n copies in total, so each add costs O(1) when you share the total out. Any fixed fraction gives the same result with a different constant. That's what **amortized** means: an average over a run of operations on the same structure, where an occasional expensive step is paid for by many cheap ones.
 
 Amortized isn't the same as an average over inputs. A hash table lookup is O(1) on average because keys usually spread out, but a bad set of keys can make every lookup slow. An amortized cost is a promise about any run of operations, however unlucky.
 

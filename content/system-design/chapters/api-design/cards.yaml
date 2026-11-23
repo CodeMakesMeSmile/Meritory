@@ -186,9 +186,9 @@
   reworded: In what order should a webhook receiver handle an incoming delivery?
   steps:
     - Read the raw request body before any parsing.
-    - Check that the timestamp header is within the allowed tolerance.
     - Compute the HMAC over the id, timestamp, and raw body with the endpoint's secret.
     - Compare it with each signature in the header in constant time.
+    - Check that the timestamp header is within the allowed tolerance.
     - Skip the event if its id was already processed.
     - Queue the event for processing and return a 2xx quickly.
   lesson:

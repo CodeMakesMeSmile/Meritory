@@ -3,11 +3,12 @@ import { createAuthClient } from "better-auth/react";
 import Constants from "expo-constants";
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
+import { parseWebOrigin } from "./web-origin";
 
 /** The website origin, which also serves the API at /api/v1 */
 export function webOrigin() {
   const configured = process.env.EXPO_PUBLIC_WEB_ORIGIN;
-  if (configured) return configured;
+  if (configured) return parseWebOrigin(configured, __DEV__);
   const host = Constants.expoConfig?.hostUri?.split(":")[0];
   if (__DEV__ && host) return `http://${host}:3000`;
   throw new Error("EXPO_PUBLIC_WEB_ORIGIN is not set.");

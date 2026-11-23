@@ -76,10 +76,20 @@ export function parseYaml(
       message: error.message.split("\n")[0] ?? error.code,
     });
   }
-  return {
-    data: doc.errors.length === 0 ? doc.toJS() : undefined,
-    lineAt: (pointer) => lineAt(doc, lineCounter, pointer),
-  };
+  let data: unknown;
+  if (doc.errors.length === 0) {
+    try {
+      data = doc.toJS();
+    } catch {
+      // The parser stops a file whose aliases grow without end
+      problems.push({
+        file,
+        line: null,
+        message: "repeats its aliases too many times",
+      });
+    }
+  }
+  return { data, lineAt: (pointer) => lineAt(doc, lineCounter, pointer) };
 }
 
 // Walks up the path until it finds a node, since a missing field has none

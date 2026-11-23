@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: space[3],
-    height: controlHeight,
+    minHeight: controlHeight,
     borderRadius: radius.control,
   },
   input: {

@@ -78,8 +78,9 @@ export function checkPassword(
 ): PasswordCheck {
   const length = countCharacters(password);
   if (length > MAX_PASSWORD_LENGTH) {
+    // It can't be saved, so the meter never calls it strong
     return {
-      strength: "strong",
+      strength: "weak",
       problem: "too_long",
       message: `Use ${MAX_PASSWORD_LENGTH} characters or fewer.`,
     };

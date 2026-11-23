@@ -54,4 +54,16 @@ describe("isSafeUrl", () => {
     "mailto:a@b.c",
     "",
   ])("refuses %j", (url) => expect(isSafeUrl(url)).toBe(false));
+
+  it.each([
+    "https://good.example@evil.example/",
+    "https://user:secret@evil.example/page",
+    "https://good.example\\@evil.example/",
+  ])("refuses a user name or password in %j", (url) =>
+    expect(isSafeUrl(url)).toBe(false),
+  );
+
+  it("allows an @ after the host", () => {
+    expect(isSafeUrl("https://example.com/@anna?to=a@b.c")).toBe(true);
+  });
 });

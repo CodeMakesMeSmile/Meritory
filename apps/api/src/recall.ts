@@ -473,7 +473,7 @@ export async function registerRecallRoutes(
         if (date < day) {
           return refuse(reply, 400, {
             code: RECALL_ERRORS.datePassed,
-            message: "That date has passed. Pick a date after today.",
+            message: "That date has passed. Pick today or a later date.",
           });
         }
       }

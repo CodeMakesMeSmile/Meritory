@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/button";
 import { authClient } from "@/lib/auth-client";
@@ -26,14 +25,14 @@ export function SignOutButton({
   disabled: boolean;
   onFailed: () => void;
 }) {
-  const router = useRouter();
   const [pending, setPending] = useState(false);
 
   async function signOut() {
     if (pending) return;
     setPending(true);
     if (await signOutHere()) {
-      router.replace("/sign-in");
+      // A full load, so Back can't bring a signed-in page out of memory
+      window.location.replace("/sign-in");
       return;
     }
     setPending(false);

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { DraftOwner } from "./draft-owner";
 import { KeepSession } from "./keep-session";
 import { LogoLockup } from "./logo";
 import { TimeZoneSync } from "./time-zone-sync";
@@ -35,12 +36,13 @@ export function AppShell({
   children,
 }: {
   page: Page;
-  user: { name: string; timeZone: string };
+  user: { id: string; name: string; timeZone: string };
   children: ReactNode;
 }) {
   return (
     <div className="flex min-h-screen flex-col md:flex-row">
       <KeepSession />
+      <DraftOwner userId={user.id} />
       <TimeZoneSync timeZone={user.timeZone} />
       <nav
         aria-label="Main"

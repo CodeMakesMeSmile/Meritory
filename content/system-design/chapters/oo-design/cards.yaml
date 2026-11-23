@@ -100,8 +100,8 @@
   steps:
     - Underline the nouns and verbs in the requirements.
     - Drop nouns that are only attributes, and merge synonyms.
-    - Sort the rest into values, entities, and services.
     - Give each verb to the object that holds the data it needs.
+    - Sort what's left into values, entities, and services.
     - Walk one use case to check that every step has an owner.
   lesson:
     title: Behavior goes where the data is
