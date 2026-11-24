@@ -1,13 +1,8 @@
-import type {
-  ContentResponse,
-  InterviewDateResponse,
-  RecallDueResponse,
-} from "@meritory/contracts";
+import type { ContentResponse, RecallDueResponse } from "@meritory/contracts";
 import { space, touchTarget } from "@meritory/design-tokens";
 import {
   allChapters,
-  dayName,
-  interviewIsAhead,
+  cappedLine,
   nothingDueLine,
   plural,
   type QueueRow,
@@ -40,8 +35,6 @@ type Load =
       state: "ready";
       content: ContentResponse;
       due: RecallDueResponse;
-      /** Null when the date didn't load, which only hides its line */
-      interview: InterviewDateResponse | null;
     };
 
 function today() {
@@ -128,10 +121,9 @@ export default function Home() {
   useEffect(() => clear, [clear]);
 
   const refresh = useCallback(async () => {
-    const [content, due, interview] = await Promise.all([
+    const [content, due] = await Promise.all([
       fetchContent(),
       recallApi.loadDue(),
-      recallApi.loadInterviewDate(),
     ]);
     if (!content.ok || !due.ok) {
       const signedOut =
@@ -145,7 +137,6 @@ export default function Home() {
       state: "ready",
       content: content.content,
       due: due.data,
-      interview: interview.ok ? interview.data : null,
     });
   }, [signOut]);
 
@@ -159,6 +150,7 @@ export default function Home() {
   const ready = load.state === "ready" ? load : null;
   const rows = ready ? queueRows(ready.due, allChapters(ready.content)) : [];
   const started = (ready?.due.chapters.length ?? 0) > 0;
+  const capped = ready ? cappedLine(ready.due) : null;
 
   return (
     <Screen>
@@ -203,13 +195,23 @@ export default function Home() {
         <View style={styles.tight}>
           <AppText variant="bodyStrong">Nothing to recall yet</AppText>
           <AppText variant="small" color="textSecondary">
-            Start a chapter on the website and its cards join recall, up to 10
-            new a day.
+            {ready.due.newCardsPerDay > 0
+              ? `Start a chapter on the website and its cards join recall, up to ${ready.due.newCardsPerDay} new a day.`
+              : "Start a chapter on the website and its cards join recall once new cards are back on in Settings."}
           </AppText>
         </View>
       )}
 
-      {ready && started && rows.length === 0 && (
+      {ready && started && rows.length === 0 && capped && (
+        <View style={styles.tight}>
+          <AppText variant="bodyStrong">Done for today</AppText>
+          <AppText variant="small" color="textSecondary">
+            {capped}
+          </AppText>
+        </View>
+      )}
+
+      {ready && started && rows.length === 0 && !capped && (
         <View style={styles.tight}>
           <AppText variant="bodyStrong">Nothing due right now</AppText>
           <AppText variant="small" color="textSecondary">
@@ -238,14 +240,7 @@ export default function Home() {
 
       {ready && (
         <View style={styles.links}>
-          <TextLink
-            label={
-              interviewIsAhead(ready.interview) && ready.interview?.date
-                ? `Interview on ${dayName(ready.interview.date)}`
-                : "Add an interview date"
-            }
-            onPress={() => router.push("/interview-date")}
-          />
+          <TextLink label="Settings" onPress={() => router.push("/settings")} />
         </View>
       )}
       <Button label="Sign out" variant="secondary" onPress={signOut} />

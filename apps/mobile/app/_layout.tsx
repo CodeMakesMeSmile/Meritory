@@ -6,9 +6,11 @@ import {
 import { IBMPlexMono_400Regular } from "@expo-google-fonts/ibm-plex-mono";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { useEffect, useState } from "react";
 import { ProviderSignInProvider } from "../lib/provider-sign-in";
 import { SessionProvider, useSession } from "../lib/session";
 import { useTheme } from "../lib/theme";
+import { restoreThemeChoice } from "../lib/theme-choice";
 
 function Routes() {
   const theme = useTheme();
@@ -24,7 +26,7 @@ function Routes() {
       <Stack.Protected guard={user !== null}>
         <Stack.Screen name="index" />
         <Stack.Screen name="recall" />
-        <Stack.Screen name="interview-date" />
+        <Stack.Screen name="settings" />
       </Stack.Protected>
       <Stack.Protected guard={user === null}>
         <Stack.Screen name="sign-in" />
@@ -42,10 +44,15 @@ export default function RootLayout() {
     HostGrotesk_600SemiBold,
     IBMPlexMono_400Regular,
   });
+  // The theme picked on this phone applies before the first screen draws
+  const [themed, setThemed] = useState(false);
+  useEffect(() => {
+    void restoreThemeChoice().finally(() => setThemed(true));
+  }, []);
   return (
     <>
       <StatusBar style="auto" />
-      {(loaded || failed) && (
+      {(loaded || failed) && themed && (
         <SessionProvider>
           <ProviderSignInProvider>
             <Routes />
