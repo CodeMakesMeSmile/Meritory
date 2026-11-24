@@ -21,6 +21,7 @@ export default defineConfig({
   test: {
     include: [
       "{apps,packages}/*/src/**/*.test.ts",
+      "infra/src/**/*.test.ts",
       "apps/web/*.test.ts",
       "apps/web/lib/**/*.test.ts",
       "apps/web/app/**/*.test.tsx",

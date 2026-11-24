@@ -1,0 +1,10 @@
+{
+  "app": "node src/app.ts",
+  "versionReporting": false,
+  "context": {
+    "cli-telemetry": false
+  },
+  "watch": {
+    "include": ["src/**"]
+  }
+}

@@ -38,3 +38,6 @@ apps/mobile/expo-env.d.ts
 
 # Private tracks that only load on this machine
 /content/private-*/
+
+# CDK output
+cdk.out/
