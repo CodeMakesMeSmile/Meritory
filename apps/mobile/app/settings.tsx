@@ -30,7 +30,7 @@ import {
 } from "@meritory/recall-client";
 import { useRouter } from "expo-router";
 import { type ReactNode, useCallback, useEffect, useState } from "react";
-import { Modal, Pressable, StyleSheet, View } from "react-native";
+import { Keyboard, Modal, Pressable, StyleSheet, View } from "react-native";
 import { Alert } from "../components/alert";
 import { AppText } from "../components/app-text";
 import { Button } from "../components/button";
@@ -45,12 +45,7 @@ import { fetchContent, recallApi } from "../lib/api";
 import { localToday } from "../lib/calendar";
 import { useOnline } from "../lib/online";
 import { useSession } from "../lib/session";
-import { useTheme } from "../lib/theme";
-import {
-  currentThemeChoice,
-  setThemeChoice,
-  type ThemeChoice,
-} from "../lib/theme-choice";
+import { type ThemeChoice, useTheme, useThemeChoice } from "../lib/theme";
 import { deviceTimeZone } from "../lib/time-zone";
 
 // The phone frames word these a little shorter than the web page
@@ -761,7 +756,12 @@ export default function Settings() {
   const [load, setLoad] = useState<Load>("loading");
   const [data, setData] = useState<SettingsResponse | null>(null);
   const [tracks, setTracks] = useState<Track[]>([]);
-  const [theme, setTheme] = useState<ThemeChoice>("system");
+  const { choice: theme, setChoice } = useThemeChoice();
+  // A focused field would pull the screen back to itself when the colors change
+  const setTheme = (next: ThemeChoice) => {
+    Keyboard.dismiss();
+    setChoice(next);
+  };
   // A reset starts every section again from what was saved
   const [version, setVersion] = useState(0);
   const [asking, setAsking] = useState(false);
@@ -798,10 +798,6 @@ export default function Settings() {
     void read();
   }, [read]);
 
-  useEffect(() => {
-    void currentThemeChoice().then(setTheme);
-  }, []);
-
   async function reset() {
     if (!online) {
       setAsking(false);
@@ -813,7 +809,6 @@ export default function Settings() {
     setResetting(false);
     setAsking(false);
     if (result.ok) {
-      await setThemeChoice("system");
       setTheme("system");
       setData(result.data);
       setVersion((now) => now + 1);
@@ -883,10 +878,7 @@ export default function Settings() {
             <Segmented<ThemeChoice>
               label="Theme"
               value={theme}
-              onChange={(next) => {
-                setTheme(next);
-                void setThemeChoice(next);
-              }}
+              onChange={setTheme}
               segments={[
                 { value: "system", label: "Match system", suggested: true },
                 { value: "light", label: "Light" },

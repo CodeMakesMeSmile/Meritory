@@ -6,11 +6,15 @@ import {
 import { IBMPlexMono_400Regular } from "@expo-google-fonts/ibm-plex-mono";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useState } from "react";
 import { ProviderSignInProvider } from "../lib/provider-sign-in";
 import { SessionProvider, useSession } from "../lib/session";
-import { useTheme } from "../lib/theme";
-import { restoreThemeChoice } from "../lib/theme-choice";
+import { useScheme, useTheme } from "../lib/theme";
+import { ThemeChoiceProvider } from "../lib/theme-choice";
+
+/** Status bar icons that contrast with the app's theme, not the system's */
+function ThemedStatusBar() {
+  return <StatusBar style={useScheme() === "dark" ? "light" : "dark"} />;
+}
 
 function Routes() {
   const theme = useTheme();
@@ -44,21 +48,16 @@ export default function RootLayout() {
     HostGrotesk_600SemiBold,
     IBMPlexMono_400Regular,
   });
-  // The theme picked on this phone applies before the first screen draws
-  const [themed, setThemed] = useState(false);
-  useEffect(() => {
-    void restoreThemeChoice().finally(() => setThemed(true));
-  }, []);
   return (
-    <>
-      <StatusBar style="auto" />
-      {(loaded || failed) && themed && (
+    <ThemeChoiceProvider>
+      <ThemedStatusBar />
+      {(loaded || failed) && (
         <SessionProvider>
           <ProviderSignInProvider>
             <Routes />
           </ProviderSignInProvider>
         </SessionProvider>
       )}
-    </>
+    </ThemeChoiceProvider>
   );
 }
