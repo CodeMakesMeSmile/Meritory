@@ -16,6 +16,10 @@ vi.mock("@/lib/server-api", () => ({
   getContent: async () => ({ hash: "h", tracks: [] }),
   getDue: async () => ({
     newLeftToday: 10,
+    newCardsPerDay: 10,
+    waiting: 0,
+    reviewsPerDay: null,
+    reviewsLeftToday: null,
     dueTomorrow: 0,
     overdue: 0,
     dayEndsAt: "2026-11-20T09:00:00.000Z",

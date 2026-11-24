@@ -2,6 +2,7 @@ import type { ContentResponse, RecallDueResponse } from "@meritory/contracts";
 import { describe, expect, it } from "vitest";
 import { allChapters } from "./content.ts";
 import {
+  cappedLine,
   nothingDueLine,
   plural,
   queueNote,
@@ -43,6 +44,10 @@ const dueWith = (
   more: Partial<RecallDueResponse> = {},
 ): RecallDueResponse => ({
   newLeftToday: 10,
+  newCardsPerDay: 10,
+  waiting: 0,
+  reviewsPerDay: null,
+  reviewsLeftToday: null,
   dueTomorrow: 0,
   overdue: 0,
   dayEndsAt: "2026-11-24T09:00:00.000Z",
@@ -92,5 +97,26 @@ describe("home queue", () => {
   it("changes the queue note once cards wait from an earlier day", () => {
     expect(queueNote(dueWith([]))).toContain("up to 10 new cards a day");
     expect(queueNote(dueWith([], { overdue: 2 }))).toContain("oldest first");
+  });
+
+  it("follows the learner's new card limit", () => {
+    const more = { dueTomorrow: 4, newCardsPerDay: 20 };
+    expect(nothingDueLine(dueWith([counts("first", 0, 0, 5)], more))).toBe(
+      "You've done today's cards. 4 come back tomorrow, plus up to 20 new.",
+    );
+    expect(queueNote(dueWith([], { newCardsPerDay: 0 }))).toBe(
+      "New cards are paused in Settings, so only due cards come up.",
+    );
+  });
+
+  it("says how many wait past the reviews cap", () => {
+    const capped = dueWith([], { reviewsPerDay: 150, waiting: 23 });
+    expect(cappedLine(capped)).toBe(
+      "That's your 150 reviews for today. 23 more are waiting, and they'll come first tomorrow.",
+    );
+    expect(queueNote(capped)).toBe(
+      "Today stops at your 150 reviews. 23 more are waiting, and they'll come first tomorrow.",
+    );
+    expect(cappedLine(dueWith([]))).toBeNull();
   });
 });

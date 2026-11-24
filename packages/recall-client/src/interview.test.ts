@@ -57,8 +57,19 @@ describe("interview date wording", () => {
   it("says a passed date is over", () => {
     const passed = state({ date: "2026-12-14", status: "passed" });
     expect(interviewStatusLine(passed)).toBe(
-      "December 14 has passed, so recall is back to its usual 90%. Add a new date any time.",
+      "December 14 has passed, so recall is back to your usual 90%. Add a new date any time.",
     );
     expect(interviewIsAhead(passed)).toBe(false);
+  });
+});
+
+describe("interview wording with the learner's targets", () => {
+  it("names their own targets", () => {
+    const on = state({ date: "2026-12-14", status: "on", target: 0.92 });
+    expect(
+      interviewStatusLine(on, { recallTarget: 85, interviewTarget: 92 }),
+    ).toBe(
+      "On now. Until December 14, cards come back a bit sooner, aiming for 92% recall instead of 85%.",
+    );
   });
 });

@@ -2,7 +2,6 @@ import rateLimit from "@fastify/rate-limit";
 import {
   ChapterParams,
   type ErrorResponse,
-  InterviewDateBody,
   InterviewDateResponse,
   RECALL_ERRORS,
   RecallDueResponse,
@@ -16,22 +15,17 @@ import {
 } from "@meritory/contracts";
 import {
   buildRecallQueue,
-  interviewStatus,
-  interviewWindowStart,
-  isCalendarDate,
   isKnownTimeZone,
   isLearned,
-  NEW_CARDS_PER_DAY,
   nextDueDates,
   nextRecallDayStart,
-  recallDate,
-  recallDayStart,
-  recallTargetFor,
 } from "@meritory/learning";
 import type { RecallStore, StoredRecallCard } from "@meritory/server";
 import type { FastifyInstance, FastifyReply } from "fastify";
 import type { ServedChapter } from "./content.ts";
+import { interviewAnswer, learnerDay } from "./learner-day.ts";
 import type { CurrentSession } from "./session.ts";
+import { registerSettingsRoutes } from "./settings.ts";
 
 /** The most cards one session answer holds, so a long gap can't make it huge */
 export const SESSION_LIMIT = 100;
@@ -42,7 +36,7 @@ export const RECALL_LIMITS = {
   reads: 60,
   starts: 10,
   timeZone: 10,
-  interviewDate: 10,
+  settings: 20,
 } as const;
 
 /** Bodies here are a few hundred bytes at most */
@@ -114,31 +108,27 @@ export async function registerRecallRoutes(
         chapter.trackId === trackId && chapter.chapterId === chapterId,
     );
 
-  /** Today's start in the learner's time zone, and how many new cards are left */
-  async function today(userId: string, now: Date) {
-    const timeZone = await deps.store.timeZone(userId);
-    const start = recallDayStart(now, timeZone);
-    const seen = await deps.store.newSeenSince(userId, start);
-    return {
-      timeZone,
-      start,
-      newLeft: Math.max(0, NEW_CARDS_PER_DAY - seen),
-    };
+  /** Today's recall target from the learner's settings and interview date */
+  async function target(userId: string, now: Date) {
+    const stored = await deps.store.settings(userId);
+    return interviewAnswer(stored, now).answer.target;
   }
 
-  /** The interview date as the learner sees it, and today's recall target */
-  async function interview(userId: string, now: Date) {
-    const { timeZone, interviewDate } = await deps.store.settings(userId);
-    const day = recallDate(now, timeZone);
-    return {
-      day,
-      answer: {
-        date: interviewDate,
-        startsOn: interviewDate ? interviewWindowStart(interviewDate) : null,
-        status: interviewStatus(interviewDate, day),
-        target: recallTargetFor(interviewDate, day),
-      } satisfies InterviewDateResponse,
-    };
+  /** The queue a sitting would serve, without the session's length limit */
+  async function servedToday(userId: string, now: Date) {
+    const day = await learnerDay(deps.store, userId, now);
+    const cards = liveCards(await deps.store.cards(userId), deps.chapters);
+    const queue = buildRecallQueue(
+      cards.map((stored) => ({
+        dueAt: stored.card.dueAt,
+        scheduleStatus: stored.card.scheduleStatus,
+        trackId: stored.trackId,
+        stored,
+      })),
+      now,
+      day.limits,
+    );
+    return { day, cards, queue };
   }
 
   scope.post<{ Params: ChapterParams }>(
@@ -182,10 +172,20 @@ export async function registerRecallRoutes(
     async (request) => {
       const { user } = request.current as CurrentSession;
       const now = deps.now();
-      const day = await today(user.id, now);
-      const tomorrow = nextRecallDayStart(day.start, day.timeZone);
-      const dayAfter = nextRecallDayStart(tomorrow, day.timeZone);
-      const cards = liveCards(await deps.store.cards(user.id), deps.chapters);
+      const { day, cards, queue } = await servedToday(user.id, now);
+      const { timeZone, learner } = day.stored;
+      const tomorrow = nextRecallDayStart(
+        day.start,
+        timeZone,
+        learner.dayStartsAt,
+      );
+      const dayAfter = nextRecallDayStart(
+        tomorrow,
+        timeZone,
+        learner.dayStartsAt,
+      );
+      // The same cards a sitting would serve, so the allowances go to them
+      const served = new Set(queue.map(({ stored }) => stored));
       const counts = new Map<
         string,
         {
@@ -212,9 +212,9 @@ export async function registerRecallRoutes(
       const started = new Set<string>();
       let dueTomorrow = 0;
       let overdue = 0;
-      // Cards come in the order a sitting serves them, so the allowance goes to the same ones
-      let newLeft = day.newLeft;
-      for (const { trackId, chapterId, card } of cards) {
+      let waiting = 0;
+      for (const stored of cards) {
+        const { trackId, chapterId, card } = stored;
         const key = chapterKey(trackId, chapterId);
         const count = counts.get(key);
         if (!count) continue;
@@ -223,12 +223,10 @@ export async function registerRecallRoutes(
         const due = card.dueAt.getTime();
         if (card.scheduleStatus === "new") {
           count.new += 1;
-          if (newLeft > 0) {
-            count.offered += 1;
-            newLeft -= 1;
-          }
+          if (served.has(stored)) count.offered += 1;
         } else if (due <= now.getTime()) {
-          count.due += 1;
+          if (served.has(stored)) count.due += 1;
+          else waiting += 1;
           if (due < day.start.getTime()) overdue += 1;
         }
         if (
@@ -240,7 +238,11 @@ export async function registerRecallRoutes(
         }
       }
       return {
-        newLeftToday: day.newLeft,
+        newLeftToday: day.limits.newLeft,
+        newCardsPerDay: learner.newCardsPerDay,
+        waiting,
+        reviewsPerDay: learner.reviewsPerDay,
+        reviewsLeftToday: day.limits.reviewsLeft ?? null,
         dueTomorrow,
         overdue,
         dayEndsAt: tomorrow.toISOString(),
@@ -264,21 +266,11 @@ export async function registerRecallRoutes(
     async (request) => {
       const { user } = request.current as CurrentSession;
       const now = deps.now();
-      const left = (await today(user.id, now)).newLeft;
-      const { target } = (await interview(user.id, now)).answer;
-      const cards = liveCards(await deps.store.cards(user.id), deps.chapters);
-      const queue = buildRecallQueue(
-        cards.map((stored) => ({
-          dueAt: stored.card.dueAt,
-          scheduleStatus: stored.card.scheduleStatus,
-          stored,
-        })),
-        now,
-        NEW_CARDS_PER_DAY - left,
-      ).slice(0, SESSION_LIMIT);
+      const { day, queue } = await servedToday(user.id, now);
+      const { target } = interviewAnswer(day.stored, now).answer;
       return {
-        newLeftToday: left,
-        cards: queue.map(({ stored }) => {
+        newLeftToday: day.limits.newLeft,
+        cards: queue.slice(0, SESSION_LIMIT).map(({ stored }) => {
           const next = nextDueDates(stored.card, now, target);
           return {
             trackId: stored.trackId,
@@ -332,7 +324,6 @@ export async function registerRecallRoutes(
         });
       }
       const now = deps.now();
-      const { target } = (await interview(user.id, now)).answer;
       const result = await deps.store.review(
         user.id,
         {
@@ -346,7 +337,7 @@ export async function registerRecallRoutes(
           durationMs: body.durationMs ?? null,
         },
         now,
-        target,
+        await target(user.id, now),
       );
       if (result.kind === "not_found") {
         return refuse(reply, 404, {
@@ -419,7 +410,7 @@ export async function registerRecallRoutes(
     {
       bodyLimit: BODY_LIMIT,
       schema: {
-        summary: "Set the time zone each recall day starts in",
+        summary: "Set the device's time zone, unless the learner picked one",
         tags: ["account"],
         body: TimeZoneBody,
       },
@@ -434,7 +425,8 @@ export async function registerRecallRoutes(
           message: "That time zone isn't one we know.",
         });
       }
-      await deps.store.setTimeZone(user.id, timeZone);
+      // Left alone when the learner picked a zone of their own
+      await deps.store.setDeviceTimeZone(user.id, timeZone);
       return reply.code(204).send();
     },
   );
@@ -451,43 +443,10 @@ export async function registerRecallRoutes(
     },
     async (request) => {
       const { user } = request.current as CurrentSession;
-      return (await interview(user.id, deps.now())).answer;
+      const stored = await deps.store.settings(user.id);
+      return interviewAnswer(stored, deps.now()).answer;
     },
   );
 
-  scope.put<{ Body: InterviewDateBody }>(
-    "/me/interview-date",
-    {
-      bodyLimit: BODY_LIMIT,
-      schema: {
-        summary:
-          "Set or clear the interview date. Recall aims higher in the 28 days before it.",
-        tags: ["account"],
-        body: InterviewDateBody,
-        response: { 200: InterviewDateResponse },
-      },
-      config: perMinute(RECALL_LIMITS.interviewDate, "interview-date"),
-    },
-    async (request, reply) => {
-      const { user } = request.current as CurrentSession;
-      const { date } = request.body;
-      if (date !== null) {
-        if (!isCalendarDate(date)) {
-          return refuse(reply, 400, {
-            code: RECALL_ERRORS.notADate,
-            message: "That isn't a date. Pick one from the calendar.",
-          });
-        }
-        const { day } = await interview(user.id, deps.now());
-        if (date < day) {
-          return refuse(reply, 400, {
-            code: RECALL_ERRORS.datePassed,
-            message: "That date has passed. Pick today or a later date.",
-          });
-        }
-      }
-      await deps.store.setInterviewDate(user.id, date);
-      return (await interview(user.id, deps.now())).answer;
-    },
-  );
+  await registerSettingsRoutes(scope, deps);
 }

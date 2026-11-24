@@ -179,6 +179,8 @@ export const recallReviews = pgTable(
     state: smallint("state"),
     answeredAt: timestamp("answered_at", { withTimezone: true }),
     reviewTime: timestamp("review_time", { withTimezone: true }),
+    // The card's previous review, so a reviews cap counts only cards from an earlier day
+    lastReviewAt: timestamp("last_review_at", { withTimezone: true }),
     durationMs: integer("duration_ms"),
     dueAt: timestamp("due_at", { withTimezone: true }),
     // What ts-fsrs needs to put the card back
@@ -197,5 +199,73 @@ export const recallReviews = pgTable(
       sql`(${table.rating} is null) = (${table.undoes} is not null)`,
     ),
     index("recall_reviews_user_time_idx").on(table.userId, table.reviewTime),
+  ],
+);
+
+// Study settings, one row per learner who changed any. An empty column means the suggested value.
+export const learnerSettings = pgTable(
+  "learner_settings",
+  {
+    userId: uuid("user_id")
+      .primaryKey()
+      .references(() => users.id, { onDelete: "cascade" }),
+    newCardsPerDay: smallint("new_cards_per_day"),
+    // Track id to new cards a day, taken out of new_cards_per_day
+    trackNewLimits: jsonb("track_new_limits").$type<Record<string, number>>(),
+    // Empty is also the suggested value, which is no cap
+    reviewsPerDay: smallint("reviews_per_day"),
+    // Whole percents
+    recallTarget: smallint("recall_target"),
+    interviewTarget: smallint("interview_target"),
+    interviewWeeks: smallint("interview_weeks"),
+    dayStartsAt: smallint("day_starts_at"),
+    followDeviceTimeZone: boolean("follow_device_time_zone"),
+    designReviewMinutes: smallint("design_review_minutes"),
+    classDesignMinutes: smallint("class_design_minutes"),
+    storyAnswerMinutes: smallint("story_answer_minutes"),
+    codeLanguage: text("code_language"),
+    updatedAt: updatedAt(),
+  },
+  (table) => [
+    check(
+      "learner_settings_new_cards",
+      sql`${table.newCardsPerDay} between 0 and 50`,
+    ),
+    check(
+      "learner_settings_reviews",
+      sql`${table.reviewsPerDay} between 50 and 500`,
+    ),
+    check(
+      "learner_settings_recall_target",
+      sql`${table.recallTarget} between 70 and 97`,
+    ),
+    check(
+      "learner_settings_interview_target",
+      sql`${table.interviewTarget} between 70 and 97`,
+    ),
+    check(
+      "learner_settings_interview_weeks",
+      sql`${table.interviewWeeks} between 1 and 8`,
+    ),
+    check(
+      "learner_settings_day_start",
+      sql`${table.dayStartsAt} between 0 and 23`,
+    ),
+    check(
+      "learner_settings_design_review",
+      sql`${table.designReviewMinutes} between 15 and 90`,
+    ),
+    check(
+      "learner_settings_class_design",
+      sql`${table.classDesignMinutes} between 15 and 90`,
+    ),
+    check(
+      "learner_settings_story_answer",
+      sql`${table.storyAnswerMinutes} between 1 and 10`,
+    ),
+    check(
+      "learner_settings_code_language",
+      sql`${table.codeLanguage} in ('typescript', 'python')`,
+    ),
   ],
 );

@@ -16,15 +16,15 @@ import {
   type CodingExercise,
   LANGUAGE_NAMES,
   readCode,
-  readLanguage,
   runCode,
   runCounter,
   runProblem,
   starterCode,
   summary,
+  takeOldLanguage,
   writeCode,
-  writeLanguage,
 } from "@/lib/code";
+import { saveSettings } from "@/lib/recall-api";
 
 const LANGUAGES = Object.keys(LANGUAGE_NAMES) as CodeLanguage[];
 
@@ -55,6 +55,7 @@ export function CodePractice({
   exerciseId,
   signature,
   languages,
+  preferred,
 }: {
   trackId: string;
   chapterId: string;
@@ -62,6 +63,8 @@ export function CodePractice({
   signature: CodingExercise["signature"];
   /** The languages the exercise names, when it doesn't ship every one */
   languages?: readonly string[];
+  /** The language from Settings, which every exercise starts in */
+  preferred: CodeLanguage;
 }) {
   const offered = useMemo(() => offeredLanguages(languages), [languages]);
   const [language, setLanguage] = useState<CodeLanguage>("typescript");
@@ -83,16 +86,19 @@ export function CodePractice({
     setRunning(false);
     setResult(null);
     setProblem(null);
-    const stored = readLanguage();
-    const saved = offered.includes(stored)
-      ? stored
+    // A pick kept in this browser before Settings moves there once
+    const old = takeOldLanguage();
+    if (old && old !== preferred) void saveSettings({ codeLanguage: old });
+    const start = old ?? preferred;
+    const saved = offered.includes(start)
+      ? start
       : (offered[0] ?? "typescript");
     setLanguage(saved);
     setCode(
       readCode(trackId, exerciseId, saved) ?? starterCode(signature, saved),
     );
     setLoaded(true);
-  }, [runs, trackId, exerciseId, signature, offered]);
+  }, [runs, trackId, exerciseId, signature, offered, preferred]);
 
   useEffect(() => {
     if (!loaded) return;
@@ -104,8 +110,8 @@ export function CodePractice({
   function pickLanguage(next: CodeLanguage) {
     runs.cancel();
     setRunning(false);
+    // Only this exercise switches, and Settings keeps the language every exercise starts in
     setLanguage(next);
-    writeLanguage(next);
     setCode(
       readCode(trackId, exerciseId, next) ?? starterCode(signature, next),
     );

@@ -1,9 +1,15 @@
 import { randomUUID } from "node:crypto";
+import { type LearnerSettings, SUGGESTED_SETTINGS } from "@meritory/learning";
 import { SQL_ATTACKS } from "@meritory/security-testing";
 import { and, eq, inArray } from "drizzle-orm";
 import { afterAll, describe, expect, it } from "vitest";
 import { createDatabase } from "../db/client.ts";
-import { recallCards, recallReviews, users } from "../db/schema.ts";
+import {
+  learnerSettings,
+  recallCards,
+  recallReviews,
+  users,
+} from "../db/schema.ts";
 import {
   type ChapterCards,
   createRecallStore,
@@ -389,13 +395,58 @@ describe.skipIf(!url)("recall store against Postgres", () => {
         input({ answeredAt: later(10 * MINUTE) }),
         later(10 * MINUTE),
       );
-      expect(await store.newSeenSince(me, start)).toBe(2);
-      expect(await store.newSeenSince(me, later(MINUTE))).toBe(0);
+      expect((await store.newSeenSince(me, start)).total).toBe(2);
+      expect((await store.newSeenSince(me, later(MINUTE))).total).toBe(0);
 
       const c = input({ cardId: "card-c" });
       await store.review(me, c, start);
       await store.undo(me, c.id, start);
-      expect(await store.newSeenSince(me, start)).toBe(2);
+      expect((await store.newSeenSince(me, start)).total).toBe(2);
+    });
+
+    it("counts each track on its own", async () => {
+      const me = await user();
+      await store.start(me, CHAPTER, start);
+      await store.start(
+        me,
+        { ...CHAPTER, trackId: "design", chapterId: "basics" },
+        start,
+      );
+      await store.review(me, input(), start);
+      await store.review(me, input({ cardId: "card-b" }), start);
+      await store.review(
+        me,
+        input({ trackId: "design", chapterId: "basics" }),
+        start,
+      );
+      const seen = await store.newSeenSince(me, start);
+      expect(seen.total).toBe(3);
+      expect([...seen.byTrack].sort()).toEqual([
+        ["design", 1],
+        ["dsa", 2],
+      ]);
+    });
+  });
+
+  describe("reviews toward a cap", () => {
+    it("counts only cards last seen on an earlier day, minus undone ones", async () => {
+      const me = await user();
+      await store.start(me, CHAPTER, start);
+      // A new card and its same-day repeat don't count
+      await store.review(me, input(), start);
+      await store.review(
+        me,
+        input({ answeredAt: later(10 * MINUTE) }),
+        later(10 * MINUTE),
+      );
+      expect(await store.reviewsSince(me, start)).toBe(0);
+
+      const day = 24 * 60 * MINUTE;
+      const next = input({ answeredAt: later(2 * day) });
+      await store.review(me, next, later(2 * day));
+      expect(await store.reviewsSince(me, later(day))).toBe(1);
+      await store.undo(me, next.id, later(2 * day));
+      expect(await store.reviewsSince(me, later(day))).toBe(0);
     });
   });
 
@@ -435,29 +486,94 @@ describe.skipIf(!url)("recall store against Postgres", () => {
   });
 
   describe("time zone", () => {
-    it("falls back to UTC and keeps what's set", async () => {
+    it("falls back to UTC and keeps what the device sends", async () => {
       const me = await user();
       expect(await store.timeZone(me)).toBe("UTC");
-      await store.setTimeZone(me, "America/Toronto");
+      await store.setDeviceTimeZone(me, "America/Toronto");
       expect(await store.timeZone(me)).toBe("America/Toronto");
+    });
+
+    it("keeps a picked zone when the device sends another", async () => {
+      const me = await user();
+      await store.saveSettings(me, {
+        timeZone: "Asia/Kolkata",
+        learner: { ...SUGGESTED_SETTINGS, followDeviceTimeZone: false },
+      });
+      await store.setDeviceTimeZone(me, "America/Toronto");
+      expect(await store.timeZone(me)).toBe("Asia/Kolkata");
     });
   });
 
   describe("settings", () => {
-    it("reads the time zone and interview date together", async () => {
+    const own: LearnerSettings = {
+      newCardsPerDay: 20,
+      trackNewLimits: { dsa: 5 },
+      reviewsPerDay: 150,
+      recallTarget: 85,
+      interviewTarget: 92,
+      interviewWeeks: 2,
+      dayStartsAt: 6,
+      followDeviceTimeZone: false,
+      rehearsalMinutes: { designReview: 30, classDesign: 60, storyAnswer: 3 },
+      codeLanguage: "python",
+    };
+
+    it("starts at the suggested values", async () => {
       const me = await user();
       expect(await store.settings(me)).toEqual({
+        learner: SUGGESTED_SETTINGS,
         timeZone: "UTC",
         interviewDate: null,
       });
-      await store.setTimeZone(me, "America/Toronto");
-      await store.setInterviewDate(me, "2026-12-14");
-      expect(await store.settings(me)).toEqual({
+    });
+
+    it("saves every setting with the date and zone, then resets", async () => {
+      const me = await user();
+      await store.saveSettings(me, {
+        learner: own,
         timeZone: "America/Toronto",
         interviewDate: "2026-12-14",
       });
-      await store.setInterviewDate(me, null);
+      expect(await store.settings(me)).toEqual({
+        learner: own,
+        timeZone: "America/Toronto",
+        interviewDate: "2026-12-14",
+      });
+      await store.saveSettings(me, { interviewDate: null });
       expect((await store.settings(me)).interviewDate).toBeNull();
+      await store.resetSettings(me);
+      expect((await store.settings(me)).learner).toEqual(SUGGESTED_SETTINGS);
+    });
+
+    it("stores a suggested value as empty", async () => {
+      const me = await user();
+      await store.saveSettings(me, {
+        learner: { ...SUGGESTED_SETTINGS, newCardsPerDay: 20 },
+      });
+      const [row] = await db
+        .select()
+        .from(learnerSettings)
+        .where(eq(learnerSettings.userId, me));
+      expect(row?.newCardsPerDay).toBe(20);
+      expect(row?.recallTarget).toBeNull();
+      expect(row?.trackNewLimits).toBeNull();
+    });
+
+    it("refuses values out of range even past the app", async () => {
+      const me = await user();
+      await expect(
+        store.saveSettings(me, { learner: { ...own, newCardsPerDay: 51 } }),
+      ).rejects.toThrow();
+      expect((await store.settings(me)).learner).toEqual(SUGGESTED_SETTINGS);
+    });
+
+    it("keeps attack strings in track names as plain text", async () => {
+      const me = await user();
+      const limits = Object.fromEntries(SQL_ATTACKS.map((a) => [a, 1]));
+      await store.saveSettings(me, {
+        learner: { ...own, trackNewLimits: limits },
+      });
+      expect((await store.settings(me)).learner.trackNewLimits).toEqual(limits);
     });
   });
 
@@ -479,7 +595,7 @@ describe.skipIf(!url)("recall store against Postgres", () => {
       });
       expect((await store.review(me, review, start)).kind).toBe("saved");
       expect((await store.undo(me, review.id, start)).kind).toBe("undone");
-      await store.setTimeZone(me, attack);
+      await store.setDeviceTimeZone(me, attack);
       expect(await store.timeZone(me)).toBe(attack);
     }
     const mine = await db

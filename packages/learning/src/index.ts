@@ -7,16 +7,20 @@ export {
 } from "./day.ts";
 export {
   addDays,
-  INTERVIEW_RECALL_TARGET,
-  INTERVIEW_WINDOW_DAYS,
   type InterviewStatus,
   interviewStatus,
   interviewWindowStart,
   isCalendarDate,
   recallDate,
   recallTargetFor,
+  type TargetSettings,
 } from "./interview.ts";
-export { buildRecallQueue, NEW_CARDS_PER_DAY } from "./queue.ts";
+export {
+  buildRecallQueue,
+  NEW_CARDS_PER_DAY,
+  type QueueLimits,
+  trackNewLeft,
+} from "./queue.ts";
 export { effectiveReviewTime } from "./review-time.ts";
 export {
   DEFAULT_RECALL_TARGET,
@@ -31,3 +35,17 @@ export {
   SCHEDULER_VERSION,
   undoRecallReview,
 } from "./scheduler.ts";
+export {
+  CODE_LANGUAGE_NAMES,
+  type CodeLanguage,
+  checkSettings,
+  type LearnerSettings,
+  RECALL_TARGET_NOTE_BAND,
+  type RehearsalMinutes,
+  SETTING_LIMITS,
+  type SettingField,
+  type SettingProblem,
+  SUGGESTED_SETTINGS,
+  settledReviewsPerDay,
+  targetFraction,
+} from "./settings.ts";

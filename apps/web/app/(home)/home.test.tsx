@@ -75,6 +75,10 @@ function counts(chapterId: string, due: number, fresh: number, offered = 0) {
 function due(over: Partial<RecallDueResponse> = {}): RecallDueResponse {
   return {
     newLeftToday: 10,
+    newCardsPerDay: 10,
+    waiting: 0,
+    reviewsPerDay: null,
+    reviewsLeftToday: null,
     dueTomorrow: 0,
     overdue: 0,
     dayEndsAt: "2026-11-20T09:00:00.000Z",
@@ -201,12 +205,12 @@ describe("Interview line", () => {
     api.interview = { date, startsOn: null, status, target: 0.9 };
   };
 
-  it("links to Account while the date is coming up", async () => {
+  it("links to Settings while the date is coming up", async () => {
     api.due = due({ chapters: [counts("arrays", 2, 0)] });
     set("2026-12-14", "on");
     const html = await home();
     expect(html).toContain("Interview on December 14");
-    expect(html).toContain('href="/account"');
+    expect(html).toContain('href="/settings"');
     set("2027-01-29", "later");
     expect(await home()).toContain("Interview on January 29");
   });
@@ -221,5 +225,23 @@ describe("Interview line", () => {
     const html = await home();
     expect(html).not.toContain("Interview on");
     expect(html).toContain("Arrays and hashing");
+  });
+});
+
+describe("Reviews cap", () => {
+  it("says the day is done and how many wait for tomorrow", async () => {
+    api.due = due({
+      newLeftToday: 0,
+      reviewsPerDay: 150,
+      reviewsLeftToday: 0,
+      waiting: 23,
+      chapters: [counts("arrays", 0, 0)],
+    });
+    const html = await home();
+    expect(html).toContain("Done for today");
+    expect(html).toContain(
+      "That&#x27;s your 150 reviews for today. 23 more are waiting, and they&#x27;ll come first tomorrow.",
+    );
+    expect(html).not.toContain("Start recall");
   });
 });

@@ -5,6 +5,7 @@ import type {
   MeResponse,
   RecallDueResponse,
   RecallSessionResponse,
+  SettingsResponse,
 } from "@meritory/contracts";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -71,4 +72,8 @@ export function getSession(path: string): Promise<RecallSessionResponse> {
 
 export function getInterviewDate(path: string): Promise<InterviewDateResponse> {
   return serverGet<InterviewDateResponse>("/v1/me/interview-date", path);
+}
+
+export function getSettings(path: string): Promise<SettingsResponse> {
+  return serverGet<SettingsResponse>("/v1/me/settings", path);
 }

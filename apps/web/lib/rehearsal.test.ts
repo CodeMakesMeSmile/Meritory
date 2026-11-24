@@ -54,6 +54,13 @@ describe("rehearsalMinutes", () => {
     expect(rehearsalMinutes("story-review")).toBe(5);
   });
 
+  it("uses the learner's own clocks", () => {
+    const own = { designReview: 30, classDesign: 60, storyAnswer: 3 };
+    expect(rehearsalMinutes("design-review", own)).toBe(30);
+    expect(rehearsalMinutes("class-design", own)).toBe(60);
+    expect(rehearsalMinutes("story-review", own)).toBe(3);
+  });
+
   it("has no rehearsal for other rubrics", () => {
     expect(rehearsalMinutes("coding-practice")).toBeNull();
     expect(rehearsalMinutes("toString")).toBeNull();

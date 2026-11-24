@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, unstable_rethrow } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { linkClass } from "@/components/button";
 import { Markdown } from "@/components/markdown";
 import { chapterPath, findChapter, trackLabel } from "@/lib/content";
 import { exercisePath, findExercise } from "@/lib/practice";
 import { rehearsalMinutes } from "@/lib/rehearsal";
-import { getContent, requireMe } from "@/lib/server-api";
+import { getContent, getSettings, requireMe } from "@/lib/server-api";
 import { CodePractice } from "./code-practice";
 import { DesignPractice } from "./design-practice";
 import { Rehearsal } from "./rehearsal";
@@ -67,15 +67,23 @@ const DIFFICULTY = { easy: "Easy", medium: "Medium", hard: "Hard" } as const;
 
 export default async function ExercisePage({ params, searchParams }: Props) {
   const { trackId, chapterId, exerciseId } = await params;
-  const [{ path, found }, query, me] = await Promise.all([
+  const here = exercisePath(trackId, chapterId, exerciseId);
+  const [{ path, found }, query, me, settings] = await Promise.all([
     load(params),
     searchParams,
-    requireMe(exercisePath(trackId, chapterId, exerciseId)),
+    requireMe(here),
+    // Suggested clocks and language stand in when Settings doesn't load
+    getSettings(here).catch((error: unknown) => {
+      unstable_rethrow(error);
+      return null;
+    }),
   ]);
   if (!found) notFound();
   const { track, chapter, exercise, rubric } = found;
   const minutes =
-    exercise.kind === "design" && rubric ? rehearsalMinutes(rubric.id) : null;
+    exercise.kind === "design" && rubric
+      ? rehearsalMinutes(rubric.id, settings?.settings.rehearsalMinutes)
+      : null;
   const rehearsing = minutes !== null && query.mode === "rehearse";
 
   return (
@@ -147,6 +155,7 @@ export default async function ExercisePage({ params, searchParams }: Props) {
             exerciseId={exercise.id}
             signature={exercise.signature}
             languages={exercise.languages}
+            preferred={settings?.settings.codeLanguage ?? "typescript"}
           />
         ) : null}
       </div>

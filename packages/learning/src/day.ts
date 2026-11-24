@@ -54,11 +54,15 @@ function offset(time: number, timeZone: string): number {
 }
 
 /** When the learner's current recall day began, in their own time zone */
-export function recallDayStart(now: Date, timeZone: string): Date {
+export function recallDayStart(
+  now: Date,
+  timeZone: string,
+  startHour = DAY_STARTS_AT_HOUR,
+): Date {
   const local = localParts(now.getTime(), timeZone);
-  const dayOffset = local.hour < DAY_STARTS_AT_HOUR ? -1 : 0;
+  const dayOffset = local.hour < startHour ? -1 : 0;
   const wanted =
-    Date.UTC(local.year, local.month - 1, local.day, DAY_STARTS_AT_HOUR) +
+    Date.UTC(local.year, local.month - 1, local.day, startHour) +
     dayOffset * DAY;
   // Twice, so a clock change between the guess and the answer settles
   let time = wanted - offset(wanted, timeZone);
@@ -67,7 +71,15 @@ export function recallDayStart(now: Date, timeZone: string): Date {
 }
 
 /** When the recall day after the one starting at dayStart begins */
-export function nextRecallDayStart(dayStart: Date, timeZone: string): Date {
+export function nextRecallDayStart(
+  dayStart: Date,
+  timeZone: string,
+  startHour = DAY_STARTS_AT_HOUR,
+): Date {
   // 36 hours on lands inside the next day, even across a clock change
-  return recallDayStart(new Date(dayStart.getTime() + 36 * HOUR), timeZone);
+  return recallDayStart(
+    new Date(dayStart.getTime() + 36 * HOUR),
+    timeZone,
+    startHour,
+  );
 }

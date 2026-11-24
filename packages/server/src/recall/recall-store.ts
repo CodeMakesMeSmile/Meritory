@@ -3,12 +3,14 @@ import {
   DEFAULT_RECALL_TARGET,
   DEFAULT_TIME_ZONE,
   effectiveReviewTime,
+  type LearnerSettings,
   newRecallCard,
   type RecallCard,
   type RecallRating,
   type RecallRevlog,
   reviewRecallCard,
   SCHEDULER_VERSION,
+  SUGGESTED_SETTINGS,
   undoRecallReview,
 } from "@meritory/learning";
 import {
@@ -18,12 +20,18 @@ import {
   eq,
   gte,
   isNotNull,
+  lt,
   ne,
   notExists,
 } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import type { Database } from "../db/client.ts";
-import { recallCards, recallReviews, users } from "../db/schema.ts";
+import {
+  learnerSettings,
+  recallCards,
+  recallReviews,
+  users,
+} from "../db/schema.ts";
 
 /** How long after a review Undo still works, past WCAG's 20-hour time limit exception */
 export const UNDO_WINDOW_MS = 24 * 60 * 60 * 1000;
@@ -170,6 +178,84 @@ function isUniqueViolation(error: unknown): boolean {
   );
 }
 
+export interface StoredSettings {
+  learner: LearnerSettings;
+  timeZone: string;
+  interviewDate: string | null;
+}
+
+export interface SettingsChange {
+  learner?: LearnerSettings;
+  timeZone?: string;
+  interviewDate?: string | null;
+}
+
+export interface NewSeen {
+  total: number;
+  byTrack: Map<string, number>;
+}
+
+type SettingsRow = typeof learnerSettings.$inferSelect;
+
+function readSettings(row: SettingsRow | undefined): LearnerSettings {
+  const s = SUGGESTED_SETTINGS;
+  if (!row) return s;
+  const minutes = s.rehearsalMinutes;
+  return {
+    newCardsPerDay: row.newCardsPerDay ?? s.newCardsPerDay,
+    trackNewLimits: row.trackNewLimits ?? s.trackNewLimits,
+    reviewsPerDay: row.reviewsPerDay ?? s.reviewsPerDay,
+    recallTarget: row.recallTarget ?? s.recallTarget,
+    interviewTarget: row.interviewTarget ?? s.interviewTarget,
+    interviewWeeks: row.interviewWeeks ?? s.interviewWeeks,
+    dayStartsAt: row.dayStartsAt ?? s.dayStartsAt,
+    followDeviceTimeZone: row.followDeviceTimeZone ?? s.followDeviceTimeZone,
+    rehearsalMinutes: {
+      designReview: row.designReviewMinutes ?? minutes.designReview,
+      classDesign: row.classDesignMinutes ?? minutes.classDesign,
+      storyAnswer: row.storyAnswerMinutes ?? minutes.storyAnswer,
+    },
+    codeLanguage: (row.codeLanguage ??
+      s.codeLanguage) as LearnerSettings["codeLanguage"],
+  };
+}
+
+// A suggested value is stored as empty, so a later change to the suggestion reaches it
+function settingsColumns(learner: LearnerSettings) {
+  const s = SUGGESTED_SETTINGS;
+  const own = <T>(value: T, suggested: T) =>
+    value === suggested ? null : value;
+  const limits = Object.keys(learner.trackNewLimits).length
+    ? learner.trackNewLimits
+    : null;
+  return {
+    newCardsPerDay: own(learner.newCardsPerDay, s.newCardsPerDay),
+    trackNewLimits: limits,
+    reviewsPerDay: learner.reviewsPerDay,
+    recallTarget: own(learner.recallTarget, s.recallTarget),
+    interviewTarget: own(learner.interviewTarget, s.interviewTarget),
+    interviewWeeks: own(learner.interviewWeeks, s.interviewWeeks),
+    dayStartsAt: own(learner.dayStartsAt, s.dayStartsAt),
+    followDeviceTimeZone: own(
+      learner.followDeviceTimeZone,
+      s.followDeviceTimeZone,
+    ),
+    designReviewMinutes: own(
+      learner.rehearsalMinutes.designReview,
+      s.rehearsalMinutes.designReview,
+    ),
+    classDesignMinutes: own(
+      learner.rehearsalMinutes.classDesign,
+      s.rehearsalMinutes.classDesign,
+    ),
+    storyAnswerMinutes: own(
+      learner.rehearsalMinutes.storyAnswer,
+      s.rehearsalMinutes.storyAnswer,
+    ),
+    codeLanguage: own(learner.codeLanguage, s.codeLanguage),
+  };
+}
+
 const cardWhere = (userId: string, key: CardKey) =>
   and(
     eq(recallCards.userId, userId),
@@ -233,6 +319,7 @@ export function createRecallStore(db: Database["db"]) {
           cardVersion: input.cardVersion,
           rating: GRADES[input.rating],
           state: before.state,
+          lastReviewAt: before.lastReviewAt,
           answeredAt: input.answeredAt,
           reviewTime,
           durationMs: input.durationMs,
@@ -264,33 +351,76 @@ export function createRecallStore(db: Database["db"]) {
       return row?.timeZone ?? DEFAULT_TIME_ZONE;
     },
 
-    async setTimeZone(userId: string, timeZone: string): Promise<void> {
-      await db.update(users).set({ timeZone }).where(eq(users.id, userId));
+    /** Saves the device's time zone, unless the learner picked one of their own */
+    async setDeviceTimeZone(userId: string, timeZone: string): Promise<void> {
+      await db
+        .update(users)
+        .set({ timeZone })
+        .where(
+          and(
+            eq(users.id, userId),
+            notExists(
+              db
+                .select({ userId: learnerSettings.userId })
+                .from(learnerSettings)
+                .where(
+                  and(
+                    eq(learnerSettings.userId, userId),
+                    eq(learnerSettings.followDeviceTimeZone, false),
+                  ),
+                ),
+            ),
+          ),
+        );
     },
 
-    /** The time zone and interview date, which together set the recall target */
-    async settings(
-      userId: string,
-    ): Promise<{ timeZone: string; interviewDate: string | null }> {
+    /** Study settings, with suggested values filling any the learner left alone */
+    async settings(userId: string): Promise<StoredSettings> {
       const [row] = await db
         .select({
           timeZone: users.timeZone,
           interviewDate: users.interviewDate,
+          own: learnerSettings,
         })
         .from(users)
+        .leftJoin(learnerSettings, eq(learnerSettings.userId, users.id))
         .where(eq(users.id, userId));
       return {
+        learner: readSettings(row?.own ?? undefined),
         timeZone: row?.timeZone ?? DEFAULT_TIME_ZONE,
         interviewDate: row?.interviewDate ?? null,
       };
     },
 
-    /** Saves a YYYY-MM-DD date, or clears it with null */
-    async setInterviewDate(
-      userId: string,
-      interviewDate: string | null,
-    ): Promise<void> {
-      await db.update(users).set({ interviewDate }).where(eq(users.id, userId));
+    /** Saves checked settings together, so a refusal changes nothing */
+    async saveSettings(userId: string, change: SettingsChange): Promise<void> {
+      await db.transaction(async (tx) => {
+        const profile: Partial<typeof users.$inferInsert> = {};
+        if (change.timeZone !== undefined) profile.timeZone = change.timeZone;
+        if (change.interviewDate !== undefined) {
+          profile.interviewDate = change.interviewDate;
+        }
+        if (Object.keys(profile).length) {
+          await tx.update(users).set(profile).where(eq(users.id, userId));
+        }
+        if (change.learner) {
+          const columns = settingsColumns(change.learner);
+          await tx
+            .insert(learnerSettings)
+            .values({ userId, ...columns })
+            .onConflictDoUpdate({
+              target: learnerSettings.userId,
+              set: columns,
+            });
+        }
+      });
+    },
+
+    /** Puts every study setting back to its suggested value */
+    async resetSettings(userId: string): Promise<void> {
+      await db
+        .delete(learnerSettings)
+        .where(eq(learnerSettings.userId, userId));
     },
 
     /** Adds the chapter's cards as new, and skips any already there */
@@ -340,11 +470,11 @@ export function createRecallStore(db: Database["db"]) {
       }));
     },
 
-    /** New cards reviewed since then, leaving out reviews that were undone */
-    async newSeenSince(userId: string, since: Date): Promise<number> {
+    /** New cards reviewed since then, in all and by track, leaving out reviews that were undone */
+    async newSeenSince(userId: string, since: Date): Promise<NewSeen> {
       const undo = alias(recallReviews, "undo");
-      const [row] = await db
-        .select({ seen: count() })
+      const rows = await db
+        .select({ trackId: recallReviews.trackId, seen: count() })
         .from(recallReviews)
         .where(
           and(
@@ -352,6 +482,36 @@ export function createRecallStore(db: Database["db"]) {
             eq(recallReviews.state, 0),
             isNotNull(recallReviews.rating),
             gte(recallReviews.reviewTime, since),
+            notExists(
+              db
+                .select({ id: undo.id })
+                .from(undo)
+                .where(eq(undo.undoes, recallReviews.id)),
+            ),
+          ),
+        )
+        .groupBy(recallReviews.trackId);
+      const byTrack = new Map(rows.map((row) => [row.trackId, row.seen]));
+      const total = rows.reduce((sum, row) => sum + row.seen, 0);
+      return { total, byTrack };
+    },
+
+    /**
+     * Reviews since then of cards last seen before then, so new cards and
+     * same-day repeats don't count toward a reviews cap
+     */
+    async reviewsSince(userId: string, since: Date): Promise<number> {
+      const undo = alias(recallReviews, "undo");
+      const [row] = await db
+        .select({ seen: count() })
+        .from(recallReviews)
+        .where(
+          and(
+            eq(recallReviews.userId, userId),
+            ne(recallReviews.state, 0),
+            isNotNull(recallReviews.rating),
+            gte(recallReviews.reviewTime, since),
+            lt(recallReviews.lastReviewAt, since),
             notExists(
               db
                 .select({ id: undo.id })

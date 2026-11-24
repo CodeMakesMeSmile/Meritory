@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { SUGGESTED_SETTINGS } from "@meritory/learning";
 import { SQL_ATTACKS } from "@meritory/security-testing";
 import {
   createDatabase,
@@ -100,11 +101,14 @@ describe("recall routes refuse bad requests before the database", () => {
       payload: { timeZone: "UTC" },
     },
     { method: "GET" as const, url: "/v1/me/interview-date" },
+    { method: "GET" as const, url: "/v1/me/settings" },
+    { method: "GET" as const, url: "/v1/time-zones" },
     {
       method: "PUT" as const,
-      url: "/v1/me/interview-date",
-      payload: { date: "2026-12-14" },
+      url: "/v1/me/settings",
+      payload: { newCardsPerDay: 20 },
     },
+    { method: "POST" as const, url: "/v1/me/settings/reset" },
   ];
 
   it("answers 401 without a session", async () => {
@@ -155,6 +159,47 @@ describe("recall routes refuse bad requests before the database", () => {
         payload: { timeZone: attack },
       });
       expect(res.statusCode, attack).toBe(400);
+      for (const payload of [
+        { trackNewLimits: { [attack]: 1 } },
+        { timeZone: attack },
+        { interviewDate: attack },
+        { codeLanguage: attack },
+      ]) {
+        const res = await api.inject({
+          method: "PUT",
+          url: "/v1/me/settings",
+          headers,
+          payload,
+        });
+        expect(res.statusCode, JSON.stringify(payload)).toBe(400);
+      }
+    }
+  });
+
+  it("refuses settings of the wrong type or with extra fields", async () => {
+    const api = await start({ recall: UNREACHABLE });
+    const headers = { cookie: "session=good", origin: ORIGIN };
+    for (const payload of [
+      { newCardsPerDay: "20" },
+      { newCardsPerDay: 2.5 },
+      { recallTarget: -1 },
+      { reviewsPerDay: 100000 },
+      { followDeviceTimeZone: "yes" },
+      { rehearsalMinutes: { designReview: 45 } },
+      { userId: randomUUID() },
+      {
+        trackNewLimits: Object.fromEntries(
+          Array.from({ length: 21 }, (_, i) => [`t${i}`, 1]),
+        ),
+      },
+    ]) {
+      const res = await api.inject({
+        method: "PUT",
+        url: "/v1/me/settings",
+        headers,
+        payload,
+      });
+      expect(res.statusCode, JSON.stringify(payload)).toBe(400);
     }
   });
 
@@ -295,6 +340,10 @@ describe.skipIf(!url)("recall routes against Postgres", () => {
     expect(due.headers["cache-control"]).toBe("no-store");
     expect(due.json()).toEqual({
       newLeftToday: 10,
+      newCardsPerDay: 10,
+      waiting: 0,
+      reviewsPerDay: null,
+      reviewsLeftToday: null,
       dueTomorrow: 0,
       overdue: 0,
       dayEndsAt: expect.any(String),
@@ -646,13 +695,24 @@ describe.skipIf(!url)("recall routes against Postgres", () => {
         content,
         now,
       });
-      const put = (date: unknown) =>
+      const send = (date: unknown) =>
         api.inject({
           method: "PUT",
-          url: "/v1/me/interview-date",
+          url: "/v1/me/settings",
           headers: me.headers,
-          payload: { date },
+          payload: { interviewDate: date },
         });
+      // Answers with the interview part, as the old route did
+      const put = async (date: unknown) => {
+        const res = await send(date);
+        return {
+          statusCode: res.statusCode,
+          json: () => {
+            const body = res.json();
+            return res.statusCode === 200 ? body.interview : body;
+          },
+        };
+      };
       const get = async () =>
         (
           await api.inject({
@@ -699,10 +759,17 @@ describe.skipIf(!url)("recall routes against Postgres", () => {
       const { put, get } = await setUp();
       const past = await put("2026-11-18");
       expect(past.statusCode).toBe(400);
-      expect(past.json().code).toBe("interview_date_passed");
+      expect(past.json().problems).toEqual([
+        {
+          field: "interviewDate",
+          message: "That date has passed. Pick today or a later date.",
+        },
+      ]);
       const notReal = await put("2026-02-30");
       expect(notReal.statusCode).toBe(400);
-      expect(notReal.json().code).toBe("not_a_date");
+      expect(notReal.json().problems[0].message).toBe(
+        "That isn't a date. Pick one from the calendar.",
+      );
       for (const bad of [
         "tomorrow",
         "2026-12-14T00:00",
@@ -741,6 +808,147 @@ describe.skipIf(!url)("recall routes against Postgres", () => {
       await put(null);
       expect((await rate()).statusCode).toBe(200);
       expect(targets).toEqual([0.9, 0.95, 0.9]);
+    });
+  });
+
+  it("lists the time zones it accepts", async () => {
+    const me = await person();
+    const api = await signedIn([me]);
+    const res = await api.inject({
+      url: "/v1/time-zones",
+      headers: me.headers,
+    });
+    expect(res.json().timeZones).toContain("America/Toronto");
+  });
+
+  describe("settings", () => {
+    async function setUp() {
+      const me = await person();
+      const api = await signedIn([me]);
+      const put = (payload: Record<string, unknown>) =>
+        api.inject({
+          method: "PUT",
+          url: "/v1/me/settings",
+          headers: me.headers,
+          payload,
+        });
+      const get = async () =>
+        (
+          await api.inject({ url: "/v1/me/settings", headers: me.headers })
+        ).json();
+      const due = async () =>
+        (
+          await api.inject({ url: "/v1/recall/due", headers: me.headers })
+        ).json();
+      return { me, api, put, get, due };
+    }
+
+    it("starts at the suggested values", async () => {
+      const { get } = await setUp();
+      expect(await get()).toEqual({
+        settings: SUGGESTED_SETTINGS,
+        suggested: SUGGESTED_SETTINGS,
+        timeZone: "UTC",
+        interview: { date: null, startsOn: null, status: "none", target: 0.9 },
+      });
+    });
+
+    it("serves new cards by the overall and track limits", async () => {
+      const { me, api, put, due } = await setUp();
+      await api.inject({ method: "POST", url: START, headers: me.headers });
+      expect((await put({ newCardsPerDay: 3 })).statusCode).toBe(200);
+      expect((await due()).chapters[0].offered).toBe(3);
+      const res = await put({ trackNewLimits: { dsa: 1 } });
+      expect(res.json().settings).toMatchObject({
+        newCardsPerDay: 3,
+        trackNewLimits: { dsa: 1 },
+      });
+      expect((await due()).chapters[0].offered).toBe(1);
+    });
+
+    it("names every setting out of range and saves none of them", async () => {
+      const { put, get } = await setUp();
+      const res = await put({
+        newCardsPerDay: 51,
+        recallTarget: 98,
+        trackNewLimits: { "no-such-track": 2 },
+        timeZone: "Mars/Olympus_Mons",
+      });
+      expect(res.statusCode).toBe(400);
+      expect(res.json()).toEqual({
+        code: "settings_out_of_range",
+        message: "Some settings can't be saved. Check the ones marked.",
+        problems: [
+          { field: "newCardsPerDay", message: "Pick a number from 0 to 50." },
+          {
+            field: "recallTarget",
+            message: "Pick from 70% to 97%. Above 97%, reviews pile up fast.",
+          },
+          {
+            field: "trackNewLimits.no-such-track",
+            message: "That track doesn't exist.",
+          },
+          { field: "timeZone", message: "Pick a time zone from the list." },
+        ],
+      });
+      expect((await get()).settings).toEqual(SUGGESTED_SETTINGS);
+    });
+
+    it("aims for the learner's own targets", async () => {
+      const { put } = await setUp();
+      const res = await put({
+        recallTarget: 85,
+        interviewTarget: 92,
+        interviewWeeks: 1,
+        interviewDate: "2026-11-26",
+      });
+      expect(res.json().interview).toEqual({
+        date: "2026-11-26",
+        startsOn: "2026-11-19",
+        status: "on",
+        target: 0.92,
+      });
+    });
+
+    it("starts the day at the learner's hour and shows the reviews cap", async () => {
+      const { put, due } = await setUp();
+      await put({ dayStartsAt: 6, reviewsPerDay: 150 });
+      expect(await due()).toMatchObject({
+        dayEndsAt: "2026-11-20T06:00:00.000Z",
+        reviewsPerDay: 150,
+        reviewsLeftToday: 150,
+      });
+    });
+
+    it("keeps a picked time zone when the device sends its own", async () => {
+      const { me, api, put } = await setUp();
+      await put({ followDeviceTimeZone: false, timeZone: "Asia/Kolkata" });
+      const device = await api.inject({
+        method: "PUT",
+        url: "/v1/me/time-zone",
+        headers: me.headers,
+        payload: { timeZone: "America/Toronto" },
+      });
+      expect(device.statusCode).toBe(204);
+      expect(await store.timeZone(me.id)).toBe("Asia/Kolkata");
+      await put({ followDeviceTimeZone: true, timeZone: "America/Toronto" });
+      expect(await store.timeZone(me.id)).toBe("America/Toronto");
+    });
+
+    it("resets every setting and keeps the interview date", async () => {
+      const { me, api, put } = await setUp();
+      await put({
+        newCardsPerDay: 20,
+        codeLanguage: "python",
+        interviewDate: "2026-12-14",
+      });
+      const res = await api.inject({
+        method: "POST",
+        url: "/v1/me/settings/reset",
+        headers: me.headers,
+      });
+      expect(res.json().settings).toEqual(SUGGESTED_SETTINGS);
+      expect(res.json().interview.date).toBe("2026-12-14");
     });
   });
 
