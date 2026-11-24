@@ -32,6 +32,14 @@ export const RecallDueResponse = Type.Object(
   {
     /** New cards still allowed before 4 a.m. local time */
     newLeftToday: Count,
+    /** The learner's new cards a day */
+    newCardsPerDay: Count,
+    /** Due cards past today's reviews cap, which come first tomorrow */
+    waiting: Count,
+    /** The learner's reviews cap, or null for none */
+    reviewsPerDay: Type.Union([Count, Type.Null()]),
+    /** Reviews still allowed today, or null with no cap */
+    reviewsLeftToday: Type.Union([Count, Type.Null()]),
     /** Cards that come due during tomorrow's recall day */
     dueTomorrow: Count,
     /** Due cards that were already due before today's recall day began */
@@ -117,28 +125,22 @@ export const UndoReviewResponse = Type.Object(
 );
 export type UndoReviewResponse = Static<typeof UndoReviewResponse>;
 
+export const TimeZoneName = Type.String({
+  maxLength: 64,
+  pattern: "^[A-Za-z][A-Za-z0-9_+-]*(/[A-Za-z0-9_+-]+){0,2}$",
+  examples: ["America/Toronto"],
+});
+
 export const TimeZoneBody = Type.Object(
-  {
-    timeZone: Type.String({
-      maxLength: 64,
-      pattern: "^[A-Za-z][A-Za-z0-9_+-]*(/[A-Za-z0-9_+-]+){0,2}$",
-      examples: ["America/Toronto"],
-    }),
-  },
+  { timeZone: TimeZoneName },
   { additionalProperties: false },
 );
 export type TimeZoneBody = Static<typeof TimeZoneBody>;
 
-const CalendarDate = Type.String({
+export const CalendarDate = Type.String({
   pattern: "^\\d{4}-\\d{2}-\\d{2}$",
   examples: ["2026-12-14"],
 });
-
-export const InterviewDateBody = Type.Object(
-  { date: Type.Union([CalendarDate, Type.Null()]) },
-  { additionalProperties: false },
-);
-export type InterviewDateBody = Static<typeof InterviewDateBody>;
 
 export const InterviewDateResponse = Type.Object(
   {
@@ -165,6 +167,4 @@ export const RECALL_ERRORS = {
   notLatest: "not_latest_review",
   undoExpired: "undo_expired",
   unknownTimeZone: "unknown_time_zone",
-  notADate: "not_a_date",
-  datePassed: "interview_date_passed",
 } as const;

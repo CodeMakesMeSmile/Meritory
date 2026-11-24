@@ -22,7 +22,6 @@ export {
 } from "./code.ts";
 export {
   ChapterParams,
-  InterviewDateBody,
   InterviewDateResponse,
   RECALL_ERRORS,
   RecallDueResponse,
@@ -44,3 +43,11 @@ export {
   SessionParams,
   SessionsResponse,
 } from "./sessions.ts";
+export {
+  LearnerSettingsValues,
+  SETTINGS_ERRORS,
+  SettingsBody,
+  SettingsProblemResponse,
+  SettingsResponse,
+  TimeZonesResponse,
+} from "./settings.ts";
