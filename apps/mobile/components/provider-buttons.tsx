@@ -4,17 +4,11 @@ import {
   type Provider,
 } from "@meritory/contracts/sign-in-messages";
 import { radius, space, touchTarget } from "@meritory/design-tokens";
-import {
-  Pressable,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { useOnline } from "../lib/online";
 import { useProviderSignIn } from "../lib/provider-sign-in";
-import { useTheme } from "../lib/theme";
+import { useScheme, useTheme } from "../lib/theme";
 import { AppText } from "./app-text";
 
 const LOGO_SIZE = 18;
@@ -70,7 +64,7 @@ function ProviderButton({
   off: boolean;
   onPress: () => void;
 }) {
-  const look = LOOK[useColorScheme() === "dark" ? "dark" : "light"];
+  const look = LOOK[useScheme()];
   const label = `Continue with ${PROVIDER_LABELS[provider]}`;
   return (
     <Pressable
