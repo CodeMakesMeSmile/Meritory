@@ -107,7 +107,8 @@ function codeKey(trackId: string, exerciseId: string, language: CodeLanguage) {
   return `meritory.code.${trackId}.${exerciseId}.${language}`;
 }
 
-const LANGUAGE_KEY = "meritory.code.language";
+// Where the language was kept before it moved to Settings
+const OLD_LANGUAGE_KEY = "meritory.code.language";
 
 /** The learner's code for this exercise and language, or null if there's none */
 export function readCode(
@@ -128,12 +129,12 @@ export function writeCode(
   writeStored(codeKey(trackId, exerciseId, language), code);
 }
 
-export function readLanguage(): CodeLanguage {
-  return readStored(LANGUAGE_KEY) === "python" ? "python" : "typescript";
-}
-
-export function writeLanguage(language: CodeLanguage) {
-  writeStored(LANGUAGE_KEY, language);
+/** The language this browser kept before Settings, read once and then forgotten */
+export function takeOldLanguage(): CodeLanguage | null {
+  const stored = readStored(OLD_LANGUAGE_KEY);
+  if (stored === null) return null;
+  writeStored(OLD_LANGUAGE_KEY, null);
+  return stored === "python" || stored === "typescript" ? stored : null;
 }
 
 /** The run's codes, kept here so pages don't load the API schemas */

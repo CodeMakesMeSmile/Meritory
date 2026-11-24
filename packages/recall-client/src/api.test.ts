@@ -2,13 +2,13 @@ import { RECALL_ERRORS } from "@meritory/contracts";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   createRecallApi,
-  INTERVIEW_ERRORS,
   REVIEW_ERRORS,
   type RecallSessionCard,
 } from "./api.ts";
 import { UNDO_ERRORS } from "./sitting.ts";
 
-const { saveInterviewDate, saveReview, undoReview } = createRecallApi();
+const { resetSettings, saveSettings, saveReview, undoReview } =
+  createRecallApi();
 
 const ID = "0b6f3c1e-8a3d-4f7a-9c2e-5d1b7e9f0a12";
 
@@ -30,13 +30,6 @@ describe("recall api", () => {
     expect(UNDO_ERRORS).toEqual({
       notLatest: RECALL_ERRORS.notLatest,
       undoExpired: RECALL_ERRORS.undoExpired,
-    });
-  });
-
-  it("uses the same interview date codes as the API contract", () => {
-    expect(INTERVIEW_ERRORS).toEqual({
-      notADate: RECALL_ERRORS.notADate,
-      datePassed: RECALL_ERRORS.datePassed,
     });
   });
 
@@ -127,27 +120,43 @@ describe("recall api", () => {
     expect(JSON.parse(String(init.body)).durationMs).toBe(86_400_000);
   });
 
-  it("saves or clears the interview date with PUT", async () => {
-    const saved = {
-      date: "2026-12-14",
-      startsOn: "2026-11-16",
-      status: "on",
-      target: 0.95,
-    };
-    const fetch = reply(200, saved);
+  it("sends only the settings that changed", async () => {
+    const fetch = reply(200, { settings: {} });
     vi.stubGlobal("fetch", fetch);
-    expect(await saveInterviewDate("2026-12-14")).toEqual({
-      ok: true,
-      data: saved,
-    });
-    await saveInterviewDate(null);
+    await saveSettings({ newCardsPerDay: 20, interviewDate: null });
     expect(fetch).toHaveBeenLastCalledWith(
-      "/api/v1/me/interview-date",
+      "/api/v1/me/settings",
       expect.objectContaining({
         method: "PUT",
-        body: JSON.stringify({ date: null }),
+        body: JSON.stringify({ newCardsPerDay: 20, interviewDate: null }),
       }),
     );
+    await resetSettings();
+    expect(fetch).toHaveBeenLastCalledWith(
+      "/api/v1/me/settings/reset",
+      expect.objectContaining({ method: "POST" }),
+    );
+  });
+
+  it("passes on each setting the API turned down", async () => {
+    const problems = [
+      { field: "newCardsPerDay", message: "Pick a number from 0 to 50." },
+    ];
+    vi.stubGlobal(
+      "fetch",
+      reply(400, {
+        code: "settings_out_of_range",
+        message: "Some settings can't be saved.",
+        problems: [...problems, { field: 3 }],
+      }),
+    );
+    expect(await saveSettings({ newCardsPerDay: 80 })).toEqual({
+      ok: false,
+      reason: "failed",
+      code: "settings_out_of_range",
+      problems,
+      refused: true,
+    });
   });
 
   it("undoes with POST on the review's own path", async () => {

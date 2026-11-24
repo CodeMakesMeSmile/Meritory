@@ -1,11 +1,13 @@
 import { createRecallApi } from "@meritory/recall-client";
 
-export {
-  INTERVIEW_ERRORS,
-  type RecallRating,
-  type RecallSessionCard,
-  type RecallSessionResponse,
-  type ReviewToSave,
+export type {
+  RecallRating,
+  RecallSessionCard,
+  RecallSessionResponse,
+  ReviewToSave,
+  SettingProblem,
+  SettingsBody,
+  SettingsResponse,
 } from "@meritory/recall-client";
 
 // The browser calls its own origin and sends the session cookie itself
@@ -16,5 +18,7 @@ export const {
   saveReview,
   undoReview,
   saveTimeZone,
-  saveInterviewDate,
+  loadSettings,
+  saveSettings,
+  resetSettings,
 } = createRecallApi();

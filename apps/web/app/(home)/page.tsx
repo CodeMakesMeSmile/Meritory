@@ -3,6 +3,7 @@ import type {
   RecallDueResponse,
 } from "@meritory/contracts";
 import {
+  cappedLine,
   nothingDueLine,
   plural,
   type QueueRow,
@@ -169,8 +170,19 @@ function HomeBody({ load, chapters }: { load: DueLoad; chapters: Chapters }) {
       <div className="flex flex-col gap-1">
         <h2 className="text-body font-semibold">Nothing to recall yet</h2>
         <p className="text-small text-secondary">
-          Start a chapter and its cards join recall, up to 10 new a day.
+          {due.newCardsPerDay > 0
+            ? `Start a chapter and its cards join recall, up to ${due.newCardsPerDay} new a day.`
+            : "Start a chapter and its cards join recall once new cards are back on in Settings."}
         </p>
+      </div>
+    );
+  }
+  const capped = cappedLine(due);
+  if (rows.length === 0 && capped) {
+    return (
+      <div className="flex flex-col gap-1">
+        <h2 className="text-body font-semibold">Done for today</h2>
+        <p className="text-small text-secondary">{capped}</p>
       </div>
     );
   }
@@ -204,14 +216,14 @@ function ChaptersWithCounts({
   return <ChaptersCard chapters={chapters} due={use(load)} />;
 }
 
-/** Under Chapters while a date is coming up, linking to where it changes */
+/** Under Chapters while a date is coming up, linking to Settings where it changes */
 function InterviewLink({ load }: { load: InterviewLoad }) {
   const interview = use(load);
   if (!interview?.date) return null;
   if (interview.status !== "on" && interview.status !== "later") return null;
   return (
     <Link
-      href="/account"
+      href="/settings"
       className={`${linkClass} flex h-control items-center self-start`}
     >
       Interview on {dayName(interview.date)}

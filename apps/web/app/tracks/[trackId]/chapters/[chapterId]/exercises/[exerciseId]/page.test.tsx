@@ -13,6 +13,7 @@ vi.mock("next/navigation", () => ({
 vi.mock("@/lib/server-api", () => ({
   requireMe: async () => ({ id: "1", name: "Rowan", email: "a@b.test" }),
   getContent: async () => api.content,
+  getSettings: async () => null,
 }));
 
 const { default: ExercisePage } = await import("./page.tsx");

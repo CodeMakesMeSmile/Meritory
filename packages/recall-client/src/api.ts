@@ -1,14 +1,24 @@
 import type {
   InterviewDateResponse,
+  LearnerSettingsValues,
   RecallDueResponse,
   RecallRating,
   RecallSessionResponse,
   RecordReviewResponse,
+  SettingsBody,
+  SettingsResponse,
   StartChapterResponse,
+  TimeZonesResponse,
   UndoReviewResponse,
 } from "@meritory/contracts";
 
-export type { RecallRating, RecallSessionResponse };
+export type {
+  LearnerSettingsValues,
+  RecallRating,
+  RecallSessionResponse,
+  SettingsBody,
+  SettingsResponse,
+};
 export type RecallSessionCard = RecallSessionResponse["cards"][number];
 
 /** What a recall request came back with, in terms the page acts on */
@@ -18,6 +28,8 @@ export type RecallResult<T> =
       ok: false;
       reason: "signed_out" | "failed";
       code?: string;
+      /** Each setting the API turned down, by its path */
+      problems?: SettingProblem[];
       /** The API turned it down for good, so sending it again gets the same answer */
       refused?: boolean;
     };
@@ -31,14 +43,30 @@ export interface RecallApiOptions {
   credentials?: RequestInit["credentials"];
 }
 
-/** The API's own error code, such as undo_expired, when the body has one */
-async function errorCode(res: Response): Promise<string | undefined> {
+export interface SettingProblem {
+  field: string;
+  message: string;
+}
+
+/** The API's own error code, such as undo_expired, and any settings it turned down */
+async function errorBody(
+  res: Response,
+): Promise<{ code?: string; problems?: SettingProblem[] }> {
   try {
-    const body: unknown = await res.json();
-    const code = (body as { code?: unknown } | null)?.code;
-    return typeof code === "string" ? code : undefined;
+    const body = (await res.json()) as {
+      code?: unknown;
+      problems?: unknown;
+    } | null;
+    const code = typeof body?.code === "string" ? body.code : undefined;
+    const problems = Array.isArray(body?.problems)
+      ? body.problems.filter(
+          (p): p is SettingProblem =>
+            typeof p?.field === "string" && typeof p?.message === "string",
+        )
+      : undefined;
+    return { ...(code ? { code } : {}), ...(problems ? { problems } : {}) };
   } catch {
-    return undefined;
+    return {};
   }
 }
 
@@ -56,12 +84,6 @@ export interface ReviewToSave {
 
 /** The review code from RECALL_ERRORS, kept here so pages don't load the API schemas */
 export const REVIEW_ERRORS = { undone: "review_undone" } as const;
-
-/** The interview date codes from RECALL_ERRORS, kept here so pages don't load the API schemas */
-export const INTERVIEW_ERRORS = {
-  notADate: "not_a_date",
-  datePassed: "interview_date_passed",
-} as const;
 
 const DEFAULT_BASE = "/api/v1";
 
@@ -95,7 +117,7 @@ export function createRecallApi(options: RecallApiOptions = {}) {
       return {
         ok: false,
         reason: "failed",
-        code: await errorCode(res),
+        ...(await errorBody(res)),
         ...(refused ? { refused } : {}),
       };
     }
@@ -166,11 +188,24 @@ export function createRecallApi(options: RecallApiOptions = {}) {
       return call<InterviewDateResponse>("/me/interview-date");
     },
 
-    saveInterviewDate(date: string | null) {
-      return call<InterviewDateResponse>("/me/interview-date", {
+    loadSettings() {
+      return call<SettingsResponse>("/me/settings");
+    },
+
+    /** Changes only the settings sent, and nothing unless every one is in range */
+    saveSettings(change: SettingsBody) {
+      return call<SettingsResponse>("/me/settings", {
         method: "PUT",
-        ...json({ date }),
+        ...json(change),
       });
+    },
+
+    loadTimeZones() {
+      return call<TimeZonesResponse>("/time-zones");
+    },
+
+    resetSettings() {
+      return call<SettingsResponse>("/me/settings/reset", { method: "POST" });
     },
   };
 }

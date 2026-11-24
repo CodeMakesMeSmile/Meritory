@@ -9,19 +9,37 @@ import {
   selfCriteria,
 } from "./practice";
 
+export interface RehearsalMinutes {
+  designReview: number;
+  classDesign: number;
+  storyAnswer: number;
+}
+
+/** The suggested clocks, used until Settings loads */
+export const SUGGESTED_MINUTES: RehearsalMinutes = {
+  designReview: 45,
+  classDesign: 45,
+  storyAnswer: 5,
+};
+
 /**
- * Minutes on the clock, set by the rubric an exercise is scored with. A
- * design review or a class design is a full interview round, and a story is
- * one answer in a behavioral round. Other rubrics have no rehearsal until they get a length.
+ * The setting that times each rubric. A design review or a class design is a
+ * full interview round, and a story is one answer in a behavioral round. Other
+ * rubrics have no rehearsal until they get a length.
  */
-const MINUTES_BY_RUBRIC: ReadonlyMap<string, number> = new Map([
-  ["design-review", 45],
-  ["class-design", 45],
-  ["story-review", 5],
+const SETTING_BY_RUBRIC: ReadonlyMap<string, keyof RehearsalMinutes> = new Map([
+  ["design-review", "designReview"],
+  ["class-design", "classDesign"],
+  ["story-review", "storyAnswer"],
 ]);
 
-export function rehearsalMinutes(rubricId: string): number | null {
-  return MINUTES_BY_RUBRIC.get(rubricId) ?? null;
+/** Minutes on the clock, from the learner's settings for the rubric an exercise is scored with */
+export function rehearsalMinutes(
+  rubricId: string,
+  minutes: RehearsalMinutes = SUGGESTED_MINUTES,
+): number | null {
+  const setting = SETTING_BY_RUBRIC.get(rubricId);
+  return setting ? minutes[setting] : null;
 }
 
 export type Debrief = "unknown" | "froze";

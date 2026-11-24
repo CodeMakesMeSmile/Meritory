@@ -5,7 +5,7 @@ import { KeepSession } from "./keep-session";
 import { LogoLockup } from "./logo";
 import { TimeZoneSync } from "./time-zone-sync";
 
-type Page = "home" | "chapter";
+type Page = "home" | "chapter" | "settings";
 
 function NavItem({
   href,
@@ -54,6 +54,9 @@ export function AppShell({
         <div className="flex gap-1 md:flex-col">
           <NavItem href="/" current={page === "home"}>
             Home
+          </NavItem>
+          <NavItem href="/settings" current={page === "settings"}>
+            Settings
           </NavItem>
         </div>
         <div className="ml-auto flex min-w-0 items-center gap-2 md:mt-auto md:ml-0 md:flex-col md:items-stretch md:gap-3">

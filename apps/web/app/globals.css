@@ -107,9 +107,11 @@ body {
     border-color: var(--color-status-danger);
     box-shadow: inset 0 0 0 1px var(--color-status-danger);
   }
-  .field-box input {
+  .field-box input,
+  .field-box select {
     flex: 1;
     min-width: 0;
+    height: 100%;
     background: transparent;
     outline: none;
   }

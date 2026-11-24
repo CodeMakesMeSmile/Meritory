@@ -1,6 +1,6 @@
 export {
   createRecallApi,
-  INTERVIEW_ERRORS,
+  type LearnerSettingsValues,
   MAX_DURATION_MS,
   REVIEW_ERRORS,
   type RecallApi,
@@ -10,6 +10,9 @@ export {
   type RecallSessionCard,
   type RecallSessionResponse,
   type ReviewToSave,
+  type SettingProblem,
+  type SettingsBody,
+  type SettingsResponse,
 } from "./api.ts";
 export {
   allChapters,
@@ -30,6 +33,7 @@ export {
   shuffled,
 } from "./grading.ts";
 export {
+  cappedLine,
   nothingDueLine,
   plural,
   type QueueRow,
@@ -41,9 +45,37 @@ export {
   dayAndYear,
   dayName,
   INTERVIEW_DESCRIPTION,
+  type InterviewTargets,
   interviewIsAhead,
   interviewStatusLine,
 } from "./interview.ts";
+export {
+  DAY_START_HOURS,
+  dailySavedLine,
+  dayStartHelp,
+  digitsOnly,
+  ENTER_A_NUMBER,
+  hourLabel,
+  interviewTargetHelp,
+  interviewWeeksHelp,
+  newCardsHelp,
+  PRACTICE_SAVED,
+  pausedTrackLine,
+  RESET_DESCRIPTION,
+  RESET_DONE,
+  REVIEWS_CAP_HELP,
+  recallTargetHelp,
+  rehearsalHelp,
+  reviewsCapLine,
+  SAVE_FAILED,
+  SAVE_OFFLINE,
+  SETTINGS_DESCRIPTION,
+  settledReviews,
+  timeZoneLine,
+  trackLimitsHelp,
+  trackLimitsLine,
+  wholeNumber,
+} from "./settings.ts";
 export {
   doneLine,
   lineAfterFailedUndo,

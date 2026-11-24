@@ -43,16 +43,28 @@ export function nothingDueLine(due: RecallDueResponse): string {
   const newLater = due.chapters.reduce((sum, c) => sum + c.new, 0);
   const tomorrow =
     due.dueTomorrow > 0
-      ? ` ${due.dueTomorrow} come back tomorrow${newLater > 0 ? ", plus up to 10 new." : "."}`
-      : newLater > 0
-        ? " Up to 10 new cards arrive tomorrow."
+      ? ` ${due.dueTomorrow} come back tomorrow${newLater > 0 && due.newCardsPerDay > 0 ? `, plus up to ${due.newCardsPerDay} new.` : "."}`
+      : newLater > 0 && due.newCardsPerDay > 0
+        ? ` Up to ${due.newCardsPerDay} new cards arrive tomorrow.`
         : "";
   return `You've done today's cards.${tomorrow}`;
 }
 
+/** Said once the reviews cap is reached and due cards are still waiting */
+export function cappedLine(due: RecallDueResponse): string | null {
+  if (due.reviewsPerDay === null || due.waiting === 0) return null;
+  return `That's your ${due.reviewsPerDay} reviews for today. ${due.waiting} more ${due.waiting === 1 ? "is" : "are"} waiting, and they'll come first tomorrow.`;
+}
+
 /** The note under the queue. Cards waiting from an earlier day change what it says */
 export function queueNote(due: RecallDueResponse): string {
-  return due.overdue > 0
-    ? "Due cards come first, oldest first. Do what you can today, and the rest stay in the queue."
-    : "We add up to 10 new cards a day so reviews grow slowly.";
+  if (due.reviewsPerDay !== null && due.waiting > 0) {
+    return `Today stops at your ${due.reviewsPerDay} reviews. ${due.waiting} more ${due.waiting === 1 ? "is" : "are"} waiting, and they'll come first tomorrow.`;
+  }
+  if (due.overdue > 0) {
+    return "Due cards come first, oldest first. Do what you can today, and the rest stay in the queue.";
+  }
+  return due.newCardsPerDay > 0
+    ? `We add up to ${due.newCardsPerDay} new cards a day so reviews grow slowly.`
+    : "New cards are paused in Settings, so only due cards come up.";
 }
