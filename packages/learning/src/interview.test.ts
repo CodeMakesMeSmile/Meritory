@@ -1,13 +1,14 @@
 import { describe, expect, it } from "vitest";
 import {
   addDays,
-  INTERVIEW_RECALL_TARGET,
   interviewStatus,
   isCalendarDate,
   recallDate,
   recallTargetFor,
 } from "./interview.ts";
 import { DEFAULT_RECALL_TARGET } from "./scheduler.ts";
+
+const INTERVIEW_RECALL_TARGET = 0.95;
 
 describe("recallTargetFor", () => {
   const today = "2026-11-21";
@@ -36,6 +37,12 @@ describe("recallTargetFor", () => {
 
   it("uses the usual target with no date", () => {
     expect(recallTargetFor(null, today)).toBe(DEFAULT_RECALL_TARGET);
+  });
+
+  it("follows the learner's targets and window", () => {
+    const own = { recallTarget: 85, interviewTarget: 92, interviewWeeks: 1 };
+    expect(recallTargetFor(addDays(today, 7), today, own)).toBe(0.92);
+    expect(recallTargetFor(addDays(today, 8), today, own)).toBe(0.85);
   });
 });
 
