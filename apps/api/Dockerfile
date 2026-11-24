@@ -22,6 +22,7 @@ COPY packages/password/package.json packages/password/
 COPY packages/recall-client/package.json packages/recall-client/
 COPY packages/security-testing/package.json packages/security-testing/
 COPY packages/server/package.json packages/server/
+COPY infra/package.json infra/
 
 FROM base AS deps
 RUN pnpm install --frozen-lockfile --prod --filter "@meritory/api..."

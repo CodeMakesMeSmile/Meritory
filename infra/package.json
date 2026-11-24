@@ -1,0 +1,20 @@
+{
+  "name": "@meritory/infra",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "AGPL-3.0-only",
+  "description": "The staging server, written with the AWS CDK",
+  "scripts": {
+    "typecheck": "tsc",
+    "synth": "cdk synth",
+    "deploy": "cdk deploy"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "2.276.0",
+    "constructs": "10.8.1"
+  },
+  "devDependencies": {
+    "aws-cdk": "2.1148.0"
+  }
+}
