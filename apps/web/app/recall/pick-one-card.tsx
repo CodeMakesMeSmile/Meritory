@@ -43,6 +43,36 @@ function Choice({
   );
 }
 
+/** The checked pick, with the right answer beside it on a miss */
+export function PickOneAnswers({
+  pick,
+  answer,
+  right,
+}: {
+  pick: Option;
+  answer: Option | undefined;
+  right: boolean;
+}) {
+  return (
+    <>
+      <Choice option={pick} label="Your pick" missed={!right} />
+      {!right && answer && (
+        <div className={`flex flex-col gap-1 p-3 ${answerRule(false)}`}>
+          <h3 className="text-small font-semibold text-success">
+            Here's the answer
+          </h3>
+          <Markdown text={answer.text} inline />
+          <Markdown
+            text={answer.reason}
+            inline
+            className="text-small text-secondary"
+          />
+        </div>
+      )}
+    </>
+  );
+}
+
 /** Pick the one right answer from a few */
 export function PickOneCard({
   item,
@@ -88,20 +118,7 @@ export function PickOneCard({
             showWait={false}
           />
           <Prompt text={promptOf(item)} answered />
-          <Choice option={pick} label="Your pick" missed={!checked.right} />
-          {!checked.right && answer && (
-            <div className={`flex flex-col gap-1 p-3 ${answerRule(false)}`}>
-              <h3 className="text-small font-semibold text-success">
-                Here's the answer
-              </h3>
-              <Markdown text={answer.text} inline />
-              <Markdown
-                text={answer.reason}
-                inline
-                className="text-small text-secondary"
-              />
-            </div>
-          )}
+          <PickOneAnswers pick={pick} answer={answer} right={checked.right} />
           <Lesson card={card} missed={!checked.right} wait={checked.wait} />
         </CardBox>
         {after}

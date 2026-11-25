@@ -66,6 +66,52 @@ function StepText({
   return <Markdown text={text} inline renderText={mark} />;
 }
 
+/** The steps placed so far, ruled red or green by place once checked */
+export function StepOrder({
+  steps,
+  placed,
+  checked,
+  terms,
+  onTerm,
+}: {
+  steps: readonly string[];
+  /** Steps known by their right place, starting at 0 */
+  placed: readonly number[];
+  checked: boolean;
+  terms: readonly Term[];
+  onTerm: (term: Term) => void;
+}) {
+  return (
+    <ol className="flex flex-col gap-2">
+      {placed.map((step, at) => {
+        const wrong = checked && step !== at;
+        return (
+          <li
+            key={step}
+            className={`flex items-start gap-3 px-3 py-3 ${checked ? answerRule(wrong) : "bg-sunken"}`}
+          >
+            <span className="w-4 shrink-0 font-mono text-small text-secondary">
+              {at + 1}
+            </span>
+            <span className="flex flex-1 flex-col gap-1">
+              <StepText
+                text={steps[step] ?? ""}
+                terms={checked ? [] : terms}
+                onTerm={onTerm}
+              />
+              {wrong && (
+                <span className="text-small text-danger">
+                  Goes {ordinal(step)}
+                </span>
+              )}
+            </span>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
 /** Put the steps in order by tapping them from first to last */
 export function OrderingCard({
   item,
@@ -107,33 +153,13 @@ export function OrderingCard({
   const done = left.length === 0;
 
   const order = (
-    <ol className="flex flex-col gap-2">
-      {placed.map((step, at) => {
-        const wrong = checked !== null && step !== at;
-        return (
-          <li
-            key={step}
-            className={`flex items-start gap-3 px-3 py-3 ${checked ? answerRule(wrong) : "bg-sunken"}`}
-          >
-            <span className="w-4 shrink-0 font-mono text-small text-secondary">
-              {at + 1}
-            </span>
-            <span className="flex flex-1 flex-col gap-1">
-              <StepText
-                text={card.steps[step] ?? ""}
-                terms={checked ? [] : terms}
-                onTerm={setTerm}
-              />
-              {wrong && (
-                <span className="text-small text-danger">
-                  Goes {ordinal(step)}
-                </span>
-              )}
-            </span>
-          </li>
-        );
-      })}
-    </ol>
+    <StepOrder
+      steps={card.steps}
+      placed={placed}
+      checked={checked !== null}
+      terms={terms}
+      onTerm={setTerm}
+    />
   );
 
   if (checked) {
