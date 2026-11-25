@@ -71,13 +71,65 @@ cloudflared --version
 swapon --show
 ```
 
+## 6. Run the stack
+
+The stack is in `infra/staging/`. A systemd timer on the server runs `deploy.sh` two minutes after boot and every 5 minutes after that. Each run downloads `compose.yml` from `main`, checks it, pulls the `staging` images that CI pushes on every merge, and runs `docker compose up`, which recreates only the containers whose image or settings changed. A merged change to the compose file deploys the same way.
+
+| Service | Memory cap | Node heap | Starts after |
+|---|---|---|---|
+| Postgres | 160 MB | | |
+| api | 288 MB | 192 MB | Postgres is healthy, then its migrations run |
+| worker | 224 MB | 144 MB | the api is healthy |
+| web | 192 MB | 128 MB | the api is healthy and the worker has started |
+
+The migrations run in a `pre_start` step of the api, so they run once each time the api is recreated, not every 5 minutes. Only web is published, on `127.0.0.1:3000`, for the Tunnel. Staging has email and password sign-in only, public content only, an empty database, and no code runner, so coding exercises can't be checked there.
+
+In the Lightsail browser terminal, as root (`sudo -i`):
+
+1. Install the deploy script and timer, and make an empty `.env`:
+
+   ```
+   curl -fsSL -o /tmp/install.sh https://raw.githubusercontent.com/CodeMakesMeSmile/Meritory/main/infra/staging/install.sh
+   less /tmp/install.sh
+   sh /tmp/install.sh
+   ```
+
+2. Fill in `/opt/meritory/.env` with `nano /opt/meritory/.env`. Each line says how to make its value. The SES SMTP login is the one from [Sending test email through Amazon SES](email-sending.md). Paste values in, and never commit them anywhere.
+
+3. Start the timer and watch the first deploy:
+
+   ```
+   systemctl enable --now meritory-deploy.timer
+   systemctl start meritory-deploy.service
+   journalctl -u meritory-deploy.service -n 50
+   ```
+
+## Checking on it
+
+```
+docker compose -f /opt/meritory/compose.yml ps
+docker stats --no-stream
+free -m
+systemctl list-timers meritory-deploy.timer
+journalctl -u meritory-deploy.service --since "1 hour ago"
+docker compose -f /opt/meritory/compose.yml logs --tail 50 api
+curl -s http://127.0.0.1:3000/ -o /dev/null -w "%{http_code}\n"
+```
+
+`docker stats` shows each container's memory against its cap. If a container keeps hitting its cap or swap stays busy, raise the cap in `compose.yml` or move to the 2 GB plan. Logs are capped at 30 MB a container.
+
+## Rebuilding the server
+
+Staging data is disposable. To start over, remove the stack and deploy again (see [Removing it](#removing-it) and step 4), then repeat step 6. The database starts empty.
+
 ## Moving to the 2 GB plan
 
 Lightsail can't change a server's plan in place ([upsizing](https://docs.aws.amazon.com/lightsail/latest/userguide/how-to-create-larger-instance-from-snapshot-using-console.html)), and CloudFormation can't update it either. Staging data is disposable, so build a fresh server instead:
 
 1. Find the 2 GB plan's ID with `aws lightsail get-bundles`.
 2. In `SERVER`, change `bundleId` to it and `name` to a new name, such as `meritory-staging-2`. The new name makes CloudFormation build a new server and remove the old one.
-3. Deploy, then set up the stack, its `.env`, and the Tunnel on the new server again.
+3. Deploy, then repeat step 6 and set up the Tunnel on the new server.
+4. With 2 GB, the memory caps in `infra/staging/compose.yml` can go up.
 
 A changed launch script works the same way. CloudFormation can only apply it by building a new server, and it can't replace a server that keeps its name, so either rename it or remove the stack and deploy again.
 
