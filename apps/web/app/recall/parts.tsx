@@ -52,6 +52,11 @@ export function Prompt({
   );
 }
 
+/** The rule around a checked answer, red when wrong and green when right */
+export function answerRule(wrong: boolean) {
+  return wrong ? "border border-danger" : "border border-success";
+}
+
 /** When the card comes back, such as "You'll get another go in 1 minute." */
 export function waitLine(right: boolean, wait: string) {
   return right
@@ -75,7 +80,11 @@ export function FeedbackHeading({
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <h2 ref={focusRef} tabIndex={-1} className="text-h3 focus:outline-none">
+      <h2
+        ref={focusRef}
+        tabIndex={-1}
+        className={`text-h3 focus:outline-none ${right ? "text-success" : ""}`}
+      >
         {right ? "Got it" : "Not quite"}
       </h2>
       {encourage && (

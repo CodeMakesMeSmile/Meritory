@@ -10,7 +10,9 @@ vi.mock("next/navigation", () => ({
 
 const { ratingsWait, Sitting, UndoBar } = await import("./sitting.tsx");
 const { PromptCard } = await import("./prompt-card.tsx");
-const { Explanation, Lesson } = await import("./parts.tsx");
+const { answerRule, Explanation, FeedbackHeading, Lesson } = await import(
+  "./parts.tsx"
+);
 
 const NOW = "2026-11-19T15:00:00.000Z";
 
@@ -195,6 +197,29 @@ describe("a recall sitting", () => {
     expect(refused).toContain("Each slice copies.");
     expect(refused).not.toContain("another go");
     expect(refused).not.toContain("see this again");
+  });
+
+  it("rules a checked answer red when wrong and green when right", () => {
+    expect(answerRule(true)).toBe("border border-danger");
+    expect(answerRule(false)).toBe("border border-success");
+  });
+
+  it("colours Got it green and leaves Not quite in ink", () => {
+    const ref = { current: null };
+    const right = renderToStaticMarkup(
+      <FeedbackHeading right encourage={false} wait={null} focusRef={ref} />,
+    );
+    expect(right).toMatch(/<h2[^>]*text-success[^>]*>Got it<\/h2>/);
+    const missed = renderToStaticMarkup(
+      <FeedbackHeading
+        right={false}
+        encourage={false}
+        wait={null}
+        focusRef={ref}
+      />,
+    );
+    expect(missed).toContain(">Not quite</h2>");
+    expect(missed).not.toContain("text-success");
   });
 
   it("shows only the explanation under a missed order or match", () => {

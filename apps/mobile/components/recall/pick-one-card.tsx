@@ -53,20 +53,20 @@ export function PickOneCard({
         <CardBox>
           <FeedbackHeading {...checked} showWait={false} />
           <Prompt text={promptOf(item)} answered />
-          <AnswerBox wrong={!checked.right}>
+          <AnswerBox result={checked.right ? "right" : "wrong"}>
             <Label
               text="Your pick"
-              color={checked.right ? "textSecondary" : "statusDanger"}
+              color={checked.right ? "statusSuccess" : "statusDanger"}
             />
             <Markdown text={pick.text} />
             <Markdown text={pick.reason} variant="small" secondary />
           </AnswerBox>
           {!checked.right && answer && (
-            <View style={recallStyles.tight}>
-              <Label text="Here's the answer" />
+            <AnswerBox result="right">
+              <Label text="Here's the answer" color="statusSuccess" />
               <Markdown text={answer.text} />
               <Markdown text={answer.reason} variant="small" secondary />
-            </View>
+            </AnswerBox>
           )}
           <Lesson card={card} missed={!checked.right} wait={checked.wait} />
         </CardBox>

@@ -12,6 +12,7 @@ import { Button, linkClass } from "@/components/button";
 import { Markdown } from "@/components/markdown";
 import type { OrderingCard as OrderingContent } from "@/lib/content";
 import {
+  answerRule,
   CardBox,
   Explanation,
   FeedbackHeading,
@@ -112,7 +113,7 @@ export function OrderingCard({
         return (
           <li
             key={step}
-            className={`flex items-start gap-3 px-3 py-3 ${wrong ? "border border-danger" : "bg-sunken"}`}
+            className={`flex items-start gap-3 px-3 py-3 ${checked ? answerRule(wrong) : "bg-sunken"}`}
           >
             <span className="w-4 shrink-0 font-mono text-small text-secondary">
               {at + 1}

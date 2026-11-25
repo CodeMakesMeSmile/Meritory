@@ -19,7 +19,12 @@ type Variant =
   | "smallStrong"
   | "numeric"
   | "link";
-type Color = "textPrimary" | "textSecondary" | "textAccent" | "statusDanger";
+type Color =
+  | "textPrimary"
+  | "textSecondary"
+  | "textAccent"
+  | "statusDanger"
+  | "statusSuccess";
 
 interface AppTextProps extends TextProps {
   variant?: Variant;
