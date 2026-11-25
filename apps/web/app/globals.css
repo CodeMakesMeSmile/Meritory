@@ -173,3 +173,149 @@ body {
   --provider-stroke: #8e918f;
   --provider-text: #e3e3e3;
 }
+
+/*
+ * The Steps loader inks one square at a time up the diagonal, in six 200 ms
+ * beats. It stays hidden for the first second, runs four times (4.8 s, under
+ * WCAG's five second limit for motion beside usable content), then rests on
+ * the logo. Each square's resting state is its place in the logo.
+ */
+@layer components {
+  .steps-loader {
+    visibility: hidden;
+    animation: steps-loader-show 0s 1s forwards;
+  }
+  .steps-loader-a .steps-loader-hatch,
+  .steps-loader-a .steps-loader-edge,
+  .steps-loader-b .steps-loader-fill,
+  .steps-loader-c .steps-loader-fill,
+  .steps-loader-c .steps-loader-hatch {
+    opacity: 0;
+  }
+  .steps-loader svg * {
+    animation-duration: 1.2s;
+    animation-delay: 1s;
+    animation-iteration-count: 4;
+    animation-timing-function: step-end;
+  }
+  .steps-loader-a .steps-loader-fill {
+    animation-name: steps-loader-a-fill;
+  }
+  .steps-loader-a .steps-loader-hatch {
+    animation-name: steps-loader-a-hatch;
+  }
+  .steps-loader-a .steps-loader-edge {
+    animation-name: steps-loader-a-edge;
+  }
+  .steps-loader-b .steps-loader-fill {
+    animation-name: steps-loader-b-fill;
+  }
+  .steps-loader-b .steps-loader-hatch {
+    animation-name: steps-loader-b-hatch;
+  }
+  .steps-loader-b .steps-loader-edge {
+    animation-name: steps-loader-b-edge;
+  }
+  .steps-loader-c .steps-loader-fill {
+    animation-name: steps-loader-c-fill;
+  }
+  .steps-loader-c .steps-loader-hatch {
+    animation-name: steps-loader-c-hatch;
+  }
+  .steps-loader-c .steps-loader-edge {
+    animation-name: steps-loader-c-edge;
+  }
+}
+
+@keyframes steps-loader-show {
+  to {
+    visibility: visible;
+  }
+}
+@keyframes steps-loader-a-fill {
+  0% {
+    opacity: 0;
+  }
+  33.33% {
+    opacity: 1;
+  }
+}
+@keyframes steps-loader-a-hatch {
+  0% {
+    opacity: 0;
+  }
+  16.67% {
+    opacity: 1;
+  }
+  33.33% {
+    opacity: 0;
+  }
+}
+@keyframes steps-loader-a-edge {
+  0% {
+    opacity: 1;
+  }
+  33.33% {
+    opacity: 0;
+  }
+}
+@keyframes steps-loader-b-fill {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes steps-loader-b-hatch {
+  0% {
+    opacity: 0;
+  }
+  33.33% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+@keyframes steps-loader-b-edge {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+@keyframes steps-loader-c-fill {
+  0% {
+    opacity: 0;
+  }
+  66.67% {
+    opacity: 1;
+  }
+}
+@keyframes steps-loader-c-hatch {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  66.67% {
+    opacity: 0;
+  }
+}
+@keyframes steps-loader-c-edge {
+  0% {
+    opacity: 1;
+  }
+  66.67% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .steps-loader svg * {
+    animation: none;
+  }
+}
