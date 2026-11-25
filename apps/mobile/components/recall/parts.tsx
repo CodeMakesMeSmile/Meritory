@@ -66,7 +66,11 @@ export function FeedbackHeading({
 }: Checked & { showWait?: boolean }) {
   return (
     <View style={styles.tight} accessibilityLiveRegion="polite">
-      <AppText variant="heading3" accessibilityRole="header">
+      <AppText
+        variant="heading3"
+        accessibilityRole="header"
+        color={right ? "statusSuccess" : "textPrimary"}
+      >
         {right ? "Got it" : "Not quite"}
       </AppText>
       {encourage && (
@@ -89,7 +93,7 @@ export function Label({
   color = "textPrimary",
 }: {
   text: string;
-  color?: "textPrimary" | "textSecondary" | "statusDanger";
+  color?: "textPrimary" | "textSecondary" | "statusDanger" | "statusSuccess";
 }) {
   return (
     <AppText variant="smallStrong" color={color} accessibilityRole="header">
@@ -217,21 +221,26 @@ export function TapRow({
   );
 }
 
-/** An answer shown back after checking, ruled in red when it was wrong */
+/** An answer shown back, ruled red when wrong and green when right once checked */
 export function AnswerBox({
   children,
-  wrong,
+  result,
 }: {
   children: ReactNode;
-  wrong: boolean;
+  /** Left out while the answer is still being built */
+  result?: "right" | "wrong";
 }) {
   const theme = useTheme();
   return (
     <View
       style={[
         styles.answer,
-        wrong
-          ? { borderWidth: 1, borderColor: theme.statusDanger }
+        result
+          ? {
+              borderWidth: 1,
+              borderColor:
+                result === "wrong" ? theme.statusDanger : theme.statusSuccess,
+            }
           : { backgroundColor: theme.bgSunken },
       ]}
     >

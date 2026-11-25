@@ -11,6 +11,7 @@ import { Button } from "@/components/button";
 import { Markdown } from "@/components/markdown";
 import type { MatchingCard as MatchingContent } from "@/lib/content";
 import {
+  answerRule,
   CardBox,
   Explanation,
   FeedbackHeading,
@@ -106,7 +107,7 @@ export function MatchingCard({
                 <li key={pair.item} className="flex flex-col gap-2">
                   <Markdown text={pair.item} className="font-semibold" />
                   <div
-                    className={`flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2 ${wrong ? "border border-danger" : "bg-sunken"}`}
+                    className={`flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2 ${answerRule(wrong)}`}
                   >
                     <Markdown text={filled[at] ?? ""} inline />
                     {wrong && (

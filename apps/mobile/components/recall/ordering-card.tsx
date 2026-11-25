@@ -83,7 +83,10 @@ export function OrderingCard({
       {placed.map((step, at) => {
         const wrong = checked !== null && step !== at;
         return (
-          <AnswerBox key={step} wrong={wrong}>
+          <AnswerBox
+            key={step}
+            result={checked === null ? undefined : wrong ? "wrong" : "right"}
+          >
             <View style={styles.step}>
               <AppText variant="numeric" color="textSecondary">
                 {at + 1}

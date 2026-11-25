@@ -101,7 +101,7 @@ export function MatchingCard({
               return (
                 <View key={pair.item} style={recallStyles.list}>
                   <Markdown text={pair.item} strong />
-                  <AnswerBox wrong={wrong}>
+                  <AnswerBox result={wrong ? "wrong" : "right"}>
                     <Markdown text={filled[at] ?? ""} />
                     {wrong && (
                       <>

@@ -5,7 +5,14 @@ import { type ReactNode, useId, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/button";
 import { Markdown } from "@/components/markdown";
 import type { PickOneCard as PickOneContent } from "@/lib/content";
-import { CardBox, FeedbackHeading, Lesson, Prompt, useFocusOn } from "./parts";
+import {
+  answerRule,
+  CardBox,
+  FeedbackHeading,
+  Lesson,
+  Prompt,
+  useFocusOn,
+} from "./parts";
 import type { Checked } from "./sitting-types";
 
 type Option = PickOneContent["options"][number];
@@ -20,11 +27,9 @@ function Choice({
   missed: boolean;
 }) {
   return (
-    <div
-      className={`flex flex-col gap-1 p-3 ${missed ? "border border-danger" : "bg-sunken"}`}
-    >
+    <div className={`flex flex-col gap-1 p-3 ${answerRule(missed)}`}>
       <h3
-        className={`text-small font-semibold ${missed ? "text-danger" : "text-secondary"}`}
+        className={`text-small font-semibold ${missed ? "text-danger" : "text-success"}`}
       >
         {label}
       </h3>
@@ -85,8 +90,10 @@ export function PickOneCard({
           <Prompt text={promptOf(item)} answered />
           <Choice option={pick} label="Your pick" missed={!checked.right} />
           {!checked.right && answer && (
-            <div className="flex flex-col gap-1">
-              <h3 className="text-small font-semibold">Here's the answer</h3>
+            <div className={`flex flex-col gap-1 p-3 ${answerRule(false)}`}>
+              <h3 className="text-small font-semibold text-success">
+                Here's the answer
+              </h3>
               <Markdown text={answer.text} inline />
               <Markdown
                 text={answer.reason}
