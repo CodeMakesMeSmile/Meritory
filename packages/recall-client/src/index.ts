@@ -77,7 +77,9 @@ export {
   wholeNumber,
 } from "./settings.ts";
 export {
+  type DontKnowResult,
   doneLine,
+  dontKnowResult,
   lineAfterFailedUndo,
   lineAfterSave,
   promptOf,

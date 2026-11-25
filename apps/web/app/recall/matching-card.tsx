@@ -12,6 +12,7 @@ import { Markdown } from "@/components/markdown";
 import type { MatchingCard as MatchingContent } from "@/lib/content";
 import {
   answerRule,
+  CardActions,
   CardBox,
   Explanation,
   FeedbackHeading,
@@ -69,6 +70,7 @@ export function MatchingCard({
   focusOnOpen,
   checked,
   onCheck,
+  onDontKnow,
   busy,
   after,
 }: {
@@ -77,6 +79,7 @@ export function MatchingCard({
   focusOnOpen: boolean;
   checked: Checked | null;
   onCheck: (right: boolean) => void;
+  onDontKnow: () => void;
   /** Another save or Undo is still on its way */
   busy: boolean;
   after: ReactNode;
@@ -132,7 +135,10 @@ export function MatchingCard({
         <CardBox>
           <FeedbackHeading {...checked} focusRef={headingRef} />
           <Prompt text={promptOf(item)} />
-          <CheckedMatches pairs={card.pairs} filled={filled} />
+          <CheckedMatches
+            pairs={card.pairs}
+            filled={checked.dontKnow ? answers : filled}
+          />
           {!checked.right && <Explanation card={card} />}
         </CardBox>
         {after}
@@ -209,7 +215,7 @@ export function MatchingCard({
           </div>
         </fieldset>
       </CardBox>
-      <div className="flex justify-end">
+      <CardActions onDontKnow={onDontKnow} busy={busy}>
         <Button
           type="button"
           waiting={!complete || busy}
@@ -218,7 +224,7 @@ export function MatchingCard({
         >
           Check matches
         </Button>
-      </div>
+      </CardActions>
       {after}
     </>
   );

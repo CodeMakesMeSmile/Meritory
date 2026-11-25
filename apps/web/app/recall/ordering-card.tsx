@@ -13,6 +13,7 @@ import { Markdown } from "@/components/markdown";
 import type { OrderingCard as OrderingContent } from "@/lib/content";
 import {
   answerRule,
+  CardActions,
   CardBox,
   Explanation,
   FeedbackHeading,
@@ -119,6 +120,7 @@ export function OrderingCard({
   focusOnOpen,
   checked,
   onCheck,
+  onDontKnow,
   busy,
   after,
 }: {
@@ -127,6 +129,7 @@ export function OrderingCard({
   focusOnOpen: boolean;
   checked: Checked | null;
   onCheck: (right: boolean) => void;
+  onDontKnow: () => void;
   /** Another save or Undo is still on its way */
   busy: boolean;
   after: ReactNode;
@@ -168,8 +171,20 @@ export function OrderingCard({
         <CardBox>
           <FeedbackHeading {...checked} focusRef={headingRef} />
           <Prompt text={promptOf(item)} />
-          <h3 className="text-small font-semibold">Your order</h3>
-          {order}
+          <h3 className="text-small font-semibold">
+            {checked.dontKnow ? "The right order" : "Your order"}
+          </h3>
+          {checked.dontKnow ? (
+            <StepOrder
+              steps={card.steps}
+              placed={card.steps.map((_, at) => at)}
+              checked
+              terms={[]}
+              onTerm={setTerm}
+            />
+          ) : (
+            order
+          )}
           {!checked.right && <Explanation card={card} />}
         </CardBox>
         {after}
@@ -228,7 +243,7 @@ export function OrderingCard({
       <p role="status" className="sr-only">
         {term ? `${term.term}: ${term.definition}` : ""}
       </p>
-      <div className="flex justify-end">
+      <CardActions onDontKnow={onDontKnow} busy={busy}>
         <Button
           type="button"
           waiting={!done || busy}
@@ -239,7 +254,7 @@ export function OrderingCard({
         >
           Check order
         </Button>
-      </div>
+      </CardActions>
       {after}
     </>
   );

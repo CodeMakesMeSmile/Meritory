@@ -1,6 +1,7 @@
 import { space, touchTarget } from "@meritory/design-tokens";
 import {
   doneLine,
+  dontKnowResult,
   lineAfterFailedUndo,
   lineAfterSave,
   longWait,
@@ -159,6 +160,8 @@ export function Sitting({
   const cardStart = useRef(Date.now());
   // Set before the first await, so a second tap in the same frame waits too
   const inFlight = useRef(false);
+  // Ratings sent by I don't know, which can be undone on any card type
+  const dontKnowIds = useRef(new Set<string>());
 
   const item = items[index];
   const total = items.length;
@@ -210,7 +213,15 @@ export function Sitting({
       AccessibilityInfo.announceForAccessibility(
         `Last card saved as ${RATING_LABELS[review.rating]}.`,
       );
-      setLine(lineAfterSave(items, review.card, review.id, review.rating));
+      setLine(
+        lineAfterSave(
+          items,
+          review.card,
+          review.id,
+          review.rating,
+          dontKnowIds.current.has(review.id),
+        ),
+      );
       if (advance) {
         setIndex((at) => at + 1);
         cardStart.current = Date.now();
@@ -238,6 +249,7 @@ export function Sitting({
     if (missed) {
       setChecked({
         right: false,
+        dontKnow: false,
         encourage: false,
         wait: longWait(loadedAt, new Date(item.session.next.again)),
       });
@@ -250,12 +262,24 @@ export function Sitting({
     const rating: RecallRating = right ? "good" : "again";
     setChecked({
       right,
+      dontKnow: false,
       encourage: !right && !missedOnce,
       wait: longWait(loadedAt, new Date(item.session.next[rating])),
     });
     if (!right) setMissedOnce(true);
     const next = review(rating);
     if (next) void save(next, false);
+  }
+
+  function dontKnow() {
+    if (!item || inFlight.current || saving.state !== "idle") return;
+    const result = dontKnowResult(item, loadedAt, missedOnce);
+    setChecked(result.checked);
+    setMissedOnce(true);
+    const next = review(result.rating);
+    if (!next) return;
+    dontKnowIds.current.add(next.id);
+    void save(next, false);
   }
 
   function nextCard() {
@@ -404,6 +428,7 @@ export function Sitting({
           checked={checked}
           saving={busy}
           onRate={rate}
+          onDontKnow={dontKnow}
           after={after}
         />
       ) : card.type === "pick-one" ? (
@@ -414,6 +439,7 @@ export function Sitting({
           checked={checked}
           busy={busy}
           onCheck={check}
+          onDontKnow={dontKnow}
           after={after}
         />
       ) : card.type === "ordering" ? (
@@ -424,6 +450,7 @@ export function Sitting({
           checked={checked}
           busy={busy}
           onCheck={check}
+          onDontKnow={dontKnow}
           after={after}
         />
       ) : (
@@ -434,6 +461,7 @@ export function Sitting({
           checked={checked}
           busy={busy}
           onCheck={check}
+          onDontKnow={dontKnow}
           after={after}
         />
       )}

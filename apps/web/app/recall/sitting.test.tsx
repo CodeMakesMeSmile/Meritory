@@ -1,4 +1,4 @@
-import type { SittingCard } from "@meritory/recall-client";
+import { dontKnowResult, type SittingCard } from "@meritory/recall-client";
 import { ATTACKS, escapeHtml } from "@meritory/security-testing";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
@@ -13,9 +13,9 @@ const { PromptCard } = await import("./prompt-card.tsx");
 const { answerRule, Explanation, FeedbackHeading, Lesson } = await import(
   "./parts.tsx"
 );
-const { PickOneAnswers } = await import("./pick-one-card.tsx");
-const { StepOrder } = await import("./ordering-card.tsx");
-const { CheckedMatches } = await import("./matching-card.tsx");
+const { PickOneAnswers, PickOneCard } = await import("./pick-one-card.tsx");
+const { OrderingCard, StepOrder } = await import("./ordering-card.tsx");
+const { CheckedMatches, MatchingCard } = await import("./matching-card.tsx");
 
 const count = (html: string, text: string) => html.split(text).length - 1;
 
@@ -155,12 +155,18 @@ describe("a recall sitting", () => {
         item={item(card)}
         card={card}
         now={new Date(NOW)}
-        checked={{ right: false, encourage: false, wait: "1 minute" }}
+        checked={{
+          right: false,
+          dontKnow: false,
+          encourage: false,
+          wait: "1 minute",
+        }}
         focusOnOpen={false}
         shortcuts
         onToggleShortcuts={() => {}}
         saving={false}
         onRate={() => {}}
+        onDontKnow={() => {}}
         after={<button type="button">Next card</button>}
       />,
     );
@@ -290,6 +296,190 @@ describe("a recall sitting", () => {
     expect(count(missed, "border-success")).toBe(1);
     expect(count(missed, "border-danger")).toBe(1);
     expect(missed).toMatch(/text-danger[^>]*>It&#x27;s /);
+  });
+
+  it("offers I don't know on every card type before it's answered", () => {
+    const cards = [
+      { type: "prompt", points: ["Copies"] },
+      {
+        type: "pick-one",
+        options: [{ text: "Copies cost time", correct: true, reason: "Right" }],
+      },
+      { type: "ordering", steps: ["Hash", "Reduce"] },
+      {
+        type: "matching",
+        matchHeading: "Cost",
+        matchName: "a cost",
+        pairs: [{ item: "Read index i", match: "O(1)" }],
+      },
+    ];
+    for (const card of cards) {
+      const html = render([item(card)]);
+      expect(html).toMatch(
+        /<button type="button"[^>]*>I don&#x27;t know<\/button>/,
+      );
+    }
+  });
+
+  it("saves I don't know as Missed, with the reminder on the first miss only", () => {
+    const card = item({ type: "prompt", points: ["Copies"] });
+    const first = dontKnowResult(card, new Date(NOW), false);
+    expect(first.rating).toBe("again");
+    expect(first.checked).toEqual({
+      right: false,
+      dontKnow: true,
+      encourage: true,
+      wait: "1 minute",
+    });
+    expect(dontKnowResult(card, new Date(NOW), true).checked.encourage).toBe(
+      false,
+    );
+  });
+
+  it("heads an I don't know result Here's the answer, in ink", () => {
+    const html = renderToStaticMarkup(
+      <FeedbackHeading
+        right={false}
+        dontKnow
+        encourage
+        wait="1 minute"
+        focusRef={{ current: null }}
+      />,
+    );
+    expect(html).toContain(">Here&#x27;s the answer</h2>");
+    expect(html).not.toContain("text-success");
+    expect(html).toContain("Trying first, then checking the answer");
+    expect(html).toContain("You&#x27;ll get another go in 1 minute.");
+  });
+
+  const dontKnow = {
+    right: false,
+    dontKnow: true,
+    encourage: false,
+    wait: "1 minute",
+  };
+  const cardProps = {
+    focusOnOpen: false,
+    checked: dontKnow,
+    onCheck: () => {},
+    onDontKnow: () => {},
+    busy: false,
+    after: null,
+  };
+
+  it("shows the answer alone in green after I don't know on pick one", () => {
+    const card = {
+      ...common,
+      type: "pick-one",
+      options: [
+        { text: "Copies cost time", correct: true, reason: "Each copies" },
+        { text: "Slices are free", reason: "No" },
+      ],
+    } as unknown as Card & { type: "pick-one" };
+    const html = renderToStaticMarkup(
+      <PickOneCard {...cardProps} item={item(card)} card={card} />,
+    );
+    expect(html).toContain(">Here&#x27;s the answer</h2>");
+    expect(count(html, "border-success")).toBe(1);
+    expect(html).not.toContain("border-danger");
+    expect(html).not.toContain("Your pick");
+    expect(html).toContain("Copies cost time");
+    expect(html).not.toContain("Slices are free");
+    expect(html).toContain("Slices copy");
+  });
+
+  it("shows the right order in green after I don't know", () => {
+    const card = {
+      ...common,
+      type: "ordering",
+      steps: ["Hash", "Reduce", "Look"],
+    } as unknown as Card & { type: "ordering" };
+    const html = renderToStaticMarkup(
+      <OrderingCard {...cardProps} item={item(card)} card={card} />,
+    );
+    expect(html).toContain("The right order");
+    expect(html).not.toContain("Your order");
+    expect(count(html, "border-success")).toBe(3);
+    expect(html).not.toContain("border-danger");
+    expect(html.indexOf("Hash")).toBeLessThan(html.indexOf("Reduce"));
+    expect(html.indexOf("Reduce")).toBeLessThan(html.indexOf("Look"));
+    expect(html).toContain("Each slice copies.");
+  });
+
+  it("shows the right matches in green after I don't know", () => {
+    const card = {
+      ...common,
+      type: "matching",
+      matchHeading: "Cost",
+      matchName: "a cost",
+      pairs: [
+        { item: "Read index i", match: "O(1)" },
+        { item: "Search unsorted", match: "O(n)" },
+      ],
+    } as unknown as Card & { type: "matching" };
+    const html = renderToStaticMarkup(
+      <MatchingCard {...cardProps} item={item(card)} card={card} />,
+    );
+    expect(count(html, "border-success")).toBe(2);
+    expect(html).not.toContain("border-danger");
+    expect(html).not.toContain("It&#x27;s");
+    expect(html).toContain("Each slice copies.");
+  });
+
+  it("shows the key points, mix-up, and lesson after I don't know on a free answer", () => {
+    const card = {
+      ...common,
+      type: "prompt",
+      points: ["Each slice copies its values"],
+      misconception: "A slice is free.",
+      lesson: { ...lesson, fix: "Pass the start and end." },
+    } as unknown as Card & { type: "prompt" };
+    const html = renderToStaticMarkup(
+      <PromptCard
+        item={item(card)}
+        card={card}
+        now={new Date(NOW)}
+        checked={dontKnow}
+        focusOnOpen={false}
+        shortcuts
+        onToggleShortcuts={() => {}}
+        saving={false}
+        onRate={() => {}}
+        onDontKnow={() => {}}
+        after={null}
+      />,
+    );
+    const order = [
+      "Here&#x27;s the answer",
+      "Key points",
+      "Each slice copies its values",
+      "Common mix-up",
+      "Slices copy",
+      "You&#x27;ll get another go in 1 minute.",
+      "Next time",
+    ].map((text) => html.indexOf(text));
+    expect(order.every((at) => at >= 0)).toBe(true);
+    expect([...order].sort((a, b) => a - b)).toEqual(order);
+    expect(count(html, "1 minute")).toBe(1);
+    expect(html).not.toContain("How did that go?");
+  });
+
+  it("offers Undo after I don't know, which saved Missed", () => {
+    const html = renderToStaticMarkup(
+      <UndoBar
+        line={{
+          kind: "offer",
+          id: "r1",
+          rating: "again",
+          at: 0,
+          busy: false,
+          offline: false,
+        }}
+        onUndo={() => {}}
+      />,
+    );
+    expect(html).toContain("Last card saved as Missed.");
+    expect(html).toContain('aria-label="Undo the Missed rating"');
   });
 
   it("shows only the explanation under a missed order or match", () => {

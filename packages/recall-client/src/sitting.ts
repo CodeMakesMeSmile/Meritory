@@ -52,6 +52,35 @@ export function sittingCards(
 }
 
 /** After a miss, the card asks the same thing in other words */
+/** What a card shows once I don't know is pressed */
+export interface DontKnowResult {
+  rating: RecallRating;
+  checked: {
+    right: false;
+    dontKnow: true;
+    /** The reminder that trying first helps, on the sitting's first miss only */
+    encourage: boolean;
+    wait: string;
+  };
+}
+
+/** I don't know saves Missed, like a blank answer in Anki, and shows the answer */
+export function dontKnowResult(
+  item: SittingCard,
+  loadedAt: Date,
+  missedOnce: boolean,
+): DontKnowResult {
+  return {
+    rating: "again",
+    checked: {
+      right: false,
+      dontKnow: true,
+      encourage: !missedOnce,
+      wait: longWait(loadedAt, new Date(item.session.next.again)),
+    },
+  };
+}
+
 export function promptOf(item: SittingCard): string {
   return item.session.retry ? item.card.reworded : item.card.prompt;
 }
@@ -139,15 +168,16 @@ export type UndoLine =
 
 export type UndoOffer = Extract<UndoLine, { kind: "offer" }>;
 
-/** Offers Undo after a free-answer rating, since only those are tapped */
+/** Offers Undo after a rating that was tapped: a free-answer rating or I don't know */
 export function lineAfterSave(
   items: readonly SittingCard[],
   card: SessionCard,
   id: string,
   rating: RecallRating,
+  dontKnow = false,
 ): UndoLine | null {
   const at = items.findIndex((item) => item.session === card);
-  if (items[at]?.card.type !== "prompt") return null;
+  if (!dontKnow && items[at]?.card.type !== "prompt") return null;
   return { kind: "offer", id, rating, at, busy: false, offline: false };
 }
 

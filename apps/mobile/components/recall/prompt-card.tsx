@@ -15,14 +15,35 @@ import { AppText, inputFont } from "../app-text";
 import { Button } from "../button";
 import { Markdown } from "../markdown";
 import {
+  CardActions,
   CardBox,
   type Checked,
+  FeedbackHeading,
   Label,
   Lesson,
   MixUp,
   Prompt,
   recallStyles,
 } from "./parts";
+
+/** The points a good answer covers */
+function KeyPoints({ points }: { points: readonly string[] }) {
+  return (
+    <View style={recallStyles.list} accessibilityLiveRegion="polite">
+      <AppText variant="heading3" accessibilityRole="header">
+        Key points
+      </AppText>
+      {points.map((point) => (
+        <View key={point} style={styles.point}>
+          <AppText color="textSecondary">{"•"}</AppText>
+          <View style={recallStyles.fill}>
+            <Markdown text={point} />
+          </View>
+        </View>
+      ))}
+    </View>
+  );
+}
 
 /** A free-recall card: answer, show the key points, then rate yourself */
 export function PromptCard({
@@ -32,6 +53,7 @@ export function PromptCard({
   checked,
   saving,
   onRate,
+  onDontKnow,
   after,
 }: {
   item: SittingCard;
@@ -41,12 +63,28 @@ export function PromptCard({
   checked: Checked | null;
   saving: boolean;
   onRate: (rating: RecallRating) => void;
+  onDontKnow: () => void;
   after: ReactNode;
 }) {
   const theme = useTheme();
   const [answer, setAnswer] = useState("");
   const [revealed, setRevealed] = useState(false);
   const typed = answer.trim();
+
+  if (checked?.dontKnow) {
+    return (
+      <>
+        <CardBox>
+          <FeedbackHeading {...checked} showWait={false} />
+          <Prompt text={promptOf(item)} answered />
+          <KeyPoints points={card.points} />
+          {card.misconception && <MixUp text={card.misconception} />}
+          <Lesson card={card} missed wait={checked.wait} full={false} />
+        </CardBox>
+        {after}
+      </>
+    );
+  }
 
   if (checked) {
     return (
@@ -79,19 +117,7 @@ export function PromptCard({
                   "Nothing typed. Compare the key points with what you thought."}
               </AppText>
             </View>
-            <View style={recallStyles.list} accessibilityLiveRegion="polite">
-              <AppText variant="heading3" accessibilityRole="header">
-                Key points
-              </AppText>
-              {card.points.map((point) => (
-                <View key={point} style={styles.point}>
-                  <AppText color="textSecondary">{"•"}</AppText>
-                  <View style={recallStyles.fill}>
-                    <Markdown text={point} />
-                  </View>
-                </View>
-              ))}
-            </View>
+            <KeyPoints points={card.points} />
             {card.misconception && <MixUp text={card.misconception} />}
           </>
         ) : (
@@ -156,7 +182,9 @@ export function PromptCard({
           </View>
         </View>
       ) : (
-        <Button label="Show key points" onPress={() => setRevealed(true)} />
+        <CardActions onDontKnow={onDontKnow}>
+          <Button label="Show key points" onPress={() => setRevealed(true)} />
+        </CardActions>
       )}
       {after}
     </>

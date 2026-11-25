@@ -12,6 +12,8 @@ import { TextLink } from "../text-link";
 /** What a checked card shows above its answer */
 export interface Checked {
   right: boolean;
+  /** Answered with I don't know, so the answer shows with no pick beside it */
+  dontKnow: boolean;
   /** The reminder that trying first helps, shown on the first miss only */
   encourage: boolean;
   /** How long until the card comes back. Null once the rating was turned down. */
@@ -57,13 +59,14 @@ export function waitLine(right: boolean, wait: string) {
     : `You'll get another go in ${wait}.`;
 }
 
-/** Got it or Not quite, read out as soon as it shows */
+/** Got it, Not quite, or Here's the answer, read out as soon as it shows */
 export function FeedbackHeading({
   right,
+  dontKnow = false,
   encourage,
   wait,
   showWait = true,
-}: Checked & { showWait?: boolean }) {
+}: Omit<Checked, "dontKnow"> & { dontKnow?: boolean; showWait?: boolean }) {
   return (
     <View style={styles.tight} accessibilityLiveRegion="polite">
       <AppText
@@ -71,7 +74,7 @@ export function FeedbackHeading({
         accessibilityRole="header"
         color={right ? "statusSuccess" : "textPrimary"}
       >
-        {right ? "Got it" : "Not quite"}
+        {dontKnow ? "Here's the answer" : right ? "Got it" : "Not quite"}
       </AppText>
       {encourage && (
         <AppText variant="small" color="textSecondary">
@@ -83,6 +86,28 @@ export function FeedbackHeading({
           {waitLine(right, wait)}
         </AppText>
       )}
+    </View>
+  );
+}
+
+/** I don't know on its own line above a card's main button */
+export function CardActions({
+  onDontKnow,
+  children,
+}: {
+  onDontKnow: () => void;
+  children: ReactNode;
+}) {
+  return (
+    <View style={styles.actions}>
+      <View style={styles.dontKnow}>
+        <TextLink
+          label="I don't know"
+          accessibilityHint="Counts as Missed and shows the answer"
+          onPress={onDontKnow}
+        />
+      </View>
+      {children}
     </View>
   );
 }
@@ -269,4 +294,6 @@ const styles = StyleSheet.create({
     paddingVertical: space[3],
   },
   answer: { gap: space[1], padding: space[3] },
+  actions: { gap: space[4] },
+  dontKnow: { alignItems: "flex-start" },
 });

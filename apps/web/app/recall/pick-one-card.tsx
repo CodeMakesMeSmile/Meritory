@@ -7,6 +7,7 @@ import { Markdown } from "@/components/markdown";
 import type { PickOneCard as PickOneContent } from "@/lib/content";
 import {
   answerRule,
+  CardActions,
   CardBox,
   FeedbackHeading,
   Lesson,
@@ -43,24 +44,29 @@ function Choice({
   );
 }
 
-/** The checked pick, with the right answer beside it on a miss */
+/**
+ * The checked pick, with the right answer beside it on a miss. With no pick,
+ * after I don't know, the answer shows alone under the card's own heading
+ */
 export function PickOneAnswers({
   pick,
   answer,
   right,
 }: {
-  pick: Option;
+  pick: Option | null;
   answer: Option | undefined;
   right: boolean;
 }) {
   return (
     <>
-      <Choice option={pick} label="Your pick" missed={!right} />
+      {pick && <Choice option={pick} label="Your pick" missed={!right} />}
       {!right && answer && (
         <div className={`flex flex-col gap-1 p-3 ${answerRule(false)}`}>
-          <h3 className="text-small font-semibold text-success">
-            Here's the answer
-          </h3>
+          {pick && (
+            <h3 className="text-small font-semibold text-success">
+              Here's the answer
+            </h3>
+          )}
           <Markdown text={answer.text} inline />
           <Markdown
             text={answer.reason}
@@ -80,6 +86,7 @@ export function PickOneCard({
   focusOnOpen,
   checked,
   onCheck,
+  onDontKnow,
   busy,
   after,
 }: {
@@ -88,6 +95,7 @@ export function PickOneCard({
   focusOnOpen: boolean;
   checked: Checked | null;
   onCheck: (right: boolean) => void;
+  onDontKnow: () => void;
   /** Another save or Undo is still on its way */
   busy: boolean;
   after: ReactNode;
@@ -108,7 +116,7 @@ export function PickOneCard({
   const pick = picked === null ? null : options[picked];
   const answer = options.find((option) => option.correct);
 
-  if (checked && pick) {
+  if (checked) {
     return (
       <>
         <CardBox>
@@ -118,7 +126,11 @@ export function PickOneCard({
             showWait={false}
           />
           <Prompt text={promptOf(item)} answered />
-          <PickOneAnswers pick={pick} answer={answer} right={checked.right} />
+          <PickOneAnswers
+            pick={checked.dontKnow ? null : (pick ?? null)}
+            answer={answer}
+            right={checked.right}
+          />
           <Lesson card={card} missed={!checked.right} wait={checked.wait} />
         </CardBox>
         {after}
@@ -153,7 +165,7 @@ export function PickOneCard({
           ))}
         </fieldset>
       </CardBox>
-      <div className="flex justify-end">
+      <CardActions onDontKnow={onDontKnow} busy={busy}>
         <Button
           type="button"
           waiting={pick === null || busy}
@@ -162,7 +174,7 @@ export function PickOneCard({
         >
           Check answer
         </Button>
-      </div>
+      </CardActions>
       {after}
     </>
   );
