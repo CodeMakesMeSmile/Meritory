@@ -30,6 +30,38 @@ function nextEmpty(filled: readonly (string | null)[], after: number) {
   return later >= 0 ? later : filled.indexOf(null);
 }
 
+/** Each box as filled, ruled red or green, with the right match on a miss */
+export function CheckedMatches({
+  pairs,
+  filled,
+}: {
+  pairs: MatchingContent["pairs"];
+  filled: readonly (string | null)[];
+}) {
+  return (
+    <ul className="flex flex-col gap-4">
+      {pairs.map((pair, at) => {
+        const wrong = filled[at] !== pair.match;
+        return (
+          <li key={pair.item} className="flex flex-col gap-2">
+            <Markdown text={pair.item} className="font-semibold" />
+            <div
+              className={`flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2 ${answerRule(wrong)}`}
+            >
+              <Markdown text={filled[at] ?? ""} inline />
+              {wrong && (
+                <span className="text-small text-danger">
+                  It's <Markdown text={pair.match} inline />
+                </span>
+              )}
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
 /** Fill each box with the match that goes in it */
 export function MatchingCard({
   item,
@@ -100,26 +132,7 @@ export function MatchingCard({
         <CardBox>
           <FeedbackHeading {...checked} focusRef={headingRef} />
           <Prompt text={promptOf(item)} />
-          <ul className="flex flex-col gap-4">
-            {card.pairs.map((pair, at) => {
-              const wrong = filled[at] !== pair.match;
-              return (
-                <li key={pair.item} className="flex flex-col gap-2">
-                  <Markdown text={pair.item} className="font-semibold" />
-                  <div
-                    className={`flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2 ${answerRule(wrong)}`}
-                  >
-                    <Markdown text={filled[at] ?? ""} inline />
-                    {wrong && (
-                      <span className="text-small text-danger">
-                        It's <Markdown text={pair.match} inline />
-                      </span>
-                    )}
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+          <CheckedMatches pairs={card.pairs} filled={filled} />
           {!checked.right && <Explanation card={card} />}
         </CardBox>
         {after}

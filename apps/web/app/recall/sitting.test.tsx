@@ -13,6 +13,11 @@ const { PromptCard } = await import("./prompt-card.tsx");
 const { answerRule, Explanation, FeedbackHeading, Lesson } = await import(
   "./parts.tsx"
 );
+const { PickOneAnswers } = await import("./pick-one-card.tsx");
+const { StepOrder } = await import("./ordering-card.tsx");
+const { CheckedMatches } = await import("./matching-card.tsx");
+
+const count = (html: string, text: string) => html.split(text).length - 1;
 
 const NOW = "2026-11-19T15:00:00.000Z";
 
@@ -220,6 +225,71 @@ describe("a recall sitting", () => {
     );
     expect(missed).toContain(">Not quite</h2>");
     expect(missed).not.toContain("text-success");
+  });
+
+  it("rules a right pick green and a missed pick red beside a green answer", () => {
+    const pick = { text: "Indices", reason: "No copy", correct: true };
+    const wrong = { text: "Slices", reason: "Copies", correct: false };
+    const right = renderToStaticMarkup(
+      <PickOneAnswers pick={pick} answer={pick} right />,
+    );
+    expect(count(right, "border-success")).toBe(1);
+    expect(right).not.toContain("border-danger");
+    expect(right).toMatch(/text-success[^>]*>Your pick</);
+    expect(right).not.toContain("Here's the answer");
+
+    const missed = renderToStaticMarkup(
+      <PickOneAnswers pick={wrong} answer={pick} right={false} />,
+    );
+    expect(count(missed, "border-danger")).toBe(1);
+    expect(count(missed, "border-success")).toBe(1);
+    expect(missed).toMatch(/text-danger[^>]*>Your pick</);
+    expect(missed).toMatch(/text-success[^>]*>Here&#x27;s the answer</);
+  });
+
+  it("rules each checked step green in place and red out of place", () => {
+    const steps = ["Read", "Plan", "Write"];
+    const order = (placed: number[], checked = true) =>
+      renderToStaticMarkup(
+        <StepOrder
+          steps={steps}
+          placed={placed}
+          checked={checked}
+          terms={[]}
+          onTerm={() => {}}
+        />,
+      );
+    const right = order([0, 1, 2]);
+    expect(count(right, "border-success")).toBe(3);
+    expect(right).not.toContain("border-danger");
+
+    const missed = order([0, 2, 1]);
+    expect(count(missed, "border-success")).toBe(1);
+    expect(count(missed, "border-danger")).toBe(2);
+    expect(missed).toContain("Goes 3rd");
+    expect(missed).toContain("Goes 2nd");
+
+    const building = order([2, 0], false);
+    expect(building).not.toMatch(/border-(success|danger)/);
+  });
+
+  it("rules each checked match green when right and red with the answer when not", () => {
+    const pairs = [
+      { item: "Binary search", match: "O(log n)" },
+      { item: "One pass", match: "O(n)" },
+    ];
+    const right = renderToStaticMarkup(
+      <CheckedMatches pairs={pairs} filled={["O(log n)", "O(n)"]} />,
+    );
+    expect(count(right, "border-success")).toBe(2);
+    expect(right).not.toContain("border-danger");
+
+    const missed = renderToStaticMarkup(
+      <CheckedMatches pairs={pairs} filled={["O(n)", "O(n)"]} />,
+    );
+    expect(count(missed, "border-success")).toBe(1);
+    expect(count(missed, "border-danger")).toBe(1);
+    expect(missed).toMatch(/text-danger[^>]*>It&#x27;s /);
   });
 
   it("shows only the explanation under a missed order or match", () => {
