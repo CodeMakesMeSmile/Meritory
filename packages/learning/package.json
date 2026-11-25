@@ -12,6 +12,6 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "ts-fsrs": "^6.0.0"
+    "ts-fsrs": "^6.0.1"
   }
 }
