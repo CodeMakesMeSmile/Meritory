@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { buttonClass } from "@/components/button";
+import { buttonClass, linkClass } from "@/components/button";
 import { readStoppedAt, type StoppedAt } from "@/lib/device-storage";
 
 /** Today's date in the browser's own time zone, filled in after load */
@@ -33,6 +33,35 @@ export function RecallButton() {
     <Link href="/recall" className={`${buttonClass()} w-full sm:w-50`}>
       {stopped ? "Continue recall" : "Start recall"}
     </Link>
+  );
+}
+
+/** Opens the tracks holding the chapters in progress that didn't fit above them */
+export function MoreInProgress({
+  count,
+  detailsIds,
+}: {
+  count: number;
+  detailsIds: string[];
+}) {
+  function open() {
+    for (const id of detailsIds) {
+      const details = document.getElementById(id);
+      if (details instanceof HTMLDetailsElement) details.open = true;
+    }
+    document
+      .getElementById(detailsIds[0] ?? "")
+      ?.querySelector("summary")
+      ?.focus();
+  }
+  return (
+    <button
+      type="button"
+      onClick={open}
+      className={`${linkClass} flex h-control items-center self-start`}
+    >
+      And {count} more in progress
+    </button>
   );
 }
 
