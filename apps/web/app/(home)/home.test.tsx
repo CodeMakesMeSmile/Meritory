@@ -141,9 +141,9 @@ describe("Home", () => {
     );
     expect(html).toContain("Due for recall");
     expect(html).toContain("Loading your cards");
-    expect(html).toContain('aria-disabled="true"');
+    expect(html).toContain('class="steps-loader');
+    expect(html).not.toContain("Start recall");
     expect(html).toContain("Arrays and hashing");
-    expect(html).toContain("Read the chapter");
     expect(html).not.toContain("learned");
   });
 
@@ -154,13 +154,33 @@ describe("Home", () => {
     );
   });
 
-  it("sends a new learner to read the first chapter", async () => {
+  it("starts a new learner on the first chapter, with what it teaches", async () => {
     api.due = due();
     const html = await home();
-    expect(html).toContain("Nothing to recall yet");
+    expect(html).toContain("Start with Arrays and hashing");
+    expect(html).toContain("21 cards");
+    expect(html).toContain("You&#x27;ll learn to:");
+    expect(html).toContain("<li>Skill</li>");
     expect(html).toContain('href="/tracks/dsa/chapters/arrays"');
     expect(html).toContain("Read Arrays and hashing");
+    expect(html).toContain("up to 10 new a day");
     expect(html).not.toContain("Start recall");
+    expect(html).not.toContain("Next up");
+  });
+
+  it("offers the first chapter not started under the queue", async () => {
+    api.due = due({ chapters: [counts("arrays", 3, 0)] });
+    const html = await home();
+    expect(html).toContain("Next up");
+    expect(html).toContain("Read Two pointers");
+    expect(html).not.toContain("Start with");
+  });
+
+  it("has no Next up once every chapter is started", async () => {
+    api.due = due({
+      chapters: [counts("arrays", 3, 0), counts("pointers", 0, 0)],
+    });
+    expect(await home()).not.toContain("Next up");
   });
 
   it("says when cards come back once today's are done", async () => {
@@ -179,16 +199,57 @@ describe("Home", () => {
     const html = await home();
     expect(html).toContain("Your cards didn&#x27;t load");
     expect(html).toContain("Try again");
-    expect(html).toContain("21 cards learned");
+    expect(html).toContain("Two pointers");
+    expect(html).not.toContain("learned");
   });
 
+  // Once above the tracks and once inside its closed track
   it("draws learned cards as squares", async () => {
     api.due = due({ chapters: [counts("arrays", 0, 0)] });
     const html = await home();
     expect(html).toContain("11 of 21 cards learned");
     expect(html.match(/size-2 border border-accent bg-accent/g)).toHaveLength(
-      11,
+      22,
     );
+  });
+
+  it("keeps every track closed, with its chapter count", async () => {
+    api.due = due({ chapters: [counts("arrays", 0, 0)] });
+    const html = await home();
+    expect(html).toContain('<details id="track-dsa"');
+    expect(html).not.toMatch(/<details[^>]* open/);
+    expect(html).toContain("2 chapters");
+  });
+
+  it("lists 4 chapters in progress, then offers the rest", async () => {
+    api.content = {
+      hash: "h",
+      tracks: [
+        {
+          id: "dsa",
+          title: "Data structures and algorithms",
+          chapters: ["a", "b", "c", "d", "e", "f"].map((id, i) =>
+            chapter(id, `Chapter ${id}`, i + 1),
+          ),
+          rubrics: [],
+        },
+      ],
+    } as unknown as ContentResponse;
+    const learned = { ...counts("a", 0, 0), learned: 21 };
+    api.due = due({
+      chapters: [
+        learned,
+        ...["b", "c", "d", "e", "f"].map((id) => counts(id, 0, 0)),
+      ],
+    });
+    const html = await home();
+    // The streamed card comes after the loading one
+    const card = html.slice(html.lastIndexOf('id="chapters-heading"'));
+    const above = card.slice(0, card.indexOf("<details"));
+    expect(above).not.toContain("Chapter a");
+    expect(above).toContain("Chapter e");
+    expect(above).not.toContain("Chapter f");
+    expect(above).toContain("And 1 more in progress");
   });
 
   it.each(ATTACKS)("a chapter title of %j renders as text", async (attack) => {

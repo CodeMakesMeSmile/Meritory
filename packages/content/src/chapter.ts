@@ -10,6 +10,8 @@ export const TrackFile = Type.Object(
   {
     id: Id,
     title: Text(80),
+    /** Where the track sits among tracks, starting at 1, with unordered tracks last */
+    order: Type.Optional(Type.Integer({ minimum: 1, maximum: 999 })),
   },
   { additionalProperties: false },
 );

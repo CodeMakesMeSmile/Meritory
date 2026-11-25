@@ -95,12 +95,14 @@ A folder is a track once it has a `chapters/` folder with a chapter in it. Track
 ```yaml
 id: dsa
 title: Data structures and algorithms
+order: 1
 ```
 
 | Field | Rule |
 |---|---|
 | `id` | Matches the folder name |
 | `title` | Text, up to 80 characters |
+| `order` | Optional. Where the track sits among tracks, from 1. Home starts new learners on the first chapter of the first track. Tracks without one come last, by folder name |
 
 ## Chapter
 

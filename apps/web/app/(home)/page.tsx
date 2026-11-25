@@ -16,9 +16,10 @@ import Link from "next/link";
 import { unstable_rethrow } from "next/navigation";
 import { Suspense, use } from "react";
 import { AppShell } from "@/components/app-shell";
-import { Button, buttonClass, linkClass } from "@/components/button";
+import { buttonClass, linkClass } from "@/components/button";
 import { CountSquares } from "@/components/count-squares";
 import { LinkedNotice } from "@/components/linked-notice";
+import { StepsLoader } from "@/components/steps-loader";
 import {
   allChapters,
   type Chapter,
@@ -33,7 +34,12 @@ import {
   getInterviewDate,
   requireMe,
 } from "@/lib/server-api";
-import { LocalDate, QueueNote, RecallButton } from "./home-parts";
+import {
+  LocalDate,
+  MoreInProgress,
+  QueueNote,
+  RecallButton,
+} from "./home-parts";
 
 export const metadata: Metadata = { title: "Due for recall · Meritory" };
 
@@ -66,6 +72,55 @@ function QueueItem({ row }: { row: QueueRow }) {
   );
 }
 
+type Counts = RecallDueResponse["chapters"][number];
+
+/** At most this many chapters in progress sit above the tracks */
+const IN_PROGRESS_SHOWN = 4;
+
+function countsFor(
+  due: RecallDueResponse | null | undefined,
+  track: Track,
+  chapter: Chapter,
+): Counts | undefined {
+  return due?.chapters.find(
+    (c) => c.trackId === track.id && c.chapterId === chapter.id,
+  );
+}
+
+function trackDetailsId(track: Track) {
+  return `track-${track.id}`;
+}
+
+/** A chapter link, with its learned cards as squares once it's started */
+function ChapterRow({
+  track,
+  chapter,
+  counts,
+}: {
+  track: Track;
+  chapter: Chapter;
+  counts: Counts | undefined;
+}) {
+  return (
+    <li className={`flex flex-col ${counts ? "gap-2 pb-3" : ""}`}>
+      <Link
+        href={chapterPath(track.id, chapter.id)}
+        className={`${linkClass} flex min-h-control items-center py-2`}
+      >
+        {chapter.title}
+      </Link>
+      {counts && (
+        <>
+          <CountSquares filled={counts.learned} total={counts.total} />
+          <span className="text-small text-secondary">
+            {counts.learned} of {plural(counts.total, "card")} learned
+          </span>
+        </>
+      )}
+    </li>
+  );
+}
+
 function ChaptersCard({
   chapters,
   due,
@@ -75,51 +130,83 @@ function ChaptersCard({
   due: RecallDueResponse | null | undefined;
 }) {
   const tracks = [...new Set(chapters.map(({ track }) => track))];
+  const inProgress = chapters.flatMap(({ track, chapter }) => {
+    const counts = countsFor(due, track, chapter);
+    return counts && counts.learned < counts.total
+      ? [{ track, chapter, counts }]
+      : [];
+  });
+  const shown = inProgress.slice(0, IN_PROGRESS_SHOWN);
+  const rest = inProgress.slice(IN_PROGRESS_SHOWN);
   return (
     <section
       aria-labelledby="chapters-heading"
-      className="flex flex-col gap-3 border border-border bg-card p-5"
+      className="flex flex-col border border-border bg-card p-5"
     >
-      <h2 id="chapters-heading" className="text-h3">
+      <h2 id="chapters-heading" className="mb-3 text-h3">
         Chapters
       </h2>
-      {tracks.map((track) => (
-        <div key={track.id} className="flex flex-col gap-3">
-          <span className="text-small text-gold">{trackLabel(track)}</span>
-          <ul className="flex flex-col gap-4">
-            {chapters
-              .filter((c) => c.track === track)
-              .map(({ chapter }) => {
-                const counts = due?.chapters.find(
-                  (c) => c.trackId === track.id && c.chapterId === chapter.id,
-                );
-                const learned = counts?.learned ?? 0;
-                const total = counts?.total ?? chapter.cards.length;
-                return (
-                  <li key={chapter.id} className="flex flex-col gap-2">
-                    <span className="text-body font-semibold">
-                      {chapter.title}
-                    </span>
-                    {due !== undefined && (
-                      <>
-                        <CountSquares filled={learned} total={total} />
-                        <span className="text-small text-secondary">
-                          {learned} of {plural(total, "card")} learned
-                        </span>
-                      </>
-                    )}
-                    <Link
-                      href={chapterPath(track.id, chapter.id)}
-                      className={`${linkClass} flex h-control items-center self-start`}
-                    >
-                      Read the chapter
-                    </Link>
-                  </li>
-                );
-              })}
+      {shown.length > 0 && (
+        <div className="flex flex-col pb-2">
+          <ul className="flex flex-col">
+            {shown.map(({ track, chapter, counts }) => (
+              <ChapterRow
+                key={`${track.id}/${chapter.id}`}
+                track={track}
+                chapter={chapter}
+                counts={counts}
+              />
+            ))}
           </ul>
+          {rest.length > 0 && (
+            <MoreInProgress
+              count={rest.length}
+              detailsIds={[
+                ...new Set(rest.map(({ track }) => trackDetailsId(track))),
+              ]}
+            />
+          )}
         </div>
-      ))}
+      )}
+      {tracks.map((track) => {
+        const inTrack = chapters.filter((c) => c.track === track);
+        return (
+          <details key={track.id} id={trackDetailsId(track)} className="group">
+            <summary className="focus-ring flex h-control cursor-pointer list-none items-center gap-2 [&::-webkit-details-marker]:hidden">
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                aria-hidden="true"
+                className="shrink-0 text-primary group-open:rotate-90"
+              >
+                <path
+                  d="M4 2 8 6 4 10"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                />
+              </svg>
+              <span className="flex-1 text-small font-semibold text-gold">
+                {trackLabel(track)}
+              </span>
+              <span className="text-small text-secondary">
+                {plural(inTrack.length, "chapter")}
+              </span>
+            </summary>
+            <ul className="flex flex-col pl-5">
+              {inTrack.map(({ chapter }) => (
+                <ChapterRow
+                  key={chapter.id}
+                  track={track}
+                  chapter={chapter}
+                  counts={countsFor(due, track, chapter)}
+                />
+              ))}
+            </ul>
+          </details>
+        );
+      })}
     </section>
   );
 }
@@ -128,30 +215,99 @@ function ChaptersCard({
 function homeState(due: RecallDueResponse | null, chapters: Chapters) {
   const rows = due ? queueRows(due, chapters) : [];
   const started = (due?.chapters.length ?? 0) > 0;
-  return { rows, started, first: chapters[0] };
+  const next = chapters.find(
+    ({ track, chapter }) => !countsFor(due, track, chapter),
+  );
+  return { rows, started, first: chapters[0], next };
 }
 
-/** Start recall, Read the first chapter, or nothing, whichever the counts call for */
+/** Start recall when cards are due, since Start here holds the first chapter's button */
 function HomeAction({ load, chapters }: { load: DueLoad; chapters: Chapters }) {
   const due = use(load);
-  const { rows, started, first } = homeState(due, chapters);
-  if (!due) return null;
-  if (!started) {
-    return first ? (
-      <Link
-        href={chapterPath(first.track.id, first.chapter.id)}
-        className={`${buttonClass()} w-full sm:w-auto`}
-      >
-        Read {first.chapter.title}
-      </Link>
-    ) : null;
-  }
+  const { rows, started } = homeState(due, chapters);
+  if (!due || !started) return null;
   return rows.length > 0 ? <RecallButton /> : null;
+}
+
+/** The first chapter for a new learner, with what it teaches */
+function StartHere({
+  track,
+  chapter,
+  newCardsPerDay,
+}: {
+  track: Track;
+  chapter: Chapter;
+  newCardsPerDay: number;
+}) {
+  return (
+    <section
+      aria-labelledby="start-heading"
+      className="flex flex-col gap-4 border border-border bg-card p-6"
+    >
+      <div className="flex flex-col gap-2">
+        <h2 id="start-heading" className="text-h2">
+          Start with {chapter.title}
+        </h2>
+        <p className="flex gap-3 text-small">
+          <span className="font-semibold text-gold">{trackLabel(track)}</span>
+          <span className="text-secondary">
+            {plural(chapter.cards.length, "card")}
+          </span>
+        </p>
+      </div>
+      <div className="flex flex-col gap-2">
+        <p>You'll learn to:</p>
+        <ul className="flex list-disc flex-col gap-2 pl-6">
+          {chapter.skills.map((skill) => (
+            <li key={skill.id}>{skill.name}</li>
+          ))}
+        </ul>
+      </div>
+      <Link
+        href={chapterPath(track.id, chapter.id)}
+        className={`${buttonClass()} w-full sm:w-auto sm:min-w-50 sm:self-start`}
+      >
+        Read {chapter.title}
+      </Link>
+      <p className="text-small text-secondary">
+        {newCardsPerDay > 0
+          ? `Start a chapter and its cards join recall, up to ${newCardsPerDay} new a day.`
+          : "Start a chapter and its cards join recall once new cards are back on in Settings."}
+      </p>
+    </section>
+  );
+}
+
+/** The first chapter not started yet, offered under the queue */
+function NextUp({ track, chapter }: { track: Track; chapter: Chapter }) {
+  return (
+    <section
+      aria-labelledby="next-heading"
+      className="flex flex-col gap-1 pt-5"
+    >
+      <h2 id="next-heading" className="pb-1 text-h3">
+        Next up
+      </h2>
+      <span className="text-body font-semibold">{chapter.title}</span>
+      <p className="flex gap-3 text-small">
+        <span className="font-semibold text-gold">{trackLabel(track)}</span>
+        <span className="text-secondary">
+          {plural(chapter.cards.length, "card")}
+        </span>
+      </p>
+      <Link
+        href={chapterPath(track.id, chapter.id)}
+        className={`${linkClass} flex h-control items-center self-start`}
+      >
+        Read {chapter.title}
+      </Link>
+    </section>
+  );
 }
 
 function HomeBody({ load, chapters }: { load: DueLoad; chapters: Chapters }) {
   const due = use(load);
-  const { rows, started } = homeState(due, chapters);
+  const { rows, started, first, next } = homeState(due, chapters);
   if (!due) {
     return (
       <div role="alert" className="flex flex-col gap-3">
@@ -166,17 +322,25 @@ function HomeBody({ load, chapters }: { load: DueLoad; chapters: Chapters }) {
     );
   }
   if (!started) {
+    if (!first) return null;
     return (
-      <div className="flex flex-col gap-1">
-        <h2 className="text-body font-semibold">Nothing to recall yet</h2>
-        <p className="text-small text-secondary">
-          {due.newCardsPerDay > 0
-            ? `Start a chapter and its cards join recall, up to ${due.newCardsPerDay} new a day.`
-            : "Start a chapter and its cards join recall once new cards are back on in Settings."}
-        </p>
-      </div>
+      <StartHere
+        track={first.track}
+        chapter={first.chapter}
+        newCardsPerDay={due.newCardsPerDay}
+      />
     );
   }
+  return (
+    <div className="flex flex-col gap-3">
+      <Queue due={due} rows={rows} />
+      {next && <NextUp track={next.track} chapter={next.chapter} />}
+    </div>
+  );
+}
+
+/** Today's queue, or why it's empty */
+function Queue({ due, rows }: { due: RecallDueResponse; rows: QueueRow[] }) {
   const capped = cappedLine(due);
   if (rows.length === 0 && capped) {
     return (
@@ -231,18 +395,6 @@ function InterviewLink({ load }: { load: InterviewLoad }) {
   );
 }
 
-/** Holds the queue's place while the counts load */
-function QueueLoading() {
-  return (
-    <div className="flex flex-col gap-3">
-      <div aria-hidden="true" className="h-20 bg-sunken" />
-      <p role="status" className="text-small text-secondary">
-        Loading your cards
-      </p>
-    </div>
-  );
-}
-
 export default async function Home({
   searchParams,
 }: {
@@ -275,20 +427,14 @@ export default async function Home({
             <h1 className="text-display">Due for recall</h1>
             <LocalDate />
           </div>
-          <Suspense
-            fallback={
-              <Button waiting className="w-full sm:w-50">
-                Start recall
-              </Button>
-            }
-          >
+          <Suspense fallback={null}>
             <HomeAction load={load} chapters={chapters} />
           </Suspense>
         </header>
         <LinkedNotice linked={linked} />
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
           <div className="min-w-0">
-            <Suspense fallback={<QueueLoading />}>
+            <Suspense fallback={<StepsLoader label="Loading your cards" />}>
               <HomeBody load={load} chapters={chapters} />
             </Suspense>
           </div>

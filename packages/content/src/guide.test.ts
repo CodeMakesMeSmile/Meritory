@@ -119,7 +119,10 @@ describe("content guide", () => {
   it("names the file of an example the format no longer allows", async () => {
     const guide = (await readFile(guideFile, "utf8")).replaceAll("\r\n", "\n");
     const { lines } = await buildExamples(
-      guide.replace("order: 1\n", "order: 0\n"),
+      guide.replace(
+        "title: Prefix sums\norder: 1\n",
+        "title: Prefix sums\norder: 0\n",
+      ),
     );
     expect(lines).toContain(
       "dsa/chapters/prefix-sums/chapter.yaml:3 order must be >= 1",

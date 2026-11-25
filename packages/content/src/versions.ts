@@ -8,6 +8,7 @@ import type {
   Versioned,
 } from "./bundle.ts";
 import type { Card } from "./card.ts";
+import type { TrackFile } from "./chapter.ts";
 import type { LoadedChapter } from "./chapters.ts";
 import type { LoadedExercise } from "./exercises.ts";
 import type { LoadedRubric } from "./rubrics.ts";
@@ -236,7 +237,7 @@ export function addVersions(
  * Only called once the versions are checked, so every hash is the latest.
  */
 export function bundleTrack(
-  track: { id: string; title: string },
+  track: TrackFile,
   chapters: LoadedChapter[],
   rubrics: LoadedRubric[],
   versions: Versions,

@@ -29,7 +29,7 @@ export type BuildResult = {
  */
 export async function buildBundle(contentDir: string): Promise<BuildResult> {
   const problems: Problem[] = [];
-  const tracks: (() => BundleTrack)[] = [];
+  const tracks: { order: number; build: () => BundleTrack }[] = [];
 
   for (const folder of await subfolders(contentDir)) {
     if (NOT_TRACKS.has(folder)) continue;
@@ -45,11 +45,17 @@ export async function buildBundle(contentDir: string): Promise<BuildResult> {
       problems,
     );
     checkVersions(trackItems(chapters, rubrics), versions, problems);
-    tracks.push(() => bundleTrack(track, chapters, rubrics, versions));
+    tracks.push({
+      order: track.order ?? Number.POSITIVE_INFINITY,
+      build: () => bundleTrack(track, chapters, rubrics, versions),
+    });
   }
 
   if (problems.length > 0) return { bundle: undefined, problems };
-  const built = tracks.map((track) => track());
+  // Folders come sorted by name, and the sort is stable, so ties keep that order
+  const built = tracks
+    .sort((a, b) => (a.order === b.order ? 0 : a.order - b.order))
+    .map((track) => track.build());
   const hash = createHash("sha256").update(canonicalJson(built)).digest("hex");
   return { bundle: { hash, tracks: built }, problems };
 }
