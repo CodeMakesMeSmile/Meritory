@@ -6,7 +6,7 @@ describe("parseWebOrigin", () => {
     ["https://meritory.app", "https://meritory.app"],
     ["https://meritory.app/", "https://meritory.app"],
     ["https://meritory.app/api/v1?x=1#top", "https://meritory.app"],
-    ["https://staging.meritory.app:8443/", "https://staging.meritory.app:8443"],
+    ["https://example.test:8443/", "https://example.test:8443"],
     [" HTTPS://Meritory.App ", "https://meritory.app"],
   ])("reads %j as %j", (value, origin) => {
     expect(parseWebOrigin(value, false)).toBe(origin);
