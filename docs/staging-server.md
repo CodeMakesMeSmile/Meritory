@@ -104,6 +104,27 @@ In the Lightsail browser terminal, as root (`sudo -i`):
    journalctl -u meritory-deploy.service -n 50
    ```
 
+## 7. Put it behind Cloudflare Access
+
+Staging is private. Cloudflare Access sits in front of it, and a Cloudflare Tunnel carries traffic from Cloudflare to web on the server, so the server opens no web ports. Everything here is in the Cloudflare dashboard, on the Zero Trust Free plan ([plans](https://www.cloudflare.com/plans/zero-trust-services/)).
+
+1. In Zero Trust, under Integrations, Identity providers, add One-time PIN ([One-time PIN login](https://developers.cloudflare.com/cloudflare-one/integrations/identity-providers/one-time-pin/)).
+2. Under Access controls, Applications, create a self-hosted application for the staging hostname before anything else, so the hostname is never open ([self-hosted application](https://developers.cloudflare.com/cloudflare-one/access-controls/applications/http-apps/self-hosted-public-app/)):
+   - One Allow policy that includes only the maintainer's email.
+   - One-time PIN as the only login method, and a 1-week session.
+3. Under Networking, Tunnels, create a tunnel named `meritory-staging` ([create a tunnel](https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/get-started/create-remote-tunnel/)). Copy only the "Install as service" command and paste it into the Lightsail browser terminal. cloudflared is already installed, so skip the install command. The command holds the tunnel's token, so never paste it anywhere else.
+4. When the tunnel shows Healthy, add a published application route from the staging hostname to `http://localhost:3000`. Under Access, turn on Protect with Access and paste the application's AUD tag from its Additional settings, so cloudflared also checks each request's Access token.
+
+Check it from a browser that isn't signed in. Every path should redirect to the Access login page:
+
+```
+curl -s -o /dev/null -w "%{http_code} %{redirect_url}\n" https://<staging hostname>/
+```
+
+On the Free plan Cloudflare compresses responses, and the API's content keeps a working ETag ([ETag headers](https://developers.cloudflare.com/cache/reference/etag-headers/)). If a strong ETag ever arrives weak, the API still matches it, since it compares `If-None-Match` weakly.
+
+To rotate the tunnel token, use Refresh token on the tunnel's page, then run the new install command on the server.
+
 ## Checking on it
 
 ```
@@ -128,7 +149,7 @@ Lightsail can't change a server's plan in place ([upsizing](https://docs.aws.ama
 
 1. Find the 2 GB plan's ID with `aws lightsail get-bundles`.
 2. In `SERVER`, change `bundleId` to it and `name` to a new name, such as `meritory-staging-2`. The new name makes CloudFormation build a new server and remove the old one.
-3. Deploy, then repeat step 6 and set up the Tunnel on the new server.
+3. Deploy, then repeat step 6, and run the tunnel's install command from step 7 on the new server.
 4. With 2 GB, the memory caps in `infra/staging/compose.yml` can go up.
 
 A changed launch script works the same way. CloudFormation can only apply it by building a new server, and it can't replace a server that keeps its name, so either rename it or remove the stack and deploy again.
