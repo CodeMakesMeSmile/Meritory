@@ -39,6 +39,9 @@ WORKDIR /repo
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
+# Server-rendered pages read it at run time, so it has to be set here too
+ARG API_ORIGIN=http://api:4000
+ENV API_ORIGIN=${API_ORIGIN}
 COPY --from=build /repo/apps/web/.next/standalone ./
 # The standalone server serves these, but the build leaves them out
 COPY --from=build /repo/apps/web/.next/static apps/web/.next/static
