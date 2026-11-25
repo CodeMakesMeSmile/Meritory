@@ -89,6 +89,16 @@ describe("the staging compose file", () => {
     }
   });
 
+  it("points web's server-rendered pages at the api container", () => {
+    expect(services.web?.environment?.API_ORIGIN).toBe("http://api:4000");
+    const dockerfile = readFileSync(
+      new URL("../../apps/web/Dockerfile", import.meta.url),
+      "utf8",
+    );
+    const run = dockerfile.slice(dockerfile.indexOf(" AS run"));
+    expect(run).toContain("ENV API_ORIGIN=");
+  });
+
   it("restarts every service after a crash or a reboot", () => {
     for (const service of Object.values(services)) {
       expect(service.restart).toBe("unless-stopped");
