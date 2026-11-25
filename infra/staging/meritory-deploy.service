@@ -1,0 +1,9 @@
+[Unit]
+Description=Deploy the latest Meritory staging images
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/meritory/deploy.sh

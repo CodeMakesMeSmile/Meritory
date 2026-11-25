@@ -1,6 +1,6 @@
 # 0008: Staging on one Lightsail server
 
-**Status:** Accepted, 2026-11-22. Supersedes [0001](0001-aws-hosting.md). The server and its budget alert are in `infra/`, as described in [The staging server](../../staging-server.md). Running the stack on it and the Tunnel aren't built yet.
+**Status:** Accepted, 2026-11-22. Supersedes [0001](0001-aws-hosting.md). The server, its budget alert, and the stack it runs are in `infra/`, as described in [The staging server](../../staging-server.md). The Tunnel isn't built yet.
 
 ## Decision
 

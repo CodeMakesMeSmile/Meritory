@@ -1,0 +1,109 @@
+# The stack on the staging server. The deploy timer downloads this file from
+# main every 5 minutes, so a merged change here deploys like a new image.
+# Secrets come from the .env next to it, see docs/staging-server.md
+# Not "meritory", which the local dev stack uses, so the two never share containers
+name: meritory-staging
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: 10m
+    max-file: "3"
+
+services:
+  postgres:
+    image: postgres:18.7-alpine
+    # Small buffers, since the whole server has 1 GB
+    command:
+      ["postgres", "-c", "shared_buffers=32MB", "-c", "max_connections=40"]
+    environment:
+      POSTGRES_USER: meritory
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set it in .env}
+      POSTGRES_DB: meritory
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U meritory -d meritory"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    mem_limit: 160m
+    restart: unless-stopped
+    logging: *logging
+
+  api:
+    image: ghcr.io/codemakesmesmile/meritory-api:staging
+    depends_on:
+      postgres:
+        condition: service_healthy
+    # Runs once each time the api is recreated, so once per deploy
+    pre_start:
+      - command: ["node", "packages/server/src/db/migrate.ts"]
+        environment:
+          NODE_OPTIONS: --max-old-space-size=192
+    environment:
+      DATABASE_URL: postgres://meritory:${POSTGRES_PASSWORD}@postgres:5432/meritory
+      API_HOST: 0.0.0.0
+      API_PORT: "4000"
+      WEB_ORIGIN: ${WEB_ORIGIN:?set it in .env}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?set it in .env}
+      MAIL_JOB_KEY: ${MAIL_JOB_KEY:?set it in .env}
+      # Set by Cloudflare's edge. No port is open, so only the Tunnel reaches the app.
+      AUTH_IP_HEADERS: cf-connecting-ip
+      NODE_OPTIONS: --max-old-space-size=192
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "-q",
+          "-O",
+          "/dev/null",
+          "http://127.0.0.1:4000/v1/health/ready",
+        ]
+      interval: 15s
+      timeout: 5s
+      start_period: 60s
+      retries: 5
+    mem_limit: 288m
+    restart: unless-stopped
+    logging: *logging
+
+  worker:
+    image: ghcr.io/codemakesmesmile/meritory-worker:staging
+    # After the api is healthy, so the migrations and queues are ready and the
+    # two startup peaks don't overlap
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://meritory:${POSTGRES_PASSWORD}@postgres:5432/meritory
+      MAIL_JOB_KEY: ${MAIL_JOB_KEY}
+      SMTP_HOST: email-smtp.ca-central-1.amazonaws.com
+      SMTP_PORT: "587"
+      SMTP_USER: ${SMTP_USER:?set it in .env}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:?set it in .env}
+      MAIL_FROM: Meritory <no-reply@meritory.app>
+      NODE_OPTIONS: --max-old-space-size=144
+    mem_limit: 224m
+    restart: unless-stopped
+    logging: *logging
+
+  web:
+    image: ghcr.io/codemakesmesmile/meritory-web:staging
+    depends_on:
+      api:
+        condition: service_healthy
+      worker:
+        condition: service_started
+    environment:
+      NODE_OPTIONS: --max-old-space-size=128
+    # Only on the server itself, for the Tunnel
+    ports:
+      - "127.0.0.1:3000:3000"
+    mem_limit: 192m
+    restart: unless-stopped
+    logging: *logging
+
+volumes:
+  postgres-data:
