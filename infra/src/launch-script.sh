@@ -1,7 +1,8 @@
-#!/bin/bash
 # Runs once, as root, on the server's first boot. It must never hold secrets,
 # because anyone who can read the instance can read its launch script.
-set -euo pipefail
+# Lightsail adds it after its own setup script, which runs under dash, so it
+# must stay plain POSIX sh.
+set -eu
 export DEBIAN_FRONTEND=noninteractive
 
 # Swap, so the whole stack fits in 1 GB

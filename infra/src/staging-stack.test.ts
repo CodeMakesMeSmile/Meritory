@@ -1,7 +1,11 @@
+import { spawnSync } from "node:child_process";
 import { App } from "aws-cdk-lib";
 import { Match, Template } from "aws-cdk-lib/assertions";
 import { describe, expect, it } from "vitest";
 import { BUDGET_USD, LAUNCH_SCRIPT, StagingStack } from "./staging-stack.ts";
+
+// Ubuntu CI runners have dash, Windows machines usually don't
+const hasDash = spawnSync("dash", ["-c", "true"]).status === 0;
 
 const template = Template.fromStack(
   new StagingStack(new App(), "Test", {
@@ -61,8 +65,19 @@ describe("the launch script", () => {
   });
 
   it("stops on the first failed step", () => {
-    expect(LAUNCH_SCRIPT).toMatch(/^#!\/bin\/bash\n/);
-    expect(LAUNCH_SCRIPT).toContain("set -euo pipefail");
+    expect(LAUNCH_SCRIPT).toMatch(/^set -eu$/m);
+  });
+
+  // Lightsail runs it after its own #!/bin/sh setup, which is dash on Ubuntu
+  it("is plain POSIX sh, not bash", () => {
+    expect(LAUNCH_SCRIPT).not.toMatch(/^#!/);
+    expect(LAUNCH_SCRIPT).not.toMatch(/pipefail|\[\[|\bfunction\b|\bsource\b/);
+  });
+
+  it.runIf(hasDash)("parses under dash", () => {
+    const check = spawnSync("dash", ["-n"], { input: LAUNCH_SCRIPT });
+    expect(check.stderr.toString()).toBe("");
+    expect(check.status).toBe(0);
   });
 
   it("holds no secrets", () => {
