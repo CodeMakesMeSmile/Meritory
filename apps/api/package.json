@@ -10,7 +10,7 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@fastify/rate-limit": "11.2.2",
+    "@fastify/rate-limit": "11.3.0",
     "@fastify/swagger": "^9.9.5",
     "@fastify/type-provider-typebox": "^6.3.0",
     "@meritory/content": "workspace:*",
