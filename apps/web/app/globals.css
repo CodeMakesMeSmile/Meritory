@@ -70,6 +70,16 @@ body {
   line-height: var(--type-body-line-height);
 }
 
+/* An open dropdown list takes the select's text colour but not its
+   background, so without this dark mode shows light text on white */
+@layer base {
+  select,
+  option {
+    background-color: var(--color-bg-card);
+    color: var(--color-text-primary);
+  }
+}
+
 @layer components {
   /* Faint grid on every page: minor lines every 24px, major every 120px */
   .graph-paper {
