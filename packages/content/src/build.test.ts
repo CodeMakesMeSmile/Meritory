@@ -494,3 +494,59 @@ describe("versionsJson", () => {
     expect(versionsJson({})).toBe("{}\n");
   });
 });
+
+describe("track order", () => {
+  /** A track with one chapter and one card, locked so it builds */
+  async function smallTrack(id: string, order?: number) {
+    const dir = path.join(contentDir, id);
+    await write(
+      path.join(dir, "track.yaml"),
+      stringify({ id, title: `Track ${id}`, ...(order ? { order } : {}) }),
+    );
+    const chapter = path.join(dir, "chapters", `${id}-basics`);
+    await write(
+      path.join(chapter, "chapter.yaml"),
+      stringify({
+        id: `${id}-basics`,
+        title: "Basics",
+        order: 1,
+        skills: [{ id: "basics", name: "The basics" }],
+      }),
+    );
+    await write(path.join(chapter, "explanation.md"), "# Basics\n\nText.\n");
+    await write(
+      path.join(chapter, "cards.yaml"),
+      await readFile(path.join(chapterDir, "cards.yaml"), "utf8").then((text) =>
+        text
+          .replaceAll("by-index", `${id}-card`)
+          .replaceAll("indexing", "basics"),
+      ),
+    );
+    await lockTrack(dir);
+  }
+
+  it("puts tracks in their order, then tracks without one by folder name", async () => {
+    await write(
+      path.join(track, "track.yaml"),
+      "id: dsa\ntitle: DSA\norder: 2\n",
+    );
+    await lockTrack(track);
+    await smallTrack("aaa");
+    await smallTrack("zzz", 1);
+    await smallTrack("bbb");
+    const bundle = await built();
+    expect(bundle.tracks.map((t) => [t.id, t.order])).toEqual([
+      ["zzz", 1],
+      ["dsa", 2],
+      ["aaa", undefined],
+      ["bbb", undefined],
+    ]);
+  });
+
+  it("keeps folder order when no track has an order", async () => {
+    await lockTrack(track);
+    await smallTrack("aaa");
+    const bundle = await built();
+    expect(bundle.tracks.map((t) => t.id)).toEqual(["aaa", "dsa"]);
+  });
+});
