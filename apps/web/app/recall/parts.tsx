@@ -64,15 +64,17 @@ export function waitLine(right: boolean, wait: string) {
     : `You'll get another go in ${wait}.`;
 }
 
-/** Got it or Not quite, with when the card comes back unless the lesson says it */
+/** Got it, Not quite, or Here's the answer, with when the card comes back unless the lesson says it */
 export function FeedbackHeading({
   right,
+  dontKnow = false,
   encourage,
   wait,
   focusRef,
   showWait = true,
 }: {
   right: boolean;
+  dontKnow?: boolean;
   encourage: boolean;
   wait: string | null;
   focusRef: RefObject<HTMLHeadingElement | null>;
@@ -85,7 +87,7 @@ export function FeedbackHeading({
         tabIndex={-1}
         className={`text-h3 focus:outline-none ${right ? "text-success" : ""}`}
       >
-        {right ? "Got it" : "Not quite"}
+        {dontKnow ? "Here's the answer" : right ? "Got it" : "Not quite"}
       </h2>
       {encourage && (
         <p className="text-small text-secondary">
@@ -95,6 +97,32 @@ export function FeedbackHeading({
       {showWait && wait !== null && (
         <p className="text-small text-secondary">{waitLine(right, wait)}</p>
       )}
+    </div>
+  );
+}
+
+/** I don't know beside a card's main button, which counts as Missed and shows the answer */
+export function CardActions({
+  onDontKnow,
+  busy,
+  children,
+}: {
+  onDontKnow: () => void;
+  /** Another save or Undo is still on its way */
+  busy: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end sm:gap-4">
+      <button
+        type="button"
+        onClick={onDontKnow}
+        disabled={busy}
+        className={`${linkClass} h-control self-start pr-5 disabled:cursor-progress sm:self-auto sm:px-5`}
+      >
+        I don't know
+      </button>
+      {children}
     </div>
   );
 }

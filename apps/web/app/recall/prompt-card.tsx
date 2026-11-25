@@ -8,12 +8,21 @@ import {
   type SittingCard,
   shortWait,
 } from "@meritory/recall-client";
-import { type ReactNode, useEffect, useId, useRef, useState } from "react";
+import {
+  type ReactNode,
+  type RefObject,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from "react";
 import { Button } from "@/components/button";
 import { Markdown } from "@/components/markdown";
 import type { PromptCard as PromptCardContent } from "@/lib/content";
 import {
+  CardActions,
   CardBox,
+  FeedbackHeading,
   hasFinePointer,
   keyIsTaken,
   Lesson,
@@ -23,6 +32,34 @@ import {
   useFocusOn,
 } from "./parts";
 import type { Checked } from "./sitting-types";
+
+/** The points a good answer covers */
+export function KeyPoints({
+  points,
+  headingRef,
+}: {
+  points: readonly string[];
+  headingRef?: RefObject<HTMLHeadingElement | null>;
+}) {
+  return (
+    <div className="flex flex-col gap-3">
+      <h3
+        ref={headingRef}
+        tabIndex={headingRef ? -1 : undefined}
+        className="text-h3 focus:outline-none"
+      >
+        Key points
+      </h3>
+      <ul className="flex list-disc flex-col gap-3 pl-5 marker:text-secondary">
+        {points.map((point) => (
+          <li key={point}>
+            <Markdown text={point} />
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
 /** A free-recall card: answer, show the key points, then rate yourself */
 export function PromptCard({
@@ -35,6 +72,7 @@ export function PromptCard({
   onToggleShortcuts,
   saving,
   onRate,
+  onDontKnow,
   after,
 }: {
   item: SittingCard;
@@ -47,6 +85,7 @@ export function PromptCard({
   onToggleShortcuts: () => void;
   saving: boolean;
   onRate: (rating: RecallRating) => void;
+  onDontKnow: () => void;
   after: ReactNode;
 }) {
   const [answer, setAnswer] = useState("");
@@ -54,18 +93,20 @@ export function PromptCard({
   const promptRef = useRef<HTMLDivElement>(null);
   const pointsRef = useRef<HTMLHeadingElement>(null);
   const lessonRef = useRef<HTMLHeadingElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
   const answerId = useId();
   const legendId = useId();
 
   useFocusOn(promptRef, item.key, focusOnOpen);
   useFocusOn(pointsRef, revealed, false);
   useFocusOn(lessonRef, checked !== null, false);
+  useFocusOn(headingRef, checked !== null, false);
 
   useEffect(() => {
     if (!shortcuts || !hasFinePointer()) return;
     function onKey(event: KeyboardEvent) {
       if (keyIsTaken(event)) return;
-      if (!revealed && event.key === " ") {
+      if (!revealed && !checked && event.key === " ") {
         event.preventDefault();
         setRevealed(true);
         return;
@@ -81,6 +122,25 @@ export function PromptCard({
   }, [shortcuts, revealed, saving, checked, onRate]);
 
   const typed = answer.trim();
+
+  if (checked?.dontKnow) {
+    return (
+      <>
+        <CardBox>
+          <FeedbackHeading
+            {...checked}
+            focusRef={headingRef}
+            showWait={false}
+          />
+          <Prompt text={promptOf(item)} answered />
+          <KeyPoints points={card.points} />
+          {card.misconception && <MixUp text={card.misconception} />}
+          <Lesson card={card} missed wait={checked.wait} full={false} />
+        </CardBox>
+        {after}
+      </>
+    );
+  }
 
   if (checked) {
     return (
@@ -119,22 +179,7 @@ export function PromptCard({
                   "Nothing typed or recorded. Compare the key points with what you thought."}
               </p>
             </div>
-            <div className="flex flex-col gap-3">
-              <h3
-                ref={pointsRef}
-                tabIndex={-1}
-                className="text-h3 focus:outline-none"
-              >
-                Key points
-              </h3>
-              <ul className="flex list-disc flex-col gap-3 pl-5 marker:text-secondary">
-                {card.points.map((point) => (
-                  <li key={point}>
-                    <Markdown text={point} />
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <KeyPoints points={card.points} headingRef={pointsRef} />
             {card.misconception && <MixUp text={card.misconception} />}
           </>
         ) : (
@@ -187,19 +232,21 @@ export function PromptCard({
           />
         </fieldset>
       ) : (
-        <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="flex flex-col gap-4">
+          <CardActions onDontKnow={onDontKnow} busy={saving}>
+            <Button
+              type="button"
+              onClick={() => setRevealed(true)}
+              className="w-full sm:w-50"
+            >
+              Show key points
+            </Button>
+          </CardActions>
           <ShortcutHint
             on={shortcuts}
             hint="You can also press Space to show key points."
             onToggle={onToggleShortcuts}
           />
-          <Button
-            type="button"
-            onClick={() => setRevealed(true)}
-            className="w-full sm:ml-auto sm:w-50"
-          >
-            Show key points
-          </Button>
         </div>
       )}
       {after}

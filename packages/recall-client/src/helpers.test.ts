@@ -234,6 +234,17 @@ describe("undo after a rating", () => {
     expect(lineAfterSave(items, at.session, "r2", "again")).toBeNull();
   });
 
+  it("offers Undo after I don't know on a graded card, since that was tapped", () => {
+    const at = items[1] as SittingCard;
+    expect(lineAfterSave(items, at.session, "r2", "again", true)).toEqual({
+      ...offer,
+      id: "r2",
+      rating: "again",
+      at: 1,
+      busy: false,
+    });
+  });
+
   it("shows only on the next card or the done screen", () => {
     expect(showsUndo(offer, 2)).toBe(false);
     expect(showsUndo(offer, 3)).toBe(true);

@@ -17,6 +17,7 @@ import { Markdown } from "../markdown";
 import { TextLink } from "../text-link";
 import {
   AnswerBox,
+  CardActions,
   CardBox,
   type Checked,
   Explanation,
@@ -33,6 +34,7 @@ export function OrderingCard({
   card,
   checked,
   onCheck,
+  onDontKnow,
   busy,
   after,
 }: {
@@ -40,6 +42,7 @@ export function OrderingCard({
   card: OrderingContent;
   checked: Checked | null;
   onCheck: (right: boolean) => void;
+  onDontKnow: () => void;
   /** Another save or Undo is still on its way */
   busy: boolean;
   after: ReactNode;
@@ -78,9 +81,12 @@ export function OrderingCard({
       ),
     );
 
+  // After I don't know the right order shows in place of the learner's
+  const listed = checked?.dontKnow ? card.steps.map((_, at) => at) : placed;
+
   const order = (
     <View style={recallStyles.list}>
-      {placed.map((step, at) => {
+      {listed.map((step, at) => {
         const wrong = checked !== null && step !== at;
         return (
           <AnswerBox
@@ -115,7 +121,7 @@ export function OrderingCard({
         <CardBox>
           <FeedbackHeading {...checked} />
           <Prompt text={promptOf(item)} answered />
-          <Label text="Your order" />
+          <Label text={checked.dontKnow ? "The right order" : "Your order"} />
           {order}
           {!checked.right && <Explanation card={card} />}
         </CardBox>
@@ -171,14 +177,16 @@ export function OrderingCard({
           </View>
         )}
       </CardBox>
-      <Button
-        label="Check order"
-        off={!done}
-        busy={busy}
-        onPress={() =>
-          done && onCheck(orderingIsRight(placed, card.steps.length))
-        }
-      />
+      <CardActions onDontKnow={onDontKnow}>
+        <Button
+          label="Check order"
+          off={!done}
+          busy={busy}
+          onPress={() =>
+            done && onCheck(orderingIsRight(placed, card.steps.length))
+          }
+        />
+      </CardActions>
       {after}
     </>
   );

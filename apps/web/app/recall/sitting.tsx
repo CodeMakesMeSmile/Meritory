@@ -3,6 +3,7 @@
 import type { RecallRating } from "@meritory/contracts";
 import {
   doneLine,
+  dontKnowResult,
   lineAfterFailedUndo,
   lineAfterSave,
   longWait,
@@ -172,6 +173,8 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
   const cardStart = useRef(Date.now());
   // Set before the first await, so a second press in the same frame waits too
   const inFlight = useRef(false);
+  // Ratings sent by I don't know, which can be undone on any card type
+  const dontKnowIds = useRef(new Set<string>());
   const failedBox = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -233,7 +236,15 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
       ]);
       setSaving({ state: "idle" });
       setAnnouncement(`Last card saved as ${RATING_LABELS[review.rating]}.`);
-      setLine(lineAfterSave(items, review.card, review.id, review.rating));
+      setLine(
+        lineAfterSave(
+          items,
+          review.card,
+          review.id,
+          review.rating,
+          dontKnowIds.current.has(review.id),
+        ),
+      );
       if (advance) {
         setIndex((at) => at + 1);
         cardStart.current = Date.now();
@@ -267,6 +278,7 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
       if (missed) {
         setChecked({
           right: false,
+          dontKnow: false,
           encourage: false,
           wait: longWait(loadedAt, new Date(item.session.next.again)),
         });
@@ -281,12 +293,24 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
     const rating: RecallRating = right ? "good" : "again";
     setChecked({
       right,
+      dontKnow: false,
       encourage: !right && !missedOnce,
       wait: longWait(loadedAt, new Date(item.session.next[rating])),
     });
     if (!right) setMissedOnce(true);
     const next = review(rating);
     if (next) save(next, false);
+  }
+
+  function dontKnow() {
+    if (!item || inFlight.current || saving.state !== "idle") return;
+    const result = dontKnowResult(item, loadedAt, missedOnce);
+    setChecked(result.checked);
+    setMissedOnce(true);
+    const next = review(result.rating);
+    if (!next) return;
+    dontKnowIds.current.add(next.id);
+    save(next, false);
   }
 
   function nextCard() {
@@ -479,6 +503,7 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
           onToggleShortcuts={toggleShortcuts}
           saving={busy}
           onRate={rate}
+          onDontKnow={dontKnow}
         />
       ) : card.type === "pick-one" ? (
         <PickOneCard
@@ -488,6 +513,7 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
           checked={checked}
           busy={busy}
           onCheck={check}
+          onDontKnow={dontKnow}
         />
       ) : card.type === "ordering" ? (
         <OrderingCard
@@ -497,6 +523,7 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
           checked={checked}
           busy={busy}
           onCheck={check}
+          onDontKnow={dontKnow}
         />
       ) : (
         <MatchingCard
@@ -506,6 +533,7 @@ export function Sitting({ items, now }: { items: SittingCard[]; now: string }) {
           checked={checked}
           busy={busy}
           onCheck={check}
+          onDontKnow={dontKnow}
         />
       )}
       {liveRegion}

@@ -14,6 +14,7 @@ import { Button } from "../button";
 import { Markdown } from "../markdown";
 import {
   AnswerBox,
+  CardActions,
   CardBox,
   type Checked,
   Explanation,
@@ -39,6 +40,7 @@ export function MatchingCard({
   card,
   checked,
   onCheck,
+  onDontKnow,
   busy,
   after,
 }: {
@@ -46,6 +48,7 @@ export function MatchingCard({
   card: MatchingContent;
   checked: Checked | null;
   onCheck: (right: boolean) => void;
+  onDontKnow: () => void;
   /** Another save or Undo is still on its way */
   busy: boolean;
   after: ReactNode;
@@ -90,6 +93,8 @@ export function MatchingCard({
   const complete = filled.every((match) => match !== null);
 
   if (checked) {
+    // After I don't know each box shows its right match
+    const shown = checked.dontKnow ? answers : filled;
     return (
       <>
         <CardBox>
@@ -97,12 +102,12 @@ export function MatchingCard({
           <Prompt text={promptOf(item)} answered />
           <View style={recallStyles.blocks}>
             {card.pairs.map((pair, at) => {
-              const wrong = filled[at] !== pair.match;
+              const wrong = shown[at] !== pair.match;
               return (
                 <View key={pair.item} style={recallStyles.list}>
                   <Markdown text={pair.item} strong />
                   <AnswerBox result={wrong ? "wrong" : "right"}>
-                    <Markdown text={filled[at] ?? ""} />
+                    <Markdown text={shown[at] ?? ""} />
                     {wrong && (
                       <>
                         <AppText variant="small" color="statusDanger">
@@ -195,12 +200,14 @@ export function MatchingCard({
           </View>
         </View>
       </CardBox>
-      <Button
-        label="Check matches"
-        off={!complete}
-        busy={busy}
-        onPress={() => complete && onCheck(matchingIsRight(filled, answers))}
-      />
+      <CardActions onDontKnow={onDontKnow}>
+        <Button
+          label="Check matches"
+          off={!complete}
+          busy={busy}
+          onPress={() => complete && onCheck(matchingIsRight(filled, answers))}
+        />
+      </CardActions>
       {after}
     </>
   );

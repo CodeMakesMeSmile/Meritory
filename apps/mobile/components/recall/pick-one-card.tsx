@@ -11,6 +11,7 @@ import { Button } from "../button";
 import { Markdown } from "../markdown";
 import {
   AnswerBox,
+  CardActions,
   CardBox,
   type Checked,
   FeedbackHeading,
@@ -27,6 +28,7 @@ export function PickOneCard({
   card,
   checked,
   onCheck,
+  onDontKnow,
   busy,
   after,
 }: {
@@ -34,6 +36,7 @@ export function PickOneCard({
   card: PickOneContent;
   checked: Checked | null;
   onCheck: (right: boolean) => void;
+  onDontKnow: () => void;
   /** Another save or Undo is still on its way */
   busy: boolean;
   after: ReactNode;
@@ -46,6 +49,23 @@ export function PickOneCard({
   const [picked, setPicked] = useState<number | null>(null);
   const pick = picked === null ? null : options[picked];
   const answer = options.find((option) => option.correct);
+
+  if (checked?.dontKnow && answer) {
+    return (
+      <>
+        <CardBox>
+          <FeedbackHeading {...checked} showWait={false} />
+          <Prompt text={promptOf(item)} answered />
+          <AnswerBox result="right">
+            <Markdown text={answer.text} />
+            <Markdown text={answer.reason} variant="small" secondary />
+          </AnswerBox>
+          <Lesson card={card} missed wait={checked.wait} />
+        </CardBox>
+        {after}
+      </>
+    );
+  }
 
   if (checked && pick) {
     return (
@@ -105,12 +125,14 @@ export function PickOneCard({
           ))}
         </View>
       </CardBox>
-      <Button
-        label="Check answer"
-        off={pick === null}
-        busy={busy}
-        onPress={() => pick && onCheck(pick.correct === true)}
-      />
+      <CardActions onDontKnow={onDontKnow}>
+        <Button
+          label="Check answer"
+          off={pick === null}
+          busy={busy}
+          onPress={() => pick && onCheck(pick.correct === true)}
+        />
+      </CardActions>
       {after}
     </>
   );
